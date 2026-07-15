@@ -10,9 +10,9 @@ Welcome to the official design specification for modIQ.
 4. ProductSpecification.md
 5. Architecture.md
 6. DataModel.md
-7. EngineAPI.md
-8. RuleEngine.md
-9. KnowledgeModel.md
+7. KnowledgeModel.md
+8. EngineAPI.md
+9. RuleEngine.md
 10. Sprint0.md
 11. Sprint1.md
 
