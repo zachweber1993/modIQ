@@ -19,3 +19,11 @@ The project is currently focused on completing the Design Specification before i
 - `/sample_mods` — Test assets
 
 Documentation Release: **In Progress**
+
+## Current Status
+
+modIQ is currently in the Documentation Release 1.0 phase.
+
+The constitutional specifications have been completed and frozen.
+
+Development is currently focused on the technical specification layer prior to implementation.

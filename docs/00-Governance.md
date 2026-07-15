@@ -5,4 +5,4 @@ Vision.md
 Principles.md
 Glossary.md
 ProductSpecification.md
-...
+Architecture.md
