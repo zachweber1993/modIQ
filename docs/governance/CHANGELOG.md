@@ -142,3 +142,29 @@ Planned outcomes:
 - Implemented runtime domain skeleton
 - Implemented Assessment aggregate
 - Structured runtime entities according to DataModel.md
+
+---
+
+## Sprint 0
+
+### Runtime Domain
+
+- Established `modiq-runtime` crate
+- Implemented Assessment aggregate skeleton
+- Implemented runtime domain module hierarchy
+- Aligned runtime model with DataModel.md
+- Established aggregate ownership
+
+### Common Platform
+
+- Established `modiq-common` crate
+- Added shared platform documentation
+- Defined architectural ownership rules
+
+### Knowledge Domain
+
+- Established `modiq-knowledge` crate
+- Implemented knowledge domain module hierarchy
+- Implemented reusable engineering knowledge entities
+- Aligned implementation with KnowledgeModel.md
+- Preserved runtime / knowledge separation

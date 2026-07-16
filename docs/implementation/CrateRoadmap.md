@@ -149,14 +149,16 @@ Sprint 0
 
 Current engineering focus:
 
-1. modiq-common ✅
-2. modiq-runtime ✅
-3. modiq-knowledge
-4. modiq-versioning
-5. modiq-rules
-6. modiq-engine
-7. modiq-report
-8. modiq-cli
+Current engineering focus:
+
+✓ modiq-common
+✓ modiq-runtime
+✓ modiq-knowledge
+✓ modiq-versioning
+✓ modiq-rules
+✓ modiq-engine
+✓ modiq-report
+✓ modiq-cli
 
 ---
 

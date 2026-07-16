@@ -1,45 +1,36 @@
 # modIQ
 
-An intelligence platform for Farming Simulator mods.
+Deterministic engineering assessment platform for Farming Simulator modifications.
 
 ## Repository Structure
 
-- `/docs` — Official Product & Engineering Design Specification
-- `/adrs` — Architecture Decision Records
-- `/engine` — Core platform implementation
-- `/clients` — User interfaces
-- `/tests` — Automated tests
-- `/sample_mods` — Test assets
+## Repository Structure
 
-Documentation Release: **1.0 (Final Review)**
+```text
+modIQ/
+├── crates/
+├── docs/
+├── sample-mods/
+├── Cargo.toml
+├── Cargo.lock
+├── README.md
+└── LICENSE
+```
 
-## Current Status
+### Workspace Crates
 
-**Current Milestone:** Documentation Release 1.0 Final Review
+| Crate | Responsibility |
+|--------|----------------|
+| modiq-common | Shared platform types and utilities |
+| modiq-runtime | Runtime assessment domain |
+| modiq-knowledge | Engineering knowledge domain |
+| modiq-versioning | Version Profile management |
+| modiq-rules | Deterministic rule evaluation |
+| modiq-engine | Assessment orchestration |
+| modiq-report | Report representation and formatting |
+| modiq-cli | Command-line interface |
 
-The constitutional architecture, platform architecture, technical architecture, and implementation planning documents have been completed.
-
-The repository is currently undergoing a comprehensive release audit to verify:
-
-- Architectural consistency
-- Cross-specification reconciliation
-- Terminology consistency
-- Documentation quality
-- Implementation readiness
-
-Successful completion of the audit will result in:
-
-- Documentation Release 1.0 Freeze
-- Git tag `v0.1.0-docs`
-- Authorization to begin implementation
-
-## Current Focus
-
-The project has completed Documentation Release 1.0 and is currently in the Final Review phase.
-
-No new architectural specifications should be introduced until the release audit has been completed.
-
-The next major milestone is the implementation of Sprint 0.
+---
 
 ## Documentation Reading Order
 
@@ -65,3 +56,25 @@ The following documents support the Engineering Specification and should be read
 
 1. DocumentationRelease.md
 2. EngineeringGuide.md
+
+---
+
+## Documentation
+
+Project documentation is organized by purpose.
+
+| Directory | Description |
+|-----------|-------------|
+| `docs/architecture/` | Engineering Specification |
+| `docs/governance/` | Repository governance and project management |
+| `docs/implementation/` | Sprint planning and engineering guidance |
+| `docs/adrs/` | Architecture Decision Records |
+
+---
+
+## Getting Started
+
+Build the workspace:
+
+```bash
+cargo build

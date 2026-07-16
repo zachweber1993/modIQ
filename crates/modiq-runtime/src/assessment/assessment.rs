@@ -1,8 +1,13 @@
 use super::{
-    context::AssessmentContext, evidence::Evidence, finding::Finding,
-    recommendation::Recommendation, report::AssessmentReport, subject::AssessmentSubject,
+    context::AssessmentContext,
+    evidence::Evidence,
+    finding::Finding,
+    recommendation::Recommendation,
+    report::AssessmentReport,
+    subject::AssessmentSubject,
 };
 
+#[allow(dead_code)]
 pub struct Assessment {
     subject: AssessmentSubject,
     context: AssessmentContext,
