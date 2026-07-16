@@ -1,5 +1,8 @@
 # Architecture
 
+> **The authoritative specification defining the conceptual organization of the modIQ platform.**
+
+---
 
 | Property | Value |
 |----------|-------|

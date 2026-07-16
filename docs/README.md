@@ -24,14 +24,34 @@ All contributors should read them in order before making architectural or implem
 
 Approved RFCs supplement these documents.
 
+## Specification Hierarchy
+
+The documentation is hierarchical.
+
+Each specification derives its authority from the documents that precede it in the Reading Order.
+
+Higher-level specifications define architectural intent.
+
+Lower-level specifications implement that intent without redefining it.
+
+If a conflict exists between specifications, the higher-level specification takes precedence.
+
 ## Current Documentation Status
 
-The following specifications have completed the Foundation Review and are considered **Frozen Drafts** for Documentation Release 1.0:
+The constitutional specifications have completed the Foundation Review and are considered **Frozen Drafts**.
 
-- Vision.md
-- Principles.md
-- Glossary.md
-- ProductSpecification.md
-- Architecture.md
+The platform architecture, technical specifications, and implementation planning documents have been completed.
 
-Current work is focused on the Technical Specification layer, beginning with DataModel.md.
+The repository is currently undergoing the **Documentation Release 1.0 Final Review** to verify:
+
+- Architectural consistency
+- Cross-specification reconciliation
+- Terminology consistency
+- Documentation quality
+- Implementation readiness
+
+Upon successful completion of the review, the repository will:
+
+- Freeze Documentation Release 1.0
+- Create Git tag `v0.1.0-docs`
+- Transition from documentation to implementation
