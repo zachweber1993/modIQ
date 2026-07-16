@@ -126,5 +126,5 @@ Planned outcomes:
 - Repository audit
 - Cross-specification reconciliation
 - Documentation Freeze
-- Git tag `v0.1.0-docs`
+- Git tag `v0.1.0`
 - Authorization to begin implementation
