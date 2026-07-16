@@ -58,3 +58,10 @@ Documentation should be read in the following order:
 11. Sprint1.md
 
 Each document derives its authority from the specifications that precede it.
+
+## Engineering Governance
+
+The following documents support the Engineering Specification and should be read before contributing to the repository.
+
+1. DocumentationRelease.md
+2. EngineeringGuide.md
