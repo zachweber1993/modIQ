@@ -168,3 +168,19 @@ Changes to these specifications should occur only when:
 - An accepted Architecture Decision Record (ADR) requires a foundational change.
 
 All subsequent specifications shall derive from this foundation.
+
+DataModel.md
+
+✅ Complete (Draft)
+
+KnowledgeModel.md
+
+✅ Complete (Draft)
+
+RuleEngine.md
+
+✅ Complete (Draft)
+
+EngineAPI.md
+
+✅ Complete (Draft)
