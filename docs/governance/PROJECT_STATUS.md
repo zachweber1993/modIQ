@@ -3,30 +3,33 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Milestone** | Documentation Release 1.0 |
-| **Overall Status** | Frozen |
-| **Current Phase** | Implementation Preparation |
+| **Current Release** | v.0.2.0 
+| **Current Milestone** | Sprint 1 |
+| **Overall Status** | Active Deployment |
+| **Current Phase** | Sprint 1 |
 | **Last Updated** | 2026-07-16 |
 
 ---
 
 # Current Milestone
 
-## Documentation Release 1.0
+## Sprint 1
 
-**Status:** Frozen
+**Status:** Active
 
-Documentation Release 1.0 has successfully completed:
+Sprint 0 has been successfully completed.
 
-- Foundation Review
-- Technical Review
-- Repository Audit
-- Cross-Specification Reconciliation
-- Documentation Freeze
+The engineering foundation has been established, including:
 
-The engineering specification is now considered stable and authoritative.
+- Workspace scaffolding
+- Repository governance
+- Crate hierarchy
+- Module hierarchy
+- Documentation hierarchy
+- Architecture verification
+- Clean workspace build
 
-Implementation should derive from the frozen specifications.
+Implementation now proceeds with deterministic assessment functionality.
 
 ---
 
@@ -126,3 +129,14 @@ The documentation contained within this repository is the authoritative engineer
 Implementation should reconcile all engineering decisions against the frozen specifications.
 
 Architectural changes should be introduced through Architecture Decision Records (ADRs) and incorporated into future Documentation Releases rather than modifying Documentation Release 1.0.
+
+---
+
+Current Release:
+v0.2.0
+
+Current Phase:
+Sprint 1
+
+Status:
+Sprint 0 Complete

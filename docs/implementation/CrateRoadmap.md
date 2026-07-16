@@ -64,14 +64,14 @@ No crate should depend on a crate above it in this hierarchy.
 
 | Crate | Responsibility | Current Level | Status |
 |--------|----------------|--------------|--------|
-| modiq-common | Shared platform types | L1 | 🟡 Scaffolded |
-| modiq-runtime | Runtime domain | L1 | 🟡 Scaffolded |
-| modiq-knowledge | Engineering knowledge | L0 | ⚪ Not Started |
-| modiq-versioning | Version Profiles | L0 | ⚪ Not Started |
-| modiq-rules | Deterministic rule evaluation | L0 | ⚪ Not Started |
-| modiq-engine | Assessment orchestration | L0 | ⚪ Not Started |
-| modiq-report | Report generation | L0 | ⚪ Not Started |
-| modiq-cli | Command line interface | L0 | ⚪ Not Started |
+| modiq-common | Shared platform types | L1 | ✅ Scaffolded |
+| modiq-runtime | Runtime domain | L1 | ✅ Scaffolded |
+| modiq-knowledge | Engineering knowledge | L1 | ✅ Scaffolded |
+| modiq-versioning | Version Profile management | L1 | ✅ Scaffolded |
+| modiq-rules | Deterministic rule evaluation | L1 | ✅ Scaffolded |
+| modiq-engine | Assessment orchestration | L1 | ✅ Scaffolded |
+| modiq-report | Report representation and formatting | L1 | ✅ Scaffolded |
+| modiq-cli | Command-line interface | L1 | ✅ Scaffolded |
 
 ---
 
@@ -145,33 +145,43 @@ Architectural conflicts must be resolved through the ADR process before implemen
 
 # Current Sprint
 
-Sprint 0
+## Sprint 1
 
-Current engineering focus:
+Sprint 0 has successfully completed.
 
-Current engineering focus:
+The engineering foundation for the modIQ platform has been established.
 
-✓ modiq-common
-✓ modiq-runtime
-✓ modiq-knowledge
-✓ modiq-versioning
-✓ modiq-rules
-✓ modiq-engine
-✓ modiq-report
-✓ modiq-cli
+Completed objectives include:
+
+- Workspace scaffolding
+- Repository organization
+- Crate hierarchy
+- Module hierarchy
+- Documentation hierarchy
+- Governance documentation
+- Dependency map
+- Clean workspace verification
+- Engineering audit
+
+Current engineering focus shifts from architectural scaffolding to deterministic implementation.
+
+The first implementation milestone is the Assessment lifecycle.
 
 ---
 
 # Exit Criteria
 
-Sprint 0 is complete when:
+Sprint 1 will be considered complete when:
 
-- All crates have been scaffolded.
-- Module boundaries reflect the Engineering Specification.
-- Workspace builds successfully.
-- Tests execute successfully.
-- CI passes.
-- No production assessment functionality has been implemented beyond architectural scaffolding.
+- Assessment lifecycle implemented
+- Runtime domain operational
+- Rule Engine executes deterministic evaluation
+- Findings generated from objective evidence
+- Recommendations generated from findings
+- Assessment reports produced through the Engine API
+- Unit tests passing
+- Integration tests passing
+- Workspace builds without warnings
 
 ---
 
@@ -180,3 +190,4 @@ Sprint 0 is complete when:
 | Version | Date | Description |
 |----------|------|-------------|
 | 1.0.0 | 2026-07-16 | Initial crate implementation roadmap established. |
+| 1.1.0 | 2026-07-16 | Sprint 0 completed. All workspace crates scaffolded and engineering foundation established. |
