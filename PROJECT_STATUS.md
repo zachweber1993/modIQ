@@ -140,3 +140,31 @@ These specifications should only be modified if:
 - A critical architectural defect is identified.
 - A downstream specification exposes a contradiction.
 - An accepted ADR requires a foundational change.
+
+# Foundation Freeze
+
+| Property | Value |
+|----------|-------|
+| **Status** | Complete |
+| **Date** | 2026-07-15 |
+| **Milestone** | Documentation Release 1.0 Foundation Freeze |
+
+The constitutional and foundational specifications have completed architectural review and are considered **Frozen Drafts**.
+
+The following documents are included in this freeze:
+
+- Vision.md
+- Principles.md
+- Glossary.md
+- ProductSpecification.md
+- Architecture.md
+
+These documents are now considered the authoritative foundation for the project.
+
+Changes to these specifications should occur only when:
+
+- A critical architectural defect is identified.
+- A downstream specification exposes a contradiction.
+- An accepted Architecture Decision Record (ADR) requires a foundational change.
+
+All subsequent specifications shall derive from this foundation.
