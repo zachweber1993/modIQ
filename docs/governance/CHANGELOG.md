@@ -128,3 +128,17 @@ Planned outcomes:
 - Documentation Freeze
 - Git tag `v0.1.0`
 - Authorization to begin implementation
+
+---
+
+# Changelog
+
+## Sprint 0
+
+### Milestone 1
+
+- Established Cargo workspace
+- Configured Rust toolchain
+- Implemented runtime domain skeleton
+- Implemented Assessment aggregate
+- Structured runtime entities according to DataModel.md
