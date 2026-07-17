@@ -1,0 +1,7 @@
+pub enum AssessmentError
+
+InvalidStateTransition
+
+AssessmentCompleted
+
+InvalidOperation

@@ -1,0 +1,1 @@
+/// Lifecycle states of an Assessment aggregate.

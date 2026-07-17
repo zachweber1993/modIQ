@@ -1,18 +1,3 @@
-use super::{
-    context::AssessmentContext,
-    evidence::Evidence,
-    finding::Finding,
-    recommendation::Recommendation,
-    report::AssessmentReport,
-    subject::AssessmentSubject,
-};
+/// Aggregate root for deterministic engineering assessments.
 
-#[allow(dead_code)]
-pub struct Assessment {
-    subject: AssessmentSubject,
-    context: AssessmentContext,
-    evidence: Vec<Evidence>,
-    findings: Vec<Finding>,
-    recommendations: Vec<Recommendation>,
-    report: AssessmentReport,
-}
+// Owns all runtime assessment state and enforces assessment invariants.
