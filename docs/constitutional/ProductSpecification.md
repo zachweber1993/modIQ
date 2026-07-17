@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | ProductSpecification.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -211,7 +211,7 @@ The high-level workflow of the platform is:
 2. Assessment Engine collects evidence.
 3. Rule Engine evaluates evidence.
 4. Findings are generated.
-5. Assessment Framework produces conclusions.
+5. Conclusions are produced according to the Assessment Framework.
 6. Assessment Report is generated.
 7. Knowledge is incorporated into the MKB where appropriate.
 
@@ -296,6 +296,6 @@ These capabilities represent product direction rather than implementation commit
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification defines the product requirements for modIQ and serves as the authoritative source for all subsequent architectural and engineering specifications.

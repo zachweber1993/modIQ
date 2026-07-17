@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | VersionProfiles.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -265,7 +265,7 @@ This document defines compatibility context only.
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification establishes the authoritative conceptual Version Profile model for the modIQ platform.
 

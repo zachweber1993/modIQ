@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | Glossary.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -29,7 +29,9 @@ Every product, engineering, architectural, and implementation document should us
 
 ## Assessment
 
-The complete analytical evaluation of a submitted mod.
+Assessment
+
+A deterministic evaluation of a single Assessment Subject using the modIQ Assessment Framework.
 
 An Assessment consists of evidence collection, rule evaluation, compatibility analysis, dependency analysis, performance observations, findings, recommendations, and the generation of an Assessment Report.
 
@@ -297,6 +299,6 @@ Version Profiles allow modIQ to support multiple game generations without redesi
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This glossary is considered the authoritative vocabulary of the modIQ Design Specification.

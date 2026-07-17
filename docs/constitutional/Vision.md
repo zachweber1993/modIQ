@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | Vision.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -225,6 +225,6 @@ The platform should remain adaptable to future Farming Simulator releases withou
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
-This specification remains under active review until approved for Documentation Release 1.0.
+This specification is frozen for Documentation Release 1.0, per ADR-0001 (Foundation Freeze).

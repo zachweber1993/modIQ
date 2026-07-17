@@ -5,3 +5,5 @@
 ///
 /// Recommendations do not evaluate evidence directly and are
 /// never produced without supporting findings.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Recommendation;

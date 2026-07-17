@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | Sprint0.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -275,6 +275,6 @@ Sprint 1 focuses on delivering the first end-to-end assessment workflow while pr
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification defines the implementation readiness objectives required before production feature development begins.

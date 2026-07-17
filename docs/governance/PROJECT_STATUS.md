@@ -3,11 +3,12 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | v.0.2.0 
+| **Current Release** | v0.2.0 |
+| **Repository Status** | Implementation Ready |
 | **Current Milestone** | Sprint 1 |
-| **Overall Status** | Active Deployment |
+| **Overall Status** | Active Implementation |
 | **Current Phase** | Sprint 1 |
-| **Last Updated** | 2026-07-16 |
+| **Last Updated** | 2026-07-17 |
 
 ---
 
@@ -17,9 +18,7 @@
 
 **Status:** Active
 
-Sprint 0 has been successfully completed.
-
-The engineering foundation has been established, including:
+Sprint 0 is complete. The engineering foundation has been established, including:
 
 - Workspace scaffolding
 - Repository governance
@@ -29,7 +28,12 @@ The engineering foundation has been established, including:
 - Architecture verification
 - Clean workspace build
 
-Implementation now proceeds with deterministic assessment functionality.
+Runtime implementation is underway in `modiq-runtime`:
+
+- Assessment aggregate implemented, including creation, unique identity, and initialization of empty Evidence, Finding, and Recommendation collections
+- Assessment lifecycle transitions implemented and enforced (`begin_evidence_collection`, `begin_rule_evaluation`, `complete`)
+
+**Next implementation milestone:** Evidence Collection.
 
 ---
 
@@ -86,39 +90,26 @@ Implementation now proceeds with deterministic assessment functionality.
 
 | Property | Value |
 |----------|-------|
-| **Release** | Documentation Release 1.0 |
+| **Current Release** | Documentation Release 2.0 |
+| **Status** | ✅ Complete |
+| **Constitutional Layer** | ✅ Frozen |
+| **Architecture Layer** | ✅ Frozen |
+| **Governance Documentation** | ✅ Reconciled |
 | **Repository Audit** | ✅ Passed |
 | **Implementation Readiness** | ✅ Verified |
-| **Documentation Freeze** | ✅ Complete |
-| **Git Tag** | `v0.1.0-docs` |
+| **Previous Release** | Documentation Release 1.0 (tag `v0.1.0`) |
+
+Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT_STATUS.md, and related tracking documents) is reconciled with current repository state as of Documentation Release 2.0. Unlike the constitutional and architecture layers, governance documentation remains a living body of documentation per EngineeringGuide.md and is not designated Frozen.
 
 ---
 
 # Current Focus
 
-Documentation Release 1.0 has concluded.
+Documentation Release 1.0 and Documentation Release 2.0 have both concluded.
 
-Current work transitions from architectural specification to engineering implementation.
+Sprint 0 is complete. Sprint 1 is active. Runtime implementation is the current engineering focus.
 
 Implementation should remain consistent with the frozen engineering specification.
-
----
-
-# Next Milestone
-
-## Sprint 0 Implementation
-
-Objectives include:
-
-- Development environment
-- Project structure
-- Runtime framework
-- Knowledge framework
-- Rule Engine framework
-- Testing infrastructure
-- Continuous integration
-
-No production assessment functionality should be implemented until Sprint 0 objectives have been completed.
 
 ---
 
@@ -129,14 +120,3 @@ The documentation contained within this repository is the authoritative engineer
 Implementation should reconcile all engineering decisions against the frozen specifications.
 
 Architectural changes should be introduced through Architecture Decision Records (ADRs) and incorporated into future Documentation Releases rather than modifying Documentation Release 1.0.
-
----
-
-Current Release:
-v0.2.0
-
-Current Phase:
-Sprint 1
-
-Status:
-Sprint 0 Complete

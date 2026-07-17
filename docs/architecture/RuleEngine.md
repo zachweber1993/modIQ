@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | RuleEngine.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -158,7 +158,7 @@ Every Finding should be directly traceable to both the evaluated Rule and the su
 
 ## Recommendation Generation
 
-Generate Recommendations from Findings and associated Repair Recipes.
+Generate Recommendations from Findings. Associated Repair Recipes inform Recommendation content but do not independently trigger a Recommendation.
 
 Recommendations should assist user understanding without automatically modifying content.
 
@@ -296,6 +296,6 @@ The execution model should remain deterministic, explainable, and evidence-based
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification establishes the authoritative conceptual execution model for the modIQ assessment engine.

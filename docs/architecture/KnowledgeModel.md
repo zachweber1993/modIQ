@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | KnowledgeModel.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -294,6 +294,6 @@ Related specifications include:
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification establishes the authoritative conceptual knowledge model for the modIQ platform.

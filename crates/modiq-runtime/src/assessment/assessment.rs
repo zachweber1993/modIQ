@@ -1,3 +1,311 @@
 /// Aggregate root for deterministic engineering assessments.
+///
+/// Owns all runtime assessment state and enforces assessment invariants.
+use super::assessment_error::AssessmentError;
+use super::assessment_id::AssessmentId;
+use super::assessment_status::AssessmentStatus;
+use super::context::AssessmentContext;
+use super::evidence::Evidence;
+use super::finding::Finding;
+use super::recommendation::Recommendation;
+use super::subject::AssessmentSubject;
 
-// Owns all runtime assessment state and enforces assessment invariants.
+#[derive(Debug)]
+pub struct Assessment {
+    id: AssessmentId,
+    subject: AssessmentSubject,
+    context: AssessmentContext,
+    status: AssessmentStatus,
+    evidence: Vec<Evidence>,
+    findings: Vec<Finding>,
+    recommendations: Vec<Recommendation>,
+}
+
+impl Assessment {
+    /// Creates a new Assessment for the given subject and context.
+    ///
+    /// Per AssessmentCreation.md, this generates a unique AssessmentId,
+    /// enters the Created lifecycle state (RuntimeInvariants.md INV-001),
+    /// and initializes empty Evidence, Finding, and Recommendation
+    /// collections.
+    pub fn new(subject: AssessmentSubject, context: AssessmentContext) -> Self {
+        Self {
+            id: AssessmentId::generate(),
+            subject,
+            context,
+            status: AssessmentStatus::Created,
+            evidence: Vec::new(),
+            findings: Vec::new(),
+            recommendations: Vec::new(),
+        }
+    }
+
+    pub fn id(&self) -> AssessmentId {
+        self.id
+    }
+
+    pub fn subject(&self) -> &AssessmentSubject {
+        &self.subject
+    }
+
+    pub fn context(&self) -> &AssessmentContext {
+        &self.context
+    }
+
+    pub fn status(&self) -> AssessmentStatus {
+        self.status
+    }
+
+    pub fn evidence(&self) -> &[Evidence] {
+        &self.evidence
+    }
+
+    pub fn findings(&self) -> &[Finding] {
+        &self.findings
+    }
+
+    pub fn recommendations(&self) -> &[Recommendation] {
+        &self.recommendations
+    }
+
+    /// Transitions the Assessment into evidence collection.
+    ///
+    /// Valid only from `Created` (RuntimeInvariants.md INV-010, INV-011).
+    pub fn begin_evidence_collection(&mut self) -> Result<(), AssessmentError> {
+        self.transition(
+            AssessmentStatus::Created,
+            AssessmentStatus::CollectingEvidence,
+        )
+    }
+
+    /// Transitions the Assessment into rule evaluation.
+    ///
+    /// Valid only from `CollectingEvidence` (RuntimeInvariants.md INV-003,
+    /// INV-010, INV-011).
+    pub fn begin_rule_evaluation(&mut self) -> Result<(), AssessmentError> {
+        self.transition(
+            AssessmentStatus::CollectingEvidence,
+            AssessmentStatus::EvaluatingRules,
+        )
+    }
+
+    /// Completes the Assessment.
+    ///
+    /// Valid only from `EvaluatingRules` (RuntimeInvariants.md INV-010,
+    /// INV-011).
+    pub fn complete(&mut self) -> Result<(), AssessmentError> {
+        self.transition(
+            AssessmentStatus::EvaluatingRules,
+            AssessmentStatus::Completed,
+        )
+    }
+
+    /// Advances `status` from `required` to `next`, or returns an
+    /// `AssessmentError` without mutating state.
+    ///
+    /// A Completed Assessment always rejects further transitions
+    /// (RuntimeInvariants.md INV-012), independent of the requested
+    /// target state.
+    fn transition(
+        &mut self,
+        required: AssessmentStatus,
+        next: AssessmentStatus,
+    ) -> Result<(), AssessmentError> {
+        if self.status == AssessmentStatus::Completed {
+            return Err(AssessmentError::AssessmentCompleted);
+        }
+
+        if self.status != required {
+            return Err(AssessmentError::InvalidStateTransition {
+                from: self.status,
+                to: next,
+            });
+        }
+
+        self.status = next;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_assessment_begins_in_created_state() {
+        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert_eq!(assessment.status(), AssessmentStatus::Created);
+    }
+
+    #[test]
+    fn new_assessment_initializes_empty_collections() {
+        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert!(assessment.evidence().is_empty());
+        assert!(assessment.findings().is_empty());
+        assert!(assessment.recommendations().is_empty());
+    }
+
+    #[test]
+    fn new_assessment_preserves_subject_and_context() {
+        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert_eq!(assessment.subject(), &AssessmentSubject);
+        assert_eq!(assessment.context(), &AssessmentContext);
+    }
+
+    #[test]
+    fn each_assessment_receives_a_unique_id() {
+        let first = Assessment::new(AssessmentSubject, AssessmentContext);
+        let second = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert_ne!(first.id(), second.id());
+    }
+
+    #[test]
+    fn begin_evidence_collection_succeeds_from_created() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert!(assessment.begin_evidence_collection().is_ok());
+        assert_eq!(assessment.status(), AssessmentStatus::CollectingEvidence);
+    }
+
+    #[test]
+    fn begin_rule_evaluation_succeeds_from_collecting_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        assert!(assessment.begin_rule_evaluation().is_ok());
+        assert_eq!(assessment.status(), AssessmentStatus::EvaluatingRules);
+    }
+
+    #[test]
+    fn complete_succeeds_from_evaluating_rules() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        assert!(assessment.complete().is_ok());
+        assert_eq!(assessment.status(), AssessmentStatus::Completed);
+    }
+
+    #[test]
+    fn full_lifecycle_sequence_succeeds_end_to_end() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        assert_eq!(assessment.status(), AssessmentStatus::Created);
+        assessment.begin_evidence_collection().unwrap();
+        assert_eq!(assessment.status(), AssessmentStatus::CollectingEvidence);
+        assessment.begin_rule_evaluation().unwrap();
+        assert_eq!(assessment.status(), AssessmentStatus::EvaluatingRules);
+        assessment.complete().unwrap();
+        assert_eq!(assessment.status(), AssessmentStatus::Completed);
+    }
+
+    #[test]
+    fn begin_rule_evaluation_rejects_skipping_evidence_collection() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        let result = assessment.begin_rule_evaluation();
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::InvalidStateTransition {
+                from: AssessmentStatus::Created,
+                to: AssessmentStatus::EvaluatingRules,
+            })
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::Created);
+    }
+
+    #[test]
+    fn complete_rejects_skipping_evidence_collection() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        let result = assessment.complete();
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::InvalidStateTransition {
+                from: AssessmentStatus::Created,
+                to: AssessmentStatus::Completed,
+            })
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::Created);
+    }
+
+    #[test]
+    fn complete_rejects_skipping_rule_evaluation() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        let result = assessment.complete();
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::InvalidStateTransition {
+                from: AssessmentStatus::CollectingEvidence,
+                to: AssessmentStatus::Completed,
+            })
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::CollectingEvidence);
+    }
+
+    #[test]
+    fn begin_evidence_collection_rejects_repeated_call() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        let result = assessment.begin_evidence_collection();
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::InvalidStateTransition {
+                from: AssessmentStatus::CollectingEvidence,
+                to: AssessmentStatus::CollectingEvidence,
+            })
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::CollectingEvidence);
+    }
+
+    #[test]
+    fn begin_evidence_collection_rejects_backwards_transition() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        let result = assessment.begin_evidence_collection();
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::InvalidStateTransition {
+                from: AssessmentStatus::EvaluatingRules,
+                to: AssessmentStatus::CollectingEvidence,
+            })
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::EvaluatingRules);
+    }
+
+    #[test]
+    fn completed_assessment_rejects_further_transitions() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.complete().unwrap();
+
+        assert_eq!(
+            assessment.begin_evidence_collection(),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(
+            assessment.begin_rule_evaluation(),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(
+            assessment.complete(),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(assessment.status(), AssessmentStatus::Completed);
+    }
+}

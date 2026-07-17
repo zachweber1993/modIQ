@@ -59,10 +59,11 @@ Recommended reading order:
 5. Architecture.md
 6. DataModel.md
 7. KnowledgeModel.md
-8. RuleEngine.md
-9. EngineAPI.md
-10. Sprint0.md
-11. Sprint1.md
+8. VersionProfile.md
+9. RuleEngine.md
+10. EngineAPI.md
+11. Sprint0.md
+12. Sprint1.md
 
 ---
 
@@ -112,11 +113,13 @@ Contains production source code and supporting assets.
 
 Examples include:
 
-- engine/
-- clients/
-- tests/
-- sample_mods/
-- scripts/
+- crates/modiq-runtime/
+- crates/modiq-engine/
+- crates/modiq-knowledge/
+- crates/modiq-rules/
+- crates/modiq-versioning/
+- crates/modiq-report/
+- crates/modiq-cli/
 
 ---
 
@@ -201,7 +204,8 @@ Development should generally follow this sequence:
 3. Implement the feature.
 4. Write or update tests.
 5. Verify consistency with the Engineering Specification.
-6. Submit for review.
+6. Produce a standard implementation report.
+7. Submit for review.
 
 ---
 
@@ -212,3 +216,52 @@ This guide is expected to evolve alongside implementation practices.
 Unlike the Engineering Specification, this document is intended to be a living guide and may be updated as engineering practices mature.
 
 Changes to this guide should improve engineering consistency without altering the architectural intent established by the Engineering Specification.
+
+---
+
+## Implementation Reports
+
+Every implementation task SHALL conclude with a standardized implementation report.
+
+The implementation report provides engineering traceability between:
+
+- Engineering Specifications
+- Architecture Decision Records (ADRs)
+- Runtime Invariants
+- Source Code
+- Verification
+
+All implementation reports SHALL follow the standard template defined in:
+
+docs/governance/templates/ImplementationReportTemplate.md
+
+Implementation reports SHALL include:
+
+- Summary
+- Files Modified
+- Public API Changes
+- Specification References
+- Invariants Implemented (when applicable)
+- Tests Added
+- Design Decisions
+- Assumptions Made
+- Known Limitations
+- Architectural Concerns
+- Verification
+
+Implementation reports are considered engineering artifacts and shall accompany every completed implementation task.
+
+---
+
+## External Dependencies
+
+Third-party dependencies shall be introduced intentionally.
+
+Before adding a new dependency:
+
+- Prefer the Rust standard library when practical.
+- Reuse existing workspace dependencies where appropriate.
+- Consider long-term maintenance and compile-time impact.
+- Document the rationale in the implementation report.
+
+Architectural dependencies that affect crate boundaries or platform design require Technical Director review.

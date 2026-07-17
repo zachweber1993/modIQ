@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | EngineAPI.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -283,6 +283,6 @@ Implementation technology may evolve without changing the conceptual capabilitie
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification establishes the authoritative conceptual service contract for the modIQ assessment engine.

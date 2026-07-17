@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | Architecture.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -128,15 +128,15 @@ Support for future Farming Simulator releases should not require architectural r
 
 # System Overview
 
-modIQ is organized as a collection of cooperating platform services centered around the Assessment Framework (MAF).
+modIQ is organized as a collection of cooperating platform services centered around the Assessment Service.
 
-The Assessment Framework coordinates the complete assessment lifecycle while delegating specialized responsibilities to supporting subsystems.
+The Assessment Service coordinates the complete assessment lifecycle while delegating specialized responsibilities to supporting subsystems.
 
 ```
                         User
                           │
                           ▼
-               Assessment Framework (MAF)
+                  Assessment Service
                           │
      ┌───────────┬────────┼────────┬────────────┐
      ▼           ▼        ▼        ▼            ▼
@@ -147,25 +147,26 @@ Rule Engine   Version   Knowledge  Reporting  Storage
           Extension Layer
 ```
 
-The Assessment Framework serves as the primary orchestration layer for the platform.
+The Assessment Service serves as the primary orchestration layer for the platform.
 
 ---
 
 # Core Platform Components
 
-## Assessment Framework (MAF)
+## Assessment Service
 
-The Assessment Framework is the central orchestration subsystem.
+The Assessment Service is the central orchestration subsystem.
 
 Responsibilities include:
 
-- coordinating assessments
-- managing assessment workflows
-- invoking platform services
-- collecting findings
+- creating Assessments
+- managing Assessment Context
+- executing Assessments
 - producing Assessment Reports
 
-The Assessment Framework owns the assessment lifecycle but does not perform technical analysis directly.
+The Assessment Service owns the assessment lifecycle but does not perform technical analysis directly.
+
+The modIQ Assessment Framework (MAF) is not a subsystem. It is the assessment methodology — the standards, categories, rules, scoring methodology, and evidence requirements — that the Assessment Service applies during execution. See Glossary.md.
 
 ---
 
@@ -277,7 +278,7 @@ Assessment Request
 
         ▼
 
-Assessment Framework
+Assessment Service
 
         │
 
@@ -361,7 +362,7 @@ Subsystems may depend upon lower-level services but should avoid circular depend
 General dependency flow:
 
 ```
-Assessment Framework
+Assessment Service
 
 ↓
 
@@ -465,6 +466,10 @@ Subsequent specifications refine this architecture.
 
 # Document Status
 
-This document is a foundational technical specification.
+**Current Version:** 1.0.0
+
+**Status:** Frozen
+
+This document is a foundational technical specification, frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze).
 
 Changes should preserve consistency with higher-level specifications and maintain stable subsystem boundaries.

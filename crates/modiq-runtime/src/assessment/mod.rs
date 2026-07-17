@@ -1,4 +1,7 @@
 pub mod assessment;
+pub mod assessment_error;
+pub mod assessment_id;
+pub mod assessment_status;
 pub mod context;
 pub mod evidence;
 pub mod finding;
@@ -7,6 +10,9 @@ pub mod report;
 pub mod subject;
 
 pub use assessment::Assessment;
+pub use assessment_error::AssessmentError;
+pub use assessment_id::AssessmentId;
+pub use assessment_status::AssessmentStatus;
 pub use context::AssessmentContext;
 pub use evidence::Evidence;
 pub use finding::Finding;

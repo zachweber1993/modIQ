@@ -26,6 +26,18 @@ Findings SHALL only be produced by deterministic rule evaluation.
 
 Recommendations SHALL only be produced from one or more Findings.
 
+### INV-010
+
+Assessment lifecycle transitions SHALL occur sequentially.
+
+### INV-011
+
+An Assessment SHALL NOT transition backwards.
+
+### INV-012
+
+A Completed Assessment SHALL reject further lifecycle transitions.
+
 ## Aggregate Ownership
 
 ### INV-006

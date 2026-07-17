@@ -65,7 +65,7 @@ No crate should depend on a crate above it in this hierarchy.
 | Crate | Responsibility | Current Level | Status |
 |--------|----------------|--------------|--------|
 | modiq-common | Shared platform types | L1 | ✅ Scaffolded |
-| modiq-runtime | Runtime domain | L1 | ✅ Scaffolded |
+| modiq-runtime | Runtime domain | L3 | 🔧 In Progress |
 | modiq-knowledge | Engineering knowledge | L1 | ✅ Scaffolded |
 | modiq-versioning | Version Profile management | L1 | ✅ Scaffolded |
 | modiq-rules | Deterministic rule evaluation | L1 | ✅ Scaffolded |
@@ -163,9 +163,9 @@ Completed objectives include:
 - Clean workspace verification
 - Engineering audit
 
-Current engineering focus shifts from architectural scaffolding to deterministic implementation.
+Current engineering focus has shifted from architectural scaffolding to deterministic implementation.
 
-The first implementation milestone is the Assessment lifecycle.
+The Assessment lifecycle has been implemented in `modiq-runtime` (see Implementation Status above).
 
 ---
 
@@ -191,3 +191,4 @@ Sprint 1 will be considered complete when:
 |----------|------|-------------|
 | 1.0.0 | 2026-07-16 | Initial crate implementation roadmap established. |
 | 1.1.0 | 2026-07-16 | Sprint 0 completed. All workspace crates scaffolded and engineering foundation established. |
+| 1.2.0 | 2026-07-16 | modiq-runtime advanced to L3. Assessment aggregate, lifecycle transitions, and AssessmentError implemented. |

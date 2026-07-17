@@ -6,3 +6,5 @@
 ///
 /// Findings may later be used to generate recommendations
 /// and assessment reports.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Finding;

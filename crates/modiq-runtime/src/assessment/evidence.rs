@@ -5,3 +5,5 @@
 /// interpretation, severity, or recommendations.
 ///
 /// Rules consume evidence to produce findings.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Evidence;

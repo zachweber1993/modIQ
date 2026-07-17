@@ -5,7 +5,7 @@
 |----------|-------|
 | **Document** | Principles.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -308,8 +308,10 @@ Related specifications include:
 
 # Document Status
 
-This document is considered a foundational specification.
+**Status:** Frozen
 
-Changes should be made deliberately and reconciled with the Vision before approval.
+This document is considered a foundational specification, frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze).
 
-Once approved, subsequent technical specifications should derive their decision-making framework from the principles defined here.
+Changes should be made deliberately and reconciled with the Vision.
+
+Subsequent technical specifications derive their decision-making framework from the principles defined here.

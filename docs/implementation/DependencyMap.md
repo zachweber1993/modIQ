@@ -3,13 +3,10 @@ modiq-cli
     ▼
 modiq-engine
     │
- ┌──┴──────────────┐
- ▼                 ▼
-modiq-runtime   modiq-rules
-       │              │
-       ▼              ▼
-modiq-versioning  modiq-knowledge
-        │             │
-        └──────┬──────┘
-               ▼
-         modiq-common
+    ├──────────┬──────────┬──────────┐
+    ▼          ▼          ▼          ▼
+modiq-runtime modiq-knowledge modiq-rules modiq-versioning
+    │                                     │
+    └──────────────────┬──────────────────┘
+                        ▼
+                  modiq-common

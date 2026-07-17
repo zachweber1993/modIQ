@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | Sprint1.md |
 | **Version** | 1.0.0 |
-| **Status** | Draft |
+| **Status** | Frozen |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 |
 | **Owner** | Zach Weber |
@@ -269,6 +269,6 @@ Future work should extend the architecture established during Documentation Rele
 
 **Current Version:** 1.0.0
 
-**Status:** Draft
+**Status:** Frozen
 
 This specification defines the first production implementation sprint for the modIQ platform.

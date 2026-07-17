@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Documentation Release Governance |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-16 |
+| **Last Updated** | 2026-07-17 |
 
 ---
 
@@ -150,10 +150,10 @@ Following a successful audit:
 
 The completed Documentation Release is tagged within source control.
 
-Example:
+Documentation Release 1.0 was tagged:
 
 ```
-v0.1.0-docs
+v0.1.0
 ```
 
 ---
@@ -226,6 +226,28 @@ Documentation Releases define architectural intent.
 Implementation realizes that intent.
 
 Implementation should remain consistent with the authoritative specifications unless superseded by a future Documentation Release.
+
+---
+
+# Release History
+
+## Documentation Release 1.0
+
+**Status:** Complete
+
+Completed the constitutional, platform, technical, and implementation planning specifications. Passed the Repository Audit and Documentation Freeze (Phase 5).
+
+Tagged: `v0.1.0`
+
+---
+
+## Documentation Release 2.0
+
+**Status:** Complete
+
+A governance and terminology reconciliation release. Reconciled the "modIQ Assessment Framework (MAF)" terminology, Version Profile ownership wording, and the constitutional Assessment definition. Corrected governance tracking documents (PROJECT_STATUS.md, CrateRoadmap.md, DependencyMap.md, ROADMAP.md, CHANGELOG.md, EngineeringGuide.md) to reflect actual repository state, including removal of stale references to Documentation Release 1.0 planning language.
+
+Not yet tagged in source control as of this record.
 
 ---
 

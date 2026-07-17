@@ -11,10 +11,11 @@ Welcome to the official design specification for modIQ.
 5. Architecture.md
 6. DataModel.md
 7. KnowledgeModel.md
-8. RuleEngine.md
-9. EngineAPI.md
-10. Sprint0.md
-11. Sprint1.md
+8. VersionProfile.md
+9. RuleEngine.md
+10. EngineAPI.md
+11. Sprint0.md
+12. Sprint1.md
 
 ## Purpose
 
@@ -38,11 +39,9 @@ If a conflict exists between specifications, the higher-level specification take
 
 ## Current Documentation Status
 
-The constitutional specifications have completed the Foundation Review and are considered **Frozen Drafts**.
+The constitutional specifications, platform architecture, technical specifications, and implementation planning documents have completed the Documentation Release 1.0 Final Review and are considered **Frozen**.
 
-The platform architecture, technical specifications, and implementation planning documents have been completed.
-
-The repository is currently undergoing the **Documentation Release 1.0 Final Review** to verify:
+The review verified:
 
 - Architectural consistency
 - Cross-specification reconciliation
@@ -50,8 +49,10 @@ The repository is currently undergoing the **Documentation Release 1.0 Final Rev
 - Documentation quality
 - Implementation readiness
 
-Upon successful completion of the review, the repository will:
+The review concluded with:
 
-- Freeze Documentation Release 1.0
-- Create Git tag `v0.1.0-docs`
+- Documentation Release 1.0 frozen
+- Git tag `v0.1.0`
 - Transition from documentation to implementation
+
+Documentation Release 2.0 (governance and terminology reconciliation) has since been completed. Implementation work continues under Sprint 1.
