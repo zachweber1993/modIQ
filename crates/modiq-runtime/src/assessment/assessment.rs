@@ -100,6 +100,31 @@ impl Assessment {
         )
     }
 
+    /// Adds Evidence to the Assessment.
+    ///
+    /// Valid only while the Assessment is actively collecting evidence
+    /// (RuntimeInvariants.md INV-002). Once rule evaluation begins,
+    /// previously collected Evidence becomes immutable because this is
+    /// the sole mutation path and it stops accepting new Evidence
+    /// (INV-003). Evidence is mutated only through this aggregate method
+    /// (INV-006, INV-007, INV-009), and every call enforces lifecycle
+    /// validity before mutating state, never silently ignoring an
+    /// invalid call (INV-008).
+    pub fn add_evidence(&mut self, evidence: Evidence) -> Result<(), AssessmentError> {
+        if self.status == AssessmentStatus::Completed {
+            return Err(AssessmentError::AssessmentCompleted);
+        }
+
+        if self.status != AssessmentStatus::CollectingEvidence {
+            return Err(AssessmentError::EvidenceCollectionNotActive {
+                status: self.status,
+            });
+        }
+
+        self.evidence.push(evidence);
+        Ok(())
+    }
+
     /// Advances `status` from `required` to `next`, or returns an
     /// `AssessmentError` without mutating state.
     ///
@@ -307,5 +332,77 @@ mod tests {
             Err(AssessmentError::AssessmentCompleted)
         );
         assert_eq!(assessment.status(), AssessmentStatus::Completed);
+    }
+
+    #[test]
+    fn add_evidence_succeeds_during_evidence_collection() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        let result = assessment.add_evidence(Evidence);
+
+        assert!(result.is_ok());
+        assert_eq!(assessment.evidence().len(), 1);
+        assert_eq!(assessment.evidence()[0], Evidence);
+    }
+
+    #[test]
+    fn add_evidence_accumulates_multiple_items() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+
+        assert_eq!(assessment.evidence().len(), 3);
+    }
+
+    #[test]
+    fn add_evidence_rejects_before_evidence_collection_begins() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        let result = assessment.add_evidence(Evidence);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::EvidenceCollectionNotActive {
+                status: AssessmentStatus::Created,
+            })
+        );
+        assert!(assessment.evidence().is_empty());
+    }
+
+    #[test]
+    fn add_evidence_rejects_once_rule_evaluation_has_started() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        let result = assessment.add_evidence(Evidence);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::EvidenceCollectionNotActive {
+                status: AssessmentStatus::EvaluatingRules,
+            })
+        );
+        // Evidence collected before rule evaluation began remains intact
+        // and untouched by the rejected call (INV-003).
+        assert_eq!(assessment.evidence().len(), 1);
+    }
+
+    #[test]
+    fn add_evidence_rejects_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.complete().unwrap();
+
+        let result = assessment.add_evidence(Evidence);
+
+        assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
+        assert!(assessment.evidence().is_empty());
     }
 }

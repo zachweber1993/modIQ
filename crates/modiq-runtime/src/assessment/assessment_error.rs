@@ -15,4 +15,9 @@ pub enum AssessmentError {
     /// lifecycle transitions (RuntimeInvariants.md INV-012).
     #[error("assessment is already completed and accepts no further transitions")]
     AssessmentCompleted,
+
+    /// Evidence may only be added while the Assessment is actively
+    /// collecting evidence (RuntimeInvariants.md INV-002, INV-003).
+    #[error("evidence may only be added while collecting evidence (current status: {status:?})")]
+    EvidenceCollectionNotActive { status: AssessmentStatus },
 }
