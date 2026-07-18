@@ -56,6 +56,17 @@ impl Assessment {
         self.status
     }
 
+    /// Returns whether the Assessment is currently in the rule evaluation
+    /// phase.
+    ///
+    /// While `true`, collected Evidence is available and immutable
+    /// (RuntimeInvariants.md INV-002, INV-003): `evidence()` reflects the
+    /// complete, final Evidence set for this Assessment, and
+    /// `add_evidence` unconditionally rejects further additions.
+    pub fn is_evaluating(&self) -> bool {
+        self.status == AssessmentStatus::EvaluatingRules
+    }
+
     pub fn evidence(&self) -> &[Evidence] {
         &self.evidence
     }
@@ -404,5 +415,84 @@ mod tests {
 
         assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
         assert!(assessment.evidence().is_empty());
+    }
+
+    #[test]
+    fn is_evaluating_is_false_before_rule_evaluation_begins() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assert!(!assessment.is_evaluating());
+
+        assessment.begin_evidence_collection().unwrap();
+        assert!(!assessment.is_evaluating());
+    }
+
+    #[test]
+    fn is_evaluating_is_true_once_rule_evaluation_begins() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        assert!(assessment.is_evaluating());
+    }
+
+    #[test]
+    fn is_evaluating_is_false_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.complete().unwrap();
+
+        assert!(!assessment.is_evaluating());
+    }
+
+    #[test]
+    fn evidence_is_fully_available_and_unchanged_throughout_evaluation() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+
+        assessment.begin_rule_evaluation().unwrap();
+        assert!(assessment.is_evaluating());
+        assert_eq!(assessment.evidence(), &[Evidence, Evidence]);
+
+        assessment.complete().unwrap();
+        assert_eq!(assessment.evidence(), &[Evidence, Evidence]);
+    }
+
+    #[test]
+    fn repeated_add_evidence_attempts_during_evaluation_never_mutate_state() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        for _ in 0..3 {
+            let result = assessment.add_evidence(Evidence);
+            assert_eq!(
+                result,
+                Err(AssessmentError::EvidenceCollectionNotActive {
+                    status: AssessmentStatus::EvaluatingRules,
+                })
+            );
+        }
+
+        assert_eq!(assessment.evidence().len(), 1);
+    }
+
+    #[test]
+    fn findings_and_recommendations_remain_empty_throughout_the_lifecycle() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        assert!(assessment.findings().is_empty());
+        assert!(assessment.recommendations().is_empty());
+
+        assessment.complete().unwrap();
+
+        assert!(assessment.findings().is_empty());
+        assert!(assessment.recommendations().is_empty());
     }
 }
