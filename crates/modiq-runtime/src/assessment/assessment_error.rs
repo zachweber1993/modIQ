@@ -20,4 +20,11 @@ pub enum AssessmentError {
     /// collecting evidence (RuntimeInvariants.md INV-002, INV-003).
     #[error("evidence may only be added while collecting evidence (current status: {status:?})")]
     EvidenceCollectionNotActive { status: AssessmentStatus },
+
+    /// Findings may only be added while the Assessment is actively
+    /// evaluating rules (RuntimeInvariants.md INV-004). Findings become
+    /// immutable once evaluation completes because the aggregate no
+    /// longer permits mutation outside EvaluatingRules.
+    #[error("findings may only be added while evaluating rules (current status: {status:?})")]
+    FindingCollectionNotActive { status: AssessmentStatus },
 }

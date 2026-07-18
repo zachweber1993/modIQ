@@ -136,6 +136,32 @@ impl Assessment {
         Ok(())
     }
 
+    /// Adds a Finding to the Assessment.
+    ///
+    /// Valid only while the Assessment is actively evaluating rules
+    /// (RuntimeInvariants.md INV-004). Findings become immutable after
+    /// the evaluation phase because the aggregate no longer permits
+    /// mutation outside EvaluatingRules: this is the sole mutation path,
+    /// and it stops accepting new Findings once evaluation completes.
+    /// Findings are mutated only through this aggregate method
+    /// (INV-006, INV-007, INV-009), and every call enforces lifecycle
+    /// validity before mutating state, never silently ignoring an
+    /// invalid call (INV-008).
+    pub fn add_finding(&mut self, finding: Finding) -> Result<(), AssessmentError> {
+        if self.status == AssessmentStatus::Completed {
+            return Err(AssessmentError::AssessmentCompleted);
+        }
+
+        if self.status != AssessmentStatus::EvaluatingRules {
+            return Err(AssessmentError::FindingCollectionNotActive {
+                status: self.status,
+            });
+        }
+
+        self.findings.push(finding);
+        Ok(())
+    }
+
     /// Advances `status` from `required` to `next`, or returns an
     /// `AssessmentError` without mutating state.
     ///
@@ -494,5 +520,120 @@ mod tests {
 
         assert!(assessment.findings().is_empty());
         assert!(assessment.recommendations().is_empty());
+    }
+
+    #[test]
+    fn add_finding_succeeds_during_rule_evaluation() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        let result = assessment.add_finding(Finding);
+
+        assert!(result.is_ok());
+        assert_eq!(assessment.findings().len(), 1);
+        assert_eq!(assessment.findings()[0], Finding);
+    }
+
+    #[test]
+    fn add_finding_accumulates_multiple_findings() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(Finding).unwrap();
+
+        assert_eq!(assessment.findings().len(), 3);
+    }
+
+    #[test]
+    fn add_finding_rejects_while_created() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        let result = assessment.add_finding(Finding);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::FindingCollectionNotActive {
+                status: AssessmentStatus::Created,
+            })
+        );
+        assert!(assessment.findings().is_empty());
+    }
+
+    #[test]
+    fn add_finding_rejects_while_collecting_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        let result = assessment.add_finding(Finding);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::FindingCollectionNotActive {
+                status: AssessmentStatus::CollectingEvidence,
+            })
+        );
+        assert!(assessment.findings().is_empty());
+    }
+
+    #[test]
+    fn add_finding_rejects_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.complete().unwrap();
+
+        let result = assessment.add_finding(Finding);
+
+        assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
+        // The Finding added before completion remains; the rejected call added nothing.
+        assert_eq!(assessment.findings().len(), 1);
+    }
+
+    #[test]
+    fn repeated_add_finding_attempts_before_evaluation_never_mutate_state() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        for _ in 0..3 {
+            let result = assessment.add_finding(Finding);
+            assert_eq!(
+                result,
+                Err(AssessmentError::FindingCollectionNotActive {
+                    status: AssessmentStatus::Created,
+                })
+            );
+        }
+
+        assert!(assessment.findings().is_empty());
+    }
+
+    #[test]
+    fn findings_remain_readable_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.complete().unwrap();
+
+        assert_eq!(assessment.findings(), &[Finding, Finding]);
+    }
+
+    #[test]
+    fn evidence_is_unaffected_while_findings_are_added() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(Finding).unwrap();
+
+        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.findings().len(), 2);
     }
 }
