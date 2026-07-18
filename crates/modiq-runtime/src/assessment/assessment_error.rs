@@ -27,4 +27,18 @@ pub enum AssessmentError {
     /// longer permits mutation outside EvaluatingRules.
     #[error("findings may only be added while evaluating rules (current status: {status:?})")]
     FindingCollectionNotActive { status: AssessmentStatus },
+
+    /// Recommendations may only be added while the Assessment is
+    /// actively evaluating rules; they become immutable once evaluation
+    /// completes because the aggregate no longer permits mutation
+    /// outside EvaluatingRules.
+    #[error(
+        "recommendations may only be added while evaluating rules (current status: {status:?})"
+    )]
+    RecommendationCollectionNotActive { status: AssessmentStatus },
+
+    /// Recommendations require at least one Finding to exist
+    /// (RuntimeInvariants.md INV-005).
+    #[error("recommendations require at least one finding to exist")]
+    RecommendationRequiresFinding,
 }

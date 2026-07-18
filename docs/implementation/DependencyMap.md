@@ -3,10 +3,15 @@ modiq-cli
     ▼
 modiq-engine
     │
-    ├──────────┬──────────┬──────────┐
-    ▼          ▼          ▼          ▼
-modiq-runtime modiq-knowledge modiq-rules modiq-versioning
+    ├──────────┬──────────┬──────────┬──────────┐
+    ▼          ▼          ▼          ▼          ▼
+modiq-runtime modiq-knowledge modiq-rules modiq-versioning modiq-report
     │                                     │
     └──────────────────┬──────────────────┘
                         ▼
                   modiq-common
+
+Additional direct dependencies:
+
+- modiq-rules depends on modiq-runtime (consumes Evidence, Finding, Recommendation)
+- modiq-report depends on modiq-runtime (consumes Assessment, Evidence, Finding, Recommendation)

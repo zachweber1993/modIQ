@@ -4,7 +4,7 @@ pub mod explainability;
 pub mod selector;
 pub mod traceability;
 
-pub use engine::RuleEngine;
+pub use engine::{RuleEngine, RuleOutcome};
 pub use evaluator::EvidenceEvaluator;
 pub use explainability::Explainability;
 pub use selector::RuleSelector;

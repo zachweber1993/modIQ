@@ -34,14 +34,19 @@ Implementation proceeds from the lowest-level platform crates upward.
                       │
                       ▼
                 modiq-engine
-          ┌─────────┼──────────┬──────────┐
-          ▼         ▼          ▼          ▼
-   modiq-runtime  modiq-knowledge  modiq-rules  modiq-versioning
+          ┌─────────┼──────────┬──────────┬──────────┐
+          ▼         ▼          ▼          ▼          ▼
+   modiq-runtime  modiq-knowledge  modiq-rules  modiq-versioning  modiq-report
           │                                 │
           └───────────────┬─────────────────┘
                           ▼
                     modiq-common
 ```
+
+Additional direct dependencies:
+
+- modiq-rules depends on modiq-runtime (consumes Evidence, Finding, Recommendation)
+- modiq-report depends on modiq-runtime (consumes Assessment, Evidence, Finding, Recommendation)
 
 No crate should depend on a crate above it in this hierarchy.
 
@@ -68,9 +73,9 @@ No crate should depend on a crate above it in this hierarchy.
 | modiq-runtime | Runtime domain | L3 | 🔧 In Progress |
 | modiq-knowledge | Engineering knowledge | L1 | ✅ Scaffolded |
 | modiq-versioning | Version Profile management | L1 | ✅ Scaffolded |
-| modiq-rules | Deterministic rule evaluation | L1 | ✅ Scaffolded |
-| modiq-engine | Assessment orchestration | L1 | ✅ Scaffolded |
-| modiq-report | Report representation and formatting | L1 | ✅ Scaffolded |
+| modiq-rules | Deterministic rule evaluation | L3 | 🔧 In Progress |
+| modiq-engine | Assessment orchestration | L3 | 🔧 In Progress |
+| modiq-report | Report representation and formatting | L3 | 🔧 In Progress |
 | modiq-cli | Command-line interface | L1 | ✅ Scaffolded |
 
 ---
@@ -165,7 +170,7 @@ Completed objectives include:
 
 Current engineering focus has shifted from architectural scaffolding to deterministic implementation.
 
-The Assessment lifecycle has been implemented in `modiq-runtime` (see Implementation Status above).
+The Assessment lifecycle, deterministic Rule evaluation, and Assessment Report generation have been implemented across `modiq-runtime`, `modiq-rules`, and `modiq-report` (see Implementation Status above). These are composed into one executable pipeline by `AssessmentService` in `modiq-engine`, demonstrated end-to-end by an integration test in `modiq-engine`.
 
 ---
 
@@ -192,3 +197,5 @@ Sprint 1 will be considered complete when:
 | 1.0.0 | 2026-07-16 | Initial crate implementation roadmap established. |
 | 1.1.0 | 2026-07-16 | Sprint 0 completed. All workspace crates scaffolded and engineering foundation established. |
 | 1.2.0 | 2026-07-16 | modiq-runtime advanced to L3. Assessment aggregate, lifecycle transitions, and AssessmentError implemented. |
+| 1.3.0 | 2026-07-18 | modiq-rules and modiq-report advanced to L3. Deterministic Rule evaluation, Assessment Report generation, and Recommendation ownership in modiq-runtime implemented; end-to-end pipeline demonstrated by integration test. |
+| 1.4.0 | 2026-07-18 | modiq-engine advanced to L3. AssessmentService orchestrates the full pipeline (Runtime Domain, Rule Engine, Reporting); end-to-end integration test moved from modiq-report to modiq-engine to exercise the orchestration layer directly. |

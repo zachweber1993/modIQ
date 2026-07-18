@@ -162,6 +162,39 @@ impl Assessment {
         Ok(())
     }
 
+    /// Adds a Recommendation to the Assessment.
+    ///
+    /// Requires at least one Finding to already exist
+    /// (RuntimeInvariants.md INV-005). Valid only while the Assessment
+    /// is actively evaluating rules; Recommendations become immutable
+    /// once evaluation completes because the aggregate no longer
+    /// permits mutation outside EvaluatingRules. Recommendations are
+    /// mutated only through this aggregate method (INV-006, INV-007,
+    /// INV-009), and every call enforces lifecycle and data validity
+    /// before mutating state, never silently ignoring an invalid call
+    /// (INV-008).
+    pub fn add_recommendation(
+        &mut self,
+        recommendation: Recommendation,
+    ) -> Result<(), AssessmentError> {
+        if self.status == AssessmentStatus::Completed {
+            return Err(AssessmentError::AssessmentCompleted);
+        }
+
+        if self.status != AssessmentStatus::EvaluatingRules {
+            return Err(AssessmentError::RecommendationCollectionNotActive {
+                status: self.status,
+            });
+        }
+
+        if self.findings.is_empty() {
+            return Err(AssessmentError::RecommendationRequiresFinding);
+        }
+
+        self.recommendations.push(recommendation);
+        Ok(())
+    }
+
     /// Advances `status` from `required` to `next`, or returns an
     /// `AssessmentError` without mutating state.
     ///
@@ -635,5 +668,147 @@ mod tests {
 
         assert_eq!(assessment.evidence(), &[Evidence]);
         assert_eq!(assessment.findings().len(), 2);
+    }
+
+    #[test]
+    fn add_recommendation_succeeds_after_a_finding_exists() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+
+        let result = assessment.add_recommendation(Recommendation);
+
+        assert!(result.is_ok());
+        assert_eq!(assessment.recommendations().len(), 1);
+        assert_eq!(assessment.recommendations()[0], Recommendation);
+    }
+
+    #[test]
+    fn add_recommendation_accumulates_multiple_recommendations() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+
+        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.add_recommendation(Recommendation).unwrap();
+
+        assert_eq!(assessment.recommendations().len(), 2);
+    }
+
+    #[test]
+    fn add_recommendation_rejects_without_a_finding() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+
+        let result = assessment.add_recommendation(Recommendation);
+
+        assert_eq!(result, Err(AssessmentError::RecommendationRequiresFinding));
+        assert!(assessment.recommendations().is_empty());
+    }
+
+    #[test]
+    fn add_recommendation_rejects_while_created() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+
+        let result = assessment.add_recommendation(Recommendation);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::RecommendationCollectionNotActive {
+                status: AssessmentStatus::Created,
+            })
+        );
+        assert!(assessment.recommendations().is_empty());
+    }
+
+    #[test]
+    fn add_recommendation_rejects_while_collecting_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+
+        let result = assessment.add_recommendation(Recommendation);
+
+        assert_eq!(
+            result,
+            Err(AssessmentError::RecommendationCollectionNotActive {
+                status: AssessmentStatus::CollectingEvidence,
+            })
+        );
+        assert!(assessment.recommendations().is_empty());
+    }
+
+    #[test]
+    fn add_recommendation_rejects_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.complete().unwrap();
+
+        let result = assessment.add_recommendation(Recommendation);
+
+        assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
+        // The Recommendation added before completion remains; the
+        // rejected call added nothing.
+        assert_eq!(assessment.recommendations().len(), 1);
+    }
+
+    #[test]
+    fn recommendations_remain_readable_after_completion() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.complete().unwrap();
+
+        assert_eq!(assessment.recommendations(), &[Recommendation]);
+    }
+
+    #[test]
+    fn evidence_and_findings_are_unaffected_while_recommendations_are_added() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+
+        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.add_recommendation(Recommendation).unwrap();
+
+        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.findings(), &[Finding]);
+        assert_eq!(assessment.recommendations().len(), 2);
+    }
+
+    #[test]
+    fn full_pipeline_then_completion_rejects_all_further_mutation() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(Evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(Finding).unwrap();
+        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.complete().unwrap();
+
+        assert_eq!(
+            assessment.add_evidence(Evidence),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(
+            assessment.add_finding(Finding),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(
+            assessment.add_recommendation(Recommendation),
+            Err(AssessmentError::AssessmentCompleted)
+        );
+        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.findings(), &[Finding]);
+        assert_eq!(assessment.recommendations(), &[Recommendation]);
     }
 }
