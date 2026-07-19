@@ -8,16 +8,24 @@
 //! `AssessmentService::execute`'s own implementation.
 
 use modiq_engine::engine::AssessmentService;
-use modiq_runtime::assessment::{AssessmentContext, AssessmentStatus, AssessmentSubject, Evidence};
+use modiq_runtime::assessment::{
+    AssessmentContext, AssessmentStatus, AssessmentSubject, Evidence, EvidenceCategory,
+};
+
+fn sample_evidence() -> Evidence {
+    Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
+        .expect("category and description are valid")
+}
 
 #[test]
 fn complete_deterministic_assessment_pipeline_via_the_engine() {
     let service = AssessmentService;
+    let evidence = sample_evidence();
 
-    let report = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
+    let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
 
     // Evidence Collection
-    assert_eq!(report.evidence(), &[Evidence]);
+    assert_eq!(report.evidence(), &[evidence]);
     // Rule Evaluation + Finding Collection
     assert_eq!(report.findings().len(), 1);
     // Recommendation Collection
@@ -42,9 +50,10 @@ fn pipeline_with_no_evidence_via_the_engine_produces_an_empty_report() {
 #[test]
 fn each_execution_produces_an_independent_assessment() {
     let service = AssessmentService;
+    let evidence = sample_evidence();
 
-    let first = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
-    let second = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
+    let first = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
+    let second = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
 
     // Distinct Assessments, but deterministic, identical results for
     // identical input.

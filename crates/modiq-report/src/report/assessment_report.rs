@@ -53,7 +53,12 @@ impl AssessmentReport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject};
+    use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject, EvidenceCategory};
+
+    fn sample_evidence() -> Evidence {
+        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
+            .expect("category and description are valid")
+    }
 
     #[test]
     fn generate_reflects_empty_assessment_state() {
@@ -72,7 +77,8 @@ mod tests {
     fn generate_reflects_collected_evidence_findings_and_recommendations() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
         assessment.add_finding(Finding).unwrap();
         assessment.add_recommendation(Recommendation).unwrap();
@@ -80,7 +86,7 @@ mod tests {
         let report = AssessmentReport::generate(&assessment);
 
         assert_eq!(report.status(), AssessmentStatus::EvaluatingRules);
-        assert_eq!(report.evidence(), &[Evidence]);
+        assert_eq!(report.evidence(), &[evidence]);
         assert_eq!(report.findings(), &[Finding]);
         assert_eq!(report.recommendations(), &[Recommendation]);
     }
@@ -89,7 +95,7 @@ mod tests {
     fn generate_after_completion_matches_generate_before_completion() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
         assessment.add_finding(Finding).unwrap();
         assessment.add_recommendation(Recommendation).unwrap();

@@ -225,6 +225,12 @@ impl Assessment {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::assessment::EvidenceCategory;
+
+    fn sample_evidence() -> Evidence {
+        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
+            .expect("category and description are valid")
+    }
 
     #[test]
     fn new_assessment_begins_in_created_state() {
@@ -408,12 +414,13 @@ mod tests {
     fn add_evidence_succeeds_during_evidence_collection() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
+        let evidence = sample_evidence();
 
-        let result = assessment.add_evidence(Evidence);
+        let result = assessment.add_evidence(evidence.clone());
 
         assert!(result.is_ok());
         assert_eq!(assessment.evidence().len(), 1);
-        assert_eq!(assessment.evidence()[0], Evidence);
+        assert_eq!(assessment.evidence()[0], evidence);
     }
 
     #[test]
@@ -421,9 +428,9 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
 
-        assessment.add_evidence(Evidence).unwrap();
-        assessment.add_evidence(Evidence).unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
 
         assert_eq!(assessment.evidence().len(), 3);
     }
@@ -432,7 +439,7 @@ mod tests {
     fn add_evidence_rejects_before_evidence_collection_begins() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
 
-        let result = assessment.add_evidence(Evidence);
+        let result = assessment.add_evidence(sample_evidence());
 
         assert_eq!(
             result,
@@ -447,10 +454,10 @@ mod tests {
     fn add_evidence_rejects_once_rule_evaluation_has_started() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
-        let result = assessment.add_evidence(Evidence);
+        let result = assessment.add_evidence(sample_evidence());
 
         assert_eq!(
             result,
@@ -470,7 +477,7 @@ mod tests {
         assessment.begin_rule_evaluation().unwrap();
         assessment.complete().unwrap();
 
-        let result = assessment.add_evidence(Evidence);
+        let result = assessment.add_evidence(sample_evidence());
 
         assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
         assert!(assessment.evidence().is_empty());
@@ -508,26 +515,28 @@ mod tests {
     fn evidence_is_fully_available_and_unchanged_throughout_evaluation() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        let first = sample_evidence();
+        let second = sample_evidence();
+        assessment.add_evidence(first.clone()).unwrap();
+        assessment.add_evidence(second.clone()).unwrap();
 
         assessment.begin_rule_evaluation().unwrap();
         assert!(assessment.is_evaluating());
-        assert_eq!(assessment.evidence(), &[Evidence, Evidence]);
+        assert_eq!(assessment.evidence(), &[first.clone(), second.clone()]);
 
         assessment.complete().unwrap();
-        assert_eq!(assessment.evidence(), &[Evidence, Evidence]);
+        assert_eq!(assessment.evidence(), &[first, second]);
     }
 
     #[test]
     fn repeated_add_evidence_attempts_during_evaluation_never_mutate_state() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
         for _ in 0..3 {
-            let result = assessment.add_evidence(Evidence);
+            let result = assessment.add_evidence(sample_evidence());
             assert_eq!(
                 result,
                 Err(AssessmentError::EvidenceCollectionNotActive {
@@ -543,7 +552,7 @@ mod tests {
     fn findings_and_recommendations_remain_empty_throughout_the_lifecycle() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
         assert!(assessment.findings().is_empty());
@@ -660,13 +669,14 @@ mod tests {
     fn evidence_is_unaffected_while_findings_are_added() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
         assessment.add_finding(Finding).unwrap();
         assessment.add_finding(Finding).unwrap();
 
-        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.evidence(), &[evidence]);
         assert_eq!(assessment.findings().len(), 2);
     }
 
@@ -773,14 +783,15 @@ mod tests {
     fn evidence_and_findings_are_unaffected_while_recommendations_are_added() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
         assessment.add_finding(Finding).unwrap();
 
         assessment.add_recommendation(Recommendation).unwrap();
         assessment.add_recommendation(Recommendation).unwrap();
 
-        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.evidence(), &[evidence]);
         assert_eq!(assessment.findings(), &[Finding]);
         assert_eq!(assessment.recommendations().len(), 2);
     }
@@ -789,14 +800,15 @@ mod tests {
     fn full_pipeline_then_completion_rejects_all_further_mutation() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
-        assessment.add_evidence(Evidence).unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
         assessment.add_finding(Finding).unwrap();
         assessment.add_recommendation(Recommendation).unwrap();
         assessment.complete().unwrap();
 
         assert_eq!(
-            assessment.add_evidence(Evidence),
+            assessment.add_evidence(sample_evidence()),
             Err(AssessmentError::AssessmentCompleted)
         );
         assert_eq!(
@@ -807,7 +819,7 @@ mod tests {
             assessment.add_recommendation(Recommendation),
             Err(AssessmentError::AssessmentCompleted)
         );
-        assert_eq!(assessment.evidence(), &[Evidence]);
+        assert_eq!(assessment.evidence(), &[evidence]);
         assert_eq!(assessment.findings(), &[Finding]);
         assert_eq!(assessment.recommendations(), &[Recommendation]);
     }

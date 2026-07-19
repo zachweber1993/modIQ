@@ -33,6 +33,12 @@ impl RuleEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use modiq_runtime::assessment::EvidenceCategory;
+
+    fn sample_evidence() -> Evidence {
+        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
+            .expect("category and description are valid")
+    }
 
     #[test]
     fn evaluate_returns_none_for_no_evidence() {
@@ -45,7 +51,9 @@ mod tests {
     fn evaluate_produces_a_finding_and_recommendation_for_evidence() {
         let engine = RuleEngine;
 
-        let outcome = engine.evaluate(&[Evidence]).expect("evidence was provided");
+        let outcome = engine
+            .evaluate(&[sample_evidence()])
+            .expect("evidence was provided");
 
         assert_eq!(outcome.finding, Finding);
         assert_eq!(outcome.recommendation, Recommendation);
@@ -54,9 +62,10 @@ mod tests {
     #[test]
     fn evaluate_is_deterministic_for_identical_input() {
         let engine = RuleEngine;
+        let evidence = [sample_evidence(), sample_evidence()];
 
-        let first = engine.evaluate(&[Evidence, Evidence]);
-        let second = engine.evaluate(&[Evidence, Evidence]);
+        let first = engine.evaluate(&evidence);
+        let second = engine.evaluate(&evidence);
 
         assert_eq!(first, second);
     }

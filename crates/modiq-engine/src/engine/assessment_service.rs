@@ -62,15 +62,21 @@ impl AssessmentService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use modiq_runtime::assessment::AssessmentStatus;
+    use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory};
+
+    fn sample_evidence() -> Evidence {
+        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
+            .expect("category and description are valid")
+    }
 
     #[test]
     fn execute_with_evidence_produces_a_finding_and_recommendation() {
         let service = AssessmentService;
+        let evidence = sample_evidence();
 
-        let report = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
+        let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
 
-        assert_eq!(report.evidence(), &[Evidence]);
+        assert_eq!(report.evidence(), &[evidence]);
         assert_eq!(report.findings().len(), 1);
         assert_eq!(report.recommendations().len(), 1);
     }
@@ -90,7 +96,11 @@ mod tests {
     fn execute_reflects_state_at_report_generation_prior_to_completion() {
         let service = AssessmentService;
 
-        let report = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
+        let report = service.execute(
+            AssessmentSubject,
+            AssessmentContext,
+            vec![sample_evidence()],
+        );
 
         assert_eq!(report.status(), AssessmentStatus::EvaluatingRules);
     }
@@ -98,9 +108,10 @@ mod tests {
     #[test]
     fn separate_executions_are_independent_and_deterministic() {
         let service = AssessmentService;
+        let evidence = sample_evidence();
 
-        let first = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
-        let second = service.execute(AssessmentSubject, AssessmentContext, vec![Evidence]);
+        let first = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
+        let second = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
 
         assert_ne!(first.assessment_id(), second.assessment_id());
         assert_eq!(first.evidence(), second.evidence());
