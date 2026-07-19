@@ -1977,6 +1977,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "modiq-engine"
+version = "0.1.0"
+dependencies = [
+ "modiq-report",
+ "modiq-rules",
+ "modiq-runtime",
+]
+
+[[package]]
+name = "modiq-report"
+version = "0.1.0"
+dependencies = [
+ "modiq-runtime",
+]
+
+[[package]]
+name = "modiq-rules"
+version = "0.1.0"
+dependencies = [
+ "modiq-runtime",
+]
+
+[[package]]
 name = "modiq-runtime"
 version = "0.1.0"
 dependencies = [
@@ -2757,6 +2780,8 @@ dependencies = [
 name = "sandbox"
 version = "0.1.0"
 dependencies = [
+ "modiq-engine",
+ "modiq-report",
  "modiq-runtime",
  "serde",
  "serde_json",

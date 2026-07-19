@@ -1,17 +1,71 @@
-use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject};
+use modiq_engine::engine::AssessmentService;
+use modiq_report::report::AssessmentReport;
+use modiq_runtime::assessment::{
+    AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory, Finding, Recommendation,
+};
 
-/// A structured, IPC-safe snapshot of a newly created Assessment's
-/// initial state.
+/// IPC-safe snapshot of a single Evidence item's existing public data.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct EvidenceEntry {
+    id: String,
+    category: String,
+    description: String,
+    location: Option<String>,
+}
+
+impl From<&Evidence> for EvidenceEntry {
+    fn from(evidence: &Evidence) -> Self {
+        Self {
+            id: format!("{:?}", evidence.id()),
+            category: format!("{:?}", evidence.category()),
+            description: evidence.description().to_string(),
+            location: evidence.location().map(str::to_string),
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single Finding's existing public data.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct FindingEntry {
+    id: String,
+    severity: String,
+    description: String,
+}
+
+impl From<&Finding> for FindingEntry {
+    fn from(finding: &Finding) -> Self {
+        Self {
+            id: format!("{:?}", finding.id()),
+            severity: format!("{:?}", finding.severity()),
+            description: finding.description().to_string(),
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single Recommendation's existing public data.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RecommendationEntry {
+    id: String,
+    action: String,
+}
+
+impl From<&Recommendation> for RecommendationEntry {
+    fn from(recommendation: &Recommendation) -> Self {
+        Self {
+            id: format!("{:?}", recommendation.id()),
+            action: recommendation.action().to_string(),
+        }
+    }
+}
+
+/// A structured, IPC-safe snapshot of an executed Assessment's state.
 ///
-/// This DTO exists specifically so the `Assessment` aggregate itself
-/// is never exposed across the Tauri boundary: React only ever sees
-/// this summary, never the Runtime type it was derived from.
-///
-/// `assessment_id` is currently the `Debug` representation of
-/// `AssessmentId` (e.g. `"AssessmentId(1)"`) — `modiq-runtime` exposes
-/// no accessor or `Display`/`Serialize` implementation for the value
-/// it wraps, and this phase does not modify `modiq-runtime`. See the
-/// accompanying engineering summary for this known limitation.
+/// Built from `AssessmentReport` — the same read-only snapshot type
+/// `AssessmentService::execute` already returns — never from the
+/// `Assessment` aggregate directly.
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 struct AssessmentSummary {
@@ -19,32 +73,51 @@ struct AssessmentSummary {
     evidence_count: usize,
     finding_count: usize,
     recommendation_count: usize,
+    evidence: Vec<EvidenceEntry>,
+    findings: Vec<FindingEntry>,
+    recommendations: Vec<RecommendationEntry>,
 }
 
-impl From<&Assessment> for AssessmentSummary {
-    fn from(assessment: &Assessment) -> Self {
+impl From<&AssessmentReport> for AssessmentSummary {
+    fn from(report: &AssessmentReport) -> Self {
         Self {
-            assessment_id: format!("{:?}", assessment.id()),
-            evidence_count: assessment.evidence().len(),
-            finding_count: assessment.findings().len(),
-            recommendation_count: assessment.recommendations().len(),
+            assessment_id: format!("{:?}", report.assessment_id()),
+            evidence_count: report.evidence().len(),
+            finding_count: report.findings().len(),
+            recommendation_count: report.recommendations().len(),
+            evidence: report.evidence().iter().map(EvidenceEntry::from).collect(),
+            findings: report.findings().iter().map(FindingEntry::from).collect(),
+            recommendations: report
+                .recommendations()
+                .iter()
+                .map(RecommendationEntry::from)
+                .collect(),
         }
     }
 }
 
-/// Constructs a real Assessment via `modiq-runtime` and returns its
-/// initial state as a DTO.
+/// Executes the existing Assessment pipeline through `AssessmentService`
+/// — the same orchestration entry point already exercised by
+/// `modiq-engine`'s own integration tests — using one deterministic
+/// Evidence item, and returns the result as a DTO.
 ///
-/// Performs no other business logic: no lifecycle transitions, no
-/// Rule Engine evaluation, no Evidence/Finding/Recommendation
-/// construction. The Assessment is not persisted or retained after
-/// this call returns — each invocation creates and immediately
-/// summarizes a fresh, ephemeral Assessment, matching the "no
-/// application state" constraint for this phase.
+/// No orchestration, Rule Engine, or Runtime logic is reimplemented
+/// here: this command only constructs the pipeline's input and maps
+/// its already-existing output to an IPC-safe shape. The Evidence
+/// exists solely to exercise the pipeline end-to-end; it is not a
+/// claim about any real Assessment Subject.
 #[tauri::command]
 fn create_assessment() -> AssessmentSummary {
-    let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
-    AssessmentSummary::from(&assessment)
+    let evidence = Evidence::new(
+        EvidenceCategory::FileStructureAnalysis,
+        "Deterministic bootstrap evidence for verifying the Assessment pipeline end-to-end.",
+    )
+    .expect("category and description are valid");
+
+    let service = AssessmentService;
+    let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
+
+    AssessmentSummary::from(&report)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -61,24 +134,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn a_newly_created_assessment_summarizes_with_zero_counts() {
-        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+    fn create_assessment_produces_one_of_each_via_the_real_pipeline() {
+        let summary = create_assessment();
 
-        let summary = AssessmentSummary::from(&assessment);
-
-        assert_eq!(summary.evidence_count, 0);
-        assert_eq!(summary.finding_count, 0);
-        assert_eq!(summary.recommendation_count, 0);
+        assert_eq!(summary.evidence_count, 1);
+        assert_eq!(summary.finding_count, 1);
+        assert_eq!(summary.recommendation_count, 1);
+        assert_eq!(summary.evidence.len(), 1);
+        assert_eq!(summary.findings.len(), 1);
+        assert_eq!(summary.recommendations.len(), 1);
     }
 
     #[test]
-    fn each_assessment_summary_reflects_a_distinct_assessment_id() {
-        let first = Assessment::new(AssessmentSubject, AssessmentContext);
-        let second = Assessment::new(AssessmentSubject, AssessmentContext);
+    fn each_invocation_produces_a_distinct_assessment_id() {
+        let first = create_assessment();
+        let second = create_assessment();
 
-        let first_summary = AssessmentSummary::from(&first);
-        let second_summary = AssessmentSummary::from(&second);
+        assert_ne!(first.assessment_id, second.assessment_id);
+    }
 
-        assert_ne!(first_summary.assessment_id, second_summary.assessment_id);
+    #[test]
+    fn evidence_entry_reflects_the_deterministic_bootstrap_content() {
+        let summary = create_assessment();
+
+        assert_eq!(summary.evidence[0].category, "FileStructureAnalysis");
+        assert!(!summary.evidence[0].description.is_empty());
     }
 }
