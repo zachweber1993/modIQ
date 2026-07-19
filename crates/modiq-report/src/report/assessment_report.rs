@@ -54,7 +54,8 @@ impl AssessmentReport {
 mod tests {
     use super::*;
     use modiq_runtime::assessment::{
-        AssessmentContext, AssessmentSubject, EvidenceCategory, FindingSeverity, RuleReference,
+        AssessmentContext, AssessmentSubject, EvidenceCategory, EvidenceId, FindingId,
+        FindingSeverity, RuleReference,
     };
 
     fn sample_evidence() -> Evidence {
@@ -66,14 +67,15 @@ mod tests {
         Finding::new(
             FindingSeverity::Informational,
             "sample finding",
-            vec![],
+            vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )
-        .expect("severity, description, and rule reference are valid")
+        .expect("severity, description, evidence_ids, and rule reference are valid")
     }
 
     fn sample_recommendation() -> Recommendation {
-        Recommendation::new("sample recommendation", vec![], None).expect("action is valid")
+        Recommendation::new("sample recommendation", vec![FindingId::generate()], None)
+            .expect("action and finding_ids are valid")
     }
 
     #[test]

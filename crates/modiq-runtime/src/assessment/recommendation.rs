@@ -24,11 +24,10 @@ impl Recommendation {
     /// `action` must not be empty; an empty action carries no guidance
     /// for a user to act upon.
     ///
-    /// `finding_ids` is accepted as provided, including empty. A
-    /// requirement that every Recommendation reference at least one
-    /// Finding is a refinement of INV-005 pending governance approval
-    /// (SPRINT2_IMPLEMENTATION_PLAN.md: Governance Prerequisites) and
-    /// is not enforced here.
+    /// `finding_ids` must reference at least one Finding (INV-014,
+    /// GOV-006). Referential integrity — whether each id actually
+    /// resolves within the Assessment it is added to — is not checked
+    /// here; that remains a separate, still-open governance question.
     pub fn new(
         action: impl Into<String>,
         finding_ids: Vec<FindingId>,
@@ -37,6 +36,9 @@ impl Recommendation {
         let action = action.into();
         if action.trim().is_empty() {
             return Err(RecommendationError::EmptyAction);
+        }
+        if finding_ids.is_empty() {
+            return Err(RecommendationError::EmptyFindingIds);
         }
 
         Ok(Self {
@@ -67,52 +69,54 @@ impl Recommendation {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assessment::{Finding, FindingSeverity, RuleReference};
+    use crate::assessment::{EvidenceId, Finding, FindingSeverity, RuleReference};
 
     fn sample_finding_id() -> FindingId {
         Finding::new(
             FindingSeverity::Informational,
             "sample finding",
-            vec![],
+            vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )
         .unwrap()
         .id()
     }
 
+    fn sample_finding_ids() -> Vec<FindingId> {
+        vec![sample_finding_id()]
+    }
+
     #[test]
     fn new_succeeds_with_a_valid_action() {
-        let recommendation = Recommendation::new("update the mod dependency", vec![], None)
-            .expect("action is non-empty");
+        let finding_ids = sample_finding_ids();
+        let recommendation =
+            Recommendation::new("update the mod dependency", finding_ids.clone(), None)
+                .expect("action is non-empty and finding_ids is non-empty");
 
         assert_eq!(recommendation.action(), "update the mod dependency");
-        assert!(recommendation.finding_ids().is_empty());
+        assert_eq!(recommendation.finding_ids(), finding_ids.as_slice());
         assert_eq!(recommendation.repair_recipe_reference(), None);
     }
 
     #[test]
     fn new_rejects_an_empty_action() {
-        let result = Recommendation::new("", vec![], None);
+        let result = Recommendation::new("", sample_finding_ids(), None);
 
         assert_eq!(result, Err(RecommendationError::EmptyAction));
     }
 
     #[test]
     fn new_rejects_a_whitespace_only_action() {
-        let result = Recommendation::new("   ", vec![], None);
+        let result = Recommendation::new("   ", sample_finding_ids(), None);
 
         assert_eq!(result, Err(RecommendationError::EmptyAction));
     }
 
     #[test]
-    fn new_currently_permits_empty_finding_ids_pending_governance_approval() {
-        let recommendation = Recommendation::new(
-            "finding-less recommendation, pending governance",
-            vec![],
-            None,
-        );
+    fn new_rejects_empty_finding_ids() {
+        let result = Recommendation::new("finding-less recommendation", vec![], None);
 
-        assert!(recommendation.is_ok());
+        assert_eq!(result, Err(RecommendationError::EmptyFindingIds));
     }
 
     #[test]
@@ -130,33 +134,42 @@ mod tests {
     fn new_preserves_provided_repair_recipe_reference() {
         let reference = RepairRecipeReference::new("sample-repair-recipe");
 
-        let recommendation =
-            Recommendation::new("apply the repair recipe", vec![], Some(reference.clone()))
-                .unwrap();
+        let recommendation = Recommendation::new(
+            "apply the repair recipe",
+            sample_finding_ids(),
+            Some(reference.clone()),
+        )
+        .unwrap();
 
         assert_eq!(recommendation.repair_recipe_reference(), Some(&reference));
     }
 
     #[test]
     fn each_recommendation_receives_a_unique_id() {
-        let first = Recommendation::new("identical content", vec![], None).unwrap();
-        let second = Recommendation::new("identical content", vec![], None).unwrap();
+        let finding_ids = sample_finding_ids();
+        let first = Recommendation::new("identical content", finding_ids.clone(), None).unwrap();
+        let second = Recommendation::new("identical content", finding_ids, None).unwrap();
 
         assert_ne!(first.id(), second.id());
     }
 
     #[test]
     fn recommendation_with_identical_content_but_different_identity_is_not_equal() {
-        let first = Recommendation::new("identical content", vec![], None).unwrap();
-        let second = Recommendation::new("identical content", vec![], None).unwrap();
+        let finding_ids = sample_finding_ids();
+        let first = Recommendation::new("identical content", finding_ids.clone(), None).unwrap();
+        let second = Recommendation::new("identical content", finding_ids, None).unwrap();
 
         assert_ne!(first, second);
     }
 
     #[test]
     fn cloned_recommendation_is_equal_to_its_source() {
-        let recommendation =
-            Recommendation::new("consider using recommended structure", vec![], None).unwrap();
+        let recommendation = Recommendation::new(
+            "consider using recommended structure",
+            sample_finding_ids(),
+            None,
+        )
+        .unwrap();
 
         assert_eq!(recommendation.clone(), recommendation);
     }

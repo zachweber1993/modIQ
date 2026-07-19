@@ -105,12 +105,12 @@ impl Assessment {
     ///
     /// Only Evidence actually present in this Assessment is returned;
     /// an `EvidenceId` that does not resolve is silently omitted
-    /// rather than treated as an error. Requiring every reference to
-    /// resolve (and requiring at least one to be present at all) is a
-    /// governance-pending invariant (SPRINT2_IMPLEMENTATION_PLAN.md:
-    /// Governance Prerequisites) and is intentionally not enforced
-    /// here; this method reflects the relationship as currently
-    /// stored rather than validating it.
+    /// rather than treated as an error. `Finding::new` already
+    /// requires `evidence_ids` to be non-empty (INV-013, GOV-005);
+    /// requiring every reference to actually resolve is a separate,
+    /// still-open governance question, and this method intentionally
+    /// reflects the relationship as currently stored rather than
+    /// validating it.
     pub fn evidence_for_finding(&self, finding: &Finding) -> Vec<&Evidence> {
         finding
             .evidence_ids()
@@ -125,10 +125,10 @@ impl Assessment {
     /// Only Findings actually present in this Assessment are
     /// returned; a `FindingId` that does not resolve is silently
     /// omitted rather than treated as an error, for the same reason as
-    /// `evidence_for_finding`: the refinement of INV-005 requiring
-    /// every reference to resolve is governance-pending
-    /// (SPRINT2_IMPLEMENTATION_PLAN.md: Governance Prerequisites) and
-    /// is intentionally not enforced here.
+    /// `evidence_for_finding`: `Recommendation::new` already requires
+    /// `finding_ids` to be non-empty (INV-014, GOV-006), but requiring
+    /// every reference to actually resolve remains a separate,
+    /// still-open governance question.
     pub fn findings_for_recommendation(&self, recommendation: &Recommendation) -> Vec<&Finding> {
         recommendation
             .finding_ids()
@@ -294,14 +294,15 @@ mod tests {
         Finding::new(
             FindingSeverity::Informational,
             "sample finding",
-            vec![],
+            vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )
-        .expect("severity, description, and rule reference are valid")
+        .expect("severity, description, evidence_ids, and rule reference are valid")
     }
 
     fn sample_recommendation() -> Recommendation {
-        Recommendation::new("sample recommendation", vec![], None).expect("action is valid")
+        Recommendation::new("sample recommendation", vec![FindingId::generate()], None)
+            .expect("action and finding_ids are valid")
     }
 
     #[test]
@@ -980,17 +981,6 @@ mod tests {
     }
 
     #[test]
-    fn evidence_for_finding_is_empty_when_the_finding_references_no_evidence() {
-        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
-        assessment.begin_evidence_collection().unwrap();
-        assessment.begin_rule_evaluation().unwrap();
-        let finding = sample_finding();
-        assessment.add_finding(finding.clone()).unwrap();
-
-        assert!(assessment.evidence_for_finding(&finding).is_empty());
-    }
-
-    #[test]
     fn evidence_for_finding_omits_evidence_ids_that_do_not_resolve() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
@@ -1035,24 +1025,6 @@ mod tests {
         assert_eq!(
             assessment.findings_for_recommendation(&recommendation),
             vec![&first_finding, &second_finding]
-        );
-    }
-
-    #[test]
-    fn findings_for_recommendation_is_empty_when_the_recommendation_references_no_findings() {
-        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
-        assessment.begin_evidence_collection().unwrap();
-        assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(sample_finding()).unwrap();
-        let recommendation = sample_recommendation();
-        assessment
-            .add_recommendation(recommendation.clone())
-            .unwrap();
-
-        assert!(
-            assessment
-                .findings_for_recommendation(&recommendation)
-                .is_empty()
         );
     }
 

@@ -27,11 +27,11 @@ impl Finding {
     /// `description` must not be empty; an empty description carries
     /// no conclusion for a Recommendation or Report to reflect.
     ///
-    /// `evidence_ids` is accepted as provided, including empty. A
-    /// requirement that every Finding reference at least one Evidence
-    /// item is a new invariant pending governance approval
-    /// (SPRINT2_IMPLEMENTATION_PLAN.md: Governance Prerequisites) and
-    /// is not enforced here.
+    /// `evidence_ids` must reference at least one Evidence item
+    /// (INV-013, GOV-005). Referential integrity — whether each id
+    /// actually resolves within the Assessment it is added to — is not
+    /// checked here; that remains a separate, still-open governance
+    /// question.
     pub fn new(
         severity: FindingSeverity,
         description: impl Into<String>,
@@ -41,6 +41,9 @@ impl Finding {
         let description = description.into();
         if description.trim().is_empty() {
             return Err(FindingError::EmptyDescription);
+        }
+        if evidence_ids.is_empty() {
+            return Err(FindingError::EmptyEvidenceIds);
         }
 
         Ok(Self {
@@ -82,19 +85,24 @@ mod tests {
         RuleReference::new("sample-rule")
     }
 
+    fn sample_evidence_ids() -> Vec<EvidenceId> {
+        vec![EvidenceId::generate()]
+    }
+
     #[test]
     fn new_succeeds_with_a_valid_description() {
+        let evidence_ids = sample_evidence_ids();
         let finding = Finding::new(
             FindingSeverity::Warning,
             "missing dependency detected",
-            vec![],
+            evidence_ids.clone(),
             sample_rule_reference(),
         )
-        .expect("description is non-empty");
+        .expect("description is non-empty and evidence_ids is non-empty");
 
         assert_eq!(finding.severity(), FindingSeverity::Warning);
         assert_eq!(finding.description(), "missing dependency detected");
-        assert!(finding.evidence_ids().is_empty());
+        assert_eq!(finding.evidence_ids(), evidence_ids.as_slice());
         assert_eq!(finding.rule_reference(), &sample_rule_reference());
     }
 
@@ -103,7 +111,7 @@ mod tests {
         let result = Finding::new(
             FindingSeverity::Warning,
             "",
-            vec![],
+            sample_evidence_ids(),
             sample_rule_reference(),
         );
 
@@ -115,7 +123,7 @@ mod tests {
         let result = Finding::new(
             FindingSeverity::Warning,
             "   ",
-            vec![],
+            sample_evidence_ids(),
             sample_rule_reference(),
         );
 
@@ -123,15 +131,15 @@ mod tests {
     }
 
     #[test]
-    fn new_currently_permits_empty_evidence_ids_pending_governance_approval() {
-        let finding = Finding::new(
+    fn new_rejects_empty_evidence_ids() {
+        let result = Finding::new(
             FindingSeverity::Informational,
-            "evidence-less finding, pending governance",
+            "evidence-less finding",
             vec![],
             sample_rule_reference(),
         );
 
-        assert!(finding.is_ok());
+        assert_eq!(result, Err(FindingError::EmptyEvidenceIds));
     }
 
     #[test]
@@ -152,17 +160,18 @@ mod tests {
 
     #[test]
     fn each_finding_receives_a_unique_id() {
+        let evidence_ids = sample_evidence_ids();
         let first = Finding::new(
             FindingSeverity::Informational,
             "identical content",
-            vec![],
+            evidence_ids.clone(),
             sample_rule_reference(),
         )
         .unwrap();
         let second = Finding::new(
             FindingSeverity::Informational,
             "identical content",
-            vec![],
+            evidence_ids,
             sample_rule_reference(),
         )
         .unwrap();
@@ -172,17 +181,18 @@ mod tests {
 
     #[test]
     fn finding_with_identical_content_but_different_identity_is_not_equal() {
+        let evidence_ids = sample_evidence_ids();
         let first = Finding::new(
             FindingSeverity::Informational,
             "identical content",
-            vec![],
+            evidence_ids.clone(),
             sample_rule_reference(),
         )
         .unwrap();
         let second = Finding::new(
             FindingSeverity::Informational,
             "identical content",
-            vec![],
+            evidence_ids,
             sample_rule_reference(),
         )
         .unwrap();
@@ -195,7 +205,7 @@ mod tests {
         let finding = Finding::new(
             FindingSeverity::BestPractice,
             "consider using recommended structure",
-            vec![],
+            sample_evidence_ids(),
             sample_rule_reference(),
         )
         .unwrap();

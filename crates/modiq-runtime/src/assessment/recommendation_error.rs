@@ -5,4 +5,10 @@ pub enum RecommendationError {
     /// no guidance for a user to act upon.
     #[error("recommendation action must not be empty")]
     EmptyAction,
+
+    /// A Recommendation must reference at least one Finding (INV-014);
+    /// a Recommendation with no Finding reference carries no traceable
+    /// basis for its action.
+    #[error("recommendation must reference at least one finding")]
+    EmptyFindingIds,
 }

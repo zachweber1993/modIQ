@@ -429,7 +429,7 @@ New Finding Invariant — Evidence Reference Requirement
 
 Status
 
-Open
+Resolved (cardinality only)
 
 Raised
 
@@ -445,7 +445,7 @@ Should a new invariant require every Finding to reference at least one Evidence 
 
 Resolution
 
-Pending Documentation Release 2.1
+Approved by Technical Director, Sprint 3 Phase 2: a Finding SHALL reference at least one Evidence item (RuntimeInvariants.md, INV-013). Scope explicitly limited to cardinality; `Finding::new` rejects empty `evidence_ids` (`FindingError::EmptyEvidenceIds`). Referential-integrity validation (whether each referenced `EvidenceId` resolves within the same Assessment) was explicitly excluded from this decision and remains open, to be raised as a separate future governance item.
 
 ---
 
@@ -457,7 +457,7 @@ INV-005 Refinement — Recommendation Finding Reference Requirement
 
 Status
 
-Open
+Resolved (cardinality only)
 
 Raised
 
@@ -473,7 +473,7 @@ Should INV-005 be refined to require content-level reference validation, and sho
 
 Resolution
 
-Pending Documentation Release 2.1
+Approved by Technical Director, Sprint 3 Phase 2: a Recommendation SHALL reference at least one Finding item, recorded as a new invariant (RuntimeInvariants.md, INV-014) rather than a rewording of INV-005, since INV-005's existing text is not incorrect, only under-specified for this case. Scope explicitly limited to cardinality; `Recommendation::new` rejects empty `finding_ids` (`RecommendationError::EmptyFindingIds`). Referential-integrity validation (whether each referenced `FindingId` resolves within the same Assessment) was explicitly excluded from this decision and remains open, to be raised as a separate future governance item.
 
 ---
 
