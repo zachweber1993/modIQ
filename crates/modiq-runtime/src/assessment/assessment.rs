@@ -6,7 +6,9 @@ use super::assessment_id::AssessmentId;
 use super::assessment_status::AssessmentStatus;
 use super::context::AssessmentContext;
 use super::evidence::Evidence;
+use super::evidence_id::EvidenceId;
 use super::finding::Finding;
+use super::finding_id::FindingId;
 use super::recommendation::Recommendation;
 use super::subject::AssessmentSubject;
 
@@ -77,6 +79,62 @@ impl Assessment {
 
     pub fn recommendations(&self) -> &[Recommendation] {
         &self.recommendations
+    }
+
+    /// Looks up an Evidence item owned by this Assessment by its id.
+    ///
+    /// Returns `None` if no Evidence with this id has been collected.
+    pub fn evidence_by_id(&self, id: EvidenceId) -> Option<&Evidence> {
+        self.evidence.iter().find(|evidence| evidence.id() == id)
+    }
+
+    /// Looks up a Finding owned by this Assessment by its id.
+    ///
+    /// Returns `None` if no Finding with this id has been produced.
+    pub fn finding_by_id(&self, id: FindingId) -> Option<&Finding> {
+        self.findings.iter().find(|finding| finding.id() == id)
+    }
+
+    /// Resolves the Evidence a Finding references, against this
+    /// Assessment's own Evidence collection.
+    ///
+    /// As the aggregate root, Assessment is the only component with
+    /// the context to resolve this relationship — a Finding holds only
+    /// the identifiers of the Evidence it was derived from, not the
+    /// Evidence itself.
+    ///
+    /// Only Evidence actually present in this Assessment is returned;
+    /// an `EvidenceId` that does not resolve is silently omitted
+    /// rather than treated as an error. Requiring every reference to
+    /// resolve (and requiring at least one to be present at all) is a
+    /// governance-pending invariant (SPRINT2_IMPLEMENTATION_PLAN.md:
+    /// Governance Prerequisites) and is intentionally not enforced
+    /// here; this method reflects the relationship as currently
+    /// stored rather than validating it.
+    pub fn evidence_for_finding(&self, finding: &Finding) -> Vec<&Evidence> {
+        finding
+            .evidence_ids()
+            .iter()
+            .filter_map(|id| self.evidence_by_id(*id))
+            .collect()
+    }
+
+    /// Resolves the Findings a Recommendation references, against this
+    /// Assessment's own Finding collection.
+    ///
+    /// Only Findings actually present in this Assessment are
+    /// returned; a `FindingId` that does not resolve is silently
+    /// omitted rather than treated as an error, for the same reason as
+    /// `evidence_for_finding`: the refinement of INV-005 requiring
+    /// every reference to resolve is governance-pending
+    /// (SPRINT2_IMPLEMENTATION_PLAN.md: Governance Prerequisites) and
+    /// is intentionally not enforced here.
+    pub fn findings_for_recommendation(&self, recommendation: &Recommendation) -> Vec<&Finding> {
+        recommendation
+            .finding_ids()
+            .iter()
+            .filter_map(|id| self.finding_by_id(*id))
+            .collect()
     }
 
     /// Transitions the Assessment into evidence collection.
@@ -225,11 +283,25 @@ impl Assessment {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assessment::EvidenceCategory;
+    use crate::assessment::{EvidenceCategory, FindingSeverity, RuleReference};
 
     fn sample_evidence() -> Evidence {
         Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
             .expect("category and description are valid")
+    }
+
+    fn sample_finding() -> Finding {
+        Finding::new(
+            FindingSeverity::Informational,
+            "sample finding",
+            vec![],
+            RuleReference::new("sample-rule"),
+        )
+        .expect("severity, description, and rule reference are valid")
+    }
+
+    fn sample_recommendation() -> Recommendation {
+        Recommendation::new("sample recommendation", vec![], None).expect("action is valid")
     }
 
     #[test]
@@ -569,12 +641,13 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
+        let finding = sample_finding();
 
-        let result = assessment.add_finding(Finding);
+        let result = assessment.add_finding(finding.clone());
 
         assert!(result.is_ok());
         assert_eq!(assessment.findings().len(), 1);
-        assert_eq!(assessment.findings()[0], Finding);
+        assert_eq!(assessment.findings()[0], finding);
     }
 
     #[test]
@@ -583,9 +656,9 @@ mod tests {
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
 
         assert_eq!(assessment.findings().len(), 3);
     }
@@ -594,7 +667,7 @@ mod tests {
     fn add_finding_rejects_while_created() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
 
-        let result = assessment.add_finding(Finding);
+        let result = assessment.add_finding(sample_finding());
 
         assert_eq!(
             result,
@@ -610,7 +683,7 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
 
-        let result = assessment.add_finding(Finding);
+        let result = assessment.add_finding(sample_finding());
 
         assert_eq!(
             result,
@@ -626,10 +699,10 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
         assessment.complete().unwrap();
 
-        let result = assessment.add_finding(Finding);
+        let result = assessment.add_finding(sample_finding());
 
         assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
         // The Finding added before completion remains; the rejected call added nothing.
@@ -641,7 +714,7 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
 
         for _ in 0..3 {
-            let result = assessment.add_finding(Finding);
+            let result = assessment.add_finding(sample_finding());
             assert_eq!(
                 result,
                 Err(AssessmentError::FindingCollectionNotActive {
@@ -658,11 +731,13 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_finding(Finding).unwrap();
+        let first = sample_finding();
+        let second = sample_finding();
+        assessment.add_finding(first.clone()).unwrap();
+        assessment.add_finding(second.clone()).unwrap();
         assessment.complete().unwrap();
 
-        assert_eq!(assessment.findings(), &[Finding, Finding]);
+        assert_eq!(assessment.findings(), &[first, second]);
     }
 
     #[test]
@@ -673,8 +748,8 @@ mod tests {
         assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
 
         assert_eq!(assessment.evidence(), &[evidence]);
         assert_eq!(assessment.findings().len(), 2);
@@ -685,13 +760,14 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        let recommendation = sample_recommendation();
 
-        let result = assessment.add_recommendation(Recommendation);
+        let result = assessment.add_recommendation(recommendation.clone());
 
         assert!(result.is_ok());
         assert_eq!(assessment.recommendations().len(), 1);
-        assert_eq!(assessment.recommendations()[0], Recommendation);
+        assert_eq!(assessment.recommendations()[0], recommendation);
     }
 
     #[test]
@@ -699,10 +775,14 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
 
-        assessment.add_recommendation(Recommendation).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
 
         assert_eq!(assessment.recommendations().len(), 2);
     }
@@ -713,7 +793,7 @@ mod tests {
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
 
-        let result = assessment.add_recommendation(Recommendation);
+        let result = assessment.add_recommendation(sample_recommendation());
 
         assert_eq!(result, Err(AssessmentError::RecommendationRequiresFinding));
         assert!(assessment.recommendations().is_empty());
@@ -723,7 +803,7 @@ mod tests {
     fn add_recommendation_rejects_while_created() {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
 
-        let result = assessment.add_recommendation(Recommendation);
+        let result = assessment.add_recommendation(sample_recommendation());
 
         assert_eq!(
             result,
@@ -739,7 +819,7 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
 
-        let result = assessment.add_recommendation(Recommendation);
+        let result = assessment.add_recommendation(sample_recommendation());
 
         assert_eq!(
             result,
@@ -755,11 +835,13 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
         assessment.complete().unwrap();
 
-        let result = assessment.add_recommendation(Recommendation);
+        let result = assessment.add_recommendation(sample_recommendation());
 
         assert_eq!(result, Err(AssessmentError::AssessmentCompleted));
         // The Recommendation added before completion remains; the
@@ -772,11 +854,14 @@ mod tests {
         let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
         assessment.begin_evidence_collection().unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        let recommendation = sample_recommendation();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
         assessment.complete().unwrap();
 
-        assert_eq!(assessment.recommendations(), &[Recommendation]);
+        assert_eq!(assessment.recommendations(), &[recommendation]);
     }
 
     #[test]
@@ -786,13 +871,18 @@ mod tests {
         let evidence = sample_evidence();
         assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
+        let finding = sample_finding();
+        assessment.add_finding(finding.clone()).unwrap();
 
-        assessment.add_recommendation(Recommendation).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
 
         assert_eq!(assessment.evidence(), &[evidence]);
-        assert_eq!(assessment.findings(), &[Finding]);
+        assert_eq!(assessment.findings(), &[finding]);
         assert_eq!(assessment.recommendations().len(), 2);
     }
 
@@ -803,8 +893,12 @@ mod tests {
         let evidence = sample_evidence();
         assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        let finding = sample_finding();
+        assessment.add_finding(finding.clone()).unwrap();
+        let recommendation = sample_recommendation();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
         assessment.complete().unwrap();
 
         assert_eq!(
@@ -812,15 +906,206 @@ mod tests {
             Err(AssessmentError::AssessmentCompleted)
         );
         assert_eq!(
-            assessment.add_finding(Finding),
+            assessment.add_finding(sample_finding()),
             Err(AssessmentError::AssessmentCompleted)
         );
         assert_eq!(
-            assessment.add_recommendation(Recommendation),
+            assessment.add_recommendation(sample_recommendation()),
             Err(AssessmentError::AssessmentCompleted)
         );
         assert_eq!(assessment.evidence(), &[evidence]);
-        assert_eq!(assessment.findings(), &[Finding]);
-        assert_eq!(assessment.recommendations(), &[Recommendation]);
+        assert_eq!(assessment.findings(), &[finding]);
+        assert_eq!(assessment.recommendations(), &[recommendation]);
+    }
+
+    #[test]
+    fn evidence_by_id_finds_collected_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
+
+        assert_eq!(assessment.evidence_by_id(evidence.id()), Some(&evidence));
+    }
+
+    #[test]
+    fn evidence_by_id_returns_none_for_an_unknown_id() {
+        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        let unknown = sample_evidence().id();
+
+        assert_eq!(assessment.evidence_by_id(unknown), None);
+    }
+
+    #[test]
+    fn finding_by_id_finds_a_produced_finding() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = sample_finding();
+        assessment.add_finding(finding.clone()).unwrap();
+
+        assert_eq!(assessment.finding_by_id(finding.id()), Some(&finding));
+    }
+
+    #[test]
+    fn finding_by_id_returns_none_for_an_unknown_id() {
+        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        let unknown = sample_finding().id();
+
+        assert_eq!(assessment.finding_by_id(unknown), None);
+    }
+
+    #[test]
+    fn evidence_for_finding_resolves_referenced_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        let first_evidence = sample_evidence();
+        let second_evidence = sample_evidence();
+        assessment.add_evidence(first_evidence.clone()).unwrap();
+        assessment.add_evidence(second_evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "missing dependency detected",
+            vec![first_evidence.id(), second_evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        assessment.add_finding(finding.clone()).unwrap();
+
+        assert_eq!(
+            assessment.evidence_for_finding(&finding),
+            vec![&first_evidence, &second_evidence]
+        );
+    }
+
+    #[test]
+    fn evidence_for_finding_is_empty_when_the_finding_references_no_evidence() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = sample_finding();
+        assessment.add_finding(finding.clone()).unwrap();
+
+        assert!(assessment.evidence_for_finding(&finding).is_empty());
+    }
+
+    #[test]
+    fn evidence_for_finding_omits_evidence_ids_that_do_not_resolve() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        // A dangling reference: this EvidenceId was never added to this
+        // Assessment. Requiring every reference to resolve is
+        // governance-pending (see evidence_for_finding's own
+        // documentation); today this is resolved permissively rather
+        // than rejected.
+        let dangling_id = sample_evidence().id();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "missing dependency detected",
+            vec![dangling_id],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        assessment.add_finding(finding.clone()).unwrap();
+
+        assert!(assessment.evidence_for_finding(&finding).is_empty());
+    }
+
+    #[test]
+    fn findings_for_recommendation_resolves_referenced_findings() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let first_finding = sample_finding();
+        let second_finding = sample_finding();
+        assessment.add_finding(first_finding.clone()).unwrap();
+        assessment.add_finding(second_finding.clone()).unwrap();
+        let recommendation = Recommendation::new(
+            "resolve the missing dependency",
+            vec![first_finding.id(), second_finding.id()],
+            None,
+        )
+        .unwrap();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
+
+        assert_eq!(
+            assessment.findings_for_recommendation(&recommendation),
+            vec![&first_finding, &second_finding]
+        );
+    }
+
+    #[test]
+    fn findings_for_recommendation_is_empty_when_the_recommendation_references_no_findings() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        let recommendation = sample_recommendation();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
+
+        assert!(
+            assessment
+                .findings_for_recommendation(&recommendation)
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn findings_for_recommendation_omits_finding_ids_that_do_not_resolve() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        // A dangling reference: this FindingId was never produced within
+        // this Assessment. Requiring every reference to resolve is the
+        // pending INV-005 refinement; today this is resolved
+        // permissively rather than rejected.
+        let dangling_id = sample_finding().id();
+        let recommendation =
+            Recommendation::new("resolve the missing dependency", vec![dangling_id], None).unwrap();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
+
+        assert!(
+            assessment
+                .findings_for_recommendation(&recommendation)
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn full_pipeline_relationships_resolve_correctly() {
+        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = sample_evidence();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "missing dependency detected",
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        assessment.add_finding(finding.clone()).unwrap();
+        let recommendation =
+            Recommendation::new("resolve the missing dependency", vec![finding.id()], None)
+                .unwrap();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
+
+        assert_eq!(assessment.evidence_for_finding(&finding), vec![&evidence]);
+        assert_eq!(
+            assessment.findings_for_recommendation(&recommendation),
+            vec![&finding]
+        );
     }
 }

@@ -150,33 +150,25 @@ Architectural conflicts must be resolved through the ADR process before implemen
 
 # Current Sprint
 
-## Sprint 1
+## Sprint 1 — Complete
 
-Sprint 0 has successfully completed.
+Sprint 0 completed the engineering foundation for the modIQ platform: workspace scaffolding, repository organization, crate hierarchy, module hierarchy, documentation hierarchy, governance documentation, dependency map, clean workspace verification, and engineering audit.
 
-The engineering foundation for the modIQ platform has been established.
+Sprint 1 implemented the Assessment lifecycle, deterministic Rule evaluation, and Assessment Report generation across `modiq-runtime`, `modiq-rules`, and `modiq-report`, composed into one executable pipeline by `AssessmentService` in `modiq-engine` and demonstrated end-to-end by an integration test. Tagged `v0.1.0-alpha`.
 
-Completed objectives include:
+## Sprint 2 — Complete
 
-- Workspace scaffolding
-- Repository organization
-- Crate hierarchy
-- Module hierarchy
-- Documentation hierarchy
-- Governance documentation
-- Dependency map
-- Clean workspace verification
-- Engineering audit
+Sprint 2 gave `Evidence`, `Finding`, and `Recommendation` — content-free through Sprint 1 — real field content, process-local identity (`EvidenceId`, `FindingId`, `RecommendationId`), and constructor validation, and extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`). The Runtime entity design pattern established across all three is recorded in ADR-0007. No Rule Engine, Reporting, or Engine orchestration behavior changed. Two content-level invariants were identified and deliberately left unenforced, recorded as GOV-005 and GOV-006 in `GOVERNANCE.md`. Frozen as Engineering Release 0.2; see `docs/releases/ENGINEERING_RELEASE_0.2.md`.
 
-Current engineering focus has shifted from architectural scaffolding to deterministic implementation.
-
-The Assessment lifecycle, deterministic Rule evaluation, and Assessment Report generation have been implemented across `modiq-runtime`, `modiq-rules`, and `modiq-report` (see Implementation Status above). These are composed into one executable pipeline by `AssessmentService` in `modiq-engine`, demonstrated end-to-end by an integration test in `modiq-engine`.
+Sprint 3's scope has not yet been selected from the remaining deferred work (Rule abstraction, Knowledge integration, Reporting evolution, CLI wiring, and others — see Engineering Release 0.2's "Known Deferred Work").
 
 ---
 
 # Exit Criteria
 
-Sprint 1 will be considered complete when:
+## Sprint 1 Exit Criteria (met)
+
+Sprint 1 was considered complete when:
 
 - Assessment lifecycle implemented
 - Runtime domain operational
@@ -186,6 +178,17 @@ Sprint 1 will be considered complete when:
 - Assessment reports produced through the Engine API
 - Unit tests passing
 - Integration tests passing
+- Workspace builds without warnings
+
+## Sprint 2 Exit Criteria (met)
+
+Sprint 2 was considered complete when:
+
+- Evidence, Finding, and Recommendation carry real field content, identity, and constructor validation
+- Identity-based equality is implemented and tested for all three types
+- Assessment resolves Finding→Evidence and Recommendation→Finding relationships as the aggregate root
+- Content-level invariants discovered during implementation (GOV-005, GOV-006) are recorded in the Governance Register rather than resolved informally
+- Unit tests passing across the full workspace (97 tests, 0 failures)
 - Workspace builds without warnings
 
 ---
@@ -199,3 +202,4 @@ Sprint 1 will be considered complete when:
 | 1.2.0 | 2026-07-16 | modiq-runtime advanced to L3. Assessment aggregate, lifecycle transitions, and AssessmentError implemented. |
 | 1.3.0 | 2026-07-18 | modiq-rules and modiq-report advanced to L3. Deterministic Rule evaluation, Assessment Report generation, and Recommendation ownership in modiq-runtime implemented; end-to-end pipeline demonstrated by integration test. |
 | 1.4.0 | 2026-07-18 | modiq-engine advanced to L3. AssessmentService orchestrates the full pipeline (Runtime Domain, Rule Engine, Reporting); end-to-end integration test moved from modiq-report to modiq-engine to exercise the orchestration layer directly. |
+| 1.5.0 | 2026-07-19 | Sprint 2 completed. Evidence, Finding, and Recommendation carry real field content, identity, and constructor validation in modiq-runtime; Assessment extended with relationship-resolution methods (evidence_by_id, finding_by_id, evidence_for_finding, findings_for_recommendation). Runtime entity design pattern recorded in ADR-0007. Workspace test suite expanded to 97 tests. Frozen as Engineering Release 0.2. |

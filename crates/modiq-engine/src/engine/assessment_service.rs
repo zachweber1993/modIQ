@@ -115,7 +115,41 @@ mod tests {
 
         assert_ne!(first.assessment_id(), second.assessment_id());
         assert_eq!(first.evidence(), second.evidence());
-        assert_eq!(first.findings(), second.findings());
-        assert_eq!(first.recommendations(), second.recommendations());
+        // Each execution's Finding is freshly assigned its own identity by
+        // RuleEngine (mirroring AssessmentId/EvidenceId); determinism is
+        // judged by content, not by incidental identity.
+        assert_eq!(first.findings().len(), second.findings().len());
+        for (first_finding, second_finding) in first.findings().iter().zip(second.findings()) {
+            assert_eq!(first_finding.severity(), second_finding.severity());
+            assert_eq!(first_finding.description(), second_finding.description());
+            assert_eq!(first_finding.evidence_ids(), second_finding.evidence_ids());
+            assert_eq!(
+                first_finding.rule_reference(),
+                second_finding.rule_reference()
+            );
+        }
+        // Same rationale for Recommendation: content is compared, not
+        // identity, and finding_ids is compared structurally rather than
+        // by value since it references each execution's own Finding.
+        assert_eq!(
+            first.recommendations().len(),
+            second.recommendations().len()
+        );
+        for (first_recommendation, second_recommendation) in
+            first.recommendations().iter().zip(second.recommendations())
+        {
+            assert_eq!(
+                first_recommendation.action(),
+                second_recommendation.action()
+            );
+            assert_eq!(
+                first_recommendation.finding_ids().len(),
+                second_recommendation.finding_ids().len()
+            );
+            assert_eq!(
+                first_recommendation.repair_recipe_reference(),
+                second_recommendation.repair_recipe_reference()
+            );
+        }
     }
 }

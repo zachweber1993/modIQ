@@ -421,6 +421,62 @@ Pending
 
 ---
 
+## GOV-005
+
+Title
+
+New Finding Invariant — Evidence Reference Requirement
+
+Status
+
+Open
+
+Raised
+
+Sprint 2 (Runtime Domain Content Implementation)
+
+Description
+
+Finding now carries an `evidence_ids` field, but no invariant requires it to be non-empty or to reference Evidence that exists within the same Assessment. RuntimeInvariants.md defines no invariant of this kind.
+
+Question
+
+Should a new invariant require every Finding to reference at least one Evidence item, validated against the Assessment's own Evidence collection?
+
+Resolution
+
+Pending Documentation Release 2.1
+
+---
+
+## GOV-006
+
+Title
+
+INV-005 Refinement — Recommendation Finding Reference Requirement
+
+Status
+
+Open
+
+Raised
+
+Sprint 2 (Runtime Domain Content Implementation)
+
+Description
+
+Recommendation now carries a `finding_ids` field. INV-005 ("Recommendations SHALL only be produced from one or more Findings") is currently enforced only as a temporal precondition — that some Finding exists in the Assessment — not as a content-level requirement that the Recommendation reference specific, existing Finding(s).
+
+Question
+
+Should INV-005 be refined to require content-level reference validation, and should this be a wording change to INV-005 itself or a new, separate invariant?
+
+Resolution
+
+Pending Documentation Release 2.1
+
+---
+
 # Documentation Release Process
 
 Architecture evolves through Documentation Releases.

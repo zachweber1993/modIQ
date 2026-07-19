@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-17 |
+| **Last Updated** | 2026-07-19 |
 
 ---
 
@@ -165,7 +165,9 @@ The Documentation Release 1.0 Final Review concluded with:
 
 ---
 
-# [Sprint 1] (In Progress)
+# [Sprint 1]
+
+**Status:** Complete
 
 ## Added
 
@@ -173,6 +175,59 @@ The Documentation Release 1.0 Final Review concluded with:
 - Implemented and enforced Assessment lifecycle transitions (`begin_evidence_collection`, `begin_rule_evaluation`, `complete`).
 - Added `AssessmentError` for invalid lifecycle transitions.
 - Added RuntimeInvariants.md INV-010, INV-011, and INV-012 governing lifecycle sequencing.
+- Implemented Evidence collection (`Assessment::add_evidence`), gated to the evidence-collection lifecycle phase.
+- Implemented the first deterministic Rule Engine (`modiq-rules::RuleEngine`), evaluating Evidence into a Finding and Recommendation.
+- Implemented immutable Assessment Report snapshot generation (`modiq-report::AssessmentReport`).
+- Implemented orchestration of the complete pipeline (`modiq-engine::AssessmentService::execute`), composing the Runtime Domain, Rule Engine, and Reporting into one executable operation, demonstrated end to end by integration tests.
+
+## Released
+
+- Repository tagged `v0.1.0-alpha`.
+- Recorded in `ENGINEERING_RELEASE_v0.1.0-alpha.md` and `HANDOFF_SPRINT1.md`.
+
+---
+
+# [Sprint 2]
+
+**Status:** Complete
+
+## Added
+
+- Gave `Evidence`, `Finding`, and `Recommendation` real field content in `modiq-runtime`, replacing the content-free marker types used to validate the Sprint 1 pipeline.
+- Added `EvidenceId`, `FindingId`, and `RecommendationId` — process-local, monotonic identity types following the existing `AssessmentId` pattern.
+- Added `EvidenceCategory` and `FindingSeverity`, closed classification enums drawn from Glossary.md.
+- Added `RuleReference` and `RepairRecipeReference` — opaque Runtime-owned reference types identifying the Rule and, optionally, the Repair Recipe informing a Finding or Recommendation, without Runtime owning or evaluating Knowledge.
+- Added constructor-level validation (`EvidenceError`, `FindingError`, `RecommendationError`) rejecting empty or whitespace-only descriptive content.
+- Established identity-based equality for all three entities, consistent with `AssessmentId`.
+- Extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`), making the aggregate root responsible for resolving cross-entity relationships that were previously stored but never consulted.
+- Updated `modiq-rules::RuleEngine` to construct real Finding/Recommendation content; no Rule Engine decision logic changed.
+- Expanded the workspace test suite from 55 to 97 tests.
+
+## Deferred (Governance-Pending)
+
+- A new Finding invariant (every Finding must reference at least one Evidence item) and a refinement of INV-005 (a Recommendation must reference specific, existing Finding(s) rather than merely coexist with some Finding) were identified during implementation and recorded as GOV-005 and GOV-006 in `GOVERNANCE.md`. Neither is enforced.
+
+## Released
+
+- Documented in `SPRINT2_IMPLEMENTATION_PLAN.md` (implementation blueprint) and `docs/releases/ENGINEERING_RELEASE_0.2.md` (release record).
+
+---
+
+# [Engineering Release 0.2]
+
+**Status:** Complete
+
+## Added
+
+- Published `docs/releases/ENGINEERING_RELEASE_0.2.md`, the architectural and implementation record for Sprint 2.
+- Published ADR-0007 (Runtime Entity Design Pattern), recording the Runtime entity modeling pattern established across Sprint 2: aggregate ownership, entity identity, value objects, opaque references, constructor validation, identity-based equality, aggregate-owned relationship resolution, governance-controlled invariants, and deterministic behavior.
+- Added Governance Register items GOV-005 and GOV-006 to `GOVERNANCE.md`.
+
+## Changed
+
+- Updated `PROJECT_STATUS.md` to reflect Sprint 2 completion and Engineering Release 0.2 as the current milestone.
+- Updated `CrateRoadmap.md`'s Current Sprint section and revision history to record Sprint 2.
+- Completed this file's Sprint 1 record (previously left "In Progress" despite Sprint 1 having concluded at Engineering Release v0.1.0-alpha) and added the Sprint 2 record.
 
 ---
 

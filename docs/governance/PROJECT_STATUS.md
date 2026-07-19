@@ -3,37 +3,28 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | v0.2.0 |
+| **Current Release** | Engineering Release 0.2 |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 1 |
+| **Current Milestone** | Sprint 2 — Complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Sprint 1 |
-| **Last Updated** | 2026-07-17 |
+| **Current Phase** | Post-Sprint 2 Freeze (Engineering Release 0.2) |
+| **Last Updated** | 2026-07-19 |
 
 ---
 
 # Current Milestone
 
-## Sprint 1
+## Sprint 1 — Complete
 
-**Status:** Active
+Sprint 0 is complete. The engineering foundation was established, including workspace scaffolding, repository governance, crate hierarchy, module hierarchy, documentation hierarchy, architecture verification, and a clean workspace build.
 
-Sprint 0 is complete. The engineering foundation has been established, including:
+Sprint 1 delivered the first complete, deterministic Assessment pipeline: Assessment creation, Evidence collection, deterministic Rule evaluation, Finding and Recommendation generation, Assessment Report generation, and Assessment completion, composed into one executable operation (`AssessmentService::execute`) and exercised end to end by integration tests. The repository was tagged `v0.1.0-alpha`. Full record: `ENGINEERING_RELEASE_v0.1.0-alpha.md`, `HANDOFF_SPRINT1.md`.
 
-- Workspace scaffolding
-- Repository governance
-- Crate hierarchy
-- Module hierarchy
-- Documentation hierarchy
-- Architecture verification
-- Clean workspace build
+## Sprint 2 — Complete
 
-Runtime implementation is underway in `modiq-runtime`:
+Sprint 2 gave Evidence, Finding, and Recommendation — content-free in Sprint 1 — real field content, identity, and constructor validation, and extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`). No Rule Engine, Reporting, or Engine orchestration behavior changed; no Knowledge Domain integration began. Two content-level invariants were identified and deliberately left unenforced, recorded as Governance Register items GOV-005 and GOV-006. The workspace test suite grew from 55 to 97 tests. Full record: `docs/releases/ENGINEERING_RELEASE_0.2.md`, `SPRINT2_IMPLEMENTATION_PLAN.md`, ADR-0007.
 
-- Assessment aggregate implemented, including creation, unique identity, and initialization of empty Evidence, Finding, and Recommendation collections
-- Assessment lifecycle transitions implemented and enforced (`begin_evidence_collection`, `begin_rule_evaluation`, `complete`)
-
-**Next implementation milestone:** Evidence Collection.
+**Next implementation milestone:** Sprint 3 — scope not yet selected. See "Sprint 3 Entry Criteria" in `docs/releases/ENGINEERING_RELEASE_0.2.md`.
 
 ---
 
@@ -105,9 +96,9 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 # Current Focus
 
-Documentation Release 1.0 and Documentation Release 2.0 have both concluded.
+Documentation Release 1.0 and Documentation Release 2.0 have both concluded. No new Documentation Release was required for Sprint 2, since no frozen specification was modified.
 
-Sprint 0 is complete. Sprint 1 is active. Runtime implementation is the current engineering focus.
+Sprint 0, Sprint 1, and Sprint 2 are complete. Engineering Release 0.2 freezes the Sprint 2 milestone. Sprint 3's scope has not yet been selected; see "Sprint 3 Entry Criteria" in `docs/releases/ENGINEERING_RELEASE_0.2.md`.
 
 Implementation should remain consistent with the frozen engineering specification.
 

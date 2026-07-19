@@ -53,11 +53,27 @@ impl AssessmentReport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject, EvidenceCategory};
+    use modiq_runtime::assessment::{
+        AssessmentContext, AssessmentSubject, EvidenceCategory, FindingSeverity, RuleReference,
+    };
 
     fn sample_evidence() -> Evidence {
         Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
             .expect("category and description are valid")
+    }
+
+    fn sample_finding() -> Finding {
+        Finding::new(
+            FindingSeverity::Informational,
+            "sample finding",
+            vec![],
+            RuleReference::new("sample-rule"),
+        )
+        .expect("severity, description, and rule reference are valid")
+    }
+
+    fn sample_recommendation() -> Recommendation {
+        Recommendation::new("sample recommendation", vec![], None).expect("action is valid")
     }
 
     #[test]
@@ -80,15 +96,19 @@ mod tests {
         let evidence = sample_evidence();
         assessment.add_evidence(evidence.clone()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        let finding = sample_finding();
+        assessment.add_finding(finding.clone()).unwrap();
+        let recommendation = sample_recommendation();
+        assessment
+            .add_recommendation(recommendation.clone())
+            .unwrap();
 
         let report = AssessmentReport::generate(&assessment);
 
         assert_eq!(report.status(), AssessmentStatus::EvaluatingRules);
         assert_eq!(report.evidence(), &[evidence]);
-        assert_eq!(report.findings(), &[Finding]);
-        assert_eq!(report.recommendations(), &[Recommendation]);
+        assert_eq!(report.findings(), &[finding]);
+        assert_eq!(report.recommendations(), &[recommendation]);
     }
 
     #[test]
@@ -97,8 +117,10 @@ mod tests {
         assessment.begin_evidence_collection().unwrap();
         assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();
-        assessment.add_finding(Finding).unwrap();
-        assessment.add_recommendation(Recommendation).unwrap();
+        assessment.add_finding(sample_finding()).unwrap();
+        assessment
+            .add_recommendation(sample_recommendation())
+            .unwrap();
 
         let before = AssessmentReport::generate(&assessment);
         assessment.complete().unwrap();
