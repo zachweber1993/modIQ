@@ -1,0 +1,33 @@
+[package]
+name = "sandbox"
+version = "0.1.0"
+description = "modIQ developer sandbox — not production software"
+authors = ["modIQ"]
+edition = "2021"
+
+# This crate is intentionally its own Cargo workspace root. It is not a
+# member of the root modIQ workspace (crates/*): the sandbox is a
+# developer application, not a reusable engineering crate, and keeping
+# it separate avoids pulling Tauri's GUI dependency tree into
+# `cargo check --workspace` / `cargo test --workspace` at the repo root.
+[workspace]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "sandbox_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+modiq-runtime = { path = "../../../crates/modiq-runtime" }
+
