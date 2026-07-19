@@ -188,3 +188,50 @@ Two pre-existing documentation defects were identified during this review and fl
 No Documentation Release was required — no frozen specification changed during Sprint 2.
 
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` confirmed green (97 tests, 0 failures) as the closing verification for this release.
+
+---
+
+### Sprint 3 Phase 1: Sandbox Pipeline Integration
+
+Status:
+Completed
+
+Affected Crates:
+- (none — `apps/sandbox` only, not a workspace member)
+
+Affected Documents:
+- (none)
+
+Notes:
+Rewrote `apps/sandbox`'s `create_assessment` Tauri command to construct one deterministic Evidence item and execute it through the real pipeline — `modiq-engine::AssessmentService::execute`, the same orchestration entry point `modiq-engine`'s own integration tests use — rather than returning an empty Assessment DTO. Added `modiq-engine` and `modiq-report` as sandbox dependencies. The resulting `AssessmentReport` is mapped into a serializable `AssessmentSummary` DTO (with nested Evidence/Finding/Recommendation entries); the `Assessment` aggregate itself is never exposed over IPC. `App.tsx` updated to render the DTO's counts and lists. No domain logic was added to the sandbox and no crate boundary was crossed.
+
+The original phase framing had asked the Rule Engine to construct Evidence itself; an architectural review (recorded in `TECHNICAL_DIRECTOR_HANDOFF_v2.0.md`) found this would reverse `RuleEngine.md`'s frozen "Evidence is consumed, not produced" specification and identified real Evidence Collection as a genuine, currently unowned architectural gap rather than something to improvise into `modiq-rules`. Implementation proceeded instead using Evidence supplied as ordinary external input, exactly as existing integration tests already did.
+
+`cargo fmt`, `cargo check`, and `cargo test` passed in both the root workspace (unaffected, 97 tests) and the sandbox's own workspace (3 tests).
+
+---
+
+### Sprint 3 Phase 2: GOV-005/GOV-006 Cardinality Enforcement
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-runtime
+- modiq-report (test fixtures only)
+
+Affected Documents:
+- RuntimeInvariants.md
+- GOVERNANCE.md
+- PROPOSAL_GOV-005_GOV-006.md (new)
+
+Notes:
+Resolved GOV-005 and GOV-006, both open since Sprint 2, by Technical Director decision following an Architecture Review proposal. `Finding::new` now rejects empty `evidence_ids` and `Recommendation::new` now rejects empty `finding_ids`, recorded as new invariants INV-013 and INV-014. GOV-006 was resolved as a new invariant rather than a rewording of INV-005, since INV-005's existing text was not incorrect, only under-specified for content-level reference validation.
+
+Scope was explicitly limited to cardinality by Technical Director direction. Referential integrity — whether a reference actually resolves within its Assessment — was explicitly excluded and remains a separate, still-open governance question; `Assessment::evidence_for_finding` and `Assessment::findings_for_recommendation` are unchanged, `modiq-rules::RuleEngine` is unchanged, and `apps/sandbox` is unaffected.
+
+Two `modiq-runtime` tests were removed (`evidence_for_finding_is_empty_when_the_finding_references_no_evidence`, `findings_for_recommendation_is_empty_when_the_recommendation_references_no_findings`): both constructed a Finding/Recommendation with zero references to exercise resolution behavior, a state no longer reachable through the public API. Equivalent coverage of "resolution returns empty for an unresolvable reference" is preserved by the adjacent dangling-reference tests, which were untouched.
+
+This documentation update (RuntimeInvariants.md, GOVERNANCE.md) was made directly rather than through a full Documentation Release cycle (Draft → Foundation Review → Technical Review → Repository Audit → Documentation Freeze → Release Tag). Documentation Release 2.1 — under which GOV-005/GOV-006 were originally filed as "pending" — remains a future documentation milestone, not superseded by this change; referential integrity in particular is expected to be part of it.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` passed (95 tests, down from 97: two obsolete tests removed, two new rejection tests added, net −2 in `modiq-runtime`). Sandbox workspace independently reverified, unaffected (3 tests).
