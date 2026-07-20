@@ -390,3 +390,26 @@ GOV-004 is now Resolved: `AssessmentService` direct subsystem composition is the
 `EngineAPI.md` amended to v1.1.0 — the Service Overview and Service Relationships sections (five services, an internal diagram) replaced with a description of the Assessment Service, subsystem orchestration by direct composition, engine responsibilities, and dependency boundaries, cross-referencing `Architecture.md`'s System Overview diagram rather than duplicating it. `Architecture.md` received a one-sentence cross-reference addition to its Assessment Service component description (v1.1.2); no structural change, since its System Overview already described the architecture this decision confirmed. `CrateRoadmap.md`'s `modiq-engine` and `modiq-rules` maturity entries note the retirement, plus a new revision history entry (1.9.0). ADR-0010 (Engine Orchestration Simplification) records the decision permanently and is indexed in `docs/adrs/README.md`.
 
 This is a governance and documentation resolution only. Deletion of the eight retired stub types is authorized as future implementation work by ADR-0010's own Status section, not performed here. No Rust source file was modified, no test was modified, and no crate's maturity level changed. `cargo fmt`/`cargo check`/`cargo test` were not run this session, consistent with its documentation-only scope; the eight stub types remain in source, compiling and unused, exactly as `PLATFORM_VALIDATION_GOV-004.md` found them.
+
+---
+
+### GOV-004 Implementation: Retired Scaffolding Removed
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-engine
+- modiq-rules
+
+Affected Documents:
+- docs/implementation/CrateRoadmap.md
+
+Notes:
+Implemented the architectural simplification ADR-0010 authorized and GOV-004 resolved. Deleted the eight stub types identified in `PLATFORM_VALIDATION_GOV-004.md` as never constructed or called anywhere in the workspace: `modiq-engine`'s `knowledge_service.rs`, `reporting_service.rs`, `rule_evaluation_service.rs`, `version_profile_service.rs`, and `modiq-rules`'s `selector.rs`, `evaluator.rs`, `explainability.rs`, `traceability.rs`, along with each file's `pub mod` and `pub use` declaration in its crate's `mod.rs`. No replacement type, trait, or abstraction was introduced — this removes scaffolding, it does not substitute for it.
+
+`AssessmentService` and `RuleEngine` are otherwise unchanged: neither's public API, method bodies, or doc comments required modification, since neither ever referenced any of the eight deleted types.
+
+`cargo fmt` made no further changes beyond the two `mod.rs` edits. `cargo check --workspace` and `cargo check` in `apps/sandbox/src-tauri` (its own, separate workspace) both passed with zero warnings. `cargo test --workspace` passed 112/112, identical in count and distribution to the pre-deletion baseline (`modiq-runtime` 82, `modiq-collection` 12, `modiq-engine` 9, `modiq-report` 3, `modiq-rules` 3); the Sandbox's own suite passed 3/3, unchanged. No `Cargo.lock` drift in either workspace. This confirms, rather than merely asserts, that the deleted types had zero behavioral footprint.
+
+`GOVERNANCE.md` and ADR-0010 are not re-edited to reflect completion, consistent with this project's convention that accepted governance resolutions and ADRs are historical records of the decision, not living status trackers — this entry and `CrateRoadmap.md`'s revision history (1.10.0) carry the implementation-complete status instead, the same pattern already used when GOV-007's later implementation did not require re-editing ADR-0008.
