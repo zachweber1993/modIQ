@@ -7,13 +7,13 @@
 | Property | Value |
 |----------|-------|
 | **Document** | DataModel.md |
-| **Version** | 1.0.0 |
-| **Status** | Frozen |
+| **Version** | 1.0.1 |
+| **Status** | Frozen, with a Documentation Release 2.1 cross-reference addition |
 | **Project** | modIQ |
-| **Documentation Release** | 1.0 |
+| **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-15 |
-| **Last Updated** | 2026-07-15 |
+| **Last Updated** | 2026-07-19 |
 
 ---
 
@@ -325,6 +325,7 @@ Related specifications include:
 
 - KnowledgeModel.md defines reusable engineering knowledge.
 - RuleEngine.md defines deterministic assessment execution.
+- EvidenceCollection.md defines how Evidence is produced.
 - EngineAPI.md defines subsystem interfaces.
 - Architecture.md defines platform organization.
 
@@ -332,8 +333,8 @@ Related specifications include:
 
 # Document Status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.0.1
 
-**Status:** Frozen
+**Status:** Frozen, with a Documentation Release 2.1 cross-reference addition
 
-This specification establishes the authoritative conceptual runtime data model for the modIQ platform and serves as the foundation for the remaining technical specifications.
+This specification establishes the authoritative conceptual runtime data model for the modIQ platform and serves as the foundation for the remaining technical specifications. Under Documentation Release 2.1 (Frozen, Technical Director approved), a cross-reference to the new EvidenceCollection.md was added above; no entity definition, relationship, or lifecycle ordering in this document changed — this document's Runtime Lifecycle already placed Evidence Collected before Findings Produced, which is the ordering ADR-0008 and the corresponding Architecture.md amendment now also reflect.

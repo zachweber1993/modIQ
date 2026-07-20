@@ -240,6 +240,30 @@ Must never mutate Assessment directly.
 
 ---
 
+## Evidence Collection
+
+Owns:
+
+- inspection of an Assessment Subject's actual content
+- production of Evidence
+
+May consume:
+
+- an application-supplied Input Descriptor
+- relevant Assessment Context
+
+Must never:
+
+- evaluate Evidence, or produce Findings or Recommendations
+- mutate Assessment directly
+- own orchestration (invoked by Engine; does not invoke itself)
+- acquire its own Input Descriptor (an application-layer responsibility)
+- persist anything
+
+See ADR-0008 and `EvidenceCollection.md` for the full boundary and Collector Contract. Architecture approved; implementation not yet authorized (GOV-007).
+
+---
+
 ## Reporting
 
 Owns:
@@ -474,6 +498,118 @@ Should INV-005 be refined to require content-level reference validation, and sho
 Resolution
 
 Approved by Technical Director, Sprint 3 Phase 2: a Recommendation SHALL reference at least one Finding item, recorded as a new invariant (RuntimeInvariants.md, INV-014) rather than a rewording of INV-005, since INV-005's existing text is not incorrect, only under-specified for this case. Scope explicitly limited to cardinality; `Recommendation::new` rejects empty `finding_ids` (`RecommendationError::EmptyFindingIds`). Referential-integrity validation (whether each referenced `FindingId` resolves within the same Assessment) was explicitly excluded from this decision and remains open, to be raised as a separate future governance item.
+
+---
+
+## GOV-007
+
+Title
+
+Evidence Collection Subsystem Implementation Approval
+
+Status
+
+Open
+
+Raised
+
+Sprint 3 Phase 3 (Evidence Collection Architecture & Governance Foundation)
+
+Description
+
+ADR-0008 establishes the architectural boundary for an Evidence Collection subsystem (new crate, orchestrated by `modiq-engine`) but authorizes architecture only, not implementation. No concrete collector, no new crate, and no change to `modiq-engine`'s orchestration code has been implemented.
+
+Question
+
+Once Documentation Release 2.1 is frozen, what specific implementation scope (a first concrete collector, the new crate's initial shape, and any accompanying test strategy) should be authorized, and in what order?
+
+Resolution
+
+Pending Documentation Release 2.1 freeze and a subsequent implementation-scoping decision. Remains open until implementation is explicitly reviewed and approved.
+
+---
+
+## GOV-008
+
+Title
+
+AssessmentService Public API Evolution
+
+Status
+
+Open
+
+Raised
+
+Sprint 3 Phase 3 (Evidence Collection Architecture & Governance Foundation)
+
+Description
+
+ADR-0009 records that `modiq-engine`'s public Assessment-execution entry point will require a breaking change to accept an Input Descriptor once Evidence Collection is implemented, without deciding that change's shape.
+
+Question
+
+Should the existing entry point's signature change directly, should a new parallel entry point be introduced with the old one deprecated, or should some other approach be taken? What is the exact new input shape?
+
+Resolution
+
+Pending. Must be resolved, and separately approved under the Public API Policy's breaking-change requirement, before Evidence Collection implementation can integrate with `modiq-engine`.
+
+---
+
+## GOV-009
+
+Title
+
+Input Descriptor Ownership
+
+Status
+
+Open
+
+Raised
+
+Sprint 3 Phase 3 (Evidence Collection Architecture & Governance Foundation)
+
+Description
+
+`EvidenceCollection.md` defines the Input Descriptor conceptually (what an application supplies to identify content for Evidence Collection to inspect) but does not authoritatively assign which specification owns its definition or what content it eventually carries.
+
+Question
+
+Which specification should own the Input Descriptor's authoritative definition — EvidenceCollection.md, DataModel.md (as content on Assessment Subject or Assessment Context), or a new specification — and what should it contain?
+
+Resolution
+
+Pending. Should be resolved before or during Evidence Collection implementation scoping (see GOV-007).
+
+---
+
+## GOV-010
+
+Title
+
+Collection Error Model
+
+Status
+
+Open
+
+Raised
+
+Sprint 3 Phase 3 (Evidence Collection Architecture & Governance Foundation)
+
+Description
+
+`EvidenceCollection.md`'s Collector Contract requires that collection failure be represented distinctly from legitimate absence (successfully inspecting content and finding nothing relevant), but does not define the mechanism.
+
+Question
+
+How should a Collector's failure to complete inspection be represented and surfaced — as part of Evidence itself, as a distinct error/result type, as a new kind of Finding, or some other mechanism — and how should it interact with Assessment lifecycle state?
+
+Resolution
+
+Pending. Should be resolved before Evidence Collection implementation begins, since it affects the shape of what a Collector returns.
 
 ---
 

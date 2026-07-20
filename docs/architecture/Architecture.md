@@ -7,13 +7,13 @@
 | Property | Value |
 |----------|-------|
 | **Document** | Architecture.md |
-| **Version** | 1.0.0 |
-| **Status** | Frozen |
+| **Version** | 1.1.0 |
+| **Status** | Frozen, with a Documentation Release 2.1 amendment |
 | **Project** | modIQ |
-| **Documentation Release** | 1.0 |
+| **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-15 |
-| **Last Updated** | 2026-07-15 |
+| **Last Updated** | 2026-07-19 |
 
 ---
 
@@ -41,6 +41,7 @@ This document intentionally avoids implementation details. It defines *how the p
 - DataModel.md
 - KnowledgeModel.md
 - RuleEngine.md
+- EvidenceCollection.md
 - EngineAPI.md
 - Sprint0.md
 - Sprint1.md
@@ -133,18 +134,18 @@ modIQ is organized as a collection of cooperating platform services centered aro
 The Assessment Service coordinates the complete assessment lifecycle while delegating specialized responsibilities to supporting subsystems.
 
 ```
-                        User
-                          │
-                          ▼
-                  Assessment Service
-                          │
-     ┌───────────┬────────┼────────┬────────────┐
-     ▼           ▼        ▼        ▼            ▼
-Rule Engine   Version   Knowledge  Reporting  Storage
-              Profiles    Base
-                 │
-                 ▼
-          Extension Layer
+                                    User
+                                      │
+                                      ▼
+                              Assessment Service
+                                      │
+     ┌───────────┬────────┬──────────┼────────┬────────────┐
+     ▼           ▼        ▼          ▼        ▼            ▼
+  Evidence    Rule Engine  Version   Knowledge  Reporting  Storage
+ Collection               Profiles    Base
+                              │
+                              ▼
+                       Extension Layer
 ```
 
 The Assessment Service serves as the primary orchestration layer for the platform.
@@ -182,6 +183,20 @@ Responsibilities include:
 - determining assessment outcomes
 
 The Rule Engine consumes knowledge but does not own it.
+
+---
+
+## Evidence Collection
+
+Evidence Collection produces Evidence from an Assessment Subject's actual content.
+
+Responsibilities include:
+
+- interpreting an application-supplied Input Descriptor
+- inspecting the described content
+- producing Evidence
+
+Evidence Collection does not evaluate Evidence, does not own runtime state, and does not orchestrate the Assessment lifecycle. See EvidenceCollection.md.
 
 ---
 
@@ -290,6 +305,12 @@ Version Profile Selection
 
         ▼
 
+Evidence Collection
+
+        │
+
+        ▼
+
 Rule Engine
 
         │
@@ -297,12 +318,6 @@ Rule Engine
         ▼
 
 Knowledge Base
-
-        │
-
-        ▼
-
-Evidence Collection
 
         │
 
@@ -318,6 +333,8 @@ Assessment Report
 ```
 
 Each stage has a clearly defined responsibility.
+
+> **Documentation Release 2.1 amendment:** this diagram previously placed Evidence Collection after Rule Engine and Knowledge Base. That ordering was inconsistent with `DataModel.md`'s Runtime Lifecycle (which has always placed Evidence Collected before Findings Produced) and with the platform's actual, already-implemented pipeline. `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md` identified the inconsistency; this amendment corrects it to match `DataModel.md` and implementation, rather than leaving two Frozen specifications in disagreement. See ADR-0008 and `docs/governance/DocumentationRelease.md`'s Documentation Release 2.1 entry.
 
 ---
 
@@ -363,6 +380,10 @@ General dependency flow:
 
 ```
 Assessment Service
+
+↓
+
+Evidence Collection
 
 ↓
 
@@ -412,6 +433,7 @@ The platform should evolve through extension rather than modification.
 New capabilities should integrate by:
 
 - introducing additional Rules
+- extending Evidence Collection with additional Collectors
 - extending the Knowledge Base
 - adding Version Profiles
 - implementing Extension interfaces
@@ -459,6 +481,7 @@ Subsequent specifications refine this architecture.
 - DataModel.md defines platform information.
 - KnowledgeModel.md defines engineering knowledge representation.
 - RuleEngine.md defines assessment execution.
+- EvidenceCollection.md defines the Evidence Collection subsystem boundary.
 - EngineAPI.md defines subsystem interfaces.
 - Sprint planning documents define implementation sequencing.
 
@@ -466,10 +489,10 @@ Subsequent specifications refine this architecture.
 
 # Document Status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.1.0
 
-**Status:** Frozen
+**Status:** Frozen, with a Documentation Release 2.1 amendment
 
-This document is a foundational technical specification, frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze).
+This document is a foundational technical specification, originally frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze). It was amended under Documentation Release 2.1 (Frozen, Technical Director approved) to name Evidence Collection as a Core Platform Component and to correct the Assessment Lifecycle diagram's ordering, per ADR-0008. This amendment is recorded explicitly, as required by `docs/governance/DocumentationRelease.md`'s "documented contradiction" exception to Frozen-specification stability — it is not a silent rewrite.
 
 Changes should preserve consistency with higher-level specifications and maintain stable subsystem boundaries.

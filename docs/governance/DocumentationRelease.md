@@ -251,6 +251,27 @@ Not yet tagged in source control as of this record.
 
 ---
 
+## Documentation Release 2.1
+
+**Status:** Complete
+
+Establishes the architectural and governance foundation for Evidence Collection, following Technical Director approval of `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md`'s architectural direction. This release is architecture/documentation only — no production code changed, and no implementation is authorized by it.
+
+Scope:
+
+- ADR-0008 (Evidence Collection Subsystem Boundary) and ADR-0009 (AssessmentService Public API Evolution), both new.
+- `docs/architecture/EvidenceCollection.md`, a new Technical Layer specification defining the Evidence Collection subsystem boundary, its relationship to the four existing subsystems, and the Collector Contract.
+- Amendments to `Architecture.md` (Evidence Collection named as a Core Platform Component across the System Overview, Assessment Lifecycle, Dependency Rules, and Extensibility sections; Assessment Lifecycle diagram corrected to place Evidence Collection before Rule Engine, resolving a documented inconsistency with `DataModel.md` identified by the proposal) and cross-reference additions to `DataModel.md` and `RuleEngine.md`.
+- `docs/README.md`: Reading Order updated to include `EvidenceCollection.md`.
+- `GOVERNANCE.md`: a new Evidence Collection Crate Boundary Rules entry, and four new Governance Register items (GOV-007 through GOV-010), all left open pending implementation review.
+- `CrateRoadmap.md`: `modiq-collection` recorded as a planned (not yet created) crate.
+
+Phase 1 (Draft) through Phase 6 (Release Tag) of the Documentation Release Lifecycle above are complete for this release's actual scope — a Technical Director review served as Foundation Review, Technical Review, and Repository Audit together, given the release's narrow, single-subsystem scope. `EvidenceCollection.md` and the amended sections of `Architecture.md`/`DataModel.md`/`RuleEngine.md` are now marked Frozen. Not yet tagged in source control as of this record, consistent with Documentation Release 2.0's own precedent.
+
+Per Phase 7 (Implementation Authorization): this release establishes architectural intent only. Evidence Collection implementation remains gated on GOV-007 and is not authorized by this Documentation Release alone.
+
+---
+
 # Future Evolution
 
 Future Documentation Releases should build upon previous releases through refinement rather than unnecessary replacement.

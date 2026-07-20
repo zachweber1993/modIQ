@@ -50,6 +50,8 @@ Additional direct dependencies:
 
 No crate should depend on a crate above it in this hierarchy.
 
+**Planned addition (Documentation Release 2.1, Frozen; not yet created — ADR-0008):** `modiq-collection`, depending on `modiq-runtime` only (to produce `Evidence`), with `modiq-engine` depending on it — the same shape as `modiq-rules` and `modiq-report`, added as a peer to both once implementation is separately authorized (GOV-007). See `docs/architecture/EvidenceCollection.md`.
+
 ---
 
 # Crate Maturity Levels
@@ -77,6 +79,7 @@ No crate should depend on a crate above it in this hierarchy.
 | modiq-engine | Assessment orchestration | L3 | 🔧 In Progress |
 | modiq-report | Report representation and formatting | L3 | 🔧 In Progress |
 | modiq-cli | Command-line interface | L1 | ✅ Scaffolded |
+| modiq-collection | Evidence Collection (produces Evidence from Assessment Subject content) | — | 📋 Planned (ADR-0008; not yet created) |
 
 ---
 
@@ -160,7 +163,9 @@ Sprint 1 implemented the Assessment lifecycle, deterministic Rule evaluation, an
 
 Sprint 2 gave `Evidence`, `Finding`, and `Recommendation` — content-free through Sprint 1 — real field content, process-local identity (`EvidenceId`, `FindingId`, `RecommendationId`), and constructor validation, and extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`). The Runtime entity design pattern established across all three is recorded in ADR-0007. No Rule Engine, Reporting, or Engine orchestration behavior changed. Two content-level invariants were identified and deliberately left unenforced, recorded as GOV-005 and GOV-006 in `GOVERNANCE.md`. Frozen as Engineering Release 0.2; see `docs/releases/ENGINEERING_RELEASE_0.2.md`.
 
-Sprint 3's scope has not yet been selected from the remaining deferred work (Rule abstraction, Knowledge integration, Reporting evolution, CLI wiring, and others — see Engineering Release 0.2's "Known Deferred Work").
+## Sprint 3 — In Progress
+
+Sprint 3 Phase 1 proved the sandbox could drive the real Evidence → Rule Engine → Assessment → Report pipeline end to end. Sprint 3 Phase 2 resolved GOV-005 and GOV-006 (Finding/Recommendation minimum reference cardinality, INV-013/INV-014). Sprint 3 Phase 3 is an architecture-and-governance-only phase: `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md` was approved at the architectural level, producing ADR-0008 (Evidence Collection Subsystem Boundary), ADR-0009 (AssessmentService Public API Evolution), the new `EvidenceCollection.md` specification, corresponding amendments to `Architecture.md`/`DataModel.md`/`RuleEngine.md`, and four new Governance Register items (GOV-007 through GOV-010). Documentation Release 2.1 is Frozen. No runtime code changed during Phase 3. Implementation of Evidence Collection (a new `modiq-collection` crate) is not yet authorized — see GOV-007.
 
 ---
 
@@ -203,3 +208,4 @@ Sprint 2 was considered complete when:
 | 1.3.0 | 2026-07-18 | modiq-rules and modiq-report advanced to L3. Deterministic Rule evaluation, Assessment Report generation, and Recommendation ownership in modiq-runtime implemented; end-to-end pipeline demonstrated by integration test. |
 | 1.4.0 | 2026-07-18 | modiq-engine advanced to L3. AssessmentService orchestrates the full pipeline (Runtime Domain, Rule Engine, Reporting); end-to-end integration test moved from modiq-report to modiq-engine to exercise the orchestration layer directly. |
 | 1.5.0 | 2026-07-19 | Sprint 2 completed. Evidence, Finding, and Recommendation carry real field content, identity, and constructor validation in modiq-runtime; Assessment extended with relationship-resolution methods (evidence_by_id, finding_by_id, evidence_for_finding, findings_for_recommendation). Runtime entity design pattern recorded in ADR-0007. Workspace test suite expanded to 97 tests. Frozen as Engineering Release 0.2. |
+| 1.6.0 | 2026-07-19 | Sprint 3 Phase 3 (architecture/documentation only, no runtime code changed): Evidence Collection Subsystem Boundary approved architecturally (ADR-0008), with AssessmentService's anticipated public API evolution recorded separately (ADR-0009). Added `modiq-collection` as a planned crate (not yet created). Four new Governance Register items opened (GOV-007–GOV-010). Documentation Release 2.1 Frozen. |

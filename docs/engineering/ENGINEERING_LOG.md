@@ -235,3 +235,43 @@ Two `modiq-runtime` tests were removed (`evidence_for_finding_is_empty_when_the_
 This documentation update (RuntimeInvariants.md, GOVERNANCE.md) was made directly rather than through a full Documentation Release cycle (Draft → Foundation Review → Technical Review → Repository Audit → Documentation Freeze → Release Tag). Documentation Release 2.1 — under which GOV-005/GOV-006 were originally filed as "pending" — remains a future documentation milestone, not superseded by this change; referential integrity in particular is expected to be part of it.
 
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` passed (95 tests, down from 97: two obsolete tests removed, two new rejection tests added, net −2 in `modiq-runtime`). Sandbox workspace independently reverified, unaffected (3 tests).
+
+---
+
+### Sprint 3 Phase 3: Evidence Collection Architecture & Governance Foundation
+
+Status:
+Completed (architecture/documentation only)
+
+Affected Crates:
+- (none — no runtime code changed this phase)
+
+Affected Documents:
+- docs/adrs/0008-evidence-collection-subsystem-boundary.md (new)
+- docs/adrs/0009-assessmentservice-public-api-evolution.md (new)
+- docs/adrs/README.md
+- docs/architecture/EvidenceCollection.md (new)
+- docs/architecture/Architecture.md
+- docs/architecture/DataModel.md
+- docs/architecture/RuleEngine.md
+- docs/implementation/CrateRoadmap.md
+- docs/engineering/GOVERNANCE.md
+- docs/governance/DocumentationRelease.md
+- docs/engineering/PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md (prior phase's proposal; approved this phase, not modified)
+
+Notes:
+Following Technical Director approval of `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md`'s architectural direction (not implementation), this phase established the architectural and governance foundation for Evidence Collection without writing any production code. Two ADRs were drafted per explicit Technical Director instruction to keep them separate: ADR-0008 records Evidence Collection as its own subsystem (a new, not-yet-created crate, working name `modiq-collection`, orchestrated by `modiq-engine`, depending only on `modiq-runtime`), with alternatives (inside Runtime, inside Engine, inside Knowledge) considered and rejected against existing `GOVERNANCE.md` boundary rules. ADR-0009 separately records that `modiq-engine`'s public execution entry point will eventually require a breaking change to accept an Input Descriptor, without deciding that change's shape.
+
+A new Technical Layer specification, `EvidenceCollection.md`, was written alongside `RuleEngine.md`, defining the subsystem's responsibilities, non-responsibilities, orchestration flow, the Input Descriptor concept, and a conceptual Collector Contract (inputs, outputs, guarantees, non-responsibilities, determinism expectations) — deliberately free of Rust types or interfaces, per explicit instruction.
+
+A pre-existing inconsistency between `Architecture.md`'s Assessment Lifecycle diagram (which placed Evidence Collection after Rule Engine) and `DataModel.md`'s Runtime Lifecycle (which already placed Evidence Collection before Findings Produced) — first identified in the prior phase's proposal — was resolved by correcting `Architecture.md` to match `DataModel.md` and the actual, already-implemented pipeline. The correction is recorded explicitly as a Documentation Release 2.1 amendment within `Architecture.md` itself, not silently rewritten, per `docs/governance/DocumentationRelease.md`'s "documented contradiction" exception to Frozen-specification stability.
+
+`GOVERNANCE.md` gained a new Evidence Collection Crate Boundary Rules entry and four new Governance Register items — GOV-007 (implementation approval), GOV-008 (AssessmentService API evolution, companion to ADR-0009), GOV-009 (Input Descriptor ownership), GOV-010 (collection error model) — all explicitly left Open, per instruction not to resolve them this phase. `CrateRoadmap.md` records `modiq-collection` as planned, not created, and its Sprint 3 status section was brought current (it had gone stale after Sprint 3 Phase 1/2, describing Sprint 3's scope as "not yet selected").
+
+`docs/governance/DocumentationRelease.md` gained a new "Documentation Release 2.1" entry under Release History, explicitly marked Draft/prepared rather than Complete — only Phase 1 (Draft) of the Documentation Release Lifecycle has occurred; Phases 2 through 6 (Foundation Review through Release Tag) require Technical Director review before this release can be considered frozen or tagged.
+
+No `cargo fmt`/`cargo check`/`cargo test` verification was performed this phase, since no Rust source file was touched — consistent with the explicit instruction to remain in architecture/documentation mode throughout.
+
+Following Technical Director review, a "Relationship to Existing Subsystems" section was added to `EvidenceCollection.md` (explicit ownership statements for all five subsystems plus a no-bypass rule), and a documentation repository audit was performed, scoped strictly to Documentation Release 2.1. The audit found and corrected: `docs/README.md`'s Reading Order was missing the new `EvidenceCollection.md`; `Architecture.md`, `DataModel.md`, and `RuleEngine.md` each had a metadata table (version/status/date) left stale relative to their own updated Document Status sections; and `Architecture.md`'s System Overview, Dependency Rules, and Extensibility sections omitted Evidence Collection despite the Core Platform Components and Assessment Lifecycle sections already naming it. All corrected. One issue was found and deliberately left uncorrected: `TECHNICAL_DIRECTOR_HANDOFF_v2.1.md` speculatively suggested "GOV-007" for a future referential-integrity governance item; that number is now assigned to Evidence Collection implementation approval instead. Per this project's "historical snapshots are superseded, not rewritten" convention for handoff documents, this was flagged rather than edited. `docs/00-Governance.md`'s pre-existing, previously-flagged staleness (it does not reach the Technical Layer at all) was confirmed out of scope and left untouched.
+
+Documentation Release 2.1 was then frozen: `EvidenceCollection.md` and the amended sections of `Architecture.md`/`DataModel.md`/`RuleEngine.md` moved from Draft/pending-review to Frozen; `docs/governance/DocumentationRelease.md`'s Documentation Release 2.1 entry updated to Complete (not tagged in source control, matching Documentation Release 2.0's own precedent).

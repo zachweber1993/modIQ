@@ -78,6 +78,8 @@ ADR numbers are permanent and should never be reused.
 | ADR-0005 | Deterministic Assessment Engine | Accepted |
 | ADR-0006 | Documentation Release 1.0 Freeze | Accepted |
 | ADR-0007 | Runtime Entity Design Pattern | Accepted |
+| ADR-0008 | Evidence Collection Subsystem Boundary | Accepted (architecture only; implementation not authorized — GOV-007) |
+| ADR-0009 | AssessmentService Public API Evolution | Accepted (anticipatory; change itself not authorized — GOV-008) |
 
 Future ADRs should continue the established numbering sequence. Note: `0002-domain-model-boundaries.md` internally titles and numbers itself "ADR-0001" in its own body text, despite its filename, this index, and every cross-reference elsewhere in the repository treating it as ADR-0002. This mismatch predates Engineering Release 0.2 and remains unresolved — flagged here rather than silently corrected, since accepted ADRs are not to be modified per this document's own Engineering Notes.
 

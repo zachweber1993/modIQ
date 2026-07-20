@@ -13,9 +13,10 @@ Welcome to the official design specification for modIQ.
 7. KnowledgeModel.md
 8. VersionProfile.md
 9. RuleEngine.md
-10. EngineAPI.md
-11. Sprint0.md
-12. Sprint1.md
+10. EvidenceCollection.md
+11. EngineAPI.md
+12. Sprint0.md
+13. Sprint1.md
 
 ## Purpose
 

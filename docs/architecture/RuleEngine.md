@@ -7,13 +7,13 @@
 | Property | Value |
 |----------|-------|
 | **Document** | RuleEngine.md |
-| **Version** | 1.0.0 |
-| **Status** | Frozen |
+| **Version** | 1.0.1 |
+| **Status** | Frozen, with a Documentation Release 2.1 cross-reference addition |
 | **Project** | modIQ |
-| **Documentation Release** | 1.0 |
+| **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-16 |
-| **Last Updated** | 2026-07-16 |
+| **Last Updated** | 2026-07-19 |
 
 ---
 
@@ -245,6 +245,8 @@ The Rule Engine produces:
 
 The Rule Engine does not own runtime entities.
 
+Evidence is produced by the Evidence Collection subsystem (EvidenceCollection.md, ADR-0008), not by the Rule Engine. This document's boundary — the Rule Engine consumes Evidence, it never produces it — is unchanged by that subsystem's introduction; EvidenceCollection.md was written specifically to preserve it.
+
 ---
 
 # Relationship to the Knowledge Domain
@@ -294,8 +296,8 @@ The execution model should remain deterministic, explainable, and evidence-based
 
 # Document Status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.0.1
 
-**Status:** Frozen
+**Status:** Frozen, with a Documentation Release 2.1 cross-reference addition
 
-This specification establishes the authoritative conceptual execution model for the modIQ assessment engine.
+This specification establishes the authoritative conceptual execution model for the modIQ assessment engine. Under Documentation Release 2.1 (Frozen, Technical Director approved), a cross-reference to EvidenceCollection.md was added to the Relationship to the Runtime Domain section, reinforcing (not altering) this document's existing Evidence-consumer boundary.
