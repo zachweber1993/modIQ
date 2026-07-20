@@ -238,6 +238,8 @@ May consume Runtime state.
 
 Must never mutate Assessment directly.
 
+`RuleEngine::evaluate` fulfills selection, evaluation, Finding/Recommendation generation, and traceability inline, without delegating to separate internal types for each. See ADR-0010 and GOV-004 for why this is the approved pattern.
+
 ---
 
 ## Evidence Collection
@@ -312,6 +314,8 @@ Must never:
 - own runtime state
 - implement business rules
 - generate reports
+
+Composition of platform services means direct composition of each subsystem's own real type — not an intermediate layer of engine-local service objects. See ADR-0010 and GOV-004 (Resolved) for the full evaluation and decision record.
 
 ---
 
@@ -425,7 +429,7 @@ Engine Service Granularity
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -441,7 +445,17 @@ Should future orchestration continue through AssessmentService, or transition to
 
 Resolution
 
-Pending
+Approved by Technical Director, following `PROPOSAL_GOV-004.md`'s architectural direction, itself based on the implementation evidence gathered in `PLATFORM_VALIDATION_GOV-004.md`.
+
+**Original concern.** `EngineAPI.md` (Documentation Release 1.0) described four intra-engine service objects — `KnowledgeService`, `ReportingService`, `RuleEvaluationService`, `VersionProfileService` — intended to mediate between `AssessmentService` and each subsystem. Whether `AssessmentService` should continue orchestrating directly, or transition to these specialized services, was left open at the platform's first Engineering Release.
+
+**Implementation evidence.** All four services (and the mirrored `RuleSelector`/`EvidenceEvaluator`/`Explainability`/`Traceability` scaffolding in `modiq-rules`) originate from the platform's first foundational commit and have never been modified since. Across three Engineering Releases, three independently introduced real subsystems — the Rule Engine (Sprint 1), Reporting (Sprint 1), and Evidence Collection (Sprint 3) — were each wired into `AssessmentService` by direct instantiation of that subsystem's own real type. No construction site, method call, or test exists for any of the eight stub types anywhere in the workspace.
+
+**Architectural decision.** `AssessmentService` remains the engine orchestration boundary. Direct composition of collaborating subsystems is the approved engine architecture. The internal `EngineAPI` service model is retired. The mirrored service scaffolding within `modiq-rules` is retired as part of the same architectural simplification, since it exists solely to support the same speculative model.
+
+**Reasoning.** `Architecture.md` — the higher-authority specification `EngineAPI.md` itself subordinates to — already described subsystem delegation, not intra-engine service objects, in its own System Overview. Three subsystems converging independently on direct composition, without coordination, is strong evidence that this is the architecture the platform's own higher-authority specification actually produces when implemented honestly. No forcing function for the four-service model arrived in three Engineering Releases, and carrying it further would contradict the platform's own repeatedly validated principle: capability before abstraction.
+
+**Implementation implications.** `EngineAPI.md` is amended to describe the approved architecture (see below). ADR-0010 records the decision. Deletion of the eight unused stub types (`modiq-engine`: `knowledge_service.rs`, `reporting_service.rs`, `rule_evaluation_service.rs`, `version_profile_service.rs`; `modiq-rules`: `selector.rs`, `evaluator.rs`, `explainability.rs`, `traceability.rs`) is authorized as future implementation work, not performed by this resolution. No behavioral change is expected: none of the eight types has ever been constructed or called.
 
 ---
 

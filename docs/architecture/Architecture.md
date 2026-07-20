@@ -165,7 +165,7 @@ Responsibilities include:
 - executing Assessments
 - producing Assessment Reports
 
-The Assessment Service owns the assessment lifecycle but does not perform technical analysis directly.
+The Assessment Service owns the assessment lifecycle but does not perform technical analysis directly. It orchestrates each subsystem shown below by direct composition — see `EngineAPI.md` and ADR-0010 for the full engine orchestration model, confirmed by implementation evidence under GOV-004.
 
 The modIQ Assessment Framework (MAF) is not a subsystem. It is the assessment methodology — the standards, categories, rules, scoring methodology, and evidence requirements — that the Assessment Service applies during execution. See Glossary.md.
 
@@ -489,10 +489,10 @@ Subsequent specifications refine this architecture.
 
 # Document Status
 
-**Current Version:** 1.1.1
+**Current Version:** 1.1.2
 
 **Status:** Frozen, with a Documentation Release 2.1 amendment
 
-This document is a foundational technical specification, originally frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze). It was amended under Documentation Release 2.1 (Frozen, Technical Director approved) to name Evidence Collection as a Core Platform Component and to correct the Assessment Lifecycle diagram's ordering, per ADR-0008. This amendment is recorded explicitly, as required by `docs/governance/DocumentationRelease.md`'s "documented contradiction" exception to Frozen-specification stability — it is not a silent rewrite. A minor terminology correction (Evidence Collection's component description now says "Assessment Input," matching `EvidenceCollection.md`'s GOV-009 resolution) was made following GOV-009/GOV-010's resolution; no structural or diagram change accompanied it.
+This document is a foundational technical specification, originally frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze). It was amended under Documentation Release 2.1 (Frozen, Technical Director approved) to name Evidence Collection as a Core Platform Component and to correct the Assessment Lifecycle diagram's ordering, per ADR-0008. This amendment is recorded explicitly, as required by `docs/governance/DocumentationRelease.md`'s "documented contradiction" exception to Frozen-specification stability — it is not a silent rewrite. A minor terminology correction (Evidence Collection's component description now says "Assessment Input," matching `EvidenceCollection.md`'s GOV-009 resolution) was made following GOV-009/GOV-010's resolution; no structural or diagram change accompanied it. A further cross-reference to ADR-0010 was added to the Assessment Service component description following GOV-004's resolution; this document's own System Overview diagram and Core Platform Components section were the higher-authority description that decision confirmed, so no structural or diagram change was required here.
 
 Changes should preserve consistency with higher-level specifications and maintain stable subsystem boundaries.

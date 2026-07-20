@@ -363,3 +363,30 @@ Performed a living-document reconciliation pass: `PROJECT_STATUS.md` (Current Mi
 This release's central finding is procedural rather than architectural: the entire body of Sprint 3 Phase 5, the governance-resolution session that preceded it, and the Roadmap Review and Filesystem Collection proposal before that, remain uncommitted in the working tree as of this record. `ENGINEERING_RELEASE_0.3.md` names this directly in its Executive Summary, Repository Health, and Recommendation sections rather than treating the release as a clean baseline it does not yet have in git history.
 
 No `cargo fmt`/`cargo check`/`cargo test` verification was performed this session, since no Rust source file was touched — consistent with this session's explicit documentation-only scope.
+
+---
+
+### Platform Validation: GOV-004 Resolved
+
+Status:
+Completed
+
+Affected Crates:
+- (none — documentation only)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md
+- docs/architecture/EngineAPI.md
+- docs/architecture/Architecture.md
+- docs/implementation/CrateRoadmap.md
+- docs/adrs/0010-engine-orchestration-simplification.md (new)
+- docs/adrs/README.md
+
+Notes:
+Opened the Platform Validation cycle following Engineering Release 0.3 with `PROPOSAL_PLATFORM_VALIDATION_REVIEW.md`, classifying accumulated architectural assumptions as Validated, Requiring Refinement, or Retirement Candidate. Evaluated the first refinement candidate, GOV-004 (Engine Service Granularity), in `PLATFORM_VALIDATION_GOV-004.md` — a technical evaluation only, presenting evidence without a recommendation. The Technical Director reviewed that evidence and reached a decision, formalized in `PROPOSAL_GOV-004.md` and approved.
+
+GOV-004 is now Resolved: `AssessmentService` direct subsystem composition is the approved engine orchestration architecture; the internal `EngineAPI` service model (`KnowledgeService`, `ReportingService`, `RuleEvaluationService`, `VersionProfileService`) is retired, along with the mirrored `modiq-rules` scaffolding (`RuleSelector`, `EvidenceEvaluator`, `Explainability`, `Traceability`), as part of the same architectural simplification.
+
+`EngineAPI.md` amended to v1.1.0 — the Service Overview and Service Relationships sections (five services, an internal diagram) replaced with a description of the Assessment Service, subsystem orchestration by direct composition, engine responsibilities, and dependency boundaries, cross-referencing `Architecture.md`'s System Overview diagram rather than duplicating it. `Architecture.md` received a one-sentence cross-reference addition to its Assessment Service component description (v1.1.2); no structural change, since its System Overview already described the architecture this decision confirmed. `CrateRoadmap.md`'s `modiq-engine` and `modiq-rules` maturity entries note the retirement, plus a new revision history entry (1.9.0). ADR-0010 (Engine Orchestration Simplification) records the decision permanently and is indexed in `docs/adrs/README.md`.
+
+This is a governance and documentation resolution only. Deletion of the eight retired stub types is authorized as future implementation work by ADR-0010's own Status section, not performed here. No Rust source file was modified, no test was modified, and no crate's maturity level changed. `cargo fmt`/`cargo check`/`cargo test` were not run this session, consistent with its documentation-only scope; the eight stub types remain in source, compiling and unused, exactly as `PLATFORM_VALIDATION_GOV-004.md` found them.
