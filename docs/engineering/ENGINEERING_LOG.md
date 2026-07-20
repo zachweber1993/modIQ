@@ -275,3 +275,27 @@ No `cargo fmt`/`cargo check`/`cargo test` verification was performed this phase,
 Following Technical Director review, a "Relationship to Existing Subsystems" section was added to `EvidenceCollection.md` (explicit ownership statements for all five subsystems plus a no-bypass rule), and a documentation repository audit was performed, scoped strictly to Documentation Release 2.1. The audit found and corrected: `docs/README.md`'s Reading Order was missing the new `EvidenceCollection.md`; `Architecture.md`, `DataModel.md`, and `RuleEngine.md` each had a metadata table (version/status/date) left stale relative to their own updated Document Status sections; and `Architecture.md`'s System Overview, Dependency Rules, and Extensibility sections omitted Evidence Collection despite the Core Platform Components and Assessment Lifecycle sections already naming it. All corrected. One issue was found and deliberately left uncorrected: `TECHNICAL_DIRECTOR_HANDOFF_v2.1.md` speculatively suggested "GOV-007" for a future referential-integrity governance item; that number is now assigned to Evidence Collection implementation approval instead. Per this project's "historical snapshots are superseded, not rewritten" convention for handoff documents, this was flagged rather than edited. `docs/00-Governance.md`'s pre-existing, previously-flagged staleness (it does not reach the Technical Layer at all) was confirmed out of scope and left untouched.
 
 Documentation Release 2.1 was then frozen: `EvidenceCollection.md` and the amended sections of `Architecture.md`/`DataModel.md`/`RuleEngine.md` moved from Draft/pending-review to Frozen; `docs/governance/DocumentationRelease.md`'s Documentation Release 2.1 entry updated to Complete (not tagged in source control, matching Documentation Release 2.0's own precedent).
+
+---
+
+### Sprint 3 Phase 4: Evidence Collection Implementation
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection (new)
+- modiq-engine
+- apps/sandbox (Tauri command wiring, not a workspace member)
+
+Affected Documents:
+- GOVERNANCE.md (GOV-007 marked Resolved)
+
+Notes:
+Implemented the architectural boundary ADR-0008 established, authorized by the Technical Director following Documentation Release 2.1's freeze. Scope was deliberately the smallest slice that proves the boundary: a new `modiq-collection` crate (`InputDescriptor`, `InputDescriptorError`, `EvidenceCollector`), added to the root Cargo workspace, depending only on `modiq-runtime` — no other crate depends on it except `modiq-engine`, exactly matching ADR-0008's documented dependency direction. No ZIP parsing, XML parsing, or Lua inspection was implemented; no collector trait or plugin mechanism was introduced. `EvidenceCollector::collect` is deliberately infallible — the only representable failure (an empty descriptor) is rejected earlier, at `InputDescriptor::new` — since inventing a `Result`-returning collect path with no reachable error case would have been placeholder code; GOV-010 (Collection Error Model) remains open for when a real, I/O-capable collector actually needs one.
+
+`modiq-engine::AssessmentService` gained a new, purely additive method, `execute_from_descriptor`, rather than a change to `execute` itself: GOV-008 (whether `execute`'s own signature should evolve) remained separately open, so implementation avoided that gate entirely rather than resolving it as a side effect. `execute_from_descriptor` resolves the Input Descriptor, invokes `EvidenceCollector`, and delegates to the existing, byte-for-byte-unchanged `execute` for the rest of the pipeline. `apps/sandbox`'s `create_assessment` command was updated to call it, removing the sandbox's last piece of direct Evidence construction; sandbox's `Cargo.toml` did not need a new dependency, since `modiq-collection` reaches it only transitively through `modiq-engine`, confirmed by inspection of its own separate workspace build.
+
+GOV-007 (Evidence Collection Subsystem Implementation Approval) is now Resolved. GOV-008 (AssessmentService Public API Evolution), GOV-009 (Input Descriptor Ownership), and GOV-010 (Collection Error Model) remain open, untouched and un-prejudiced by this implementation.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` passed (106 tests, up from 95: 8 new in `modiq-collection`, 3 new in `modiq-engine`). Sandbox workspace independently verified, 3/3 passing, zero warnings in both workspaces.

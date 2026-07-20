@@ -260,7 +260,7 @@ Must never:
 - acquire its own Input Descriptor (an application-layer responsibility)
 - persist anything
 
-See ADR-0008 and `EvidenceCollection.md` for the full boundary and Collector Contract. Architecture approved; implementation not yet authorized (GOV-007).
+See ADR-0008 and `EvidenceCollection.md` for the full boundary and Collector Contract. Architecture approved; a minimal implementation proving the boundary is complete (GOV-007, Sprint 3 Phase 4). No concrete collector (ZIP/XML/Lua) has been implemented.
 
 ---
 
@@ -509,7 +509,7 @@ Evidence Collection Subsystem Implementation Approval
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -525,7 +525,7 @@ Once Documentation Release 2.1 is frozen, what specific implementation scope (a 
 
 Resolution
 
-Pending Documentation Release 2.1 freeze and a subsequent implementation-scoping decision. Remains open until implementation is explicitly reviewed and approved.
+Approved by Technical Director, Sprint 3 Phase 4: implementation scoped to the smallest slice that proves the ADR-0008 boundary, explicitly excluding ZIP/XML/Lua parsing and any collector trait or plugin mechanism. Delivered: a new `modiq-collection` crate (`InputDescriptor`, `InputDescriptorError`, `EvidenceCollector`), added to the Cargo workspace, depending only on `modiq-runtime`, exactly as ADR-0008 specified. Wired into `modiq-engine` via a new, additive `AssessmentService::execute_from_descriptor` method rather than a change to `execute` itself, since GOV-008 (whether `execute`'s own signature should change) remained separately open and unresolved. `apps/sandbox` updated to exercise the new capability. The complete pipeline (`AssessmentService` → Evidence Collection → Evidence → `Assessment` → Rule Engine → `AssessmentReport`) is demonstrated end-to-end via the real engine, verified by 106 passing workspace tests (up from 95) plus the sandbox's own 3. GOV-008, GOV-009, and GOV-010 remain open, untouched and un-prejudiced by this implementation.
 
 ---
 
