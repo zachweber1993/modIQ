@@ -1,5 +1,15 @@
 # Technical Director Engineering Handoff v2.2
 
+---
+
+> **Archived Document**
+>
+> This handoff has been superseded by `TECHNICAL_DIRECTOR_HANDOFF_v3.0.md`.
+>
+> It is retained for historical reference only and should not be used as the authoritative architectural handoff.
+
+---
+
 **Engineering Release 0.2+ · Sandbox Phase 2 · Sprint 3 Phase 4**
 
 | Property | Value |
