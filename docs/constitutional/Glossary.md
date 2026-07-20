@@ -147,6 +147,7 @@ Evidence may include:
 - Dependency resolution
 - Performance observations
 - File structure analysis
+- Structural duplication
 
 Every Assessment conclusion should be traceable back to evidence.
 

@@ -152,6 +152,31 @@ impl ArchiveReader {
 
         Ok(entries)
     }
+
+    /// Each entry's uncompressed and compressed size, as
+    /// `(uncompressed, compressed)`, in central-directory (physical)
+    /// order — not sorted like `entries()`, and not exposed as
+    /// `ArchiveEntry` or Evidence. Exists solely so resource-limit
+    /// checks (GOV-011, Question 3) can read compressed size, which
+    /// the Archive Metadata Policy deliberately excludes from
+    /// `ArchiveEntry` and from every other public accessor on this
+    /// type.
+    pub(crate) fn entry_sizes(&mut self) -> Result<Vec<(u64, u64)>, ArchiveReadError> {
+        let mut sizes = Vec::with_capacity(self.archive.len());
+
+        for index in 0..self.archive.len() {
+            let entry =
+                self.archive
+                    .by_index(index)
+                    .map_err(|_| ArchiveReadError::InvalidArchive {
+                        path: self.path.clone(),
+                    })?;
+
+            sizes.push((entry.size(), entry.compressed_size()));
+        }
+
+        Ok(sizes)
+    }
 }
 
 #[cfg(test)]
@@ -355,6 +380,87 @@ mod tests {
         let entries = reader.entries().unwrap();
 
         assert!(entries.is_empty());
+    }
+
+    /// Hand-builds a minimal, well-formed archive containing two
+    /// entries under the same name — bypassing `ZipWriter`, whose own
+    /// `insert_file_data` now rejects duplicate filenames at write
+    /// time, so this discrepancy can no longer be constructed through
+    /// the crate's own writer and must be built at the byte level
+    /// instead. Mirrors `archive_collector.rs`'s own raw-archive test
+    /// helper, at the minimum size this one test needs.
+    fn write_archive_with_duplicate_name(path: &Path, name: &str) {
+        let mut buffer = Vec::new();
+        let mut local_offsets = Vec::new();
+
+        for _ in 0..2 {
+            local_offsets.push(buffer.len() as u32);
+            buffer.extend_from_slice(&0x0403_4b50u32.to_le_bytes());
+            buffer.extend_from_slice(&20u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0x0021u16.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&(name.len() as u16).to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(name.as_bytes());
+        }
+
+        let central_directory_start = buffer.len() as u32;
+        for &local_offset in &local_offsets {
+            buffer.extend_from_slice(&0x0201_4b50u32.to_le_bytes());
+            buffer.extend_from_slice(&20u16.to_le_bytes());
+            buffer.extend_from_slice(&20u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0x0021u16.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&(name.len() as u16).to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u16.to_le_bytes());
+            buffer.extend_from_slice(&0u32.to_le_bytes());
+            buffer.extend_from_slice(&local_offset.to_le_bytes());
+            buffer.extend_from_slice(name.as_bytes());
+        }
+        let central_directory_size = buffer.len() as u32 - central_directory_start;
+
+        buffer.extend_from_slice(&0x0605_4b50u32.to_le_bytes());
+        buffer.extend_from_slice(&0u16.to_le_bytes());
+        buffer.extend_from_slice(&0u16.to_le_bytes());
+        buffer.extend_from_slice(&2u16.to_le_bytes());
+        buffer.extend_from_slice(&2u16.to_le_bytes());
+        buffer.extend_from_slice(&central_directory_size.to_le_bytes());
+        buffer.extend_from_slice(&central_directory_start.to_le_bytes());
+        buffer.extend_from_slice(&0u16.to_le_bytes());
+
+        fs::write(path, &buffer).expect("can write a hand-built archive fixture");
+    }
+
+    #[test]
+    fn entries_collapses_duplicate_entry_names_to_one() {
+        // Documents a real blind spot in the underlying `zip` crate:
+        // its central-directory-based enumeration is keyed by name, so
+        // a second entry sharing an earlier entry's name overwrites it
+        // rather than appearing as a second result. This is exactly
+        // the discrepancy GOV-011 (Duplicate Archive Entry Policy)
+        // exists to detect and report — detection is layered on top of
+        // this foundation separately (`ArchiveCollector`), not here.
+        let dir = TempDir::new("entries-duplicate-names");
+        let archive_path = dir.path().join("duplicate.zip");
+        write_archive_with_duplicate_name(&archive_path, "same.txt");
+
+        let mut reader = ArchiveReader::open(&archive_path).unwrap();
+        let entries = reader.entries().unwrap();
+
+        assert_eq!(entries.len(), 1);
     }
 
     #[test]
