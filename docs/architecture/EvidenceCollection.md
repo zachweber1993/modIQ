@@ -7,13 +7,13 @@
 | Property | Value |
 |----------|-------|
 | **Document** | EvidenceCollection.md |
-| **Version** | 1.1.0 |
-| **Status** | Frozen, amended following GOV-009/GOV-010 resolution |
+| **Version** | 1.2.0 |
+| **Status** | Frozen, amended following GOV-009/GOV-010 and GOV-011 resolution |
 | **Project** | modIQ |
 | **Documentation Release** | 2.1 |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-19 |
-| **Last Updated** | 2026-07-19 |
+| **Last Updated** | 2026-07-20 |
 
 ---
 
@@ -235,6 +235,19 @@ Only Empty Collection represents successful collection with no Evidence produced
 
 **What does not belong to Collection.** Judging whether a successfully discovered structure is adequate for a valid mod belongs to the Rule Engine, evaluating Evidence Collection already produced. Deciding what happens to the rest of an Assessment when a collection failure occurs is an Engine-orchestration policy question — see Collection Atomicity, below, for the Phase 5 answer.
 
+## Archive-Specific Outcomes (Sprint 4, GOV-011)
+
+Resolved (GOV-011), following `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` and `PROPOSAL_GOV-011.md`. The four outcomes above extend to archive-based collection without a fifth outcome:
+
+- **Malformed or corrupt archives** — a location that is reachable and named as an archive, but whose content is not a well-formed archive of the supported kind, is Unsupported Input. This is the same architectural category the filesystem case already uses for "reachable but not the right kind of thing" (a device file, a symbolic link at the root) — a malformed archive is reachable, it simply is not usable content for this Collector.
+- **Resource limits exceeded** — an archive whose entry count or claimed compression ratio exceeds a bound is likewise Unsupported Input, determined from the archive's own metadata before any content is decompressed. This is not a new outcome; it is a second condition under which the same Unsupported Input outcome applies.
+
+## Duplicate Archive Entry Policy (Sprint 4, GOV-011)
+
+An archive may contain multiple entries sharing the same name — the format does not forbid it. This is not itself a failure: an archive containing duplicate entry names is still a valid, reachable, supported location, and collection of it still succeeds (or resolves to Empty Collection, if it structurally contains nothing).
+
+The platform does not silently resolve duplicate entries to a single last-write-wins result, and does not fabricate a discrete Evidence item for an entry that cannot actually be observed through the collection mechanism in use. Where the presence of duplicate entries is detected, that detection is itself recorded as an observable fact of the collection — the same evidence-first discipline this specification applies everywhere else: Collection reports what it can factually establish about the subject, including the fact that its own inspection mechanism could not fully resolve every entry, rather than presenting a silently incomplete result as if it were complete. The precise representation of this fact (an Evidence item distinct from per-entry Evidence, or another mechanism) is an implementation detail, deliberately not fixed by this document, consistent with this Collector Contract's existing practice of resolving architectural questions here while leaving representation to implementation.
+
 ---
 
 # Collection Atomicity (Phase 5)
@@ -261,6 +274,21 @@ This is a Phase 5 architectural boundary, not a permanent one. Following symboli
 
 ---
 
+# Archive Traversal Boundary Policy (Sprint 4, GOV-011)
+
+The direct archive-format analog of the Symbolic Link Policy, above, resolved for the first archive-based collector.
+
+Every archive entry path is normalized before it is treated as a location. An entry is treated as an invalid archive entry — not followed, not recorded as Evidence — under either of the following conditions:
+
+- **Relative traversal.** The normalized path would resolve outside the archive's own conceptual root (for example, via `..` segments).
+- **Absolute paths.** The entry's original, as-stored name was itself an absolute path (for example, a Unix-style path beginning with `/`, or a Windows-style drive-qualified path). This determination is made independently of how any underlying archive-parsing mechanism may itself sanitize or represent the path — a mechanism's own internal safety accommodation is not treated as evidence that the original entry was acceptable, since such a mechanism may normalize an absolute path into an apparently-safe relative form without preserving the fact that it was originally absolute.
+
+Consistent with the Symbolic Link Policy, an invalid archive entry does not abort collection of the rest of the archive: collection continues for all remaining valid entries. An archive is rejected in its entirety (Unsupported Input, or Inaccessible Input) only when it cannot be read or parsed at all — never solely because one or more individual entries were invalid under this policy.
+
+This is a Sprint 4 architectural boundary, following the same precedent the Symbolic Link Policy set: not asserted as permanent, but the platform's considered position for the first archive-based collector.
+
+---
+
 # Future Evolution
 
 This boundary is intentionally narrow so that concrete Collectors — for example, archive traversal, structured-text inspection, script inspection, manifest inspection, or dependency inspection — can each be added as independent, additive work behind it, without any of them requiring a change to the Rule Engine, the Runtime Domain, or Reporting, and without requiring changes to each other. This mirrors `Architecture.md`'s existing Extensibility principle ("platform should evolve through extension rather than modification") applied to a second axis of extension, alongside Rules.
@@ -271,6 +299,6 @@ Future Version Profile integration (`Architecture.md`: Version Isolation) is exp
 
 # Document Status
 
-**Current Version:** 1.1.0
+**Current Version:** 1.2.0
 
-**Status:** Frozen as part of Documentation Release 2.1; amended following Technical Director approval of `PROPOSAL_FILESYSTEM_COLLECTION.md` to resolve GOV-009 (Assessment Input Ownership) and GOV-010 (Collection Error Model) for the filesystem case, and to record the Phase 5 Collection Atomicity and Symbolic Link Policy decisions. Authorized at the architecture level by ADR-0008; implementation of a real collector is not yet authorized by this document — that remains a separate implementation-readiness decision.
+**Status:** Frozen as part of Documentation Release 2.1; amended following Technical Director approval of `PROPOSAL_FILESYSTEM_COLLECTION.md` to resolve GOV-009 (Assessment Input Ownership) and GOV-010 (Collection Error Model) for the filesystem case, and to record the Phase 5 Collection Atomicity and Symbolic Link Policy decisions. Further amended following Technical Director approval of `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` and `PROPOSAL_GOV-011.md` to resolve GOV-011 (Archive Collection Model) in its entirety: Collection Outcomes extended to the archive case (malformed archives and resource-limit violations as Unsupported Input), the Duplicate Archive Entry Policy recorded, and the Archive Traversal Boundary Policy recorded, covering both relative traversal and absolute-path entries. Authorized at the architecture level by ADR-0008; implementation of an archive collector is not yet authorized by this document — that remains a separate implementation-readiness decision, per `SPRINT4_IMPLEMENTATION_PLAN.md`.

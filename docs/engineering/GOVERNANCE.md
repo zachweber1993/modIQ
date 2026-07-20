@@ -569,6 +569,8 @@ Resolution
 
 Pending. Must be resolved, and separately approved under the Public API Policy's breaking-change requirement, before Evidence Collection implementation can integrate with `modiq-engine`.
 
+Reviewed during Platform Validation Phase 1, following GOV-004's resolution (`PLATFORM_VALIDATION_GOV-008.md`, `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md`): implementation evidence gathered was found insufficient to resolve this item. No architectural change is authorized by that review. The current `AssessmentService` execution contract — both public entry points, `AssessmentInput`, `AssessmentReport`, and the public error model — remains the approved platform boundary until future implementation provides additional evidence. Status remains Open.
+
 ---
 
 ## GOV-009
@@ -645,6 +647,51 @@ Successful collection (including Empty Collection) is distinct from a successful
 For the first real collector (Sprint 3 Phase 5, filesystem collection), collection is atomic: it either completes (including as Empty Collection) or the Assessment terminates entirely — no partial Assessment, no partial Evidence, no partial Report. This is an explicit, intentional Phase 5 scope decision, not a permanent platform limitation; a future collector or phase may revisit it (e.g., incremental collection across multiple sources). No `RuntimeInvariants.md` change was required: no Runtime aggregate invariant governs this — a collection failure means the Assessment's lifecycle simply never progresses far enough to produce a Report, which existing invariants (INV-002, INV-003) already accommodate without modification. This is an Engine-orchestration policy, not a Runtime state concern.
 
 Full definition recorded in `EvidenceCollection.md`, Collection Outcomes and Collection Atomicity (Phase 5) sections.
+
+---
+
+## GOV-011
+
+Title
+
+Archive Collection Model
+
+Status
+
+Resolved
+
+Raised
+
+Sprint 4 Phase 1 (ZIP Evidence Collection — Governance Preparation)
+
+Description
+
+`PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` (approved) and `SPRINT4_IMPLEMENTATION_PLAN.md` require the same class of architectural decisions GOV-009 and GOV-010 resolved for the filesystem case, applied to the archive case: how a malformed or corrupt archive is categorized within the Collection Error Model, how duplicate entry names within a single archive are handled, what resource limits bound archive inspection, and how an entry name that would resolve outside the archive's own extraction boundary is handled.
+
+Question
+
+1. Is a malformed or corrupt archive an instance of the existing Unsupported Input outcome, or does it warrant its own distinct outcome?
+2. How are duplicate entry names within a single archive categorized?
+3. What resource limits (entry count, claimed decompression ratio) bound archive inspection, and is exceeding them a new outcome or an instance of an existing one?
+4. What is the archive-format analog of the Symbolic Link Policy — how is an entry name that would resolve outside the archive's own conceptual root handled?
+
+Resolution
+
+Approved by Technical Director in its entirety, following `PROPOSAL_GOV-011.md` (informed by `SPRINT4_IMPLEMENTATION_PLAN.md` Phase 2 Boundary-Proving evidence). All four questions resolved:
+
+**Question 1 (malformed or corrupt archives):** an instance of the existing Unsupported Input outcome. No new outcome. A location reachable but whose content is not a well-formed archive is architecturally the same case as a device file or symbolic-link root in the filesystem case — reachable, but not a usable kind of thing for this Collector.
+
+**Question 2 (duplicate entry names):** the platform does not silently resolve duplicates to a last-write-wins result, and does not fabricate a discrete Evidence item for an entry a collection mechanism cannot actually observe. Where duplicate entries are detected, that detection is itself recorded as an observable fact of the collection. This supersedes the originally drafted candidate (each duplicately-named entry produces its own discrete Evidence item), which Phase 2 Boundary-Proving found technically unachievable against the investigated dependency — confirmed independently via three separate tools that an archive containing two identically-named entries was only partially observable through that dependency's ordinary enumeration API. The precise representation mechanism is an implementation detail, not fixed by this resolution — see `EvidenceCollection.md`, Duplicate Archive Entry Policy.
+
+**Question 3 (resource limits):** bound both entry count and the ratio between an entry's claimed uncompressed size and its compressed size, checked from archive metadata alone, before any content is decompressed. Exceeding either bound is Unsupported Input (Question 1's category), not a new outcome. Phase 2 confirmed both quantities are recoverable from metadata alone, verified empirically by timing (metadata-only enumeration measured at roughly 1,270 times faster than full decompression of the same content). Exact numeric thresholds remain an implementation detail, to be calibrated during Sprint 4 Phase 3.
+
+**Question 4 (archive traversal boundary, including absolute paths):** the collector SHALL normalize archive entry paths. An entry containing a path-traversal sequence SHALL be treated as an invalid archive entry and skipped; it is not recorded as Evidence. Collection SHALL continue for all remaining valid entries. An archive SHALL NOT be rejected solely because one or more entries are invalid under this policy — only an archive that cannot be read or parsed at all terminates collection. An archive entry that was originally an absolute path is treated as a path-traversal violation under this same policy, **independent of any dependency's internal sanitization** — the collector shall not rely on a dependency's sanitized path representation as evidence that such an entry is acceptable, since Phase 2 confirmed the investigated dependency sanitizes an absolute-path entry into an accepted, safe-looking relative form without preserving the fact that it was originally absolute. This aligns with the existing Symbolic Link Policy (`EvidenceCollection.md`) and the platform's evidence-first philosophy.
+
+**Archive Metadata Policy — Approved:** unless a documented product requirement states otherwise, archive metadata SHALL NOT participate in Assessment Evidence. Excluded: timestamps, permissions, ownership, archive comments, host operating system metadata, and compression metadata that does not affect deterministic evidence. Evidence produced by archive collection is based only on deterministic inputs — normalized paths, archive structure, and file identity/content where applicable.
+
+**Implementation-mechanism questions remaining** (the exact Rust representation for Question 2's observable fact, the exact detection mechanism, the exact numeric thresholds for Question 3, and the exact absolute-path check for Question 4) do not block implementation, provided implementation faithfully realizes the policy resolved above. These do not require further governance approval unless implementation surfaces a genuine architectural question beyond what this resolution already answers.
+
+Full definition recorded in `EvidenceCollection.md`, Archive-Specific Outcomes, Duplicate Archive Entry Policy, and Archive Traversal Boundary Policy sections.
 
 ---
 

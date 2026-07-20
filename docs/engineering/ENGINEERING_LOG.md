@@ -413,3 +413,115 @@ Implemented the architectural simplification ADR-0010 authorized and GOV-004 res
 `cargo fmt` made no further changes beyond the two `mod.rs` edits. `cargo check --workspace` and `cargo check` in `apps/sandbox/src-tauri` (its own, separate workspace) both passed with zero warnings. `cargo test --workspace` passed 112/112, identical in count and distribution to the pre-deletion baseline (`modiq-runtime` 82, `modiq-collection` 12, `modiq-engine` 9, `modiq-report` 3, `modiq-rules` 3); the Sandbox's own suite passed 3/3, unchanged. No `Cargo.lock` drift in either workspace. This confirms, rather than merely asserts, that the deleted types had zero behavioral footprint.
 
 `GOVERNANCE.md` and ADR-0010 are not re-edited to reflect completion, consistent with this project's convention that accepted governance resolutions and ADRs are historical records of the decision, not living status trackers — this entry and `CrateRoadmap.md`'s revision history (1.10.0) carry the implementation-complete status instead, the same pattern already used when GOV-007's later implementation did not require re-editing ADR-0008.
+
+---
+
+### Platform Validation Phase 1: Closed
+
+Status:
+Completed
+
+Affected Crates:
+- (none — governance and documentation only)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md
+- docs/implementation/CrateRoadmap.md
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+
+Notes:
+The Technical Director completed review of the Platform Validation cycle opened by `PROPOSAL_PLATFORM_VALIDATION_REVIEW.md`. Two items were evaluated: GOV-004, approved and implemented (recorded in the two preceding log entries); GOV-008, reviewed against `PLATFORM_VALIDATION_GOV-008.md` and `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md`'s implementation evidence and deferred — the Technical Director found that evidence insufficient to resolve it, authorized no architectural change, and confirmed the current `AssessmentService` execution contract (both entry points, `AssessmentInput`, `AssessmentReport`, and the public error model) as the approved platform boundary until future implementation provides additional evidence.
+
+`GOVERNANCE.md`'s GOV-008 entry received one added paragraph recording this review outcome; its Status remains Open and its original Resolution text is unchanged, consistent with recording a review rather than a resolution. `CrateRoadmap.md` gained a new "Platform Validation Phase 1 — Complete" subsection and a revision history entry (1.11.0). `PROJECT_STATUS.md`'s dashboard table and Current Milestone/Current Focus sections were updated to reflect Platform Validation Phase 1 as the current completed milestone, and its stale "pending commit" Repository Status note — accurate before the Sprint 3 backlog was committed, stale since — was corrected in the same pass. `CHANGELOG.md` gained a new `[Platform Validation Phase 1]` entry.
+
+The four evaluation and proposal documents this cycle produced (`PROPOSAL_PLATFORM_VALIDATION_REVIEW.md`, `PLATFORM_VALIDATION_GOV-004.md`, `PROPOSAL_GOV-004.md`, `PLATFORM_VALIDATION_GOV-008.md`, `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md`) are not modified by this closeout, consistent with this project's convention that proposal and evaluation documents are retained as historical records of the review that preceded a decision, not rewritten to reflect the decision itself.
+
+Architecture validated for continued roadmap execution. Next implementation milestone: ZIP / Archive Evidence Collection (`PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`). No Rust source file was modified, no test was modified, and no governance item changed status (GOV-004 was already Resolved; GOV-008 remains Open).
+
+---
+
+### Sprint 4 Phase 1: Governance Preparation
+
+Status:
+Completed
+
+Affected Crates:
+- (none — governance and documentation only)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md
+- docs/engineering/PROPOSAL_GOV-011.md (new)
+
+Notes:
+Following the Technical Director's approval of `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` and the explicit-routing decision recorded in `SPRINT4_IMPLEMENTATION_PLAN.md`, opened GOV-011 (Archive Collection Model) in the Governance Register — Status Open, not Resolved — covering the four questions the Implementation Plan's Governance Prerequisites section named: malformed/corrupt archive categorization, duplicate entry name handling, resource limits, and the archive-format analog of the Symbolic Link Policy.
+
+Drafted candidate answers to all four in `PROPOSAL_GOV-011.md`, following the same extend-the-existing-four-outcome-model approach GOV-009/GOV-010 already used for the filesystem case: malformed archives categorized as Unsupported Input (no new outcome); duplicate entry names permitted, each producing its own Evidence item; resource limits checked from archive metadata alone, with provisional (not final) numeric values pending Phase 2 calibration; a traversal-boundary policy mirroring the Symbolic Link Policy's shape (skip the offending entry, do not abort the archive), with the alternative (reject the whole archive) named explicitly as a real fork for Technical Director preference.
+
+No archive-parsing dependency has been selected and no real archive has been read by this platform as of this entry — per `SPRINT4_IMPLEMENTATION_PLAN.md`'s own sequencing, these candidates are drafted ahead of Phase 2 (Boundary-Proving) and are explicitly subject to revision if Phase 2 finds any of them technically unachievable against a real dependency.
+
+This phase performed no Rust changes and no architectural change. `AssessmentService` remains the sole orchestration boundary; no dispatcher, registry, provider, factory, trait hierarchy, or plugin mechanism was introduced or implied by this work. `cargo fmt`/`cargo check`/`cargo test` were not run this phase, since no Rust source file was touched — consistent with Phase 1's documentation-only scope per the Implementation Plan.
+
+Per the implementation directive's reporting requirement, this phase's work concludes here; Phase 2 (Boundary-Proving) awaits confirmation before beginning.
+
+---
+
+### Sprint 4 Phase 1 (continued): Technical Director Decisions Recorded
+
+Status:
+Completed
+
+Affected Crates:
+- (none — governance only)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md
+
+Notes:
+Recorded two Technical Director decisions in GOV-011's Resolution field: Question 4 (Archive Traversal / Zip Slip Policy) approved as drafted in `PROPOSAL_GOV-011.md` — normalize entry paths, skip an offending entry rather than rejecting the whole archive, terminate collection only for archives that cannot be read or parsed at all. A new Archive Metadata Policy also approved: archive metadata (timestamps, permissions, ownership, comments, host OS metadata, non-evidentiary compression metadata) SHALL NOT participate in Assessment Evidence. GOV-011 remains Open overall — Questions 1–3 are unaffected and still Pending.
+
+---
+
+### Sprint 4 Phase 2: Boundary-Proving (Investigation)
+
+Status:
+Completed
+
+Affected Crates:
+- (none — investigation performed entirely outside the workspace, in a throwaway scratchpad project; no crate in this repository was touched)
+
+Affected Documents:
+- (none — findings reported to the Technical Director directly; governance updates deferred pending review of this phase's findings, per `PROPOSAL_GOV-011.md`'s own stated interaction with Phase 2)
+
+Notes:
+Investigated the `zip` crate (v8.6.0) against nine constructed fixtures (well-formed multi-entry, duplicate names, Zip Slip traversal entries, an absolute-path entry, empty, truncated, non-ZIP-content, a 50MB-decompressing/~51KB-compressed "bomb-shaped" archive, and a 5,000-entry archive), entirely in a standalone Cargo project outside this repository — no production Rust was written, no crate was modified, `AssessmentService` was not touched, and no dispatch abstraction was introduced.
+
+Confirmed: deterministic entry enumeration across repeated reads (central-directory/physical order, not auto-sorted — an explicit sort remains necessary, as already planned); malformed and non-archive input both fail cleanly via `Result::Err` at open time, no panic; per-entry uncompressed size, compressed size, and entry count are all available from metadata alone, empirically confirmed via timing (metadata enumeration ~1270x faster than full decompression of the same content); `enclosed_name()` correctly rejects genuine `..`-based traversal entries; the fields the new Archive Metadata Policy excludes (`last_modified`, `unix_mode`, `comment`) exist as distinct accessor methods, confirming the policy is straightforward to honor by simply never calling them.
+
+One finding contradicts a Phase 1 candidate and is reported to the Technical Director rather than acted on: this dependency's default API silently collapses duplicate-named entries to last-write-wins at archive-open time — `archive.len()` reported 1 for a fixture independently confirmed (via `unzip -l`, Python's `zipfile`, and a raw central-directory-record count) to genuinely contain 2 entries named `dup.txt`. The earlier entry is not accessible through this crate's normal enumeration API. This invalidates Question 2's Phase 1 candidate ("each duplicate-named entry produces its own discrete Evidence item") as drafted. A second, smaller nuance: `enclosed_name()` sanitizes an absolute-path entry into a safe relative path rather than rejecting it outright (unlike genuine `..` traversal, which it does reject) — behavior not explicitly addressed by the just-approved Question 4 policy text.
+
+No implementation was performed. No architectural boundary was crossed. Findings and a recommendation are reported to the Technical Director for review before Phase 3 may begin, per `SPRINT4_IMPLEMENTATION_PLAN.md`'s own gating.
+
+---
+
+### GOV-011 Resolved (Archive Collection Model)
+
+Status:
+Completed
+
+Affected Crates:
+- (none — governance and documentation only)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md
+- docs/architecture/EvidenceCollection.md
+- docs/implementation/CrateRoadmap.md
+
+Notes:
+The Technical Director approved `PROPOSAL_GOV-011.md` in its entirety, resolving all four GOV-011 questions. GOV-011's Governance Register status changed from Open to Resolved, with full policy text recorded for each question: malformed/corrupt archives and resource-limit violations (entry count, compression ratio, checked from metadata alone) both categorized as the existing Unsupported Input outcome, no fifth outcome introduced; a Duplicate Archive Entry Policy adopted, recording detection of duplicate entries as an observable fact rather than silently resolving to last-write-wins or fabricating per-entry Evidence the collection mechanism cannot actually observe; an Archive Traversal Boundary Policy adopted, extending the existing Symbolic Link Policy's shape to archive entries, covering both relative (`..`-based) traversal and absolute-path entries — the latter determined independently of any archive-parsing dependency's own internal sanitization, per Sprint 4 Phase 2's finding that at least one candidate dependency sanitizes rather than rejects absolute-path entries; and an Archive Metadata Policy excluding timestamps, permissions, ownership, comments, host OS metadata, and non-evidentiary compression metadata from Assessment Evidence.
+
+`EvidenceCollection.md` amended to v1.2.0: a new Archive-Specific Outcomes subsection under Collection Outcomes, a new Duplicate Archive Entry Policy section, and a new Archive Traversal Boundary Policy section (mirroring the Symbolic Link Policy's placement and shape) were added. The amendment is recorded explicitly in the document's own Document Status section, consistent with this project's non-silent-amendment discipline for Frozen specifications. `CrateRoadmap.md` gained a revision history entry (1.12.0).
+
+Per the Technical Director's explicit direction, implementation-mechanism questions (the exact Rust representation for the Duplicate Archive Entry Policy's observable fact, the exact detection mechanism, Question 3's numeric thresholds, and the exact absolute-path check) do not block implementation and do not require further governance approval, provided implementation faithfully realizes the policy now resolved. `PROPOSAL_GOV-011.md`, `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`, `PLATFORM_VALIDATION_GOV-004.md`, `PLATFORM_VALIDATION_GOV-008.md`, and `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md` are not modified by this resolution, consistent with this project's convention that proposal and evaluation documents remain historical records of the review that preceded a decision.
+
+No Rust file was modified. No implementation was performed. Sprint 4 Phase 3 (Real Collector Implementation) is now unblocked per `SPRINT4_IMPLEMENTATION_PLAN.md`'s own gating.

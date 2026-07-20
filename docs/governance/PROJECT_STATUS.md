@@ -4,11 +4,11 @@
 |----------|-------|
 | **Project** | modIQ |
 | **Current Release** | Engineering Release 0.3 |
-| **Repository Status** | Implementation Ready (pending commit of Sprint 3's final work — see `ENGINEERING_RELEASE_0.3.md`, Repository Health) |
-| **Current Milestone** | Sprint 3 — Complete (Phases 1–5) |
+| **Repository Status** | Implementation Ready |
+| **Current Milestone** | Platform Validation Phase 1 — Complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 3 Freeze (Engineering Release 0.3) |
-| **Last Updated** | 2026-07-19 |
+| **Current Phase** | Post-Platform Validation Phase 1 — ZIP / Archive Evidence Collection proposed, pending Technical Director review |
+| **Last Updated** | 2026-07-20 |
 
 ---
 
@@ -28,7 +28,11 @@ Sprint 2 gave Evidence, Finding, and Recommendation — content-free in Sprint 1
 
 Sprint 3 delivered the Evidence Collection subsystem, from architectural boundary through its first real capability, across five phases: Sandbox real-pipeline integration (Phase 1); GOV-005/GOV-006 minimum reference cardinality (Phase 2, INV-013/INV-014); the Evidence Collection Subsystem Boundary architecture (Phase 3, ADR-0008, ADR-0009, Documentation Release 2.1); a minimal `modiq-collection` crate proving the boundary (Phase 4, GOV-007); and the first real, filesystem-backed collector (Phase 5, GOV-009/GOV-010, deterministic traversal, the four-outcome Collection Error Model, Collection Atomicity, the Symbolic Link Policy). The workspace grew to nine crates; the root test suite grew from 97 to 112 tests. Full record: `ENGINEERING_RELEASE_0.3.md`.
 
-**Next implementation milestone:** not yet begun. `ENGINEERING_RELEASE_0.3.md`'s Recommendation names a second real collector (most likely ZIP traversal) as the next logical capability, with CLI wiring as an independent, low-risk parallel track — neither is scoped or planned in detail as of this record.
+## Platform Validation Phase 1 — Complete
+
+Following Engineering Release 0.3, a Platform Validation cycle reviewed accumulated architectural assumptions against three Sprints of implementation evidence (`PROPOSAL_PLATFORM_VALIDATION_REVIEW.md`). GOV-004 (Engine Service Granularity) was evaluated, approved, and implemented: `AssessmentService` direct subsystem composition is the confirmed engine architecture, and the unused internal `EngineAPI` service model (and its `modiq-rules` mirror) was removed. GOV-008 (AssessmentService Public API Evolution) was evaluated and deferred: implementation evidence was found insufficient to resolve it, no architectural change was authorized, and the current `AssessmentService` execution contract remains the approved platform boundary pending future implementation evidence. Architecture validated for continued roadmap execution. Full record: `docs/engineering/ENGINEERING_LOG.md`.
+
+**Next implementation milestone:** ZIP / Archive Evidence Collection, the platform's second real Evidence Collector — see `docs/engineering/PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`. CLI wiring remains a separately available, low-risk parallel track, not yet scoped in detail.
 
 ---
 
@@ -101,7 +105,7 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 # Current Focus
 
-Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one. Engineering Release 0.3 freezes Sprint 3 (Phases 1–5). The next implementation milestone has not been selected in detail; `ENGINEERING_RELEASE_0.3.md`'s Recommendation names a second real collector (most likely ZIP traversal) as the next logical capability, with CLI wiring as an independent parallel track.
+Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one. Engineering Release 0.3 freezes Sprint 3 (Phases 1–5). Platform Validation Phase 1 has since closed, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence. The next implementation milestone is ZIP / Archive Evidence Collection, proposed in `docs/engineering/PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` and awaiting Technical Director review; CLI wiring remains an independent parallel track.
 
 Implementation should remain consistent with the frozen engineering specification.
 

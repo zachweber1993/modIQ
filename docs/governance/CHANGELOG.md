@@ -317,3 +317,28 @@ The Documentation Release 1.0 Final Review concluded with:
 
 - As of this release, the work it records (Sprint 3 Phase 5, the preceding governance-resolution session, and the Roadmap Review and Filesystem Collection proposal before that) remains uncommitted in the repository's working tree. See `ENGINEERING_RELEASE_0.3.md`, Repository Health.
 - `v0.3.0` already exists as a git tag from unrelated, earlier repository history (pre-existing git tag hygiene debt); this Engineering Release is not tagged, to avoid colliding with it.
+
+---
+
+# [Platform Validation Phase 1]
+
+**Status:** Complete
+
+## Reviewed
+
+- GOV-004 (Engine Service Granularity) — evaluated in `PLATFORM_VALIDATION_GOV-004.md`, approved via `PROPOSAL_GOV-004.md`, and implemented: `AssessmentService` direct subsystem composition confirmed as the engine architecture; the unused internal `EngineAPI` service model and its `modiq-rules` mirror removed. `EngineAPI.md` amended to v1.1.0. ADR-0010 recorded.
+- GOV-008 (AssessmentService Public API Evolution) — evaluated in `PLATFORM_VALIDATION_GOV-008.md` and `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md`. Implementation evidence found insufficient to resolve it; no architectural change authorized. The current `AssessmentService` execution contract (both entry points, `AssessmentInput`, `AssessmentReport`, and the public error model) remains the approved platform boundary pending future implementation evidence. GOV-008 remains Open.
+
+## Changed
+
+- `GOVERNANCE.md`: GOV-008's Resolution field gained one paragraph recording the review outcome; Status unchanged (Open).
+- `CrateRoadmap.md`: new "Platform Validation Phase 1 — Complete" subsection and revision history entry.
+- `PROJECT_STATUS.md`: Current Milestone, Current Phase, and Current Focus updated to reflect Platform Validation Phase 1 as complete and to name the next milestone; a stale "pending commit" Repository Status note, accurate before the Sprint 3 backlog was committed, corrected in the same pass.
+
+## Not Resolved
+
+- GOV-008 remains open, deliberately, pending future implementation evidence.
+
+## Next
+
+- ZIP / Archive Evidence Collection proposed (`PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`), the platform's second real Evidence Collector — awaiting Technical Director review. CLI wiring remains an independent, unscoped parallel track.
