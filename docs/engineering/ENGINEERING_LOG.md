@@ -525,3 +525,31 @@ The Technical Director approved `PROPOSAL_GOV-011.md` in its entirety, resolving
 Per the Technical Director's explicit direction, implementation-mechanism questions (the exact Rust representation for the Duplicate Archive Entry Policy's observable fact, the exact detection mechanism, Question 3's numeric thresholds, and the exact absolute-path check) do not block implementation and do not require further governance approval, provided implementation faithfully realizes the policy now resolved. `PROPOSAL_GOV-011.md`, `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`, `PLATFORM_VALIDATION_GOV-004.md`, `PLATFORM_VALIDATION_GOV-008.md`, and `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md` are not modified by this resolution, consistent with this project's convention that proposal and evaluation documents remain historical records of the review that preceded a decision.
 
 No Rust file was modified. No implementation was performed. Sprint 4 Phase 3 (Real Collector Implementation) is now unblocked per `SPRINT4_IMPLEMENTATION_PLAN.md`'s own gating.
+
+---
+
+### Sprint 4 Phase 3A: ZIP Archive Foundation
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection
+
+Affected Documents:
+- (none — code and dependency manifests only)
+
+Notes:
+Implemented the first Rust code of Sprint 4: `ArchiveReader`, `ArchiveEntry`, and `ArchiveReadError` in a new `crates/modiq-collection/src/collection/archive_reader.rs`, registered in `collection/mod.rs`. This is a foundation type only, deliberately not yet a Collector (`EvidenceCollection.md`: Collector Contract) — it opens a location and deterministically enumerates structural entries (name, uncompressed size, file-vs-directory kind), and does not produce Evidence, detect duplicate entries, filter traversal-unsafe entries, or enforce resource limits. Those responsibilities, and integration with `AssessmentInput`/`AssessmentService`, remain for a later phase.
+
+Added `zip` (v8.6.0, the dependency investigated during Phase 2 Boundary-Proving) to `[workspace.dependencies]` in the root `Cargo.toml`, and referenced it via `{ workspace = true }` in `modiq-collection/Cargo.toml` — following this project's existing shared-dependency convention (the same pattern already used for `thiserror`). This is `modiq-collection`'s second external dependency and the first archive-parsing dependency any domain crate in this platform has taken, as anticipated by `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`.
+
+`ArchiveReadError` deliberately holds only a `path` field per variant (`Io`, `InvalidArchive`), not the underlying `std::io::Error` or `zip::result::ZipError` — matching `CollectionError`'s own existing shape exactly, for the same reason: keeps the type `Clone`/`PartialEq`/`Eq` and directly comparable in tests, consistent with this codebase's established error-design convention rather than introducing a new one.
+
+`entries()` imposes an explicit lexicographic sort over whatever order the archive's own central directory returns, mirroring `EvidenceCollector`'s identical treatment of filesystem directory traversal — confirmed necessary by Phase 2's own finding that central-directory order is not automatically sorted.
+
+Eight new tests, all passing on first run: well-formed archive opens successfully; a nonexistent path reports `ArchiveReadError::Io`; non-archive content and a truncated archive both report `ArchiveReadError::InvalidArchive`, no panic in either case; entries are discovered in deterministic (sorted) order regardless of write order, mirroring `EvidenceCollector`'s own determinism test shape; entry size and file-vs-directory kind are reported correctly; an archive with no entries returns an empty list; and enumeration is deterministic across two independent opens of the same archive. Test fixtures are constructed programmatically within each test using `zip::ZipWriter`, mirroring this codebase's existing preference for real, self-contained fixtures over checked-in binary blobs.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 112 to 120 (`modiq-collection` 12 → 20; every other crate unchanged). `apps/sandbox/src-tauri`'s own separate workspace — which depends on `modiq-collection` transitively through `modiq-engine` — was independently verified: `cargo fmt --check`, `cargo check`, and `cargo test` all pass cleanly, 3/3 tests unchanged, confirming zero behavioral impact on the one real application, exactly as expected since `AssessmentService` and `AssessmentInput` were not touched.
+
+No architectural boundary was crossed: no Evidence generation, no duplicate detection, no traversal filtering, no resource limits, no `AssessmentService` integration, no `AssessmentInput` modification, no `EvidenceCollector` change, no dispatcher abstraction, no new crate. Sprint 4 Phase 3B (layering Evidence production, the Duplicate Archive Entry Policy, the Archive Traversal Boundary Policy, resource limits, and eventual `AssessmentService` routing on top of this foundation) remains to be scoped and authorized separately.

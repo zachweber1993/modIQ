@@ -8,3 +8,4 @@ license.workspace = true
 [dependencies]
 modiq-runtime = { path = "../modiq-runtime" }
 thiserror = { workspace = true }
+zip = { workspace = true }
