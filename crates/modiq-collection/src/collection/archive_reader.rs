@@ -20,6 +20,21 @@ pub struct ArchiveEntry {
 }
 
 impl ArchiveEntry {
+    /// Constructs an `ArchiveEntry` directly, for test code elsewhere in
+    /// this crate that exercises logic built on top of `ArchiveReader`
+    /// (Evidence generation, and later phases) without needing to open a
+    /// real archive for every case. Not part of `ArchiveReader`'s own
+    /// behavior — `entries()` remains the only production path that
+    /// constructs one from real archive data.
+    #[cfg(test)]
+    pub(crate) fn new(name: impl Into<String>, size: u64, is_dir: bool) -> Self {
+        Self {
+            name: name.into(),
+            size,
+            is_dir,
+        }
+    }
+
     /// The entry's name exactly as stored in the archive. Not yet
     /// normalized or validated against the Archive Traversal Boundary
     /// Policy (GOV-011) — that filtering is layered on top of this

@@ -553,3 +553,31 @@ Eight new tests, all passing on first run: well-formed archive opens successfull
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 112 to 120 (`modiq-collection` 12 → 20; every other crate unchanged). `apps/sandbox/src-tauri`'s own separate workspace — which depends on `modiq-collection` transitively through `modiq-engine` — was independently verified: `cargo fmt --check`, `cargo check`, and `cargo test` all pass cleanly, 3/3 tests unchanged, confirming zero behavioral impact on the one real application, exactly as expected since `AssessmentService` and `AssessmentInput` were not touched.
 
 No architectural boundary was crossed: no Evidence generation, no duplicate detection, no traversal filtering, no resource limits, no `AssessmentService` integration, no `AssessmentInput` modification, no `EvidenceCollector` change, no dispatcher abstraction, no new crate. Sprint 4 Phase 3B (layering Evidence production, the Duplicate Archive Entry Policy, the Archive Traversal Boundary Policy, resource limits, and eventual `AssessmentService` routing on top of this foundation) remains to be scoped and authorized separately.
+
+---
+
+### Sprint 4 Phase 3B: Archive Evidence Generation
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection
+
+Affected Documents:
+- (none — code only)
+
+Notes:
+Implemented `ArchiveEvidenceBuilder` in a new `crates/modiq-collection/src/collection/archive_evidence.rs`, registered in `collection/mod.rs`, transforming `ArchiveEntry` values (from Phase 3A's `ArchiveReader`) into `modiq_runtime::assessment::Evidence`. This remains a transformation step only, not yet a Collector — no duplicate detection, no traversal filtering, no resource limits, no `AssessmentService`/`AssessmentInput` integration, matching Phase 3B's explicit scope.
+
+Reused the existing Evidence pattern exactly: `Evidence::with_location(EvidenceCategory::FileStructureAnalysis, description, entry.name())`, distinguishing file and directory entries only by description text ("File discovered during archive collection." / "Directory discovered during archive collection."), mirroring `EvidenceCollector`'s identical filesystem-case wording. `EvidenceCategory::FileStructureAnalysis` is reused unchanged, confirming the expectation `SPRINT4_IMPLEMENTATION_PLAN.md` recorded — no `modiq-runtime` change was needed or made. `build()` maps over its input in the given order, preserving `ArchiveReader::entries()`'s already-deterministic (sorted) ordering rather than re-deriving it.
+
+Compliance with the Archive Metadata Policy (GOV-011) is structural, not conventional: `ArchiveEntry` (Phase 3A) exposes only `name`, `size`, and `is_dir` — no timestamp, permission, ownership, or comment field exists anywhere in the type to read in the first place — and `build()` additionally never reads `size` at all, since `Evidence` has no corresponding field. A dedicated test (`build_does_not_use_entry_size_or_any_excluded_metadata`) confirms two entries differing only in size produce identical Evidence content.
+
+Added a small, `#[cfg(test)]`-gated `pub(crate)` constructor to `ArchiveEntry` (`archive_reader.rs`) so Phase 3B's tests could construct entries directly and test the new transformation logic in isolation, without real archive I/O for every case — Phase 3A's own tests already cover `ArchiveReader`'s real I/O behavior exhaustively, so this avoids duplicating that coverage. This is additive and test-only; `ArchiveReader`'s existing behavior, signatures, and production code path (`entries()` remains the only non-test constructor of a real `ArchiveEntry`) are unchanged — not a redesign.
+
+Six new tests, all passing on first run: empty input produces no Evidence; one Evidence item is produced per entry, in the given order; every item carries `FileStructureAnalysis`; file vs. directory entries get distinct description text; entry size never affects output; and building the same input twice is deterministic in content (category, description, location) while each Evidence item freshly assigns its own identity, matching this platform's universal determinism-by-content-not-identity convention.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 120 to 126 (`modiq-collection` 20 → 26; every other crate unchanged). No new dependency was needed — `Cargo.lock` is unchanged in both workspaces. `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check`, `cargo test` all pass cleanly, 3/3 unchanged.
+
+No architectural boundary was crossed: no duplicate detection, no traversal filtering, no resource limits, no `AssessmentService` integration, no `AssessmentInput` modification, no `ArchiveReader` redesign, no `EvidenceCollector` redesign, no dispatcher abstraction, no new crate. Sprint 4 Phase 3C (the Duplicate Archive Entry Policy, the Archive Traversal Boundary Policy, resource limits, and eventual `AssessmentService` routing) remains to be scoped and authorized separately.
