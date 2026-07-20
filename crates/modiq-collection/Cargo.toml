@@ -1,5 +1,5 @@
 [package]
-name = "modiq-engine"
+name = "modiq-collection"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,6 +7,4 @@ license.workspace = true
 
 [dependencies]
 modiq-runtime = { path = "../modiq-runtime" }
-modiq-rules = { path = "../modiq-rules" }
-modiq-report = { path = "../modiq-report" }
-modiq-collection = { path = "../modiq-collection" }
+thiserror = { workspace = true }

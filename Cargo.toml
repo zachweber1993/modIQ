@@ -3,6 +3,7 @@ resolver = "2"
 
 members = [
     "crates/modiq-cli",
+    "crates/modiq-collection",
     "crates/modiq-common",
     "crates/modiq-engine",
     "crates/modiq-knowledge",

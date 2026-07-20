@@ -1,7 +1,7 @@
 use modiq_engine::engine::AssessmentService;
 use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{
-    AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory, Finding, Recommendation,
+    AssessmentContext, AssessmentSubject, Evidence, Finding, Recommendation,
 };
 
 /// IPC-safe snapshot of a single Evidence item's existing public data.
@@ -96,26 +96,28 @@ impl From<&AssessmentReport> for AssessmentSummary {
     }
 }
 
-/// Executes the existing Assessment pipeline through `AssessmentService`
-/// — the same orchestration entry point already exercised by
-/// `modiq-engine`'s own integration tests — using one deterministic
-/// Evidence item, and returns the result as a DTO.
+/// Executes the Assessment pipeline through `AssessmentService`'s
+/// `execute_from_descriptor` entry point — the same orchestration
+/// `execute` performs, now including real Evidence Collection
+/// (`modiq-collection`) driven by one deterministic Input Descriptor,
+/// rather than sandbox-constructed Evidence — and returns the result
+/// as a DTO.
 ///
-/// No orchestration, Rule Engine, or Runtime logic is reimplemented
-/// here: this command only constructs the pipeline's input and maps
-/// its already-existing output to an IPC-safe shape. The Evidence
-/// exists solely to exercise the pipeline end-to-end; it is not a
-/// claim about any real Assessment Subject.
+/// No orchestration, Rule Engine, Evidence Collection, or Runtime
+/// logic is reimplemented here: this command only supplies the
+/// pipeline's input and maps its already-existing output to an
+/// IPC-safe shape. The Input Descriptor is a fixed, deterministic
+/// placeholder; it is not a claim about any real Assessment Subject.
 #[tauri::command]
 fn create_assessment() -> AssessmentSummary {
-    let evidence = Evidence::new(
-        EvidenceCategory::FileStructureAnalysis,
-        "Deterministic bootstrap evidence for verifying the Assessment pipeline end-to-end.",
-    )
-    .expect("category and description are valid");
-
     let service = AssessmentService;
-    let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
+    let report = service
+        .execute_from_descriptor(
+            AssessmentSubject,
+            AssessmentContext,
+            "Deterministic bootstrap input for verifying the Evidence Collection pipeline end-to-end.",
+        )
+        .expect("the bootstrap input descriptor is non-empty");
 
     AssessmentSummary::from(&report)
 }

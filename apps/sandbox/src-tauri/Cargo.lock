@@ -1977,9 +1977,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "modiq-collection"
+version = "0.1.0"
+dependencies = [
+ "modiq-runtime",
+ "thiserror 2.0.19",
+]
+
+[[package]]
 name = "modiq-engine"
 version = "0.1.0"
 dependencies = [
+ "modiq-collection",
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",

@@ -1,3 +1,4 @@
+use modiq_collection::collection::{EvidenceCollector, InputDescriptor, InputDescriptorError};
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
 use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject, Evidence};
@@ -56,6 +57,29 @@ impl AssessmentService {
             .expect("rule evaluation is still active and has not yet completed");
 
         report
+    }
+
+    /// Executes one complete deterministic Assessment, using Evidence
+    /// Collection (`modiq-collection`) to produce its Evidence from an
+    /// Input Descriptor, rather than accepting already-constructed
+    /// Evidence directly (ADR-0008).
+    ///
+    /// Added alongside `execute` rather than changing its signature:
+    /// whether `execute` itself should evolve to accept an Input
+    /// Descriptor remains open (ADR-0009, GOV-008). This method
+    /// resolves the Input Descriptor, invokes Evidence Collection, and
+    /// then delegates to the existing, unchanged `execute` for the
+    /// rest of the pipeline.
+    pub fn execute_from_descriptor(
+        &self,
+        subject: AssessmentSubject,
+        context: AssessmentContext,
+        input: impl Into<String>,
+    ) -> Result<AssessmentReport, InputDescriptorError> {
+        let descriptor = InputDescriptor::new(input)?;
+        let evidence = EvidenceCollector.collect(&descriptor);
+
+        Ok(self.execute(subject, context, evidence))
     }
 }
 
@@ -151,5 +175,38 @@ mod tests {
                 second_recommendation.repair_recipe_reference()
             );
         }
+    }
+
+    #[test]
+    fn execute_from_descriptor_produces_a_finding_and_recommendation_via_the_real_pipeline() {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_descriptor(AssessmentSubject, AssessmentContext, "a/mod/path")
+            .expect("input is non-empty");
+
+        assert_eq!(report.evidence().len(), 1);
+        assert_eq!(report.findings().len(), 1);
+        assert_eq!(report.recommendations().len(), 1);
+    }
+
+    #[test]
+    fn execute_from_descriptor_rejects_an_empty_input() {
+        let service = AssessmentService;
+
+        let result = service.execute_from_descriptor(AssessmentSubject, AssessmentContext, "");
+
+        assert_eq!(result, Err(InputDescriptorError::EmptyValue));
+    }
+
+    #[test]
+    fn execute_from_descriptor_reflects_state_at_report_generation_prior_to_completion() {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_descriptor(AssessmentSubject, AssessmentContext, "a/mod/path")
+            .expect("input is non-empty");
+
+        assert_eq!(report.status(), AssessmentStatus::EvaluatingRules);
     }
 }

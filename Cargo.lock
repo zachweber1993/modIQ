@@ -7,6 +7,14 @@ name = "modiq-cli"
 version = "0.1.0"
 
 [[package]]
+name = "modiq-collection"
+version = "0.1.0"
+dependencies = [
+ "modiq-runtime",
+ "thiserror",
+]
+
+[[package]]
 name = "modiq-common"
 version = "0.1.0"
 
@@ -14,6 +22,7 @@ version = "0.1.0"
 name = "modiq-engine"
 version = "0.1.0"
 dependencies = [
+ "modiq-collection",
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",
