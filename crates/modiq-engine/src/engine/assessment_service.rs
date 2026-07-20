@@ -1,7 +1,9 @@
-use modiq_collection::collection::{EvidenceCollector, InputDescriptor, InputDescriptorError};
+use modiq_collection::collection::{AssessmentInput, EvidenceCollector};
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
 use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject, Evidence};
+
+use super::assessment_execution_error::AssessmentExecutionError;
 
 /// Coordinates the lifecycle of an Assessment.
 ///
@@ -61,23 +63,27 @@ impl AssessmentService {
 
     /// Executes one complete deterministic Assessment, using Evidence
     /// Collection (`modiq-collection`) to produce its Evidence from an
-    /// Input Descriptor, rather than accepting already-constructed
+    /// AssessmentInput, rather than accepting already-constructed
     /// Evidence directly (ADR-0008).
     ///
     /// Added alongside `execute` rather than changing its signature:
-    /// whether `execute` itself should evolve to accept an Input
-    /// Descriptor remains open (ADR-0009, GOV-008). This method
-    /// resolves the Input Descriptor, invokes Evidence Collection, and
+    /// whether `execute` itself should evolve to accept an
+    /// AssessmentInput remains open (ADR-0009, GOV-008). This method
+    /// constructs the AssessmentInput, invokes Evidence Collection, and
     /// then delegates to the existing, unchanged `execute` for the
-    /// rest of the pipeline.
-    pub fn execute_from_descriptor(
+    /// rest of the pipeline — in that order, so that `execute` (and
+    /// therefore Assessment creation) is only ever reached once
+    /// collection has already succeeded (Collection Atomicity,
+    /// `EvidenceCollection.md`): if either step fails, this method
+    /// returns before any Assessment exists at all.
+    pub fn execute_from_assessment_input(
         &self,
         subject: AssessmentSubject,
         context: AssessmentContext,
         input: impl Into<String>,
-    ) -> Result<AssessmentReport, InputDescriptorError> {
-        let descriptor = InputDescriptor::new(input)?;
-        let evidence = EvidenceCollector.collect(&descriptor);
+    ) -> Result<AssessmentReport, AssessmentExecutionError> {
+        let assessment_input = AssessmentInput::new(input)?;
+        let evidence = EvidenceCollector.collect(&assessment_input)?;
 
         Ok(self.execute(subject, context, evidence))
     }
@@ -85,12 +91,49 @@ impl AssessmentService {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use std::fs;
+    use std::path::{Path, PathBuf};
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    use modiq_collection::collection::{AssessmentInputError, CollectionError};
     use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory};
+
+    use super::*;
 
     fn sample_evidence() -> Evidence {
         Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
             .expect("category and description are valid")
+    }
+
+    /// A real, unique, temporary directory for exercising the real
+    /// filesystem collector end to end. Removed when dropped.
+    struct TempDir {
+        path: PathBuf,
+    }
+
+    impl TempDir {
+        fn new(label: &str) -> Self {
+            static COUNTER: AtomicU64 = AtomicU64::new(0);
+            let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+            let path = std::env::temp_dir().join(format!(
+                "modiq-engine-test-{}-{}-{}",
+                std::process::id(),
+                label,
+                unique
+            ));
+            fs::create_dir_all(&path).expect("can create a temporary test directory");
+            Self { path }
+        }
+
+        fn path(&self) -> &Path {
+            &self.path
+        }
+    }
+
+    impl Drop for TempDir {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.path);
+        }
     }
 
     #[test]
@@ -178,12 +221,19 @@ mod tests {
     }
 
     #[test]
-    fn execute_from_descriptor_produces_a_finding_and_recommendation_via_the_real_pipeline() {
+    fn execute_from_assessment_input_produces_a_finding_and_recommendation_via_the_real_filesystem()
+    {
+        let dir = TempDir::new("execute-success");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
         let service = AssessmentService;
 
         let report = service
-            .execute_from_descriptor(AssessmentSubject, AssessmentContext, "a/mod/path")
-            .expect("input is non-empty");
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
 
         assert_eq!(report.evidence().len(), 1);
         assert_eq!(report.findings().len(), 1);
@@ -191,22 +241,72 @@ mod tests {
     }
 
     #[test]
-    fn execute_from_descriptor_rejects_an_empty_input() {
+    fn execute_from_assessment_input_rejects_an_empty_input() {
         let service = AssessmentService;
 
-        let result = service.execute_from_descriptor(AssessmentSubject, AssessmentContext, "");
+        let result =
+            service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, "");
 
-        assert_eq!(result, Err(InputDescriptorError::EmptyValue));
+        assert_eq!(
+            result,
+            Err(AssessmentExecutionError::InvalidInput(
+                AssessmentInputError::EmptyValue
+            ))
+        );
     }
 
     #[test]
-    fn execute_from_descriptor_reflects_state_at_report_generation_prior_to_completion() {
+    fn execute_from_assessment_input_reports_inaccessible_for_a_nonexistent_path() {
+        let dir = TempDir::new("execute-inaccessible");
+        let missing = dir.path().join("does-not-exist");
+        let service = AssessmentService;
+
+        let result = service.execute_from_assessment_input(
+            AssessmentSubject,
+            AssessmentContext,
+            missing.display().to_string(),
+        );
+
+        assert_eq!(
+            result,
+            Err(AssessmentExecutionError::Collection(
+                CollectionError::Inaccessible {
+                    path: missing.display().to_string()
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn execute_from_assessment_input_reflects_state_at_report_generation_prior_to_completion() {
+        let dir = TempDir::new("execute-status");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
         let service = AssessmentService;
 
         let report = service
-            .execute_from_descriptor(AssessmentSubject, AssessmentContext, "a/mod/path")
-            .expect("input is non-empty");
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
 
         assert_eq!(report.status(), AssessmentStatus::EvaluatingRules);
+    }
+
+    #[test]
+    fn execute_from_assessment_input_never_creates_an_assessment_when_collection_fails() {
+        let service = AssessmentService;
+
+        let result =
+            service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, "");
+
+        // Atomicity is structural here: execute_from_assessment_input
+        // returns before calling execute (and therefore before
+        // Assessment::new) whenever AssessmentInput::new or
+        // EvidenceCollector::collect fails, so there is no separate
+        // runtime state to inspect — the absence of any AssessmentReport
+        // at all is the assertion.
+        assert!(result.is_err());
     }
 }

@@ -249,7 +249,7 @@ Owns:
 
 May consume:
 
-- an application-supplied Input Descriptor
+- an application-supplied Assessment Input
 - relevant Assessment Context
 
 Must never:
@@ -257,10 +257,10 @@ Must never:
 - evaluate Evidence, or produce Findings or Recommendations
 - mutate Assessment directly
 - own orchestration (invoked by Engine; does not invoke itself)
-- acquire its own Input Descriptor (an application-layer responsibility)
+- acquire its own Assessment Input (an application-layer responsibility)
 - persist anything
 
-See ADR-0008 and `EvidenceCollection.md` for the full boundary and Collector Contract. Architecture approved; a minimal implementation proving the boundary is complete (GOV-007, Sprint 3 Phase 4). No concrete collector (ZIP/XML/Lua) has been implemented.
+See ADR-0008 and `EvidenceCollection.md` for the full boundary and Collector Contract. Architecture approved; a minimal implementation proving the boundary is complete (GOV-007, Sprint 3 Phase 4). Assessment Input ownership (GOV-009) and the Collection Error Model (GOV-010) are resolved for the filesystem case and implemented (Sprint 3 Phase 5): the first real collector discovers files and directories on the local filesystem. ZIP, XML, and Lua collectors remain future capabilities.
 
 ---
 
@@ -561,11 +561,11 @@ Pending. Must be resolved, and separately approved under the Public API Policy's
 
 Title
 
-Input Descriptor Ownership
+Assessment Input Ownership
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -581,7 +581,17 @@ Which specification should own the Input Descriptor's authoritative definition �
 
 Resolution
 
-Pending. Should be resolved before or during Evidence Collection implementation scoping (see GOV-007).
+Approved by Technical Director, following `PROPOSAL_FILESYSTEM_COLLECTION.md`'s architecture: `EvidenceCollection.md` owns the authoritative definition, formalized as **Assessment Input** (the term "Input Descriptor" was the Sprint 3 Phase 3/4 placeholder; Sprint 3 Phase 5 renamed the corresponding Rust types — `InputDescriptor` to `AssessmentInput`, `InputDescriptorError` to `AssessmentInputError` — reconciling implementation with this vocabulary). Resolved for the filesystem case only, matching the proposal's own explicitly limited scope:
+
+- Assessment Input represents a stable reference to a filesystem object at the moment collection begins.
+- Files are valid Assessment Inputs.
+- Directories are valid Assessment Inputs.
+- Non-existent paths are invalid input.
+- Symbolic links are intentionally not traversed for the first real collector (see `EvidenceCollection.md`, Symbolic Link Policy) — an explicit Phase 5 boundary, not a permanent one.
+- The Collection subsystem consumes an Assessment Input; it never creates or reinterprets one — acquiring it remains an application-layer concern, unchanged from the existing Non-Responsibilities boundary.
+- Future input types (archives, remote sources, virtual sources, and any non-filesystem origin) are intentionally out of scope and explicitly deferred; this resolution does not claim to be Assessment Input's final shape for every future collector.
+
+Full definition recorded in `EvidenceCollection.md`, Assessment Input section.
 
 ---
 
@@ -593,7 +603,7 @@ Collection Error Model
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -609,7 +619,18 @@ How should a Collector's failure to complete inspection be represented and surfa
 
 Resolution
 
-Pending. Should be resolved before Evidence Collection implementation begins, since it affects the shape of what a Collector returns.
+Approved by Technical Director, following `PROPOSAL_FILESYSTEM_COLLECTION.md`'s architecture. Every collection attempt resolves to exactly one of four architectural outcomes:
+
+1. **Invalid Input** — the Assessment Input itself is malformed or empty. Collection never begins.
+2. **Inaccessible Input** — the input is well-formed but its location cannot be reached (does not exist, access denied, unavailable storage). Collection aborts.
+3. **Unsupported Input** — the location is reachable but is not a supported kind (e.g., not a regular file or directory). Collection aborts.
+4. **Empty Collection** — the input is valid, reachable, and supported, but structurally contains nothing. Collection **succeeds**, producing zero Evidence. This is explicitly **not** an error.
+
+Successful collection (including Empty Collection) is distinct from a successful, or even meaningful, Assessment: Collection succeeding means only that Evidence Collection completed its own responsibility, never a claim about what the Rule Engine will later conclude from the (possibly empty) result.
+
+For the first real collector (Sprint 3 Phase 5, filesystem collection), collection is atomic: it either completes (including as Empty Collection) or the Assessment terminates entirely — no partial Assessment, no partial Evidence, no partial Report. This is an explicit, intentional Phase 5 scope decision, not a permanent platform limitation; a future collector or phase may revisit it (e.g., incremental collection across multiple sources). No `RuntimeInvariants.md` change was required: no Runtime aggregate invariant governs this — a collection failure means the Assessment's lifecycle simply never progresses far enough to produce a Report, which existing invariants (INV-002, INV-003) already accommodate without modification. This is an Engine-orchestration policy, not a Runtime state concern.
+
+Full definition recorded in `EvidenceCollection.md`, Collection Outcomes and Collection Atomicity (Phase 5) sections.
 
 ---
 

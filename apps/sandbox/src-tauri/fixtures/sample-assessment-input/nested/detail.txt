@@ -1,0 +1,2 @@
+A second fixture file, one directory level deeper, to exercise
+directory discovery and recursive traversal.

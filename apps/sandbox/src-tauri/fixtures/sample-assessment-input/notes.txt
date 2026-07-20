@@ -1,0 +1,3 @@
+Fixture file for exercising the real filesystem Evidence Collector
+through the Sandbox (Sprint 3 Phase 5). Its content is not read or
+parsed by Collection — only its existence and location matter.

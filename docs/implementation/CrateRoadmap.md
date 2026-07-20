@@ -50,7 +50,7 @@ Additional direct dependencies:
 
 No crate should depend on a crate above it in this hierarchy.
 
-**Planned addition (Documentation Release 2.1, Frozen; not yet created — ADR-0008):** `modiq-collection`, depending on `modiq-runtime` only (to produce `Evidence`), with `modiq-engine` depending on it — the same shape as `modiq-rules` and `modiq-report`, added as a peer to both once implementation is separately authorized (GOV-007). See `docs/architecture/EvidenceCollection.md`.
+**`modiq-collection`** (ADR-0008): created in Sprint 3 Phase 4, depending on `modiq-runtime` only, with `modiq-engine` depending on it — the same shape as `modiq-rules` and `modiq-report`. Sprint 3 Phase 5 gave it its first real capability: filesystem discovery. See `docs/architecture/EvidenceCollection.md`.
 
 ---
 
@@ -79,7 +79,7 @@ No crate should depend on a crate above it in this hierarchy.
 | modiq-engine | Assessment orchestration | L3 | 🔧 In Progress |
 | modiq-report | Report representation and formatting | L3 | 🔧 In Progress |
 | modiq-cli | Command-line interface | L1 | ✅ Scaffolded |
-| modiq-collection | Evidence Collection (produces Evidence from Assessment Subject content) | — | 📋 Planned (ADR-0008; not yet created) |
+| modiq-collection | Evidence Collection (produces Evidence from Assessment Subject content) | L2 | 🔧 In Progress — real filesystem discovery (Sprint 3 Phase 5); ZIP/XML/Lua collectors not yet implemented |
 
 ---
 
@@ -163,9 +163,9 @@ Sprint 1 implemented the Assessment lifecycle, deterministic Rule evaluation, an
 
 Sprint 2 gave `Evidence`, `Finding`, and `Recommendation` — content-free through Sprint 1 — real field content, process-local identity (`EvidenceId`, `FindingId`, `RecommendationId`), and constructor validation, and extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`). The Runtime entity design pattern established across all three is recorded in ADR-0007. No Rule Engine, Reporting, or Engine orchestration behavior changed. Two content-level invariants were identified and deliberately left unenforced, recorded as GOV-005 and GOV-006 in `GOVERNANCE.md`. Frozen as Engineering Release 0.2; see `docs/releases/ENGINEERING_RELEASE_0.2.md`.
 
-## Sprint 3 — In Progress
+## Sprint 3 — Complete
 
-Sprint 3 Phase 1 proved the sandbox could drive the real Evidence → Rule Engine → Assessment → Report pipeline end to end. Sprint 3 Phase 2 resolved GOV-005 and GOV-006 (Finding/Recommendation minimum reference cardinality, INV-013/INV-014). Sprint 3 Phase 3 is an architecture-and-governance-only phase: `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md` was approved at the architectural level, producing ADR-0008 (Evidence Collection Subsystem Boundary), ADR-0009 (AssessmentService Public API Evolution), the new `EvidenceCollection.md` specification, corresponding amendments to `Architecture.md`/`DataModel.md`/`RuleEngine.md`, and four new Governance Register items (GOV-007 through GOV-010). Documentation Release 2.1 is Frozen. No runtime code changed during Phase 3. Implementation of Evidence Collection (a new `modiq-collection` crate) is not yet authorized — see GOV-007.
+Sprint 3 Phase 1 proved the sandbox could drive the real Evidence → Rule Engine → Assessment → Report pipeline end to end. Sprint 3 Phase 2 resolved GOV-005 and GOV-006 (Finding/Recommendation minimum reference cardinality, INV-013/INV-014). Sprint 3 Phase 3 was an architecture-and-governance-only phase: `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md` was approved at the architectural level, producing ADR-0008 (Evidence Collection Subsystem Boundary), ADR-0009 (AssessmentService Public API Evolution), the new `EvidenceCollection.md` specification, corresponding amendments to `Architecture.md`/`DataModel.md`/`RuleEngine.md`, and four new Governance Register items (GOV-007 through GOV-010); Documentation Release 2.1 was Frozen. Sprint 3 Phase 4 implemented the minimal `modiq-collection` crate proving the boundary (GOV-007 resolved), wired into `modiq-engine` via an additive entry point. A follow-up governance-resolution session then resolved GOV-009 and GOV-010 for the filesystem case, following `PROPOSAL_FILESYSTEM_COLLECTION.md`. Sprint 3 Phase 5 implemented the first real collector against that resolved architecture: real filesystem discovery (files and directories), the approved four-outcome Collection Error Model, Collection Atomicity, and the Phase 5 Symbolic Link Policy, renaming `InputDescriptor`/`InputDescriptorError` to `AssessmentInput`/`AssessmentInputError` throughout. ZIP, XML, and Lua collectors remain future capabilities. Sprint 3 is now frozen as Engineering Release 0.3; see `docs/engineering/ENGINEERING_RELEASE_0.3.md` for the full record, including its recommendation that a second real collector (most likely ZIP traversal) or CLI wiring should follow.
 
 ---
 
@@ -209,3 +209,5 @@ Sprint 2 was considered complete when:
 | 1.4.0 | 2026-07-18 | modiq-engine advanced to L3. AssessmentService orchestrates the full pipeline (Runtime Domain, Rule Engine, Reporting); end-to-end integration test moved from modiq-report to modiq-engine to exercise the orchestration layer directly. |
 | 1.5.0 | 2026-07-19 | Sprint 2 completed. Evidence, Finding, and Recommendation carry real field content, identity, and constructor validation in modiq-runtime; Assessment extended with relationship-resolution methods (evidence_by_id, finding_by_id, evidence_for_finding, findings_for_recommendation). Runtime entity design pattern recorded in ADR-0007. Workspace test suite expanded to 97 tests. Frozen as Engineering Release 0.2. |
 | 1.6.0 | 2026-07-19 | Sprint 3 Phase 3 (architecture/documentation only, no runtime code changed): Evidence Collection Subsystem Boundary approved architecturally (ADR-0008), with AssessmentService's anticipated public API evolution recorded separately (ADR-0009). Added `modiq-collection` as a planned crate (not yet created). Four new Governance Register items opened (GOV-007–GOV-010). Documentation Release 2.1 Frozen. |
+| 1.7.0 | 2026-07-19 | Sprint 3 Phase 4: `modiq-collection` created, proving the Evidence Collection boundary with a minimal synthetic collector. GOV-007 resolved. GOV-009/GOV-010 subsequently resolved for the filesystem case (`PROPOSAL_FILESYSTEM_COLLECTION.md`). Sprint 3 Phase 5 implemented the first real collector: filesystem discovery, the four-outcome Collection Error Model, Collection Atomicity, and the Phase 5 Symbolic Link Policy; `InputDescriptor`/`InputDescriptorError` renamed to `AssessmentInput`/`AssessmentInputError`. `modiq-collection` advanced to L2. |
+| 1.8.0 | 2026-07-19 | Engineering Release 0.3: Sprint 3 (Phases 1–5) frozen. Living-document reconciliation pass across `PROJECT_STATUS.md`, `CHANGELOG.md`, `docs/README.md`, and this document. Four crates (`modiq-knowledge`, `modiq-versioning`, `modiq-cli`, `modiq-common`) flagged as untouched since Sprint 0 — deliberately, not neglectfully, deferred; see `ENGINEERING_RELEASE_0.3.md`'s Crate Maturity Review. |

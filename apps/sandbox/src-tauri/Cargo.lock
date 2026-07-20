@@ -1992,6 +1992,7 @@ dependencies = [
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",
+ "thiserror 2.0.19",
 ]
 
 [[package]]

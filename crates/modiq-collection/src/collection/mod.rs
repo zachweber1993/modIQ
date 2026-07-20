@@ -1,7 +1,9 @@
+pub mod assessment_input;
+pub mod assessment_input_error;
+pub mod collection_error;
 pub mod evidence_collector;
-pub mod input_descriptor;
-pub mod input_descriptor_error;
 
+pub use assessment_input::AssessmentInput;
+pub use assessment_input_error::AssessmentInputError;
+pub use collection_error::CollectionError;
 pub use evidence_collector::EvidenceCollector;
-pub use input_descriptor::InputDescriptor;
-pub use input_descriptor_error::InputDescriptorError;

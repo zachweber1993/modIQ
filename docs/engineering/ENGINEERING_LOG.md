@@ -299,3 +299,67 @@ Implemented the architectural boundary ADR-0008 established, authorized by the T
 GOV-007 (Evidence Collection Subsystem Implementation Approval) is now Resolved. GOV-008 (AssessmentService Public API Evolution), GOV-009 (Input Descriptor Ownership), and GOV-010 (Collection Error Model) remain open, untouched and un-prejudiced by this implementation.
 
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` passed (106 tests, up from 95: 8 new in `modiq-collection`, 3 new in `modiq-engine`). Sandbox workspace independently verified, 3/3 passing, zero warnings in both workspaces.
+
+---
+
+### Sprint 3 Phase 5: First Real Evidence Collection
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection
+- modiq-engine
+- apps/sandbox (Tauri command wiring and fixture files, not a workspace member)
+
+Affected Documents:
+- GOVERNANCE.md (reconciliation notes only — GOV-009/GOV-010 already Resolved in the preceding governance session)
+- EvidenceCollection.md (reconciliation note only)
+- CrateRoadmap.md
+
+Notes:
+Implemented the first real filesystem collector, realizing the architecture `PROPOSAL_FILESYSTEM_COLLECTION.md` proposed and a preceding governance-resolution session formalized (GOV-009, Assessment Input Ownership; GOV-010, Collection Error Model — both Resolved for the filesystem case ahead of this phase).
+
+**Terminology reconciliation:** `InputDescriptor`/`InputDescriptorError` renamed to `AssessmentInput`/`AssessmentInputError` throughout `modiq-collection`, `modiq-engine`, and documentation cross-references — vocabulary alignment only, no behavior change.
+
+**Assessment Input:** unchanged in shape from Phase 4 (still validates only non-emptiness at construction) — existence and accessibility are deliberately checked later, during collection itself, matching `EvidenceCollection.md`'s own account of why a non-existent path is an Inaccessible Input outcome, not an Invalid one.
+
+**Filesystem collector:** `EvidenceCollector::collect` now inspects the real filesystem via `std::fs::symlink_metadata` (so the root is never followed if it is itself a symbolic link), dispatches on file vs. directory, and for directories recurses with entries sorted by filename at each level before processing — the explicit ordering `EvidenceCollection.md`'s Determinism Expectations require, since the OS provides none. Each discovered file or directory becomes one `FileStructureAnalysis` Evidence item located by its path relative to the given root. No file content is ever read.
+
+**Error model:** a new `CollectionError` (Inaccessible, Unsupported) was added in `modiq-collection`, kept separate from `AssessmentInputError` (Invalid Input) since they represent genuinely different failure moments — construction vs. an actual collection attempt. A new `AssessmentExecutionError` in `modiq-engine` unifies both for `AssessmentService::execute_from_assessment_input` (itself renamed from `execute_from_descriptor`), since reconciling two crates' error types into one caller-facing result is Engine-orchestration's own job. Empty Collection remains `Ok(vec![])`, never an error.
+
+**Atomicity:** required no additional code. `execute_from_assessment_input` constructs the AssessmentInput, then collects, then calls the existing, unchanged `execute` — using `?` at each step — so `Assessment::new` (inside `execute`) is only ever reached after collection has already succeeded. If collection fails at any depth of a directory traversal, the whole call returns `Err` and the partially-built local Evidence vector is simply never returned; no explicit atomicity mechanism was needed beyond this existing control-flow shape.
+
+**Symbolic Link Policy:** a symbolic link as the AssessmentInput's own root is classified Unsupported (accepting it would require deciding whether to follow it, which Phase 5 does not do); a symbolic link encountered while traversing a directory is skipped — not followed, not recorded as Evidence. Both are tested directly (Unix-only, guarded with `#[cfg(unix)]`, since portable creation of symbolic links needs it).
+
+**Sandbox:** updated to call `execute_from_assessment_input` against a new, fixed, checked-in fixture directory (`apps/sandbox/src-tauri/fixtures/sample-assessment-input/`, one file and one nested subdirectory with a file of its own) resolved via `CARGO_MANIFEST_DIR`, not the process's working directory. No file picker, drag-and-drop, or other input UI was implemented — explicitly out of scope. The sandbox now discovers 3 real Evidence items (previously 1 synthetic item); Rule Engine output is unaffected (still exactly one Finding and one Recommendation, since `RuleEngine::evaluate` has never varied its output count with Evidence count).
+
+Tests added: `modiq-collection`'s `evidence_collector.rs` suite grew from 4 (synthetic-collector) to 8 (single file, nested directory tree with deterministic ordering, empty directory, nonexistent path, determinism across repeated calls, symlink-as-root, symlink-during-traversal, atomicity under a permission-denied nested directory) — `assessment_input.rs`'s 4 tests carried over unchanged except for the rename. `modiq-engine` gained 2 net new tests (real-filesystem success and a no-Assessment-on-failure assertion, alongside renamed empty-input and now-real nonexistent-path rejection tests). Sandbox's 3 existing tests were updated for the new fixture and its exact deterministic evidence ordering, not added to.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` passed (112 tests, up from 106: `modiq-collection` 8 → 12, `modiq-engine` 7 → 9 unit tests plus 3 unchanged integration tests). Sandbox workspace independently verified, 3/3 passing, zero warnings in both workspaces.
+
+---
+
+### Engineering Release 0.3
+
+Status:
+Completed
+
+Affected Crates:
+- (none — documentation only)
+
+Affected Documents:
+- docs/engineering/ENGINEERING_RELEASE_0.3.md (new)
+- PROJECT_STATUS.md
+- CHANGELOG.md
+- docs/README.md
+- CrateRoadmap.md
+
+Notes:
+Froze Sprint 3 (Phases 1–5) into a formal Engineering Release, consolidating five phases plus one interstitial governance-resolution session into a single permanent record: `docs/engineering/ENGINEERING_RELEASE_0.3.md`. Covers Executive Summary, Sprint 3 scope (delivered and deferred), major architectural and implementation accomplishments, governance completed (GOV-005, 006, 007, 009, 010), documentation completed (Documentation Release 2.1, ADR-0008, ADR-0009), testing growth (97 → 112), a Repository Maturity Assessment (Stable / Needs Monitoring / Needs Future Work per area), a full Crate Maturity Review across all nine crates, a four-category Technical Debt Review, a Sprint 3 Retrospective, Lessons Learned, Engineering Metrics, and a Recommendation naming a second real collector (most likely ZIP traversal) or CLI wiring as the next logical capability — without scoping either in detail, per instruction.
+
+Performed a living-document reconciliation pass: `PROJECT_STATUS.md` (Current Milestone, Documentation Release Status, Current Focus all updated from stale Sprint 2 / Documentation Release 2.0 framing), `CHANGELOG.md` (added `[Sprint 3]`, `[Documentation Release 2.1]`, and `[Engineering Release 0.3]` entries, matching the existing per-milestone format exactly), `docs/README.md` (Current Documentation Status narrative, stale since before Sprint 2, corrected), and `CrateRoadmap.md` (Sprint 3 heading changed from "In Progress" to "Complete," a closing pointer to this release added, and a final revision history entry).
+
+This release's central finding is procedural rather than architectural: the entire body of Sprint 3 Phase 5, the governance-resolution session that preceded it, and the Roadmap Review and Filesystem Collection proposal before that, remain uncommitted in the working tree as of this record. `ENGINEERING_RELEASE_0.3.md` names this directly in its Executive Summary, Repository Health, and Recommendation sections rather than treating the release as a clean baseline it does not yet have in git history.
+
+No `cargo fmt`/`cargo check`/`cargo test` verification was performed this session, since no Rust source file was touched — consistent with this session's explicit documentation-only scope.

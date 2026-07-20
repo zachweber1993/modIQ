@@ -3,11 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.2 |
-| **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 2 — Complete |
+| **Current Release** | Engineering Release 0.3 |
+| **Repository Status** | Implementation Ready (pending commit of Sprint 3's final work — see `ENGINEERING_RELEASE_0.3.md`, Repository Health) |
+| **Current Milestone** | Sprint 3 — Complete (Phases 1–5) |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 2 Freeze (Engineering Release 0.2) |
+| **Current Phase** | Post-Sprint 3 Freeze (Engineering Release 0.3) |
 | **Last Updated** | 2026-07-19 |
 
 ---
@@ -24,7 +24,11 @@ Sprint 1 delivered the first complete, deterministic Assessment pipeline: Assess
 
 Sprint 2 gave Evidence, Finding, and Recommendation — content-free in Sprint 1 — real field content, identity, and constructor validation, and extended `Assessment` with relationship-resolution methods (`evidence_by_id`, `finding_by_id`, `evidence_for_finding`, `findings_for_recommendation`). No Rule Engine, Reporting, or Engine orchestration behavior changed; no Knowledge Domain integration began. Two content-level invariants were identified and deliberately left unenforced, recorded as Governance Register items GOV-005 and GOV-006. The workspace test suite grew from 55 to 97 tests. Full record: `docs/releases/ENGINEERING_RELEASE_0.2.md`, `SPRINT2_IMPLEMENTATION_PLAN.md`, ADR-0007.
 
-**Next implementation milestone:** Sprint 3 — scope not yet selected. See "Sprint 3 Entry Criteria" in `docs/releases/ENGINEERING_RELEASE_0.2.md`.
+## Sprint 3 — Complete
+
+Sprint 3 delivered the Evidence Collection subsystem, from architectural boundary through its first real capability, across five phases: Sandbox real-pipeline integration (Phase 1); GOV-005/GOV-006 minimum reference cardinality (Phase 2, INV-013/INV-014); the Evidence Collection Subsystem Boundary architecture (Phase 3, ADR-0008, ADR-0009, Documentation Release 2.1); a minimal `modiq-collection` crate proving the boundary (Phase 4, GOV-007); and the first real, filesystem-backed collector (Phase 5, GOV-009/GOV-010, deterministic traversal, the four-outcome Collection Error Model, Collection Atomicity, the Symbolic Link Policy). The workspace grew to nine crates; the root test suite grew from 97 to 112 tests. Full record: `ENGINEERING_RELEASE_0.3.md`.
+
+**Next implementation milestone:** not yet begun. `ENGINEERING_RELEASE_0.3.md`'s Recommendation names a second real collector (most likely ZIP traversal) as the next logical capability, with CLI wiring as an independent, low-risk parallel track — neither is scoped or planned in detail as of this record.
 
 ---
 
@@ -81,24 +85,23 @@ Sprint 2 gave Evidence, Finding, and Recommendation — content-free in Sprint 1
 
 | Property | Value |
 |----------|-------|
-| **Current Release** | Documentation Release 2.0 |
-| **Status** | ✅ Complete |
+| **Current Release** | Documentation Release 2.1 |
+| **Status** | ✅ Complete (Frozen) |
 | **Constitutional Layer** | ✅ Frozen |
-| **Architecture Layer** | ✅ Frozen |
+| **Architecture Layer** | ✅ Frozen (amended under 2.1 — Evidence Collection named a Core Platform Component; Assessment Lifecycle diagram ordering corrected) |
+| **Technical Layer** | ✅ Frozen (new: `EvidenceCollection.md`) |
 | **Governance Documentation** | ✅ Reconciled |
 | **Repository Audit** | ✅ Passed |
 | **Implementation Readiness** | ✅ Verified |
-| **Previous Release** | Documentation Release 1.0 (tag `v0.1.0`) |
+| **Previous Release** | Documentation Release 2.0 |
 
-Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT_STATUS.md, and related tracking documents) is reconciled with current repository state as of Documentation Release 2.0. Unlike the constitutional and architecture layers, governance documentation remains a living body of documentation per EngineeringGuide.md and is not designated Frozen.
+Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT_STATUS.md, and related tracking documents) is reconciled with current repository state as of this release. Unlike the constitutional and architecture layers, governance documentation remains a living body of documentation per EngineeringGuide.md and is not designated Frozen — and, as `ENGINEERING_RELEASE_0.3.md`'s Repository Health section notes directly, has a documented history of falling behind between releases despite that.
 
 ---
 
 # Current Focus
 
-Documentation Release 1.0 and Documentation Release 2.0 have both concluded. No new Documentation Release was required for Sprint 2, since no frozen specification was modified.
-
-Sprint 0, Sprint 1, and Sprint 2 are complete. Engineering Release 0.2 freezes the Sprint 2 milestone. Sprint 3's scope has not yet been selected; see "Sprint 3 Entry Criteria" in `docs/releases/ENGINEERING_RELEASE_0.2.md`.
+Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one. Engineering Release 0.3 freezes Sprint 3 (Phases 1–5). The next implementation milestone has not been selected in detail; `ENGINEERING_RELEASE_0.3.md`'s Recommendation names a second real collector (most likely ZIP traversal) as the next logical capability, with CLI wiring as an independent parallel track.
 
 Implementation should remain consistent with the frozen engineering specification.
 

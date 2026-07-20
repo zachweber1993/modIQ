@@ -96,28 +96,42 @@ impl From<&AssessmentReport> for AssessmentSummary {
     }
 }
 
+/// A fixed, checked-in fixture directory, used as the Sandbox's
+/// AssessmentInput so it can exercise the real filesystem Evidence
+/// Collector without any file-picker, drag-and-drop, or other UI
+/// input workflow (Sprint 3 Phase 5 — those remain explicitly out of
+/// scope; see `PROPOSAL_FILESYSTEM_COLLECTION.md`, Sandbox
+/// Interaction). Resolved relative to the crate's own manifest
+/// directory, not the process's current working directory, so it
+/// resolves to the same absolute location regardless of how the
+/// Sandbox is launched.
+const FIXTURE_ASSESSMENT_INPUT: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/fixtures/sample-assessment-input"
+);
+
 /// Executes the Assessment pipeline through `AssessmentService`'s
-/// `execute_from_descriptor` entry point — the same orchestration
-/// `execute` performs, now including real Evidence Collection
-/// (`modiq-collection`) driven by one deterministic Input Descriptor,
+/// `execute_from_assessment_input` entry point — the same
+/// orchestration `execute` performs, now including real Evidence
+/// Collection (`modiq-collection`) over an actual filesystem fixture,
 /// rather than sandbox-constructed Evidence — and returns the result
 /// as a DTO.
 ///
 /// No orchestration, Rule Engine, Evidence Collection, or Runtime
 /// logic is reimplemented here: this command only supplies the
 /// pipeline's input and maps its already-existing output to an
-/// IPC-safe shape. The Input Descriptor is a fixed, deterministic
-/// placeholder; it is not a claim about any real Assessment Subject.
+/// IPC-safe shape. `FIXTURE_ASSESSMENT_INPUT` is a fixed, checked-in
+/// directory; it is not a claim about any real Assessment Subject.
 #[tauri::command]
 fn create_assessment() -> AssessmentSummary {
     let service = AssessmentService;
     let report = service
-        .execute_from_descriptor(
+        .execute_from_assessment_input(
             AssessmentSubject,
             AssessmentContext,
-            "Deterministic bootstrap input for verifying the Evidence Collection pipeline end-to-end.",
+            FIXTURE_ASSESSMENT_INPUT,
         )
-        .expect("the bootstrap input descriptor is non-empty");
+        .expect("the fixture assessment input exists and is accessible");
 
     AssessmentSummary::from(&report)
 }
@@ -136,13 +150,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn create_assessment_produces_one_of_each_via_the_real_pipeline() {
+    fn create_assessment_discovers_the_fixture_directory_contents_via_the_real_collector() {
         let summary = create_assessment();
 
-        assert_eq!(summary.evidence_count, 1);
+        // fixtures/sample-assessment-input contains one top-level file
+        // (notes.txt), one subdirectory (nested), and one file within
+        // it (nested/detail.txt) — three structural facts for the real
+        // filesystem collector to discover.
+        assert_eq!(summary.evidence_count, 3);
+        assert_eq!(summary.evidence.len(), 3);
         assert_eq!(summary.finding_count, 1);
         assert_eq!(summary.recommendation_count, 1);
-        assert_eq!(summary.evidence.len(), 1);
         assert_eq!(summary.findings.len(), 1);
         assert_eq!(summary.recommendations.len(), 1);
     }
@@ -156,10 +174,26 @@ mod tests {
     }
 
     #[test]
-    fn evidence_entry_reflects_the_deterministic_bootstrap_content() {
+    fn evidence_entries_reflect_the_fixture_directory_in_deterministic_order() {
         let summary = create_assessment();
 
-        assert_eq!(summary.evidence[0].category, "FileStructureAnalysis");
-        assert!(!summary.evidence[0].description.is_empty());
+        for entry in &summary.evidence {
+            assert_eq!(entry.category, "FileStructureAnalysis");
+            assert!(!entry.description.is_empty());
+        }
+
+        let locations: Vec<String> = summary
+            .evidence
+            .iter()
+            .map(|entry| entry.location.clone().unwrap_or_default())
+            .collect();
+        let nested_detail = std::path::Path::new("nested")
+            .join("detail.txt")
+            .display()
+            .to_string();
+        assert_eq!(
+            locations,
+            vec!["nested".to_string(), nested_detail, "notes.txt".to_string()]
+        );
     }
 }

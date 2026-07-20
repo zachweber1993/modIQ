@@ -26,6 +26,7 @@ dependencies = [
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",
+ "thiserror",
 ]
 
 [[package]]

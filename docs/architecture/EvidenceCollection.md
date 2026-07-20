@@ -7,10 +7,10 @@
 | Property | Value |
 |----------|-------|
 | **Document** | EvidenceCollection.md |
-| **Version** | 1.0.0 |
-| **Status** | Frozen |
+| **Version** | 1.1.0 |
+| **Status** | Frozen, amended following GOV-009/GOV-010 resolution |
 | **Project** | modIQ |
-| **Documentation Release** | 2.1 (pending) |
+| **Documentation Release** | 2.1 |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-19 |
 | **Last Updated** | 2026-07-19 |
@@ -52,7 +52,7 @@ Evidence Collection produces:
 
 Evidence Collection consumes:
 
-- An Input Descriptor (defined below), supplied by the application layer through the Engine.
+- An Assessment Input (defined below), supplied by the application layer through the Engine.
 - Assessment Context, where relevant to how content should be interpreted (for example, an eventual Version Profile).
 
 Evidence Collection does not consume Rules, Findings, Recommendations, or Engineering Knowledge, and does not produce them. It has no relationship to `RuleEngine.md` or `KnowledgeModel.md` other than indirectly supplying the Evidence the Rule Engine subsequently evaluates.
@@ -88,7 +88,7 @@ No subsystem bypasses another subsystem's ownership boundary. Evidence Collectio
 Evidence Collection participates in the Assessment lifecycle as follows, conceptually:
 
 ```text
-Application supplies an Input Descriptor
+Application supplies an Assessment Input
         │
         ▼
 Assessment Service invokes Evidence Collection
@@ -114,7 +114,7 @@ Evidence Collection is invoked by the Assessment Service, in the same conceptual
 
 Evidence Collection is responsible for:
 
-- Interpreting an Input Descriptor to locate the content to inspect.
+- Interpreting an Assessment Input to locate the content to inspect.
 - Deterministically inspecting that content.
 - Producing Evidence — correctly categorized, described, and located — that reflects what was objectively observed.
 - Reporting its own inability to complete collection, distinctly from reporting that nothing relevant was found.
@@ -129,21 +129,36 @@ Evidence Collection is explicitly **not** responsible for:
 - **Mutating the Assessment.** Evidence Collection returns Evidence to its caller. Only the Assessment aggregate mutates itself, through its own methods, per `RuntimeInvariants.md` (INV-006, INV-007, INV-009).
 - **Forming opinions or subjective judgments.** `DataModel.md`: "Evidence never represents opinion." Evidence Collection's output is factual, not evaluative.
 - **Knowing about Rules, Engineering Knowledge, or Recommendations.** Evidence Collection has no relationship to the Knowledge Domain or the Rule Engine beyond supplying Evidence indirectly, through the Assessment.
-- **Acquiring the Input Descriptor itself.** How an application (Sandbox, CLI, or a future application) obtains a path, an uploaded archive, or any other description of where content lives is an application-layer concern, outside Evidence Collection's boundary. Evidence Collection receives a descriptor; it does not solicit one from a user.
+- **Acquiring the Assessment Input itself.** How an application (Sandbox, CLI, or a future application) obtains a path, an uploaded archive, or any other description of where content lives is an application-layer concern, outside Evidence Collection's boundary. Evidence Collection consumes an Assessment Input; it never creates or reinterprets one, and it does not solicit one from a user.
 - **Persistence.** Evidence Collection has no relationship to the Storage Layer.
 - **Interpreting game-version-specific behavior on its own.** Where interpretation depends on a Farming Simulator version, that context is supplied via Assessment Context / a future Version Profile (`Architecture.md`: Version Isolation), not decided internally by Evidence Collection.
 
 ---
 
-# The Input Descriptor
+# Assessment Input
 
-An Input Descriptor is the conceptual value an application supplies to identify what Evidence Collection should inspect — for example, a location on a filesystem, though this specification deliberately does not fix its exact form. The Input Descriptor:
+Assessment Input is the value an application supplies to identify what Evidence Collection should inspect. Its authoritative definition, ownership, and scope are resolved here (GOV-009), for the filesystem case, following `PROPOSAL_FILESYSTEM_COLLECTION.md`.
 
+("Input Descriptor" was the Sprint 3 Phase 3/4 placeholder term for this same concept; Sprint 3 Phase 5 renamed the corresponding Rust types — `InputDescriptor` to `AssessmentInput`, `InputDescriptorError` to `AssessmentInputError` — so implementation and this specification now use the same vocabulary.)
+
+Assessment Input:
+
+- Represents a stable reference to a filesystem object at the moment collection begins.
 - Is supplied by the application layer (Sandbox, CLI, or a future application), through the Assessment Service.
 - Is opaque to every subsystem except Evidence Collection and whichever application layer produced it — the Rule Engine, Reporting, and the Runtime Domain have no relationship to it at all.
-- Identifies *where* to look, not *what* will be found there. Evidence Collection determines what the descriptor's content actually contains; the descriptor itself carries no assumptions about it.
+- Identifies *where* to look, not *what* will be found there. Evidence Collection determines what the location actually contains; the Assessment Input itself carries no assumptions about it.
 
-Ownership of the Input Descriptor concept — which specification defines it authoritatively, and what content it eventually carries — is an open governance question (GOV-009), not resolved by this document beyond the definition above.
+**Valid Assessment Input, for the filesystem case:**
+
+- A **file** is a valid Assessment Input — for example, a mod distributed as a single archive, not yet extracted.
+- A **directory** is a valid Assessment Input — for example, an already-unpacked mod folder.
+- A **non-existent path is not a valid Assessment Input.** The referenced location must exist at the moment collection begins; its absence is an Inaccessible Input outcome (see Collection Outcomes), not a malformed Assessment Input.
+
+**Consumption, not creation.** The Collection subsystem consumes an Assessment Input; it never creates or reinterprets one. Acquiring it remains entirely an application-layer concern (see Non-Responsibilities, above) — Evidence Collection's role begins only once a candidate Assessment Input already exists.
+
+**Future input types are intentionally out of scope.** Archives treated as their own input source (as opposed to a file discovered by traversal), remote sources, virtual sources, and any other non-filesystem origin are deliberately not addressed by this resolution. This document does not claim Assessment Input's shape here is final for every future collector — only that it is sufficient and correct for the filesystem case this milestone addresses.
+
+See Symbolic Link Policy (Phase 5), below, for the one Assessment Input traversal boundary specific to the first real collector.
 
 ---
 
@@ -155,7 +170,7 @@ A Collector is the conceptual unit of work within Evidence Collection responsibl
 
 A Collector receives:
 
-- An Input Descriptor (or the portion of one relevant to its kind of inspection).
+- An Assessment Input (or the portion of one relevant to its kind of inspection).
 - Relevant Assessment Context, where applicable.
 
 A Collector receives nothing else. It does not receive Rules, Engineering Knowledge, or any other Assessment state.
@@ -179,7 +194,7 @@ A Collector guarantees:
 
 ## Non-Responsibilities
 
-Restated at the Collector level, consistent with Evidence Collection's own Non-Responsibilities above: a Collector does not evaluate, does not mutate the Assessment, does not form opinions, does not know about Rules or Knowledge, does not acquire its own Input Descriptor, and does not persist state.
+Restated at the Collector level, consistent with Evidence Collection's own Non-Responsibilities above: a Collector does not evaluate, does not mutate the Assessment, does not form opinions, does not know about Rules or Knowledge, does not acquire its own Assessment Input, and does not persist state.
 
 ## Determinism Expectations
 
@@ -188,7 +203,61 @@ Collection is the first subsystem in the platform's pipeline that touches conten
 - **Legitimate absence** — the inspected content exists and was fully inspected, and simply contained nothing relevant to that Collector's concern. This is a successful, empty result, not a failure — the same distinction `RuleEngine.md`'s execution model already draws between "evaluated and found nothing" and "could not evaluate."
 - **Collection failure** — the Collector could not complete its inspection at all. This must be represented distinctly from legitimate absence, so that a caller (and eventually, a user) can tell "there was nothing to find" apart from "something prevented us from looking."
 
-How collection failure is represented — as part of the Evidence returned, as a distinct error value, or some other mechanism — is an open governance question (GOV-010), not resolved by this document.
+The architectural categories of collection failure, and how they are distinguished from legitimate absence, are resolved below (Collection Outcomes). This document still does not fix the concrete representation mechanism (an error type, a result variant, or otherwise) — that remains an implementation detail.
+
+---
+
+# Collection Outcomes
+
+Resolved (GOV-010), following `PROPOSAL_FILESYSTEM_COLLECTION.md`'s architecture. Every collection attempt resolves to exactly one of four architectural outcomes:
+
+## Invalid Input
+
+The Assessment Input itself is malformed or empty, before any inspection is attempted. Collection never begins.
+
+## Inaccessible Input
+
+The Assessment Input is well-formed, but the location it names cannot be reached: it does not exist, access is denied, or it sits on storage that is not currently available. Collection aborts.
+
+## Unsupported Input
+
+The location is reachable but is not a supported kind of thing for this Collector — for example, a device file or named pipe rather than a regular file or directory. Distinct from Inaccessible Input: the location is right there, it simply isn't a supported shape. Collection aborts.
+
+## Empty Collection
+
+The Assessment Input is valid, reachable, and a supported kind of location, but structurally contains nothing (an empty directory, for instance). Collection **succeeds**, producing zero Evidence. This is explicitly **not** an error — it is a successful observation reflecting a genuine fact about the subject, not a failure of collection itself.
+
+## Collection Success vs. Assessment Success
+
+Only Empty Collection represents successful collection with no Evidence produced; the other three outcomes represent collection not completing at all. In no case does a successful collection outcome (including Empty Collection) imply anything about the eventual Assessment's outcome: Collection succeeding means only that Evidence Collection completed its own responsibility. Whether the resulting Evidence — even zero Evidence — supports any Finding is entirely the Rule Engine's later, separate concern; Collection has no visibility into, and no responsibility for, whether an Assessment is meaningful in any product sense.
+
+**Which failures belong to Collection.** Invalid Input, Inaccessible Input, and Unsupported Input are Collection's own concern — each occurs before or during the act of gathering Evidence, and only Collection has the context, at the moment it happens, to distinguish one from another. None of these should ever surface as a Finding: a collection failure is not an assessment conclusion, and treating it as one would compromise the Evidence Collection / Rule Engine producer-consumer boundary this specification exists to preserve.
+
+**What does not belong to Collection.** Judging whether a successfully discovered structure is adequate for a valid mod belongs to the Rule Engine, evaluating Evidence Collection already produced. Deciding what happens to the rest of an Assessment when a collection failure occurs is an Engine-orchestration policy question — see Collection Atomicity, below, for the Phase 5 answer.
+
+---
+
+# Collection Atomicity (Phase 5)
+
+For the first real collector (Sprint 3 Phase 5, filesystem collection), collection is atomic: it either completes successfully — including as an Empty Collection outcome — or the Assessment terminates. There is no partial Assessment, no partial Evidence, and no partial Report when collection does not complete (Invalid Input, Inaccessible Input, or Unsupported Input).
+
+This is an intentional Phase 5 scope decision, not a permanent platform limitation. A future collector or phase may revisit it — for example, incremental collection across multiple sources, where one source's failure need not prevent Evidence already gathered from others from supporting a Report. Atomicity is what Phase 5 rules out; it is not a requirement the platform architecture imposes forever.
+
+No change to `RuntimeInvariants.md` is required by this policy: no Runtime aggregate invariant governs it. A collection failure means the Assessment's lifecycle simply never progresses far enough to produce a Report — existing invariants (INV-002, Evidence may only be added before rule evaluation begins; INV-003, Evidence becomes immutable once rule evaluation starts) already accommodate this without modification. Atomicity is Engine-orchestration policy, not Runtime state.
+
+---
+
+# Symbolic Link Policy (Phase 5)
+
+For the first real collector, symbolic links are intentionally not traversed. A discovered path that is a symbolic link is not followed to its target.
+
+This avoids three concerns at once, for this milestone:
+
+- **Platform-specific behavior.** Symbolic link semantics differ across operating systems and filesystems; not following them avoids that variance entirely.
+- **Traversal cycles.** A link can point back into a location already being traversed, risking unbounded or repeated work.
+- **Escaping the Assessment Input's boundary.** A link can point outside the location Collection was actually given — which Assessment Input, above, already excludes as in scope.
+
+This is a Phase 5 architectural boundary, not a permanent one. Following symbolic links under controlled conditions may be considered as a separate, future capability.
 
 ---
 
@@ -202,6 +271,6 @@ Future Version Profile integration (`Architecture.md`: Version Isolation) is exp
 
 # Document Status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.1.0
 
-**Status:** Frozen as part of Documentation Release 2.1. Authorized at the architecture level by ADR-0008; implementation is not authorized (see `GOVERNANCE.md`, GOV-007).
+**Status:** Frozen as part of Documentation Release 2.1; amended following Technical Director approval of `PROPOSAL_FILESYSTEM_COLLECTION.md` to resolve GOV-009 (Assessment Input Ownership) and GOV-010 (Collection Error Model) for the filesystem case, and to record the Phase 5 Collection Atomicity and Symbolic Link Policy decisions. Authorized at the architecture level by ADR-0008; implementation of a real collector is not yet authorized by this document — that remains a separate implementation-readiness decision.

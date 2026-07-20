@@ -254,3 +254,66 @@ The Documentation Release 1.0 Final Review concluded with:
 - Updated PROJECT_STATUS.md as the authoritative repository dashboard, reflecting Documentation Release 2.0 completion and Sprint 1 as active.
 - Converted DocumentationRelease.md from a generic in-progress planning document into a record reflecting completed Documentation Release 1.0 and 2.0 history.
 - Confirmed the repository ready to resume Sprint 1 implementation, with Evidence Collection as the next implementation milestone.
+
+---
+
+# [Sprint 3]
+
+**Status:** Complete (Phases 1–5)
+
+## Added
+
+- **Phase 1** — Wired `apps/sandbox`'s `create_assessment` command to the real `AssessmentService::execute` pipeline, replacing the empty-Assessment DTO used since Sandbox Phase 2.
+- **Phase 2** — Enforced minimum reference cardinality on `Finding` (`evidence_ids`) and `Recommendation` (`finding_ids`), recorded as new invariants INV-013 and INV-014. Resolved GOV-005 and GOV-006 (cardinality only; referential integrity deliberately left open).
+- **Phase 3** — Designed and approved the Evidence Collection Subsystem Boundary (`PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md`). Added ADR-0008 and ADR-0009. Added `docs/architecture/EvidenceCollection.md`. Amended `Architecture.md` (Evidence Collection named a Core Platform Component; Assessment Lifecycle diagram ordering corrected to match `DataModel.md`) and added cross-references in `DataModel.md`/`RuleEngine.md`. Added Governance Register items GOV-007 through GOV-010. Froze Documentation Release 2.1.
+- **Phase 4** — Created `modiq-collection`, the platform's ninth workspace crate, with a minimal synthetic collector proving the Evidence Collection boundary. Added `AssessmentService::execute_from_descriptor` (later renamed, see Phase 5) as a new, additive Engine entry point, leaving `execute` unchanged. Resolved GOV-007.
+- **Governance resolution (between Phases 4 and 5)** — Designed and approved Filesystem Collection's architecture (`PROPOSAL_FILESYSTEM_COLLECTION.md`). Resolved GOV-009 (Assessment Input Ownership) and GOV-010 (Collection Error Model) for the filesystem case, including the Collection Atomicity and Symbolic Link Policy decisions.
+- **Phase 5** — Implemented the first real collector: deterministic filesystem discovery of files and directories, the approved four-outcome Collection Error Model (`CollectionError`), Collection Atomicity, and the Symbolic Link Policy. Renamed `InputDescriptor`/`InputDescriptorError` to `AssessmentInput`/`AssessmentInputError` throughout, and `execute_from_descriptor` to `execute_from_assessment_input`. Updated the Sandbox to exercise the real collector against a fixed, checked-in fixture directory.
+- Expanded the root workspace test suite from 97 to 112 tests.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-004, and GOV-008 remain open; none were addressed this Sprint.
+- Referential integrity for Finding/Recommendation references (the GOV-005/GOV-006 follow-up) remains unassigned to a Governance Register item, though Phase 5's real collector is noted in `ENGINEERING_RELEASE_0.3.md` as a plausible forcing function that did not exist when the follow-up was first deferred.
+
+## Released
+
+- Documented in `ENGINEERING_RELEASE_0.3.md` (release record), `ROADMAP_REVIEW_2026.md` (the reassessment that recommended this Sprint's later phases), and the `PROPOSAL_EVIDENCE_COLLECTION_BOUNDARY.md` / `PROPOSAL_FILESYSTEM_COLLECTION.md` proposals that preceded Phases 3 and 5 respectively.
+
+---
+
+# [Documentation Release 2.1]
+
+**Status:** Complete (Frozen)
+
+## Added
+
+- `docs/architecture/EvidenceCollection.md` — a new Technical Layer specification: Evidence Collection subsystem ownership, orchestration flow, responsibilities/non-responsibilities, Assessment Input, the Collector Contract, Collection Outcomes, Collection Atomicity, and the Symbolic Link Policy.
+- ADR-0008 (Evidence Collection Subsystem Boundary) and ADR-0009 (AssessmentService Public API Evolution).
+
+## Changed
+
+- `Architecture.md` amended to name Evidence Collection as a Core Platform Component (System Overview, Assessment Lifecycle, Dependency Rules, Extensibility) and to correct the Assessment Lifecycle diagram's ordering, resolving a documented inconsistency with `DataModel.md`. The amendment is recorded explicitly within the document, not silently made.
+- Minor cross-reference additions to `DataModel.md` and `RuleEngine.md`.
+- `docs/README.md`'s Reading Order updated to include `EvidenceCollection.md`.
+
+---
+
+# [Engineering Release 0.3]
+
+**Status:** Complete
+
+## Added
+
+- Published `docs/engineering/ENGINEERING_RELEASE_0.3.md`, the architectural and implementation record for Sprint 3 (Phases 1–5).
+
+## Changed
+
+- Updated `PROJECT_STATUS.md` to reflect Sprint 3 completion, Engineering Release 0.3, and Documentation Release 2.1 as current.
+- Updated `CrateRoadmap.md`'s crate maturity table and Current Sprint section to reflect `modiq-collection`'s creation and its Phase 5 capability.
+- Completed this file's Sprint 3, Documentation Release 2.1, and Engineering Release 0.3 records.
+
+## Noted, Not Resolved
+
+- As of this release, the work it records (Sprint 3 Phase 5, the preceding governance-resolution session, and the Roadmap Review and Filesystem Collection proposal before that) remains uncommitted in the repository's working tree. See `ENGINEERING_RELEASE_0.3.md`, Repository Health.
+- `v0.3.0` already exists as a git tag from unrelated, earlier repository history (pre-existing git tag hygiene debt); this Engineering Release is not tagged, to avoid colliding with it.
