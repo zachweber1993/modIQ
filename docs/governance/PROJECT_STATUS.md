@@ -3,12 +3,12 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.3 |
+| **Current Release** | Engineering Release 0.4 |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Platform Validation Phase 1 — Complete |
+| **Current Milestone** | Sprint 4 — Complete (Phases 1–3D, plus Closeout) |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Platform Validation Phase 1 — ZIP / Archive Evidence Collection proposed, pending Technical Director review |
-| **Last Updated** | 2026-07-20 |
+| **Current Phase** | Post-Sprint 4 Closeout — repository reconciled; Sprint 5 not yet scoped |
+| **Last Updated** | 2026-07-21 |
 
 ---
 
@@ -32,7 +32,13 @@ Sprint 3 delivered the Evidence Collection subsystem, from architectural boundar
 
 Following Engineering Release 0.3, a Platform Validation cycle reviewed accumulated architectural assumptions against three Sprints of implementation evidence (`PROPOSAL_PLATFORM_VALIDATION_REVIEW.md`). GOV-004 (Engine Service Granularity) was evaluated, approved, and implemented: `AssessmentService` direct subsystem composition is the confirmed engine architecture, and the unused internal `EngineAPI` service model (and its `modiq-rules` mirror) was removed. GOV-008 (AssessmentService Public API Evolution) was evaluated and deferred: implementation evidence was found insufficient to resolve it, no architectural change was authorized, and the current `AssessmentService` execution contract remains the approved platform boundary pending future implementation evidence. Architecture validated for continued roadmap execution. Full record: `docs/engineering/ENGINEERING_LOG.md`.
 
-**Next implementation milestone:** ZIP / Archive Evidence Collection, the platform's second real Evidence Collector — see `docs/engineering/PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`. CLI wiring remains a separately available, low-risk parallel track, not yet scoped in detail.
+**Next implementation milestone (superseded by Sprint 4, below):** ZIP / Archive Evidence Collection, the platform's second real Evidence Collector — see `docs/engineering/PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`. CLI wiring remains a separately available, low-risk parallel track, not yet scoped in detail.
+
+## Sprint 4 — Complete
+
+Sprint 4 delivered the platform's second real Evidence Collector, archive-based, across four implementation phases plus a governance-resolution and boundary-proving cycle. GOV-011 (Archive Collection Model) was resolved in its entirety (`PROPOSAL_GOV-011.md`), informed by Phase 2's empirical investigation of the `zip` crate (v8.6.0) — the platform's first archive-parsing dependency and first genuinely adversarial input surface. Phase 3A implemented deterministic archive structural enumeration (`ArchiveReader`); Phase 3B transformed that structure into real Evidence (`ArchiveEvidenceBuilder`), reusing `EvidenceCategory::FileStructureAnalysis` unchanged; Phase 3C assembled both with GOV-011's three remaining policies (resource limits, the Archive Traversal Boundary Policy, and the Duplicate Archive Entry Policy) into one real Collector (`ArchiveCollector`), introducing one new closed-set category, `EvidenceCategory::StructuralDuplication`, following a dedicated Architecture Review (`PROPOSAL_GOV-011_DUPLICATE_REPRESENTATION.md`); Phase 3D wired `ArchiveCollector` into `AssessmentService` via one explicit, inline routing check, completing the platform's first end-to-end archive assessment path. No collector-dispatch abstraction was introduced at any phase. A Sprint 4 Closeout reconciled repository documentation, validated the archive path through the Sandbox application against a checked-in fixture, and produced an engineering retrospective. The workspace grew from 112 to 150 root tests (Sandbox: 3 to 6); nine workspace crates, unchanged in count. Full record: `docs/engineering/ENGINEERING_RELEASE_0.4.md`, `docs/engineering/SPRINT4_RETROSPECTIVE.md`.
+
+**Next implementation milestone:** not yet scoped. Sprint 5 has not begun as of this record.
 
 ---
 
@@ -105,7 +111,7 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 # Current Focus
 
-Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one. Engineering Release 0.3 freezes Sprint 3 (Phases 1–5). Platform Validation Phase 1 has since closed, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence. The next implementation milestone is ZIP / Archive Evidence Collection, proposed in `docs/engineering/PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` and awaiting Technical Director review; CLI wiring remains an independent parallel track.
+Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). Engineering Release 0.3 froze Sprint 3 (Phases 1–5); Engineering Release 0.4 now freezes Sprint 4 (Phases 1–3D, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open and untouched by Sprint 4. Sprint 5 has not yet been scoped; CLI wiring remains an independent, unscoped parallel track.
 
 Implementation should remain consistent with the frozen engineering specification.
 

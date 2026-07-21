@@ -5,9 +5,9 @@
 | **Document** | SPRINT4_IMPLEMENTATION_PLAN.md |
 | **Project** | modIQ |
 | **Sprint** | Sprint 4 — ZIP Evidence Collection |
-| **Status** | Approved — Pending Governance Prerequisites |
+| **Status** | Complete — see Completion Checklist, below, and `ENGINEERING_RELEASE_0.4.md` for the full closing record |
 | **Predecessor Documents** | `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` (approved), `PLATFORM_VALIDATION_GOV-004.md`, `PLATFORM_VALIDATION_GOV-008.md`, `PLATFORM_VALIDATION_EXECUTION_CONTRACT.md` |
-| **Last Updated** | 2026-07-20 |
+| **Last Updated** | 2026-07-21 (Sprint 4 Closeout) |
 
 ---
 
@@ -198,7 +198,7 @@ One item must be resolved through the governance process defined in `GOVERNANCE.
 - `GOVERNANCE.md` — new Governance Register entry (candidate GOV-011), resolved during Phase 1/2.
 - `CrateRoadmap.md` — `modiq-collection`'s maturity entry updated; the new external dependency recorded; a new revision history entry.
 - `ENGINEERING_LOG.md` — a Sprint 4 entry, following the established Status/Affected Crates/Affected Documents/Notes structure, per phase or as one consolidated entry at Sprint close.
-- A new ADR is plausible, recording the explicit-routing decision (Technical Director Decisions, above) as a durable architectural artifact — mirroring ADR-0010's treatment of GOV-004. This document does not draft one; whether one is warranted is for the Technical Director to confirm at Sprint close, consistent with `docs/adrs/README.md`'s own criteria (a decision "establishes a new architectural principle").
+- A new ADR was plausible, recording the explicit-routing decision (Technical Director Decisions, above) as a durable architectural artifact — mirroring ADR-0010's treatment of GOV-004. This document did not draft one; whether one was warranted was left for the Technical Director to confirm at Sprint close, consistent with `docs/adrs/README.md`'s own criteria (a decision "establishes a new architectural principle"). **Confirmed at Closeout: no ADR.** The Technical Director reviewed this question and concluded explicit routing remains an implementation decision, not a standalone architectural principle warranting its own record.
 
 ---
 
@@ -238,28 +238,30 @@ Sprint 4 is complete only when all of the following are true:
 
 # Completion Checklist
 
-☐ Governance prerequisite completed — GOV-011 Resolved in the Governance Register
+Verified against repository state at Sprint 4 Closeout (2026-07-21), not carried over from any phase's own self-report.
 
-☐ `EvidenceCollection.md` updated to reflect GOV-011's approved archive-specific outcomes and traversal boundary policy
+☑ Governance prerequisite completed — GOV-011 Resolved in the Governance Register
 
-☐ Archive Collector implemented — deterministic, tested against every GOV-011-defined outcome
+☑ `EvidenceCollection.md` updated to reflect GOV-011's approved archive-specific outcomes and traversal boundary policy
 
-☐ No dispatch abstraction introduced — no trait, registry, factory, or plugin mechanism added anywhere
+☑ Archive Collector implemented — deterministic, tested against every GOV-011-defined outcome
 
-☐ Explicit routing added to `AssessmentService` only — no other signature or behavior change
+☑ No dispatch abstraction introduced — no trait, registry, factory, or plugin mechanism added anywhere
 
-☐ Existing filesystem `EvidenceCollector` and `execute` entry point unchanged
+☑ Explicit routing added to `AssessmentService` only — no other signature or behavior change
 
-☐ New external dependency recorded in `CrateRoadmap.md` and evaluated against Phase 2's stated criteria
+☑ Existing filesystem `EvidenceCollector` and `execute` entry point unchanged
 
-☐ Sandbox exercises the new capability against a checked-in archive fixture, with no new input UI
+☑ New external dependency recorded in `CrateRoadmap.md` and evaluated against Phase 2's stated criteria — *note:* Phase 2's own record evaluated `zip` v8.6.0 only against its technical/security criteria (deterministic enumeration, clean failure modes, metadata-only resource-limit reads); the license/maintenance half of Phase 2's stated criteria was not separately written down at the time. Verified now, at Closeout: `license = "MIT"` (compatible with this workspace's own MIT license), actively versioned (major version 8), repository `zip-rs/zip2`. Checked off on that basis, not on a contemporaneous Phase 2 record.
 
-☐ Security validation complete — zip-bomb, path-traversal, and malformed-archive cases tested directly
+☑ Sandbox exercises the new capability against a checked-in archive fixture, with no new input UI — completed at Closeout (`fixtures/sample-archive-input.zip`; no new `#[tauri::command]`), not during Phase 3D, per the Technical Director's explicit deferral of this item to a post-Sprint validation activity.
 
-☐ Determinism validation complete — repeated-collection test passes; ordering imposed explicitly, not inherited
+☑ Security validation complete — zip-bomb, path-traversal, and malformed-archive cases tested directly
 
-☐ Tests passing — `cargo fmt`, `cargo check --workspace`, `cargo test --workspace` clean; Sandbox's own three commands clean
+☑ Determinism validation complete — repeated-collection test passes; ordering imposed explicitly, not inherited
 
-☐ Engineering Log updated — Sprint 4 entry added following the established entry format
+☑ Tests passing — `cargo fmt`, `cargo check --workspace`, `cargo test --workspace` clean (150/150); Sandbox's own three commands clean (6/6)
 
-☐ New ADR drafted, or explicitly declined, for the explicit-routing decision — Technical Director to confirm
+☑ Engineering Log updated — Sprint 4 entries added following the established entry format, one per phase plus Closeout
+
+☑ New ADR drafted, or explicitly declined, for the explicit-routing decision — **explicitly declined.** Raised to the Technical Director at Closeout rather than decided by Engineering; the Technical Director has since reviewed and confirmed explicit routing remains an implementation decision, not a standalone architectural principle. No ADR follows.

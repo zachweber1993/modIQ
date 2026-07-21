@@ -654,3 +654,87 @@ Amended `EvidenceCollection.md`'s Collector Contract section: the sentence stati
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 143 to 150 (`modiq-engine` 9 → 16; every other crate unchanged). `Cargo.lock` gained no new package — `zip` was already present in the lockfile from `modiq-collection`'s existing dependency; only its dev-dependency edge for `modiq-engine` is new. `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, 3/3 unchanged — expected, since the Sandbox's own filesystem-path usage of `execute_from_assessment_input` is unaffected by the new branch.
 
 No architectural boundary was crossed beyond what was explicitly authorized: no dispatcher, registry, trait, or plugin mechanism was introduced; `execute`'s signature and behavior are unchanged; `EvidenceCollector`'s own code was not modified. No governance document was modified — this phase implemented a decision the Technical Director had already made (`SPRINT4_IMPLEMENTATION_PLAN.md`'s Explicit Routing decision), it did not make a new one. A Sandbox exercise of the archive path specifically (a checked-in `.zip` fixture driven through the real Tauri application, mirroring Sprint 3 Phase 5's own filesystem-case precedent) was not part of this phase's authorized deliverables and remains unimplemented; the routing itself was verified through `modiq-engine`'s own real-I/O tests instead.
+
+---
+
+## 2026-07-21
+
+### Sprint 4 Closeout: Repository Reconciliation, Sandbox Archive Validation, Retrospective
+
+Status:
+Completed
+
+Affected Crates:
+- (none — Sandbox test/fixture additions only; no production crate code changed)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/implementation/CrateRoadmap.md
+- docs/engineering/SPRINT4_IMPLEMENTATION_PLAN.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_0.4.md (new)
+
+Notes:
+Formal Sprint 4 closeout, per Technical Director authorization: repository reconciliation, a documentation consistency audit, Sandbox archive validation, an engineering retrospective, and a Sprint 4 Completion Report — the last two combined into `ENGINEERING_RELEASE_0.4.md`, mirroring `ENGINEERING_RELEASE_0.3.md`'s own precedent of housing its Sprint's retrospective and lessons-learned content inside the release document itself, rather than as a separate file.
+
+**Repository Reconciliation:** confirmed all four implementation phases (3A–3D) complete against `SPRINT4_IMPLEMENTATION_PLAN.md`'s own Completion Checklist, verified item by item against current repository state rather than carried over from any phase's own self-report (150/150 root tests, 6/6 Sandbox tests, both independently re-run). One checklist item — the dependency-evaluation criteria for `zip` — had not been formally recorded at Phase 2 time (only technical/security criteria were); evaluated now: `license = "MIT"`, compatible with this workspace's own license, confirmed by direct inspection of the pinned dependency's `Cargo.toml`. One item remains genuinely open, not merely uncompleted: whether the explicit-routing decision (Phase 3D) warrants a standalone ADR, a question `SPRINT4_IMPLEMENTATION_PLAN.md` itself named as a Technical Director confirmation point at Sprint close — left unchecked and raised for review rather than decided by Engineering.
+
+**Documentation Audit finding:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` — this repository's designated living status documents — had not been updated since before Sprint 4 began, despite `Last Updated: 2026-07-20` on `PROJECT_STATUS.md` (the date was current; the content was not). Both still described "Platform Validation Phase 1 — Complete" as the current milestone and named ZIP/Archive Evidence Collection as merely "proposed, pending Technical Director review." This is the identical staleness pattern `ENGINEERING_RELEASE_0.3.md` flagged after Sprint 3 ("has gone stale after every release checkpoint so far... structurally unaddressed") — it recurred, unchanged, across Sprint 4. Corrected: both documents' header fields, a new `## Sprint 4 — Complete` narrative section in `PROJECT_STATUS.md` and a new `# [Sprint 4]` entry in `CHANGELOG.md`, both mirroring their own established per-Sprint structure exactly (no new section types invented). `docs/README.md`'s one stale Engineering Release cross-reference (still naming 0.3) corrected. `docs/implementation/CrateRoadmap.md` gained a `## Sprint 4 — Complete` narrative paragraph, matching its existing Sprint 1/2/3 pattern, in addition to the revision-history rows and crate-table update already added during Phase 3D.
+
+**Also found, and deliberately not corrected:** `docs/governance/ROADMAP.md` and `docs/governance/EngineeringGuide.md` are both stale since 2026-07-16 (Sprint 0/1 era) — predating Sprint 4 entirely, not named in this Closeout's documentation-audit scope, and requiring a larger content judgment (ROADMAP.md's own phase model has not tracked Sprint numbering since Sprint 1) that this Closeout's "consistency rather than rewriting" charter does not cover. `CrateRoadmap.md`'s "Exit Criteria" section has never had a Sprint 3 or Sprint 4 entry — a pre-existing gap, not created asymmetrically for Sprint 4 alone. Both are named here for visibility, not silently left out of the record.
+
+**Sandbox Archive Validation:** added a checked-in archive fixture (`apps/sandbox/src-tauri/fixtures/sample-archive-input.zip`, mirroring `sample-assessment-input/`'s own structure — one top-level file, one subdirectory, one nested file) and three new tests in the Sandbox's own workspace, calling `AssessmentService::execute_from_assessment_input` directly against it — the exact production entry point `create_assessment` itself uses, not a reimplementation. Confirmed directly: `.zip` routing selects `ArchiveCollector` and produces the expected Evidence/Finding/Recommendation counts; archive Evidence is correctly categorized and described as archive-collection output; the pre-existing directory fixture path is unaffected (a dedicated regression-guard test), still describing its Evidence as filesystem-collection output. No new `#[tauri::command]` or IPC surface was added — the new fixture and tests are `#[cfg(test)]`-only, consistent with the Sandbox's standing no-file-picker, no-new-input-mechanism constraint. This exercises the real production code path through the Sandbox's own separate workspace and build, not a launched, interacted-with GUI window — no display is available in this environment, and this limitation is stated plainly rather than implied otherwise.
+
+**Retrospective and Completion Report:** produced as `ENGINEERING_RELEASE_0.4.md`, following `ENGINEERING_RELEASE_0.3.md`'s exact section structure (no new structure introduced): Executive Summary, Scope, Major Architectural/Implementation Accomplishments, Governance Completed, Documentation Completed, Testing Growth, Repository Maturity Assessment, Crate Maturity Review, Technical Debt Review, Sprint 4 Retrospective, Remaining Risks, Lessons Learned, Engineering Metrics, Repository Timeline, Recommendation.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count unchanged at 150 (no production code changed this session). `apps/sandbox/src-tauri`: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, Sandbox test count grew from 3 to 6 (the three new archive-validation/regression tests).
+
+No architectural change was made or proposed: no new capability, no new abstraction, no scope expansion, no Sprint 5 work begun. Two items are raised for Technical Director review rather than decided unilaterally: the standalone-ADR question for explicit routing (resolved shortly after this entry — see below), and — separately, not a decision but an observation — whether documentation staleness recurring identically across two consecutive Sprints warrants a structural process change (a per-phase or per-commit reconciliation habit) rather than the per-Sprint-close catch this Closeout itself performed.
+
+---
+
+## 2026-07-21
+
+### Technical Director Review: Explicit-Routing ADR Question Closed
+
+Status:
+Completed
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- docs/engineering/SPRINT4_IMPLEMENTATION_PLAN.md
+- docs/engineering/ENGINEERING_RELEASE_0.4.md
+- docs/governance/CHANGELOG.md
+
+Notes:
+The one item Sprint 4 Closeout's Repository Reconciliation left genuinely open — whether `AssessmentService`'s explicit archive-vs-filesystem routing (Phase 3D) warrants a standalone ADR, mirroring ADR-0010's treatment of GOV-004 — has been reviewed and closed by the Technical Director: explicit routing remains an implementation decision, not a standalone architectural principle. No ADR is created.
+
+`SPRINT4_IMPLEMENTATION_PLAN.md`'s Completion Checklist item is now checked, with the outcome recorded rather than left as a bare checkmark; its Documentation Updates Expected section, which originally named this as plausible, is amended in place to record the confirmed outcome. `ENGINEERING_RELEASE_0.4.md`'s seven references to this question (Governing ADRs header field, Deliberately Not Delivered, Governance Completed, Documentation Completed, Technical Debt Review's Deferred Enhancements, Sprint 4 Retrospective, and Recommendation) are each updated in place rather than left inconsistent with the resolution — Recommendation now names only one item (documentation-staleness process fix) as needing early Sprint 5 attention, not two. `CHANGELOG.md`'s corresponding Deferred bullet is removed as no longer accurate; a duplicated resource-limit-threshold bullet introduced by that edit was caught and removed in the same pass.
+
+No architectural change was made: this entry records a decision, not an implementation. `docs/adrs/` gains no new file. Sprint 4 is now fully closed with zero open items from its own Closeout report.
+
+---
+
+### Technical Director Review: Sprint 4 Closeout Approved; Sprint 4 Officially Closed
+
+Status:
+Completed
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- (none — this entry is the record; no other document required a further change as a result of this approval)
+
+Notes:
+The Technical Director reviewed and accepted the full Sprint 4 Closeout: repository reconciliation confirmed Sprint 4 objectives complete, documentation found to accurately reflect repository state, and Sandbox validation accepted as demonstrating the completed archive assessment capability.
+
+Two decisions recorded:
+
+1. **Explicit-routing ADR — reconfirmed declined**, consistent with the prior entry above: explicit routing remains an implementation decision within the existing architectural framework, not a standalone architectural principle.
+2. **Documentation staleness — accepted as a process-improvement item, not an unresolved defect.** The Technical Director's direction: future sprints should formally include repository reconciliation and documentation audit as part of sprint closure, rather than as a catch-up performed only when explicitly scoped after the fact (as this Closeout itself was). This is a standing process expectation for future sprint-closing sessions, not an action item against Sprint 4's own record, which is now complete.
+
+**Sprint 4 is officially closed**, with zero open items from its own Closeout report. Recorded here as the formal closing event; the underlying reconciliation, validation, and retrospective content lives in `ENGINEERING_RELEASE_0.4.md` and the entries above, not repeated here.

@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-19 |
+| **Last Updated** | 2026-07-21 |
 
 ---
 
@@ -342,3 +342,30 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Next
 
 - ZIP / Archive Evidence Collection proposed (`PROPOSAL_ZIP_EVIDENCE_COLLECTION.md`), the platform's second real Evidence Collector — awaiting Technical Director review. CLI wiring remains an independent, unscoped parallel track.
+
+---
+
+# [Sprint 4]
+
+**Status:** Complete (Phases 1–3D, plus Closeout)
+
+## Added
+
+- **Phase 1 (Governance Preparation)** and **Phase 2 (Boundary-Proving)** — drafted and empirically validated candidate answers to GOV-011's four questions against the `zip` crate (v8.6.0) in a standalone investigation: deterministic entry enumeration (explicit sort required), clean malformed-archive failure, metadata-only resource-limit quantities (~1,270× faster than full decompression), duplicate entry names only partially observable through the dependency's ordinary API, and `enclosed_name()` sanitizing rather than rejecting absolute-path entries.
+- **GOV-011 (Archive Collection Model)** resolved in its entirety (`PROPOSAL_GOV-011.md`): malformed/corrupt archives and resource-limit violations categorized as Unsupported Input; the Duplicate Archive Entry Policy adopted (detection recorded as an observable fact, no fabricated per-entry Evidence, no silent last-write-wins); the Archive Traversal Boundary Policy adopted, covering relative traversal and absolute-path entries independent of dependency sanitization; the Archive Metadata Policy adopted. `EvidenceCollection.md` amended.
+- **Phase 3A** — `ArchiveReader`/`ArchiveEntry`/`ArchiveReadError`: deterministic, sorted structural enumeration of a ZIP archive's entries. `zip` v8.6.0 added to `modiq-collection`, the platform's first archive-parsing dependency.
+- **Phase 3B** — `ArchiveEvidenceBuilder`: transforms `ArchiveEntry` values into real `Evidence`, reusing `EvidenceCategory::FileStructureAnalysis` unchanged.
+- **Phase 3C** — `ArchiveCollector`: assembled Phases 3A/3B with GOV-011's three remaining policies into one real Collector. Resource limits and the Archive Traversal Boundary Policy enforced. The Duplicate Archive Entry Policy represented via a new closed-set category, `EvidenceCategory::StructuralDuplication` (`modiq-runtime`), following a dedicated Architecture Review (`PROPOSAL_GOV-011_DUPLICATE_REPRESENTATION.md`) and Technical Director approval, named for the observation's semantic class rather than the collection mechanism. Duplicate detection performs sequential local-file-header inspection, since the dependency's central directory is name-indexed and cannot represent a collision.
+- **Phase 3D** — `ArchiveCollector` wired into `AssessmentService::execute_from_assessment_input` via one explicit, inline, case-insensitive `.zip`-suffix routing check; no dispatcher, registry, trait, or plugin mechanism. The filesystem `EvidenceCollector` path is unchanged. Completed the platform's first end-to-end archive assessment path.
+- **Closeout** — a checked-in archive fixture (`apps/sandbox/src-tauri/fixtures/sample-archive-input.zip`) and dedicated Sandbox-workspace tests exercise `AssessmentService::execute_from_assessment_input`'s archive-routing path through the exact production entry point `create_assessment` uses, alongside a regression guard confirming the pre-existing filesystem fixture path is unaffected. No new `#[tauri::command]` or UI surface added.
+- The root workspace test suite grew from 112 to 150 tests across the sprint (`modiq-collection` 12→43, `modiq-engine` 9→16, plus `modiq-runtime`'s `EvidenceCategory::StructuralDuplication` coverage); the Sandbox's own separate suite grew from 3 to 6.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, and GOV-008 remain open; none were addressed this Sprint.
+- Numeric resource-limit thresholds (50,000 entries; 10,000:1 compression ratio) remain provisional, chosen with headroom above Phase 2's measured baseline rather than calibrated against production data.
+- Nested archive traversal (an archive within an archive) and any archive format other than ZIP remain out of scope, as originally planned.
+
+## Released
+
+- Documented in `docs/engineering/ENGINEERING_RELEASE_0.4.md` (release record), `docs/engineering/SPRINT4_RETROSPECTIVE.md` (engineering retrospective), and the `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` / `PROPOSAL_GOV-011.md` / `PROPOSAL_GOV-011_DUPLICATE_REPRESENTATION.md` proposals that preceded and shaped implementation.

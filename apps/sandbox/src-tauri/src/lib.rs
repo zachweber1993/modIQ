@@ -149,6 +149,22 @@ pub fn run() {
 mod tests {
     use super::*;
 
+    /// A fixed, checked-in ZIP archive fixture, used only by this test
+    /// module to exercise `AssessmentService::execute_from_assessment_input`'s
+    /// archive-routing path (Sprint 4 Phase 3D) through the exact same
+    /// production entry point `create_assessment` itself uses.
+    /// Deliberately not exposed as a second `#[tauri::command]` or any
+    /// new IPC surface — this is validation code only, consistent with
+    /// the Sandbox's standing no-file-picker, no-new-input-mechanism
+    /// constraint (`PROPOSAL_FILESYSTEM_COLLECTION.md`, Sandbox
+    /// Interaction). Mirrors `sample-assessment-input/`'s own
+    /// structure (one top-level file, one subdirectory, one nested
+    /// file) so the two fixtures are directly comparable.
+    const FIXTURE_ARCHIVE_INPUT: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/fixtures/sample-archive-input.zip"
+    );
+
     #[test]
     fn create_assessment_discovers_the_fixture_directory_contents_via_the_real_collector() {
         let summary = create_assessment();
@@ -195,5 +211,65 @@ mod tests {
             locations,
             vec!["nested".to_string(), nested_detail, "notes.txt".to_string()]
         );
+    }
+
+    #[test]
+    fn execute_from_assessment_input_discovers_the_fixture_archive_via_the_real_archive_collector()
+    {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                FIXTURE_ARCHIVE_INPUT,
+            )
+            .expect("the fixture archive exists and is well-formed");
+        let summary = AssessmentSummary::from(&report);
+
+        // sample-archive-input.zip contains one top-level file
+        // (notes.txt), one directory entry (nested/), and one nested
+        // file (nested/detail.txt) — three structural facts, this
+        // time discovered by ArchiveCollector via AssessmentService's
+        // explicit .zip routing rather than the filesystem collector.
+        assert_eq!(summary.evidence_count, 3);
+        assert_eq!(summary.evidence.len(), 3);
+        assert_eq!(summary.finding_count, 1);
+        assert_eq!(summary.recommendation_count, 1);
+    }
+
+    #[test]
+    fn archive_evidence_entries_are_categorized_and_described_as_archive_collection_output() {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                FIXTURE_ARCHIVE_INPUT,
+            )
+            .expect("the fixture archive exists and is well-formed");
+        let summary = AssessmentSummary::from(&report);
+
+        for entry in &summary.evidence {
+            assert_eq!(entry.category, "FileStructureAnalysis");
+            assert!(entry.description.contains("archive collection"));
+        }
+    }
+
+    #[test]
+    fn the_directory_fixture_path_still_produces_filesystem_collection_output() {
+        // Regression guard, specific to this Sprint 4 closeout's
+        // Sandbox Archive Validation: confirms the pre-existing
+        // create_assessment command's fixed directory target still
+        // routes to the filesystem EvidenceCollector, unaffected by
+        // the archive-routing addition, and still describes its
+        // Evidence as filesystem — not archive — collection output.
+        let summary = create_assessment();
+
+        assert_eq!(summary.evidence_count, 3);
+        for entry in &summary.evidence {
+            assert!(entry.description.contains("filesystem collection"));
+        }
     }
 }
