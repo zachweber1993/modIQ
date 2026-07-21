@@ -326,6 +326,11 @@ dependencies = [
 [[package]]
 name = "modiq-cli"
 version = "0.1.0"
+dependencies = [
+ "modiq-engine",
+ "modiq-report",
+ "modiq-runtime",
+]
 
 [[package]]
 name = "modiq-collection"

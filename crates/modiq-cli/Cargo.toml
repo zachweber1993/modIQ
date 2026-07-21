@@ -6,3 +6,6 @@ rust-version.workspace = true
 license.workspace = true
 
 [dependencies]
+modiq-runtime = { path = "../modiq-runtime" }
+modiq-engine = { path = "../modiq-engine" }
+modiq-report = { path = "../modiq-report" }
