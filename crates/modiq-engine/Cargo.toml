@@ -11,3 +11,6 @@ modiq-rules = { path = "../modiq-rules" }
 modiq-report = { path = "../modiq-report" }
 modiq-collection = { path = "../modiq-collection" }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+zip = { workspace = true }

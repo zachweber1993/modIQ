@@ -349,6 +349,7 @@ dependencies = [
  "modiq-rules",
  "modiq-runtime",
  "thiserror",
+ "zip",
 ]
 
 [[package]]

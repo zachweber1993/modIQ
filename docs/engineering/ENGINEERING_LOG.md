@@ -619,3 +619,38 @@ Seventeen new or revised tests, all passing on first run after two fixes (below)
 `cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 126 to 143 (`modiq-collection` 26 → 43; every other crate unchanged). `Cargo.lock` is unchanged — no new dependency; the streaming-read facility used for duplicate detection is part of the already-pinned `zip` v8.6.0. `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check`, `cargo test` all pass cleanly, 3/3 unchanged, confirming zero behavioral impact on the one real application — expected, since `AssessmentService` and `AssessmentInput` were not touched.
 
 No architectural boundary was crossed beyond what was explicitly authorized: no `AssessmentService` integration, no `AssessmentInput` modification, no dispatcher abstraction, no new crate, no new external dependency. `docs/engineering/GOVERNANCE.md`'s GOV-011 entry was not modified — its existing resolution already states that implementation-mechanism questions (including Question 2's representation) do not require further governance approval, and already points to `EvidenceCollection.md` as the record of implementation detail. Sprint 4 Phase 3D (`AssessmentService` integration, routing, Sandbox exercise, further documentation reconciliation) remains to be scoped and authorized separately.
+
+---
+
+## 2026-07-20
+
+### Sprint 4 Phase 3D: AssessmentService Archive Routing
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-engine
+
+Affected Documents:
+- EvidenceCollection.md
+- CrateRoadmap.md
+
+Notes:
+Wired `ArchiveCollector` (Phase 3C) into `AssessmentService::execute_from_assessment_input`, completing the platform's first end-to-end archive assessment path (`AssessmentService` → `ArchiveCollector` → Evidence → the existing, unchanged assessment pipeline → `AssessmentReport`), per Technical Director authorization.
+
+**Routing mechanism:** one new private method, `AssessmentService::is_archive_location(&str) -> bool`, called from one `if`/`else` inline in `execute_from_assessment_input` immediately after `AssessmentInput` construction. Returns true exactly when the input's value ends in `.zip`, case-insensitively; `ArchiveCollector` is called for that branch, `EvidenceCollector` for every other value, unchanged from before this phase. `SPRINT4_IMPLEMENTATION_PLAN.md`'s Approved Routing & Collector Shape section explicitly left the determination method (extension check, content-signature check, or a combination) as an implementation decision; an extension check was chosen as the simpler of the two named options, with no correctness gap it introduces: a `*.zip`-named location that is not actually a well-formed archive is not misclassified or silently mishandled, since `ArchiveCollector` already reports Inaccessible/Unsupported for exactly that case — the same discipline `EvidenceCollector` already applies for its own unsupported inputs. No trait, registry, dispatcher, or common supertype was introduced; both collectors remain independently invoked, by name, from this one decision point, matching every Technical Director decision on record for this question.
+
+`execute` (the `Vec<Evidence>`-accepting entry point) was not touched, per `SPRINT4_IMPLEMENTATION_PLAN.md` Phase 4's own completion criteria. `EvidenceCollector`'s own behavior, and every existing filesystem-path test, are unchanged and still pass unmodified.
+
+Added `zip` as a `[dev-dependencies]` entry to `modiq-engine`'s `Cargo.toml`, to build real archive fixtures (`ZipWriter`) in `AssessmentService`'s own tests, mirroring `archive_reader.rs`'s and `archive_collector.rs`'s existing test-fixture pattern. Not a new crate for the workspace — `zip` was already an approved `[workspace.dependencies]` entry since Phase 3A; this only extends its existing dev-only usage to a second crate. Production code in `modiq-engine` does not depend on `zip` directly; only `modiq-collection` does.
+
+Seven new tests: two pure unit tests of `is_archive_location` (case-insensitivity; rejection of non-`.zip` values, including a `mod.zip.bak` case ensuring only a true trailing `.zip` suffix matches); a real end-to-end archive assessment producing the expected Evidence, Finding, and Recommendation; case-insensitive extension matching exercised through the real pipeline (`MOD.ZIP`); a malformed `*.zip` file correctly surfacing `CollectionError::Unsupported` through `AssessmentExecutionError`; a plain non-`.zip` file confirming the filesystem path is unaffected by the new routing; and determinism across two identical archive assessments. All sixteen `modiq-engine` unit tests (nine existing, seven new) and the three unchanged `tests/end_to_end.rs` integration tests pass.
+
+While synchronizing `EvidenceCollection.md`, found its top metadata table's Version field still read 1.2.0 — one revision behind the Document Status footer's own 1.3.0, which Phase 3C's amendment had correctly updated. The footer's content was right; the table simply was not updated alongside it. Corrected both fields together to 1.4.0 as part of this phase's own amendment, rather than leaving the inconsistency in place or silently claiming this phase was the first to touch the table.
+
+Amended `EvidenceCollection.md`'s Collector Contract section: the sentence stating that Collector composition/dispatch "remains an open implementation question, deliberately deferred until a second concrete Collector exists" is now factually superseded — a second concrete Collector exists and the question is resolved (explicit inline routing, no abstraction). Replaced with a short "Composition (resolved, Sprint 4 Phase 3D)" note recording the resolution and explicitly leaving open whether the same shape holds for a hypothetical third Collector, rather than asserting that preemptively.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly: root workspace test count grew from 143 to 150 (`modiq-engine` 9 → 16; every other crate unchanged). `Cargo.lock` gained no new package — `zip` was already present in the lockfile from `modiq-collection`'s existing dependency; only its dev-dependency edge for `modiq-engine` is new. `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, 3/3 unchanged — expected, since the Sandbox's own filesystem-path usage of `execute_from_assessment_input` is unaffected by the new branch.
+
+No architectural boundary was crossed beyond what was explicitly authorized: no dispatcher, registry, trait, or plugin mechanism was introduced; `execute`'s signature and behavior are unchanged; `EvidenceCollector`'s own code was not modified. No governance document was modified — this phase implemented a decision the Technical Director had already made (`SPRINT4_IMPLEMENTATION_PLAN.md`'s Explicit Routing decision), it did not make a new one. A Sandbox exercise of the archive path specifically (a checked-in `.zip` fixture driven through the real Tauri application, mirroring Sprint 3 Phase 5's own filesystem-case precedent) was not part of this phase's authorized deliverables and remains unimplemented; the routing itself was verified through `modiq-engine`'s own real-I/O tests instead.

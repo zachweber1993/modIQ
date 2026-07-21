@@ -1,4 +1,4 @@
-use modiq_collection::collection::{AssessmentInput, EvidenceCollector};
+use modiq_collection::collection::{ArchiveCollector, AssessmentInput, EvidenceCollector};
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
 use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject, Evidence};
@@ -69,13 +69,14 @@ impl AssessmentService {
     /// Added alongside `execute` rather than changing its signature:
     /// whether `execute` itself should evolve to accept an
     /// AssessmentInput remains open (ADR-0009, GOV-008). This method
-    /// constructs the AssessmentInput, invokes Evidence Collection, and
-    /// then delegates to the existing, unchanged `execute` for the
-    /// rest of the pipeline — in that order, so that `execute` (and
-    /// therefore Assessment creation) is only ever reached once
-    /// collection has already succeeded (Collection Atomicity,
-    /// `EvidenceCollection.md`): if either step fails, this method
-    /// returns before any Assessment exists at all.
+    /// constructs the AssessmentInput, routes it to the appropriate
+    /// Collector (see `is_archive_location`), invokes Evidence
+    /// Collection, and then delegates to the existing, unchanged
+    /// `execute` for the rest of the pipeline — in that order, so that
+    /// `execute` (and therefore Assessment creation) is only ever
+    /// reached once collection has already succeeded (Collection
+    /// Atomicity, `EvidenceCollection.md`): if any step fails, this
+    /// method returns before any Assessment exists at all.
     pub fn execute_from_assessment_input(
         &self,
         subject: AssessmentSubject,
@@ -83,9 +84,39 @@ impl AssessmentService {
         input: impl Into<String>,
     ) -> Result<AssessmentReport, AssessmentExecutionError> {
         let assessment_input = AssessmentInput::new(input)?;
-        let evidence = EvidenceCollector.collect(&assessment_input)?;
+
+        let evidence = if Self::is_archive_location(assessment_input.value()) {
+            ArchiveCollector.collect(assessment_input.value())?
+        } else {
+            EvidenceCollector.collect(&assessment_input)?
+        };
 
         Ok(self.execute(subject, context, evidence))
+    }
+
+    /// The explicit archive-vs-filesystem routing decision (Sprint 4
+    /// Phase 3D, `SPRINT4_IMPLEMENTATION_PLAN.md`: Approved Routing &
+    /// Collector Shape). A location is routed to `ArchiveCollector`
+    /// exactly when its value ends in `.zip`, case-insensitively;
+    /// every other value routes to the filesystem `EvidenceCollector`,
+    /// exactly as it did before this phase.
+    ///
+    /// Deliberately one direct, inline check rather than any lookup
+    /// table, trait dispatch, or configuration-driven mechanism, per
+    /// the Technical Director's explicit-routing decision: two
+    /// collectors is not evidence a dispatch abstraction is
+    /// justified. Neither collector shares a trait or common
+    /// supertype with the other; both are invoked directly, by name,
+    /// from this one decision point.
+    ///
+    /// A location merely named `*.zip` that is not actually a
+    /// well-formed archive (a directory, a non-archive file) is not
+    /// specially handled here — `ArchiveCollector` itself reports the
+    /// appropriate Inaccessible/Unsupported outcome, the same
+    /// discipline `EvidenceCollector` already applies for its own
+    /// unsupported cases.
+    fn is_archive_location(value: &str) -> bool {
+        value.to_ascii_lowercase().ends_with(".zip")
     }
 }
 
@@ -97,6 +128,8 @@ mod tests {
 
     use modiq_collection::collection::{AssessmentInputError, CollectionError};
     use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory};
+    use zip::ZipWriter;
+    use zip::write::SimpleFileOptions;
 
     use super::*;
 
@@ -134,6 +167,25 @@ mod tests {
         fn drop(&mut self) {
             let _ = fs::remove_dir_all(&self.path);
         }
+    }
+
+    /// Writes a real, well-formed ZIP archive containing the given
+    /// (name, content) file entries, for exercising the real archive
+    /// routing path end to end. Mirrors `archive_reader.rs`'s own test
+    /// helper of the same shape.
+    fn write_archive(path: &Path, files: &[(&str, &str)]) {
+        let file = fs::File::create(path).expect("can create a temporary archive file");
+        let mut writer = ZipWriter::new(file);
+        let options = SimpleFileOptions::default();
+
+        for (name, content) in files {
+            writer
+                .start_file(*name, options)
+                .expect("can start a file entry");
+            std::io::Write::write_all(&mut writer, content.as_bytes())
+                .expect("can write file entry content");
+        }
+        writer.finish().expect("can finalize the archive");
     }
 
     #[test]
@@ -308,5 +360,147 @@ mod tests {
         // runtime state to inspect — the absence of any AssessmentReport
         // at all is the assertion.
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn is_archive_location_matches_the_zip_extension_case_insensitively() {
+        assert!(AssessmentService::is_archive_location("mod.zip"));
+        assert!(AssessmentService::is_archive_location("MOD.ZIP"));
+        assert!(AssessmentService::is_archive_location(
+            "archive/nested/mod.Zip"
+        ));
+    }
+
+    #[test]
+    fn is_archive_location_rejects_non_zip_values() {
+        assert!(!AssessmentService::is_archive_location("mod.rar"));
+        assert!(!AssessmentService::is_archive_location("a/mod/directory"));
+        assert!(!AssessmentService::is_archive_location("zip"));
+        assert!(!AssessmentService::is_archive_location("mod.zip.bak"));
+    }
+
+    #[test]
+    fn execute_from_assessment_input_routes_a_zip_extension_to_the_archive_collector() {
+        let dir = TempDir::new("execute-archive-success");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(&archive_path, &[("notes.txt", "sample content")]);
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        assert_eq!(report.evidence().len(), 1);
+        assert_eq!(
+            report.evidence()[0].category(),
+            EvidenceCategory::FileStructureAnalysis
+        );
+        assert_eq!(
+            report.evidence()[0].description(),
+            "File discovered during archive collection."
+        );
+        assert_eq!(report.evidence()[0].location(), Some("notes.txt"));
+        assert_eq!(report.findings().len(), 1);
+        assert_eq!(report.recommendations().len(), 1);
+    }
+
+    #[test]
+    fn execute_from_assessment_input_routing_is_case_insensitive_for_the_zip_extension() {
+        let dir = TempDir::new("execute-archive-case-insensitive");
+        let archive_path = dir.path().join("MOD.ZIP");
+        write_archive(&archive_path, &[("notes.txt", "sample content")]);
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        assert_eq!(report.evidence().len(), 1);
+    }
+
+    #[test]
+    fn execute_from_assessment_input_reports_unsupported_for_a_malformed_archive() {
+        let dir = TempDir::new("execute-archive-malformed");
+        let archive_path = dir.path().join("mod.zip");
+        fs::write(&archive_path, b"this is plain text, not a zip archive").unwrap();
+        let service = AssessmentService;
+
+        let result = service.execute_from_assessment_input(
+            AssessmentSubject,
+            AssessmentContext,
+            archive_path.display().to_string(),
+        );
+
+        assert_eq!(
+            result,
+            Err(AssessmentExecutionError::Collection(
+                CollectionError::Unsupported {
+                    path: archive_path.display().to_string()
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn execute_from_assessment_input_still_routes_a_non_zip_file_to_the_filesystem_collector() {
+        let dir = TempDir::new("execute-plain-file");
+        let file_path = dir.path().join("notes.txt");
+        fs::write(&file_path, "sample content").unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                file_path.display().to_string(),
+            )
+            .expect("file is accessible");
+
+        assert_eq!(report.evidence().len(), 1);
+        assert_eq!(
+            report.evidence()[0].description(),
+            "File discovered during filesystem collection."
+        );
+    }
+
+    #[test]
+    fn execute_from_assessment_input_archive_routing_is_deterministic_across_repeated_calls() {
+        let dir = TempDir::new("execute-archive-deterministic");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(
+            &archive_path,
+            &[("alpha.txt", "a"), ("nested/beta.txt", "b")],
+        );
+        let service = AssessmentService;
+
+        let first = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+        let second = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        let first_locations: Vec<Option<&str>> =
+            first.evidence().iter().map(Evidence::location).collect();
+        let second_locations: Vec<Option<&str>> =
+            second.evidence().iter().map(Evidence::location).collect();
+        assert_eq!(first_locations, second_locations);
+        assert_eq!(first.findings().len(), second.findings().len());
     }
 }
