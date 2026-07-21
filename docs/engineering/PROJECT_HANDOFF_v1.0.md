@@ -10,7 +10,7 @@
 | **Project** | modIQ |
 | **Purpose** | Canonical project handoff — describes the platform, its architecture, its governance, and its history independently of any individual role |
 | **Audience** | Anyone onboarding to modIQ — engineering, architecture, or product — before reading a role-specific handoff |
-| **Supersedes** | Nothing directly. `LEAD_ENGINEER_HANDOFF_v*.md` and `TECHNICAL_DIRECTOR_HANDOFF_v*.md` remain role-specific supplements; from this version forward, both assume the reader has already read this document and do not repeat what it covers. |
+| **Supersedes** | Nothing directly. `LEAD_ENGINEER_HANDOFF_v*.md` and `CHIEF_ARCHITECT_HANDOFF_v1.0.md` (the current role-specific supplement for that role; `TECHNICAL_DIRECTOR_HANDOFF_v2.0.md` through `v2.2.md` remain on disk as superseded historical record under the role's prior title) remain role-specific supplements; from this version forward, both assume the reader has already read this document and do not repeat what it covers. |
 | **As of** | 2026-07-21, following Sprint 5 Closeout (Engineering Release 0.5) |
 | **Branch** | `feature/runtime-implementation` |
 | **HEAD** | `fbef863` — "feat: implement Sprint 5 assessment intelligence layer (Phases 1-5)" |
@@ -19,9 +19,9 @@
 
 # How to Use This Document
 
-This is the first document anyone — a new engineer, a new Technical Director session, a reviewer, a future contributor — should read about modIQ. It does not belong to Engineering or to the Technical Director; it describes the project itself: why it exists, how it is organized, how decisions get made, what has been built, and what is still open.
+This is the first document anyone — a new engineer, a new Chief Architect session, a reviewer, a future contributor — should read about modIQ. It does not belong to Engineering or to the Chief Architect; it describes the project itself: why it exists, how it is organized, how decisions get made, what has been built, and what is still open.
 
-After this document, read the role-specific supplement for your role (`LEAD_ENGINEER_HANDOFF_v3.0.md` or the equivalent Technical Director handoff, once produced). Those documents assume you have read this one and will not repeat its content.
+After this document, read the role-specific supplement for your role (`LEAD_ENGINEER_HANDOFF_v3.0.md` or `CHIEF_ARCHITECT_HANDOFF_v1.0.md`). Those documents assume you have read this one and will not repeat its content.
 
 Everything in this document is verified directly against the repository as of the commit above, not carried over from memory or from prior handoff documents.
 
@@ -136,6 +136,26 @@ Specifications form a strict authority hierarchy: `Vision.md` is highest; every 
 
 # 4. Governance
 
+## Project Structure
+
+Decisions flow through a fixed chain, unchanged in substance across every Sprint to date, only in role title:
+
+```
+Project Owner
+     ↓
+Chief Architect
+     ↓
+Lead Engineer
+     ↓
+Implementation
+     ↓
+Chief Architect Review
+     ↓
+Sprint Closeout
+```
+
+The Project Owner sets priorities, approves the roadmap, and selects sprint objectives. The Chief Architect owns architecture, governance, and sprint scope authorization (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`); the Lead Engineer owns implementation, testing, and documentation synchronization within that authorized scope (`LEAD_ENGINEER_HANDOFF_v3.0.md`). Every architectural decision and governance resolution on record originated from the Chief Architect role, never from independent engineering judgment.
+
 ## The Governance Register (`GOVERNANCE.md`, docs/engineering/)
 
 Every architectural question discovered during engineering receives a permanent identifier and stays open until resolved by a Documentation Release. **13 items exist today; 8 Resolved, 5 Open:**
@@ -156,7 +176,7 @@ Every architectural question discovered during engineering receives a permanent 
 | GOV-012 | Rule Evaluation Model | Resolved |
 | GOV-013 | FindingSeverity Severity/Kind Conflation | **Open, deliberately** |
 
-GOV-013 is worth understanding as a category, not just an entry: it was opened not because implementation broke something, but because *writing a precise specification* (Sprint 5's `FindingSeverity` definitions) surfaced that `BestPractice` classifies Finding *kind*, not *severity*, unlike `Error`/`Warning`/`Informational`. The Technical Director declined to restructure the Runtime type from two Rules' worth of evidence and left it Open by design — see Section 9.
+GOV-013 is worth understanding as a category, not just an entry: it was opened not because implementation broke something, but because *writing a precise specification* (Sprint 5's `FindingSeverity` definitions) surfaced that `BestPractice` classifies Finding *kind*, not *severity*, unlike `Error`/`Warning`/`Informational`. The Chief Architect declined to restructure the Runtime type from two Rules' worth of evidence and left it Open by design — see Section 9.
 
 ## Change Categories (`GOVERNANCE.md`)
 
@@ -179,6 +199,8 @@ Distinct from Engineering Releases: a Documentation Release freezes the *specifi
 ---
 
 # 5. Engineering Workflow
+
+**Current permanent workflow:** `CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 10, defines the permanent Sprint lifecycle (Sprint Planning → Chief Architect Review → Authorization → Implementation → Validation → Implementation Report → Architecture Review → Sprint Closeout) as the standard operating procedure for future development. The cycle below is `EngineeringGuide.md`'s own, earlier articulation of the same underlying discipline (specification review before implementation, verification and reporting after) and is retained here as background rather than rewritten, per this project's own convention of amending rather than silently replacing prior text; where the two differ in stage granularity, Section 10 of `CHIEF_ARCHITECT_HANDOFF_v1.0.md` is current.
 
 ## The Proposal → Governance → Documentation → Implementation → Verification Cycle (`EngineeringGuide.md`)
 
@@ -214,9 +236,9 @@ Governed by `GOVERNANCE.md`'s Public API Policy: breaking changes require govern
 
 These are not restated from the specifications — they are patterns this project's own history has validated, repeatedly, under real implementation pressure. A new contributor should treat these as load-bearing, not optional style preferences.
 
-**1. Capability before abstraction.** Stated once (Technical Director principle, first applied to the Rule trait question), then independently re-validated at least six times: Collector dispatch (GOV-004), the Rule Engine's own internal dispatch (GOV-012), Reporting's scaffold-retirement question (Sprint 5 Phase 4), and the original EngineAPI/`modiq-rules` service-object retirement (ADR-0010) itself. The test every time: does a *second concrete case* actually exist and actually need the abstraction? If not, the abstraction does not get built, no matter how architecturally clean it would be. Three independent subsystems converging unprompted on direct composition (ADR-0010) is treated as *stronger* evidence than any single design argument.
+**1. Capability before abstraction.** Stated once (Chief Architect principle, first applied to the Rule trait question), then independently re-validated at least six times: Collector dispatch (GOV-004), the Rule Engine's own internal dispatch (GOV-012), Reporting's scaffold-retirement question (Sprint 5 Phase 4), and the original EngineAPI/`modiq-rules` service-object retirement (ADR-0010) itself. The test every time: does a *second concrete case* actually exist and actually need the abstraction? If not, the abstraction does not get built, no matter how architecturally clean it would be. Three independent subsystems converging unprompted on direct composition (ADR-0010) is treated as *stronger* evidence than any single design argument.
 
-**2. A concrete forcing function, not a hypothetical one, justifies a model change.** Applied to GOV-004 (three Engineering Releases of non-use before retirement), and applied again, freshly, to GOV-013 (the Technical Director explicitly declined to restructure `FindingSeverity` from two Rules' worth of evidence, deferring to whenever a third Rule actually needs the distinction).
+**2. A concrete forcing function, not a hypothetical one, justifies a model change.** Applied to GOV-004 (three Engineering Releases of non-use before retirement), and applied again, freshly, to GOV-013 (the Chief Architect explicitly declined to restructure `FindingSeverity` from two Rules' worth of evidence, deferring to whenever a third Rule actually needs the distinction).
 
 **3. Proposal-then-implement, not implement-then-reconcile.** Every governance-relevant capability (Evidence Collection's boundary, the filesystem Collector, GOV-011's archive policies, GOV-012's Rule Evaluation Model) was designed in a proposal document, approved, and *then* implemented — never the reverse. Zero instances of post-implementation architectural rework are on record as a result.
 
@@ -230,7 +252,7 @@ These are not restated from the specifications — they are patterns this projec
 
 **8. Frozen does not mean immutable — it means change is recorded, not silent.** Multiple Frozen specifications (`Architecture.md`, `EngineAPI.md`, `EvidenceCollection.md`, `DataModel.md`) have been amended in place, repeatedly, each time with the amendment and its rationale stated directly in the document rather than hidden in a diff.
 
-**9. Documentation staleness between checkpoints is a real, recurring, still-unsolved pattern.** `PROJECT_STATUS.md`/`CHANGELOG.md` have gone stale mid-Sprint at every closeout checked so far (Sprint 3, 4, 5 — three for three). Reconciliation at Sprint close has been reliable; preventing staleness *between* closeouts has not yet been solved, and is currently tracked as an engineering workflow refinement goal ("keep `PROJECT_STATUS.md` current at meaningful milestones"), not a mandatory per-phase rule (the Technical Director specifically declined the latter at Sprint 5 Closeout).
+**9. Documentation staleness between checkpoints is a real, recurring, still-unsolved pattern.** `PROJECT_STATUS.md`/`CHANGELOG.md` have gone stale mid-Sprint at every closeout checked so far (Sprint 3, 4, 5 — three for three). Reconciliation at Sprint close has been reliable; preventing staleness *between* closeouts has not yet been solved, and is currently tracked as an engineering workflow refinement goal ("keep `PROJECT_STATUS.md` current at meaningful milestones"), not a mandatory per-phase rule (the Chief Architect specifically declined the latter at Sprint 5 Closeout).
 
 ---
 

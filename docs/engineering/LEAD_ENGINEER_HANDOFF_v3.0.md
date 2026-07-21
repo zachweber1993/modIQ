@@ -15,7 +15,7 @@
 
 # Why This Document Exists Separately From PROJECT_HANDOFF_v1.0.md
 
-`PROJECT_HANDOFF_v1.0.md` describes modIQ independent of role — what it is, how it's organized, what's been decided, what's been built. This document describes what it means to *operate as the Lead Engineer on it right now*: your responsibilities, the constraints currently binding your work, what's immediately actionable, and the standards every task is held to. A future Technical Director handoff will be produced the same way, against the same prerequisite.
+`PROJECT_HANDOFF_v1.0.md` describes modIQ independent of role — what it is, how it's organized, what's been decided, what's been built. This document describes what it means to *operate as the Lead Engineer on it right now*: your responsibilities, the constraints currently binding your work, what's immediately actionable, and the standards every task is held to. `CHIEF_ARCHITECT_HANDOFF_v1.0.md` is produced the same way, against the same prerequisite.
 
 ---
 
@@ -25,9 +25,9 @@ You own: Rust implementation, testing, refactoring, documentation synchronizatio
 
 You do not own: architecture, governance, ADR decisions, repository direction, product decisions, sprint sequencing.
 
-**When implementation surfaces a genuine architectural question, stop and report it — do not resolve it yourself.** This has happened twice in recent history in exactly the way it should: Sprint 4 Phase 2 (the duplicate-entry-detection discrepancy), and Sprint 5 Phase 1 (the `FindingSeverity` severity/kind conflation, GOV-013). Both were surfaced, reported, and left for Technical Director decision rather than resolved unilaterally. Continue that discipline exactly.
+**When implementation surfaces a genuine architectural question, stop and report it — do not resolve it yourself.** This has happened twice in recent history in exactly the way it should: Sprint 4 Phase 2 (the duplicate-entry-detection discrepancy), and Sprint 5 Phase 1 (the `FindingSeverity` severity/kind conflation, GOV-013). Both were surfaced, reported, and left for Chief Architect decision rather than resolved unilaterally. Continue that discipline exactly.
 
-Every governance resolution and architectural decision recorded in this repository originated from the Technical Director, not from independent engineering judgment, including the ones you drafted the formal text for (GOV-011, GOV-012, GOV-013 were all Engineering-drafted, Technical-Director-approved before entering `GOVERNANCE.md`).
+Every governance resolution and architectural decision recorded in this repository originated from the Chief Architect, not from independent engineering judgment, including the ones you drafted the formal text for (GOV-011, GOV-012, GOV-013 were all Engineering-drafted, Chief-Architect-approved before entering `GOVERNANCE.md`).
 
 ---
 
@@ -46,7 +46,7 @@ Every governance resolution and architectural decision recorded in this reposito
 
 ---
 
-# Technical Director Decisions Currently In Force
+# Chief Architect Decisions Currently In Force
 
 These are binding on any work you do until explicitly revisited:
 
@@ -63,9 +63,9 @@ These are binding on any work you do until explicitly revisited:
 
 # Immediate Priorities
 
-**Sprint 6 is not yet scoped.** Nothing is authorized to begin. Three candidates are on record (`PROJECT_HANDOFF_v1.0.md`, Section 10) — XML inspection, CLI wiring, acting on the Reporting scaffold-retirement recommendation — but scoping which one, or in what order, is a Technical Director sequencing decision, not yours to make. If asked to plan Sprint 6, produce a plan document (mirroring `SPRINT5_IMPLEMENTATION_PLAN.md`'s own shape) for review before any implementation, exactly as Sprint 5 itself was handled.
+**Sprint 6 is not yet scoped.** Nothing is authorized to begin. Three candidates are on record (`PROJECT_HANDOFF_v1.0.md`, Section 10) — XML inspection, CLI wiring, acting on the Reporting scaffold-retirement recommendation — but scoping which one, or in what order, is a Chief Architect sequencing decision, not yours to make. If asked to plan Sprint 6, prepare implementation plans for Chief Architect review (mirroring `SPRINT5_IMPLEMENTATION_PLAN.md`'s own shape) before any implementation, exactly as Sprint 5 itself was handled. Implementation requires Chief Architect authorization.
 
-If asked to simply "continue" without a specific scope, the correct response is to ask which of the three candidates (or something else) the Technical Director wants scoped — not to guess and start implementing one.
+If asked to simply "continue" without a specific scope, the correct response is to ask which of the three candidates (or something else) the Chief Architect wants scoped — not to guess and start implementing one.
 
 ---
 
@@ -84,12 +84,38 @@ If asked to simply "continue" without a specific scope, the correct response is 
 - **Every task concludes with `cargo fmt`, `cargo check --workspace`, `cargo test --workspace`** — both the root workspace and, independently, `apps/sandbox/src-tauri`'s own workspace whenever anything you touched could plausibly affect it. Zero warnings, not just zero errors, is the bar — a `dead_code` warning surfaced mid-Sprint-5 specifically because a new Rule was scoped as "implemented but not yet wired in" without matching the public-unit-struct shape that makes that state warning-free; check for this pattern whenever you deliberately leave something unwired for a later phase.
 - **Real I/O, real fixtures, never mocks** — the established discipline for anything touching the filesystem, an archive, or any future external content.
 - **Determinism claims get their own direct test** — never assume an ordering guarantee is covered by a "repeated identical call" test; prove arrival-order or input-order independence explicitly when that's the actual claim being made (Sprint 5 Phase 5's own lesson).
-- **Every implementation report includes an Assessment Examples section** when the work touches Rule Engine / Evidence-to-Finding-to-Recommendation behavior — concrete, real, test-verified before/after transformations, not abstract description. Standing convention since Sprint 5 Phase 3, confirmed by the Technical Director as a permanent addition to the reporting format, not a one-off.
+- **Every implementation report includes an Assessment Examples section** when the work touches Rule Engine / Evidence-to-Finding-to-Recommendation behavior — concrete, real, test-verified before/after transformations, not abstract description. Standing convention since Sprint 5 Phase 3, confirmed by the Chief Architect as a permanent addition to the reporting format, not a one-off.
 - **Governance/specification drafting follows a two-step discipline**: stage the proposed text in its own document (mirroring `PROPOSAL_GOV-011.md`, `GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`) for review, and only amend the canonical document (`GOVERNANCE.md`, a frozen spec) after explicit approval. This has scaled cleanly from large governance resolutions to small ones — use it by default, not only for big decisions.
 - **Do not commit until explicitly told to; do not push until explicitly told to.** Both have been separately authorized, separately, at every phase and closeout to date — never assume prior authorization carries forward to new work.
 
 ---
 
+# Standard Sprint Execution
+
+Every implementation sprint follows this sequence:
+
+1. Prepare an implementation plan.
+2. Submit the plan for Chief Architect review.
+3. Do not begin implementation until authorization is explicitly granted.
+4. Implement only the approved scope.
+5. Complete validation:
+   - `cargo fmt`
+   - `cargo check --workspace`
+   - `cargo test --workspace`
+   - Sandbox validation (`apps/sandbox/src-tauri`, where applicable)
+6. Produce an implementation report summarizing:
+   - completed work
+   - validation results
+   - architectural observations
+   - governance observations
+   - recommendations
+7. Await Chief Architect implementation review.
+8. After approval, finalize documentation, commit, push, and close the sprint.
+
+This is the same permanent lifecycle `CHIEF_ARCHITECT_HANDOFF_v1.0.md` Section 10 describes from the review side (Sprint Planning → Chief Architect Review → Authorization → Implementation → Validation → Implementation Report → Architecture Review → Sprint Closeout); this section states it from the execution side.
+
+---
+
 # Final Assessment
 
-The repository is in a clean, fully verified, fully reconciled state: working tree clean, both workspaces green with zero warnings, documentation synchronized as of HEAD, and every governance item either Resolved or deliberately, correctly Open. Sprint 5 closed with zero unresolved implementation work. The next session's first action should be confirming Sprint 6's scope with the Technical Director — not assuming one of the three named candidates by default.
+The repository is in a clean, fully verified, fully reconciled state: working tree clean, both workspaces green with zero warnings, documentation synchronized as of HEAD, and every governance item either Resolved or deliberately, correctly Open. Sprint 5 closed with zero unresolved implementation work. The next session's first action should be confirming Sprint 6's scope with the Chief Architect — not assuming one of the three named candidates by default.

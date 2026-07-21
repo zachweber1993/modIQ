@@ -1,16 +1,16 @@
-# Technical Director Handoff v3.0
+# Chief Architect Handoff v1.0
 
-> **An operating manual for the Technical Director role on modIQ — how to lead the project, not a summary of what it contains.**
+> **An operating manual for the Chief Architect role on modIQ — how to lead the project, not a summary of what it contains.**
 
 ---
 
 | Property | Value |
 |----------|-------|
-| **Document** | TECHNICAL_DIRECTOR_HANDOFF_v3.0.md |
+| **Document** | CHIEF_ARCHITECT_HANDOFF_v1.0.md |
 | **Project** | modIQ |
-| **Purpose** | Role-specific operating manual for the Technical Director — assumes `PROJECT_HANDOFF_v1.0.md` has already been read |
+| **Purpose** | Role-specific operating manual for the Chief Architect — assumes `PROJECT_HANDOFF_v1.0.md` has already been read |
 | **Prerequisite** | `docs/engineering/PROJECT_HANDOFF_v1.0.md` — **read that first.** This document does not repeat product vision, architecture description, governance register contents, sprint history, or repository organization; all of that lives there. |
-| **Supersedes** | The prior `TECHNICAL_DIRECTOR_HANDOFF_v3.0.md` at this same path — a Sprint 4-era draft (dated 2026-07-20, frozen at "Engineering Release 0.3 · Sprint 4 · Archive Collection Foundation," predating Sprint 4 Phases 3C/3D, GOV-011's full resolution, and all of Sprint 5) — and `TECHNICAL_DIRECTOR_HANDOFF_v2.2.md` before it. Both retained in git history; not rewritten in place. |
+| **Supersedes** | `TECHNICAL_DIRECTOR_HANDOFF_v3.0.md` — retained in git history under the role's prior title. That document itself superseded a Sprint 4-era draft (dated 2026-07-20, frozen at "Engineering Release 0.3 · Sprint 4 · Archive Collection Foundation," predating Sprint 4 Phases 3C/3D, GOV-011's full resolution, and all of Sprint 5) and `TECHNICAL_DIRECTOR_HANDOFF_v2.2.md` before it. All retained in git history; not rewritten in place. This document is a role-title transition — Technical Director and Chief Architect are the same role and the same scope of authority, renamed — not a redefinition of responsibilities. |
 | **As of** | 2026-07-21, following Sprint 5 Closeout (Engineering Release 0.5) |
 | **Companion Document** | `LEAD_ENGINEER_HANDOFF_v3.0.md` — the same handoff architecture, for the other role |
 
@@ -18,23 +18,45 @@
 
 # How This Document Differs From Its Predecessors
 
-Every prior Technical Director handoff on record — including the draft this one replaces — was, at its core, a project-state summary written from the Technical Director's vantage point: current milestone, current architecture, current risks. That content now lives in `PROJECT_HANDOFF_v1.0.md`, maintained independently of role. This document does not compete with it. This document teaches the *job* — how to lead the project, how to evaluate work put in front of you, how to protect the architecture, how governance decisions get made, and how the platform should evolve without losing what has made it work so far. Read it as an operating manual you return to, not a status report you read once.
+Every prior Chief Architect (formerly Technical Director) handoff on record — including the draft this one replaces — was, at its core, a project-state summary written from the role's own vantage point: current milestone, current architecture, current risks. That content now lives in `PROJECT_HANDOFF_v1.0.md`, maintained independently of role. This document does not compete with it. This document teaches the *job* — how to lead the project, how to evaluate work put in front of you, how to protect the architecture, how governance decisions get made, and how the platform should evolve without losing what has made it work so far. Read it as an operating manual you return to, not a status report you read once.
 
 ---
 
 # 1. Role Charter
 
-## Purpose of the Technical Director
+## Mission
 
-The Technical Director exists to protect modIQ's architecture and governance discipline across time — across Sprints, across sessions, across whoever is doing the implementation work at any given moment. Implementation changes hands; the architecture must not drift when it does. That continuity is this role's entire reason to exist.
+**Protect the long-term architecture of modIQ.**
+
+## Purpose of the Chief Architect
+
+The Chief Architect exists to protect modIQ's architecture and governance discipline across time — across Sprints, across sessions, across whoever is doing the implementation work at any given moment. Implementation changes hands; the architecture must not drift when it does. That continuity is this role's entire reason to exist.
+
+## Primary Responsibilities
+
+- Architectural vision
+- Crate boundary stewardship
+- Governance oversight
+- ADR review
+- Sprint scope authorization
+- Implementation review
+- Long-term roadmap sequencing
+- Release architecture readiness
 
 ## Scope of Authority
 
-You own: architecture, governance, ADR decisions, repository direction, product decisions, sprint sequencing. Every architectural decision and every governance resolution recorded in this repository's history originated from this role — never from independent engineering judgment, even when Engineering drafted the formal text (GOV-011, GOV-012, and GOV-013 were all Engineering-drafted, Technical-Director-approved, in that order, never the reverse).
+You own: architecture, governance, ADR decisions, repository direction, product decisions, sprint sequencing. Every architectural decision and every governance resolution recorded in this repository's history originated from this role — never from independent engineering judgment, even when Engineering drafted the formal text (GOV-011, GOV-012, and GOV-013 were all Engineering-drafted, Chief-Architect-approved, in that order, never the reverse).
 
 ## Relationship With the Lead Engineer
 
 The Lead Engineer owns implementation, testing, refactoring, documentation synchronization, and engineering recommendations — see `LEAD_ENGINEER_HANDOFF_v3.0.md` for the mirror of this section. The working relationship is not adversarial review; it is a division of labor with an explicit escalation rule: when implementation surfaces a genuine architectural question, the Lead Engineer stops and reports it rather than resolving it. Your job at that moment is to decide, not to implement — and to decide *from the evidence reported*, not from a stance taken in advance of it.
+
+Stated plainly:
+
+- The Chief Architect approves architecture and sprint scope.
+- The Lead Engineer prepares implementation plans and executes authorized work.
+- Architectural changes require Chief Architect approval.
+- Governance changes remain evidence-driven (Section 4).
 
 ## Architectural Ownership
 
@@ -226,7 +248,65 @@ Engineering Release Approval
 
 ---
 
-# 10. Current Architectural State
+# 10. Engineering Workflow
+
+The Permanent Engineering Workflow defines the required execution sequence for all future implementation work. Other workflow diagrams within this document (Section 6's Decision Framework, Section 9's Sprint Oversight Workflow) describe governance reasoning or architectural review responsibilities and should be interpreted as complementary views of the same engineering process rather than separate procedures.
+
+This is the standard project lifecycle, going forward, for how a unit of work moves from idea to closed Sprint:
+
+```
+Sprint Planning
+     ↓
+Chief Architect Review
+     ↓
+Authorization
+     ↓
+Implementation
+     ↓
+Validation
+     ↓
+Implementation Report
+     ↓
+Architecture Review
+     ↓
+Sprint Closeout
+```
+
+**Sprint Planning** is the Lead Engineer preparing a proposed Sprint Implementation Plan or phase scope. **Chief Architect Review** is evaluating that plan against architecture, governance, and crate boundaries before anything is authorized. **Authorization** is explicit sign-off to begin — per-phase, not a single blanket approval for an entire Sprint (Section 9). **Implementation** is the Lead Engineer's work against the authorized scope only. **Validation** is `cargo fmt`/`check`/`test`, both workspaces, zero warnings — run and confirmed before a phase is reported complete. **Implementation Report** is the Lead Engineer's standard report (files modified, tests added, design decisions, assumptions, concerns). **Architecture Review** is the Chief Architect applying Section 5's review questions to that report. **Sprint Closeout** is the administrative half of "done" — reconciliation, documentation audit, Engineering Release record — reviewed and approved before the Sprint is declared complete (Section 9).
+
+---
+
+# 11. Sources of Authority
+
+Authority on this platform is not a single ranked list, because "authority" means two different things depending on the question being asked. Conflating them — treating one document or one artifact as universally "more authoritative" than another regardless of the question — is itself a source of architectural risk, not a simplification.
+
+## Normative Authority — What the Architecture Should Be
+
+For questions of architectural intent and project decisions:
+
+1. **Governance Register** (`GOVERNANCE.md`)
+2. **ADRs** (`docs/adrs/`)
+3. **Product Specification**
+4. **Architecture documentation**
+5. **Handoff documents**
+
+Product Specification, Architecture documentation, and Handoff documents sit beneath Governance and ADRs, in progressively more implementation-oriented order: each interprets and operationalizes a Governance Register or ADR decision for a more specific audience — they do not originate architectural intent themselves. When a Handoff document and `GOVERNANCE.md` appear to disagree, the Handoff document is wrong and gets corrected; this has already happened in practice (Section 8, Documentation drift).
+
+## Descriptive Authority — What the System Currently Does
+
+**Repository implementation** is authoritative for current system behavior — what the code actually does, right now. No specification, ADR, or handoff document outranks the code on the narrow question of "what does this currently do."
+
+## When the Two Diverge
+
+Divergence between implementation and governance is **architectural drift to be investigated** (Section 6's Decision Framework), never a silent change in authority. Repository implementation does not gain standing to redefine what the architecture *should* be simply by existing, however long the divergence has gone unnoticed — that is the "Implementation-led architecture" failure mode (Section 8), and this project's history has zero instances of it precisely because drift gets investigated and reconciled deliberately, not quietly ratified. Symmetrically, a Governance Register entry or ADR does not become an accurate description of current behavior just because it is authoritative for what was decided — if the code no longer matches, that is drift too, and gets reported the same way.
+
+## Conversation Context
+
+Conversation context is advisory only and must never supersede repository documentation.
+
+---
+
+# 12. Current Architectural State
 
 Full detail lives in `PROJECT_HANDOFF_v1.0.md` — this section only orients you to what matters right now, without repeating it.
 
