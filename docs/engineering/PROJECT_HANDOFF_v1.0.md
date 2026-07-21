@@ -11,9 +11,9 @@
 | **Purpose** | Canonical project handoff — describes the platform, its architecture, its governance, and its history independently of any individual role |
 | **Audience** | Anyone onboarding to modIQ — engineering, architecture, or product — before reading a role-specific handoff |
 | **Supersedes** | Nothing directly. `LEAD_ENGINEER_HANDOFF_v*.md` and `CHIEF_ARCHITECT_HANDOFF_v1.0.md` (the current role-specific supplement for that role; `TECHNICAL_DIRECTOR_HANDOFF_v2.0.md` through `v2.2.md` remain on disk as superseded historical record under the role's prior title) remain role-specific supplements; from this version forward, both assume the reader has already read this document and do not repeat what it covers. |
-| **As of** | 2026-07-21, following Sprint 5 Closeout (Engineering Release 0.5) |
+| **As of** | 2026-07-21, following Sprint 6 (CLI wiring, `modiq-report` scaffold retirement), implemented, reviewed, and merged; Repository Closeout in progress |
 | **Branch** | `feature/runtime-implementation` |
-| **HEAD** | `fbef863` — "feat: implement Sprint 5 assessment intelligence layer (Phases 1-5)" |
+| **HEAD** | `29657df` — "Merge feature/sprint6-cli: Sprint 6 (CLI wiring, modiq-report scaffold retirement)" |
 
 ---
 
@@ -72,12 +72,12 @@ apps/sandbox/             Tauri desktop application — the only real end-to-end
 | `modiq-engine` | Engine — `AssessmentService`, the sole orchestration boundary | L3, 16 unit + 3 integration tests | `modiq-runtime`, `modiq-rules`, `modiq-report`, `modiq-collection` |
 | `modiq-knowledge` | Knowledge Domain — reusable engineering knowledge (Rules, Repair Recipes, Best Practices, etc.) | L1, pure scaffold, zero implementation since Sprint 0 | `modiq-runtime` |
 | `modiq-versioning` | Version Profiles — game-version compatibility context | L1, pure scaffold, zero implementation since Sprint 0 | `modiq-runtime` |
-| `modiq-cli` | CLI entry point | L1, scaffolded, not wired to `modiq-engine` | `modiq-runtime`, `modiq-engine` |
-| `modiq-common` | Shared platform types | L1, empty stub files, zero evidence it's needed after 5 Sprints | (none) |
+| `modiq-cli` | CLI entry point | L2, 10 tests — wired to `modiq-engine` (Sprint 6): `Application` dispatches `assess`/`help`/`version`, `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a user-supplied path | `modiq-runtime`, `modiq-engine`, `modiq-report` |
+| `modiq-common` | Shared platform types | L1, empty stub files, zero evidence it's needed after 6 Sprints | (none) |
 
-Dependency direction is strictly downward; `modiq-runtime` is the leaf every other crate ultimately depends on. No circular dependency has ever existed. `apps/sandbox` depends on `modiq-engine` (and, transitively, everything below it) — it never depends on `modiq-collection`, `modiq-rules`, or `modiq-report` directly, preserving `AssessmentService` as the sole point of entry.
+Dependency direction is strictly downward; `modiq-runtime` is the leaf every other crate ultimately depends on. No circular dependency has ever existed. `apps/sandbox` and `modiq-cli` both depend on `modiq-engine` (and, transitively, everything below it) for orchestration, preserving `AssessmentService` as the sole orchestration entry point — but both also depend on `modiq-report` directly, since `modiq-engine` does not re-export `AssessmentReport`, the type both `execute` and `execute_from_assessment_input` return. This corrects a previously-stated claim in this document ("apps/sandbox... never depends on... modiq-report directly") that predates Sprint 6 and was already inaccurate; Sprint 6 surfaced it by producing a second, independent consumer with the identical dependency, not by introducing the dependency itself. Neither crate depends on `modiq-collection` or `modiq-rules` directly.
 
-**Root workspace: 162 tests, zero ignored, zero flaky.** **Sandbox: 6 tests**, its own separate workspace, independently verified.
+**Root workspace: 172 tests, zero ignored, zero flaky.** **Sandbox: 6 tests**, its own separate workspace, independently verified.
 
 ---
 
@@ -252,7 +252,7 @@ These are not restated from the specifications — they are patterns this projec
 
 **8. Frozen does not mean immutable — it means change is recorded, not silent.** Multiple Frozen specifications (`Architecture.md`, `EngineAPI.md`, `EvidenceCollection.md`, `DataModel.md`) have been amended in place, repeatedly, each time with the amendment and its rationale stated directly in the document rather than hidden in a diff.
 
-**9. Documentation staleness between checkpoints is a real, recurring, still-unsolved pattern.** `PROJECT_STATUS.md`/`CHANGELOG.md` have gone stale mid-Sprint at every closeout checked so far (Sprint 3, 4, 5 — three for three). Reconciliation at Sprint close has been reliable; preventing staleness *between* closeouts has not yet been solved, and is currently tracked as an engineering workflow refinement goal ("keep `PROJECT_STATUS.md` current at meaningful milestones"), not a mandatory per-phase rule (the Chief Architect specifically declined the latter at Sprint 5 Closeout).
+**9. Documentation staleness between checkpoints is a real, recurring, still-unsolved pattern.** `PROJECT_STATUS.md`/`CHANGELOG.md` have gone stale mid-Sprint at every closeout checked so far (Sprint 3, 4, 5, 6 — four for four). Sprint 6 extended the pattern for the first time to this document and its two role-specific companions (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, `LEAD_ENGINEER_HANDOFF_v3.0.md`), not just `PROJECT_STATUS.md`/`CHANGELOG.md`. Reconciliation at Sprint close has been reliable; preventing staleness *between* closeouts has not yet been solved, and is currently tracked as an engineering workflow refinement goal ("keep `PROJECT_STATUS.md` current at meaningful milestones"), not a mandatory per-phase rule (the Chief Architect specifically declined the latter at Sprint 5 Closeout).
 
 ---
 
@@ -267,8 +267,9 @@ These are not restated from the specifications — they are patterns this projec
 | *(Platform Validation Phase 1)* | GOV-004 resolved (direct composition confirmed, EngineAPI/`modiq-rules` service scaffolding retired); GOV-008 evaluated and deliberately deferred. | — |
 | **Sprint 4** | Second real Collector: `ArchiveCollector` (ZIP), across Phases 1–3D. GOV-011 resolved (malformed/duplicate/traversal/resource-limit policies). `EvidenceCategory::StructuralDuplication` added. Explicit `.zip`-routing wired into `AssessmentService`. | 112 → 150 |
 | **Sprint 5** | Assessment intelligence layer, deliberately *not* a third Collector. GOV-012 resolved (multi-Rule dispatch shape). GOV-013 opened (deliberately). First `FindingSeverity` definitions (`DataModel.md` v1.1.0). Second real Rule (`StructuralDuplicationRule`) and real multi-Rule `RuleEngine::evaluate`. Reporting scaffold-retirement investigated, not acted on. | 150 → 162 |
+| **Sprint 6** | `modiq-cli` wired to `modiq-engine` for the first time since Sprint 0 (`Application` dispatch, `AssessCommand` calling `execute_from_assessment_input` against a real user-supplied path, three-tier exit-code convention). `modiq-report`'s four scaffold types retired under explicit authorization; `AssessmentReport` unchanged. No change to `AssessmentService`'s public entry points. Implemented, reviewed, and merged into `feature/runtime-implementation`; formal Engineering Release 0.6 record not yet produced. | 162 → 172 |
 
-Full detail for each Sprint lives in its own Engineering Release (`ENGINEERING_RELEASE_v0.1.0-alpha.md`, `docs/releases/ENGINEERING_RELEASE_0.2.md`, `ENGINEERING_RELEASE_0.3.md`, `_0.4.md`, `_0.5.md`) — each one is also that Sprint's retrospective and completion report combined, per this project's own established convention (no separate retrospective files; one existed only briefly in error — see Section 11).
+Full detail for each Sprint lives in its own Engineering Release (`ENGINEERING_RELEASE_v0.1.0-alpha.md`, `docs/releases/ENGINEERING_RELEASE_0.2.md`, `ENGINEERING_RELEASE_0.3.md`, `_0.4.md`, `_0.5.md`) — each one is also that Sprint's retrospective and completion report combined, per this project's own established convention (no separate retrospective files; one existed only briefly in error — see Section 11). Sprint 6 does not yet have its own Engineering Release record; `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md` are its record until one is produced.
 
 **No Engineering Release has ever been git-tagged.** `v0.1.0`, `v0.1.0-alpha`, `v0.2.0`, `v0.2.0-alpha`, `v0.3.0` exist as tags, but predate-and-collide oddly with the Engineering Release numbering (a pre-existing git tag hygiene issue, flagged at every release since 0.3, never resolved). `v0.4.0` and `v0.5.0` are both currently available, untagged.
 
@@ -277,31 +278,32 @@ Full detail for each Sprint lives in its own Engineering Release (`ENGINEERING_R
 # 8. Current Repository State
 
 - **Branch:** `feature/runtime-implementation`, tracking `origin/feature/runtime-implementation`, in sync (no ahead/behind).
-- **HEAD:** `fbef863` — Sprint 5's full implementation and closeout, committed and pushed as one commit.
+- **HEAD:** `29657df` — Sprint 6's merge commit, following implementation on `feature/sprint6-cli` (`397707f`), committed and pushed.
 - **Working tree:** clean.
-- **Tests:** 162/162 root workspace, 6/6 Sandbox, zero warnings in either, verified directly while preparing this document (not carried over from any prior report).
-- **Crate maturity:** see Section 2's table. `modiq-collection` and `modiq-rules` are where real capability has been built (L2/L3 respectively, each recently extended); `modiq-knowledge`, `modiq-versioning`, `modiq-cli`, `modiq-common` remain L1 scaffolding, correctly deferred per Section 6's Principle 1 and 2.
+- **Tests:** 172/172 root workspace, 6/6 Sandbox, zero warnings in either, verified directly while preparing this document (not carried over from any prior report).
+- **Crate maturity:** see Section 2's table. `modiq-collection`, `modiq-rules`, and now `modiq-cli` (L2, Sprint 6) are where real capability has been built; `modiq-knowledge`, `modiq-versioning`, `modiq-common` remain L1 scaffolding, correctly deferred per Section 6's Principle 1 and 2.
 
 ---
 
 # 9. Current Investigations (Open, Unresolved, or Recommended-but-Not-Acted-On)
 
-- **GOV-013 (FindingSeverity Severity/Kind Conflation)** — Open by design. Will only move when a third Rule genuinely needs to express Finding *kind* independent of *severity*. Do not resolve this speculatively; wait for the forcing function.
-- **GOV-008 (AssessmentService Public API Evolution)** — Open across three Sprints. The two-entry-point additive pattern (`execute` / `execute_from_assessment_input`) remains the deliberate stopgap. No implementation evidence yet judged sufficient to resolve it (Platform Validation Phase 1 reviewed and declined to resolve it).
+- **GOV-013 (FindingSeverity Severity/Kind Conflation)** — Open by design. Will only move when a third Rule genuinely needs to express Finding *kind* independent of *severity*. Do not resolve this speculatively; wait for the forcing function. Unaffected by Sprint 6, which did not touch `modiq-rules`.
+- **GOV-008 (AssessmentService Public API Evolution)** — Open across four Sprints, now including Sprint 6. `modiq-cli` became a second real consumer of `execute_from_assessment_input`, reusing it exactly as designed — this generated no new evidence toward resolving GOV-008, and was not expected to (confirmed explicitly during Sprint 6 scoping). The two-entry-point additive pattern remains the deliberate stopgap.
 - **GOV-001, GOV-002, GOV-003** — all Open since Engineering Release v0.1.0-alpha, all still pending Documentation Release 1.1 or further evidence, none blocking current work.
-- **Reporting scaffold retirement** — Sprint 5 Phase 4 recommended retiring `FindingSummary`/`RecommendationSummary`/`TraceabilityReport`/`ReportFormatter` (zero construction sites, ever; the Sandbox's own rendering needed no changes to display Sprint 5's new severity). Recommendation accepted as eligible, **pending formal governance approval** — not yet acted on. A real, scoped, low-risk item for a near-future sprint.
-- **Documentation-staleness workflow refinement** — tracked as a goal (keep `PROJECT_STATUS.md` current at meaningful milestones), explicitly *not* a mandatory per-phase rule. Three consecutive Sprints (3, 4, 5) have shown the pattern recurring between closeouts even with reconciliation happening reliably at closeout itself.
+- **Reporting scaffold retirement — Resolved at Sprint 6.** `FindingSummary`/`RecommendationSummary`/`TraceabilityReport`/`ReportFormatter` were deleted under Sprint 6's explicit Chief Architect authorization. No longer an open item.
+- **A new, minor architectural item, named but not yet a Governance Register entry:** `modiq-engine` does not re-export `AssessmentReport`, so both real consumers of `AssessmentService` (the Sandbox and, since Sprint 6, `modiq-cli`) independently depend on `modiq-report` directly just to name the type. Two data points — below this project's own usual three-point convergent-evidence bar (see Section 6, Principle 1's GOV-004 example) — tracked for a future third occurrence, not acted on.
+- **Documentation-staleness workflow refinement** — tracked as a goal (keep `PROJECT_STATUS.md` current at meaningful milestones), explicitly *not* a mandatory per-phase rule. Four consecutive Sprints (3, 4, 5, 6) have now shown the pattern recurring between closeouts even with reconciliation happening reliably at closeout itself — Sprint 6 is the first instance where the staleness reached this document and its two role-specific companions, not just `PROJECT_STATUS.md`/`CHANGELOG.md`.
 - **Known, harmless documentation inconsistencies** (see Section 11) — flagged, not fixed, since fixing them wasn't in scope for whichever session first noticed each one, and none affects architecture or implementation.
 
 ---
 
 # 10. Roadmap
 
-**Not yet scoped for Sprint 6.** Three candidates are on record, none committed to:
+**Not yet scoped for Sprint 7.** Of the three candidates on record at Sprint 5 Closeout, two are now done:
 
-1. **XML inspection** — the next Evidence Collector in `PROPOSAL_FILESYSTEM_COLLECTION.md`'s own original sequencing (filesystem → archive → XML). Explicitly deferred through Sprint 5 specifically so it would build on a mature Rule Engine rather than drive its design — that condition is now satisfied.
-2. **CLI wiring** — `modiq-cli`'s `AssessCommand` scaffold, wired to `modiq-engine`. Independent, low-risk, and more de-risked every Sprint the Sandbox's own thin-client pattern (`AssessmentService::execute_from_assessment_input`, called directly, no reimplementation) is reused rather than reinvented.
-3. **Acting on the Reporting scaffold-retirement recommendation** — small, scoped, low-risk, currently unscheduled.
+1. **XML inspection** — the next Evidence Collector in `PROPOSAL_FILESYSTEM_COLLECTION.md`'s own original sequencing (filesystem → archive → XML). Explicitly deferred through Sprint 5 specifically so it would build on a mature Rule Engine rather than drive its design — that condition is satisfied and unchanged by Sprint 6. **The sole remaining item from the original three-candidate list.**
+2. ~~**CLI wiring**~~ — **Done, Sprint 6.** `modiq-cli`'s `AssessCommand` now calls `AssessmentService::execute_from_assessment_input` directly, reusing the Sandbox's own thin-client pattern rather than reinventing it, exactly as this entry anticipated.
+3. ~~**Acting on the Reporting scaffold-retirement recommendation**~~ — **Done, Sprint 6.** The four scaffold types are deleted.
 
 **Longer-term, per `Vision.md`:** cross-version compatibility analysis, community-validated knowledge, Repair Recipe libraries, intelligent pattern recognition — all depend on Knowledge Domain and Version Profile integration eventually happening, neither of which has a forcing function yet (Section 6, Principles 1–2).
 

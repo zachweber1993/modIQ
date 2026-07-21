@@ -3,11 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.5 |
+| **Current Release** | Engineering Release 0.5 (Sprint 6 implemented, reviewed, and merged; a formal Engineering Release 0.6 record has not yet been produced) |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 5 — Complete (Phases 1–5, plus Closeout) |
+| **Current Milestone** | Sprint 6 — Complete (CLI wiring, `modiq-report` scaffold retirement); Repository Closeout in progress |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 5 Closeout — repository reconciled; Sprint 6 not yet scoped |
+| **Current Phase** | Sprint 6 Repository Closeout — documentation reconciliation; Sprint 7 not yet scoped |
 | **Last Updated** | 2026-07-21 |
 
 ---
@@ -42,7 +42,11 @@ Sprint 4 delivered the platform's second real Evidence Collector, archive-based,
 
 Sprint 5 deliberately did not add a third Evidence Collector; per Technical Director direction, it strengthened the platform vertically instead, building the assessment intelligence layer — the Rule Engine's own depth — before widening Evidence Collection further. GOV-012 (Rule Evaluation Model) was resolved: `RuleEngine::evaluate` returns `Vec<RuleOutcome>`, Rules are dispatched in fixed, explicit declaration order, and compose independently with no suppression model. GOV-013 (FindingSeverity Severity/Kind Conflation) was opened, deliberately Open, not Resolved — the Technical Director accepted a real architectural tension (`BestPractice` classifies Finding *kind*, not severity, unlike `Error`/`Warning`/`Informational`) as provisionally accepted rather than deciding a Runtime model change from two Rules alone, to be revisited once more concrete Rules exist. `DataModel.md` was amended to v1.1.0 with the platform's first specification-level Finding Severity definitions. `modiq-rules` gained its second concrete Rule, `StructuralDuplicationRule` (Phase 2), and the original Sprint 1 Rule was extracted into its own unit, `EvidencePresenceRule`, both dispatched by the new multi-Rule `RuleEngine::evaluate` (Phase 3) — no trait, registry, or dispatch abstraction introduced. A dedicated investigation (Phase 4) recommended retiring `modiq-report`'s four unused scaffold types (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`), using the same evidentiary method GOV-004 used, but no action was taken this Sprint. Phase 5 closed one determinism-testing gap (Rule outcome order confirmed independent of Evidence arrival order, not just repeated-identical-input order). A Sprint 5 Closeout reconciled repository documentation and produced an engineering retrospective (inside `ENGINEERING_RELEASE_0.5.md`). The workspace grew from 150 to 162 root tests (Sandbox unchanged at 6); nine workspace crates, unchanged in count. Full record: `docs/engineering/ENGINEERING_RELEASE_0.5.md`.
 
-**Next implementation milestone:** not yet scoped. Sprint 6 has not begun as of this record. Candidates on record: XML inspection (the next Evidence Collector, now building on a mature assessment model rather than driving its design, per Sprint 5's own charter), CLI wiring (independent, low-risk parallel track), and any action on the Reporting scaffold-retirement recommendation (Sprint 5 Phase 4).
+## Sprint 6 — Complete (Implementation and Merge)
+
+Sprint 6 closed two of the three roadmap candidates named at Sprint 5 Closeout. `modiq-cli` was wired to `modiq-engine` for the first time since Sprint 0: `Application` dispatches `assess`/`help`/`version` by one direct match (no command trait or registry); `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a real, user-supplied path — the same entry point the Sandbox already calls, reused rather than reinvented — mapping the result to a three-tier exit-code convention (0 success, 1 execution failure, 2 invalid usage). `modiq-report`'s four scaffold types recommended for retirement at Sprint 5 Phase 4 (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) were deleted under this Sprint's explicit Chief Architect authorization; `AssessmentReport`, the crate's real, tested content, is unchanged. No change to `AssessmentService`'s public entry points, `AssessmentInput`, or the public error model. `modiq-cli` advanced from L1 to L2. The workspace grew from 162 to 172 root tests (`modiq-cli` 0 → 10; `modiq-report` unchanged at 3, confirming the deletion had zero test-coverage impact); Sandbox reverified unchanged at 6/6. Implementation was committed (`397707f`) on `feature/sprint6-cli`, reviewed, and merged into `feature/runtime-implementation` (`29657df`) with a full post-merge revalidation. Full record: `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record) and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`. A formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced — noted here as outstanding, not silently assumed complete.
+
+**Next implementation milestone:** not yet scoped. Sprint 7 has not begun as of this record. The sole remaining candidate from the original three-item Sprint 6 roadmap is XML inspection (the next Evidence Collector), its precondition (Rule Engine maturity) satisfied since Sprint 5.
 
 ---
 
@@ -115,7 +119,7 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 # Current Focus
 
-Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). `DataModel.md` was separately amended to v1.1.0 during Sprint 5 to add Finding Severity definitions (GOV-012/GOV-013). Engineering Release 0.4 froze Sprint 4 (Phases 1–3D, plus Closeout); Engineering Release 0.5 now freezes Sprint 5 (Phases 1–5, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open and untouched by Sprints 4 and 5. Sprint 6 has not yet been scoped; CLI wiring remains an independent, unscoped parallel track, alongside the Reporting scaffold-retirement recommendation Sprint 5 Phase 4 raised.
+Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). `DataModel.md` was separately amended to v1.1.0 during Sprint 5 to add Finding Severity definitions (GOV-012/GOV-013). Engineering Release 0.4 froze Sprint 4 (Phases 1–3D, plus Closeout); Engineering Release 0.5 froze Sprint 5 (Phases 1–5, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open, untouched by Sprints 4, 5, and 6 (Sprint 6 reused `AssessmentService`'s existing entry points exactly as designed and generated no new evidence toward it). Sprint 6 is complete: `modiq-cli` is wired to `modiq-engine`, and `modiq-report`'s four scaffold types are retired. XML inspection is the sole remaining candidate from the original three-item Sprint 6 roadmap, not yet scoped for Sprint 7.
 
 Implementation should remain consistent with the frozen engineering specification.
 
@@ -133,7 +137,7 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6
+Status: Frozen for Sprint 6 (Sprint 6 complete); baseline carries forward unchanged into Sprint 7
 
 The project's governance baseline is established.
 

@@ -923,3 +923,38 @@ The Technical Director reviewed and accepted the full Sprint 5 Closeout: reposit
 **Documentation-staleness process refined**, not adopted as originally suggested. `ENGINEERING_RELEASE_0.5.md`'s Lessons Learned proposed updating `PROJECT_STATUS.md`'s "Current Phase" line per-phase, not only at Sprint close. The Technical Director accepted the underlying finding (three consecutive Sprints of identical staleness) as a valid process-improvement opportunity, but declined mandatory per-phase updates specifically. Direction: track this as an engineering workflow refinement aimed at keeping `PROJECT_STATUS.md` current at meaningful project milestones, rather than a fixed per-phase requirement. This softens, and supersedes in specificity, the Sprint 4 Closeout directive ("future sprints should formally include repository reconciliation... as part of sprint closure") without abandoning it — reconciliation at closeout remains standing practice; per-phase updates are not mandated, but keeping the document current at genuinely meaningful milestones (not necessarily every phase) is now the stated aim.
 
 **Sprint 5 is hereby declared complete.** The repository is authorized for final Sprint 5 commit and push. Following that commit, preparation of the Sprint 6 Technical Handoff is authorized as the next step.
+
+---
+
+### Sprint 6 Closeout: Repository Reconciliation, Documentation Audit
+
+Status:
+Completed
+
+Affected Crates:
+- (none — documentation only; no Rust file modified)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/README.md
+- docs/implementation/CrateRoadmap.md
+- docs/engineering/PROJECT_HANDOFF_v1.0.md
+- docs/engineering/CHIEF_ARCHITECT_HANDOFF_v1.0.md
+- docs/engineering/LEAD_ENGINEER_HANDOFF_v3.0.md
+
+Notes:
+Formal Sprint 6 closeout, per Chief Architect authorization: repository reconciliation, a documentation consistency audit, corrections to the seven documents above, and final verification. No feature work was authorized or performed this session.
+
+**Repository Reconciliation:** verified Sprint 6's implementation (`modiq-cli` wired to `modiq-engine`; `modiq-report`'s four scaffold types retired) against `SPRINT6_IMPLEMENTATION_PLAN.md`'s own Completion Checklist and Authorization Record — implementation, validation, and merge into `feature/runtime-implementation` (`29657df`) all confirmed complete. `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md` (produced the prior session) had already identified the specific staleness this Closeout corrects, rather than this Closeout discovering it independently — named here so the source of each finding stays traceable.
+
+**Documentation Audit finding, recurring a fourth time, now more severe:** `PROJECT_STATUS.md` and `CHANGELOG.md` had gone stale again, unchanged since Sprint 5 Closeout, still describing Sprint 5 as the current, complete milestone with "Sprint 6 not yet scoped" — the identical pattern now at four consecutive Sprint closeouts (3, 4, 5, 6). This time the staleness also reached `PROJECT_HANDOFF_v1.0.md`, `CHIEF_ARCHITECT_HANDOFF_v1.0.md`, and `LEAD_ENGINEER_HANDOFF_v3.0.md` — the three documents `PROJECT_STATUS.md` itself now names as this project's authoritative governance documents, established during the same Sprint 6 cycle this Closeout reconciles. `PROJECT_HANDOFF_v1.0.md`'s crate table specifically stated `modiq-cli` was "not wired to `modiq-engine`," which was no longer true — a stale content claim, not merely a stale status label. All three handoff documents also still cited HEAD `fbef863` (Sprint 5) and "162 tests" (actual, verified fresh this session: 172).
+
+Corrected: `PROJECT_STATUS.md` header fields and a new `## Sprint 6 — Complete` section; `CHANGELOG.md`'s new `# [Sprint 6]` entry mirroring the established Added/Deferred/Released structure; `docs/README.md`'s stale Engineering Release cross-reference; `CrateRoadmap.md`'s dependency diagram (`modiq-cli`'s two new direct edges to `modiq-runtime` and `modiq-report`, previously showing only its edge to `modiq-engine`); `PROJECT_HANDOFF_v1.0.md`'s HEAD reference, crate table, test count, Sprint History table, and roadmap section; `CHIEF_ARCHITECT_HANDOFF_v1.0.md`'s Sprint 6 readiness note; `LEAD_ENGINEER_HANDOFF_v3.0.md`'s HEAD reference, Repository Status table, and Immediate Priorities section.
+
+No `ENGINEERING_RELEASE_0.6.md` was produced this session — outstanding, named explicitly rather than silently assumed complete, since every prior Sprint (3, 4, 5) produced one and this Closeout's authorized scope was documentation reconciliation only, not authoring a new full release record.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, unchanged at 172/172 — no production code or test was touched this session. `apps/sandbox/src-tauri` unchanged at 6/6.
+
+No architectural change was made or proposed: no new capability, no new abstraction, no scope expansion, no governance wording changed, no Sprint 7 work begun. **Sprint 6 is now administratively complete**, pending Chief Architect review of this Closeout.

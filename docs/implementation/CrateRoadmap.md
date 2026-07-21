@@ -47,6 +47,7 @@ Additional direct dependencies:
 
 - modiq-rules depends on modiq-runtime (consumes Evidence, Finding, Recommendation)
 - modiq-report depends on modiq-runtime (consumes Assessment, Evidence, Finding, Recommendation)
+- modiq-cli depends directly on modiq-runtime and modiq-report, in addition to modiq-engine (Sprint 6): it constructs `AssessmentSubject`/`AssessmentContext` (modiq-runtime) and names `AssessmentReport` (modiq-report) in its own formatting code, since modiq-engine does not re-export either type. The diagram above shows modiq-cli's original, single edge to modiq-engine only; both additional edges are real and unchanged since Sprint 6, not yet reflected in the diagram itself.
 
 No crate should depend on a crate above it in this hierarchy.
 
@@ -180,6 +181,10 @@ Sprint 4 gave `modiq-collection` its second real Collector, archive-based, resol
 ## Sprint 5 — Complete
 
 Sprint 5 deliberately did not extend Evidence Collection; per Technical Director direction, it strengthened the assessment intelligence layer instead — the Rule Engine's own depth — before a third Collector arrives. GOV-012 (Rule Evaluation Model) resolved `RuleEngine::evaluate`'s multi-Rule shape (`Vec<RuleOutcome>`, explicit declaration order, independent composition); GOV-013 (FindingSeverity Severity/Kind Conflation) was opened, deliberately Open rather than resolved, accepting the current `FindingSeverity` model as provisional pending more concrete Rules. `DataModel.md` gained the platform's first specification-level Finding Severity definitions (v1.1.0). `modiq-rules` gained its second concrete Rule (`StructuralDuplicationRule`, Phase 2) and its original Rule extracted into its own unit (`EvidencePresenceRule`), both dispatched by the new multi-Rule `RuleEngine::evaluate` (Phase 3) — no trait, registry, or dispatch abstraction introduced. A dedicated investigation (Phase 4) recommended retiring `modiq-report`'s four unused scaffold types, using the same evidentiary method GOV-004 used, but no action was taken this Sprint. A Sprint 5 Closeout followed: repository documentation reconciled (including correcting a broken cross-reference to a `SPRINT4_RETROSPECTIVE.md` file that was never created) and an engineering retrospective produced. `modiq-rules` advanced with real multi-Rule content; the root workspace test suite grew from 150 to 162 tests. Full record: `docs/engineering/ENGINEERING_RELEASE_0.5.md`.
+
+## Sprint 6 — Complete
+
+Sprint 6 closed two of the three roadmap candidates named at Sprint 5 Closeout, deliberately not touching the third (XML inspection). `modiq-cli` was wired to `modiq-engine` for the first time since Sprint 0: `Application` dispatches `assess`/`help`/`version` by one direct match, `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a real, user-supplied path, mapping the result to a three-tier exit-code convention — no command trait, registry, or new external dependency introduced. `modiq-report`'s four scaffold types recommended for retirement at Sprint 5 Phase 4 were deleted under this Sprint's explicit Chief Architect authorization; `AssessmentReport` is unchanged. No change to `AssessmentService`'s public entry points. `modiq-cli` advanced from L1 to L2; the root workspace test suite grew from 162 to 172 tests. Implementation committed and merged into `feature/runtime-implementation`; a formal `ENGINEERING_RELEASE_0.6.md` record has not yet been produced. Full record: `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`.
 
 ---
 

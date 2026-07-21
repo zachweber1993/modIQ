@@ -7,9 +7,9 @@
 | **Purpose** | Role-specific operational handoff for the next Lead Software Engineer session — assumes `PROJECT_HANDOFF_v1.0.md` has already been read |
 | **Prerequisite** | `docs/engineering/PROJECT_HANDOFF_v1.0.md` — **read that first.** This document does not repeat product vision, architecture, governance history, sprint history, or architectural principles; all of that now lives there. |
 | **Supersedes** | `LEAD_ENGINEER_HANDOFF_v2.0.md` (retained as a historical record; not rewritten) |
-| **As of** | 2026-07-21, following Sprint 5 Closeout (Engineering Release 0.5) |
+| **As of** | 2026-07-21, following Sprint 6 (CLI wiring, `modiq-report` scaffold retirement), implemented, reviewed, and merged; Repository Closeout in progress |
 | **Branch** | `feature/runtime-implementation` |
-| **HEAD** | `fbef863` |
+| **HEAD** | `29657df` |
 
 ---
 
@@ -36,13 +36,13 @@ Every governance resolution and architectural decision recorded in this reposito
 | Property | Value |
 |---|---|
 | Branch | `feature/runtime-implementation` |
-| HEAD | `fbef863` — Sprint 5's full implementation and closeout |
+| HEAD | `29657df` — Sprint 6's merge commit (implementation: `397707f` on `feature/sprint6-cli`) |
 | Working tree | Clean, pushed, in sync with `origin/feature/runtime-implementation` |
-| Current milestone | Sprint 5, complete (Phases 1–5, plus Closeout) |
+| Current milestone | Sprint 6, implemented and merged; Repository Closeout in progress |
 | Workspace crates | 9, unchanged in count since Sprint 3 |
-| Root workspace tests | 162, zero flaky, zero ignored, zero warnings |
+| Root workspace tests | 172, zero flaky, zero ignored, zero warnings |
 | Sandbox tests | 6, independent workspace, zero warnings |
-| Documentation status | `GOVERNANCE.md`, `DataModel.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `CrateRoadmap.md`, `ENGINEERING_LOG.md`, `docs/README.md` all synchronized with implementation as of HEAD, verified directly while producing this handoff, not carried over from Sprint 5's own closeout report |
+| Documentation status | `GOVERNANCE.md`, `DataModel.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `CrateRoadmap.md`, `ENGINEERING_LOG.md`, `docs/README.md`, and the three role handoff documents all reconciled as of HEAD during this Sprint 6 Closeout session — verified directly, not carried over from any prior report. A formal `ENGINEERING_RELEASE_0.6.md` has not yet been produced. |
 
 ---
 
@@ -54,7 +54,7 @@ These are binding on any work you do until explicitly revisited:
 - Collector selection and Rule dispatch are both explicit and inline — no dispatcher, registry, provider, factory, trait hierarchy, or plugin mechanism, for as long as the current small number of concrete cases persists (GOV-004, GOV-012). This has now been affirmed independently at least six times across two different subsystems (`PROJECT_HANDOFF_v1.0.md`, Section 6, Principle 1) — do not propose an abstraction without a genuine second-or-later concrete case already in hand.
 - `RuleEngine::evaluate` dispatches `EvidencePresenceRule` then `StructuralDuplicationRule`, in that fixed order, returning `Vec<RuleOutcome>`; both fire independently, no suppression model (GOV-012).
 - `FindingSeverity` (`Error`/`Warning`/`Informational`/`BestPractice`) is unchanged and **must stay unchanged** until GOV-013 is revisited with real evidence from a third Rule — do not restructure this type speculatively, and do not silently assign `BestPractice` to a new Rule without first checking whether that's actually a kind-classification need GOV-013 anticipated.
-- `modiq-report`'s four scaffold types (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) are recommended for retirement but **not yet approved for deletion** — do not delete them without a separate, explicit authorization, even though the recommendation is on record.
+- `modiq-report`'s four scaffold types (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) were **deleted at Sprint 6, under explicit, separate Chief Architect authorization** — no longer a pending decision. `AssessmentReport` remains the crate's only content, and remains the canonical report model unless future architecture, justified by implementation evidence, replaces it.
 - The `AssessmentService` execution contract (both entry points, `AssessmentInput`, `AssessmentReport`, the public error model) is the approved boundary; GOV-008 remains deliberately unresolved and unblocking — do not propose changing either entry point's signature as a side effect of unrelated work.
 - Documentation staleness between closeouts is a tracked workflow-improvement goal, **not** a mandatory per-phase `PROJECT_STATUS.md` update requirement — this was explicitly proposed and explicitly declined at Sprint 5 Closeout. Continue full reconciliation at sprint close; do not proactively edit `PROJECT_STATUS.md` after every individual phase as a blanket habit.
 - No new external crate dependency without explicit authorization; none is currently authorized.
@@ -63,19 +63,20 @@ These are binding on any work you do until explicitly revisited:
 
 # Immediate Priorities
 
-**Sprint 6 is not yet scoped.** Nothing is authorized to begin. Three candidates are on record (`PROJECT_HANDOFF_v1.0.md`, Section 10) — XML inspection, CLI wiring, acting on the Reporting scaffold-retirement recommendation — but scoping which one, or in what order, is a Chief Architect sequencing decision, not yours to make. If asked to plan Sprint 6, prepare implementation plans for Chief Architect review (mirroring `SPRINT5_IMPLEMENTATION_PLAN.md`'s own shape) before any implementation, exactly as Sprint 5 itself was handled. Implementation requires Chief Architect authorization.
+**Sprint 6 is complete** — implemented, reviewed, merged into `feature/runtime-implementation`, and now administratively closed out (this document reconciled as part of that Closeout). **Sprint 7 is not yet scoped.** Nothing is authorized to begin. Of the three original Sprint 6 candidates (`PROJECT_HANDOFF_v1.0.md`, Section 10), only XML inspection remains undone — but scoping it, or something else, is a Chief Architect sequencing decision, not yours to make. If asked to plan Sprint 7, prepare implementation plans for Chief Architect review (mirroring `SPRINT6_IMPLEMENTATION_PLAN.md`'s own shape, including its Authorization Record) before any implementation, exactly as Sprint 6 itself was handled. Implementation requires Chief Architect authorization.
 
-If asked to simply "continue" without a specific scope, the correct response is to ask which of the three candidates (or something else) the Chief Architect wants scoped — not to guess and start implementing one.
+If asked to simply "continue" without a specific scope, the correct response is to ask what the Chief Architect wants scoped — not to guess and start implementing one. Also worth surfacing proactively: a formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced.
 
 ---
 
 # Open Engineering Risks
 
-- **GOV-008 has now aged across three Sprints (3, 4, 5) untouched.** The two-entry-point stopgap works, but is explicitly a stopgap; if a fourth Sprint's implementation pressure produces new evidence bearing on it, report that evidence rather than resolving GOV-008 informally.
-- **Missing `Display`/`Serialize` for Runtime identity/enum types has now been flagged in six consecutive release records** (Sandbox Phase 2 through Engineering Release 0.5) without ever being scheduled. If you're asked to survey small, low-risk cleanup candidates, this is the most repeatedly-named one on record.
-- **The Reporting scaffold-retirement recommendation is real, scoped, low-risk work sitting undone.** Worth surfacing proactively if Sprint 6 scoping discussion doesn't mention it — it's cheap and already fully investigated (`SPRINT5_PHASE4_REPORTING_INVESTIGATION.md`).
-- **`modiq-knowledge` has gone five Sprints with zero implementation and zero forcing function**, including through a Sprint that added a second Rule specifically and still didn't need it. Not urgent, but worth another explicit look if a third Rule is ever scoped and also doesn't need it.
-- **Git tag hygiene remains unresolved**: `v0.4.0` and `v0.5.0` are both available untagged; whether to start tagging Engineering Releases going forward is a standing open question, not something to decide unilaterally.
+- **GOV-008 has now aged across four Sprints (3, 4, 5, 6) untouched.** Sprint 6 specifically reused `execute_from_assessment_input` exactly as designed and was confirmed, at scoping time, not to generate new evidence toward it. The two-entry-point stopgap works, but is explicitly a stopgap; if a future Sprint's implementation pressure produces new evidence bearing on it, report that evidence rather than resolving GOV-008 informally.
+- **Missing `Display`/`Serialize` for Runtime identity/enum types has now been flagged in seven consecutive release records** (Sandbox Phase 2 through Sprint 6) without ever being scheduled. Sprint 6 explicitly declined to fold this in despite `modiq-cli` being the first text-only consumer, per direct Chief Architect authorization. If you're asked to survey small, low-risk cleanup candidates, this is still the most repeatedly-named one on record.
+- **Resolved at Sprint 6, no longer open:** the Reporting scaffold-retirement recommendation — the four types are deleted.
+- **A new, minor architectural item from Sprint 6, not yet a Governance Register item:** `modiq-engine` does not re-export `AssessmentReport`, so both real consumers of `AssessmentService` (the Sandbox and, since Sprint 6, `modiq-cli`) independently depend on `modiq-report` directly just to name the type. Two data points so far — this project's own convergent-evidence bar has favored three (GOV-004). Worth watching for a third occurrence rather than proposing a fix from two.
+- **`modiq-knowledge` has gone six Sprints with zero implementation and zero forcing function**, including through two Sprints (5 and 6) that each added real capability elsewhere (a second Rule; a real CLI) without needing it. Not urgent, but worth another explicit look if a third Rule is ever scoped and also doesn't need it.
+- **Git tag hygiene remains unresolved**: `v0.4.0` and `v0.5.0` are both available untagged, and no Engineering Release 0.6 (or corresponding tag) exists yet at all; whether to start tagging Engineering Releases going forward is a standing open question, not something to decide unilaterally.
 
 ---
 
@@ -118,4 +119,4 @@ This is the same permanent lifecycle `CHIEF_ARCHITECT_HANDOFF_v1.0.md` Section 1
 
 # Final Assessment
 
-The repository is in a clean, fully verified, fully reconciled state: working tree clean, both workspaces green with zero warnings, documentation synchronized as of HEAD, and every governance item either Resolved or deliberately, correctly Open. Sprint 5 closed with zero unresolved implementation work. The next session's first action should be confirming Sprint 6's scope with the Chief Architect — not assuming one of the three named candidates by default.
+The repository is in a clean, fully verified, fully reconciled state: working tree clean, both workspaces green with zero warnings (172/172 root, 6/6 Sandbox), documentation synchronized as of HEAD, and every governance item either Resolved or deliberately, correctly Open. Sprint 6 closed with zero unresolved implementation work; a formal `ENGINEERING_RELEASE_0.6.md` record remains the one outstanding administrative item, named explicitly rather than silently assumed complete. The next session's first action should be confirming Sprint 7's scope with the Chief Architect — not assuming XML inspection by default, even though it is the only named candidate remaining.

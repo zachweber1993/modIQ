@@ -395,3 +395,27 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/ENGINEERING_RELEASE_0.5.md` (release record, including its own retrospective section), `docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md`, `docs/engineering/GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`, and `docs/engineering/SPRINT5_PHASE4_REPORTING_INVESTIGATION.md`.
+
+---
+
+# [Sprint 6]
+
+**Status:** Complete (implementation, review, and merge into `feature/runtime-implementation`)
+
+## Added
+
+- **CLI wiring** — `modiq-cli` wired to `modiq-engine` for the first time since Sprint 0. `Application` dispatches `assess`/`help`/`version` by one direct match, no command trait or registry. `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a real, user-supplied path (not a fixed fixture, unlike the Sandbox's own use of the same entry point), formatting Evidence/Findings/Recommendations for display. Exit-code convention: 0 success, 1 execution failure (`CollectionError` — a well-formed input, execution attempted and aborted), 2 invalid usage (CLI-level usage errors and `AssessmentInputError` alike — invalid before execution begins). No new external dependency; argument parsing is manual, per explicit Chief Architect direction.
+- **`modiq-report` scaffold retirement** — the four unused types recommended for retirement at Sprint 5 Phase 4 (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) deleted under this Sprint's explicit, separate authorization. `AssessmentReport`, the crate's real, tested content, is unchanged and remains the canonical report model.
+- The root workspace test suite grew from 162 to 172 tests across the sprint (`modiq-cli` 0 → 10; every other crate's count unchanged, including `modiq-report`'s 3, confirming the deletion had zero test-coverage impact); the Sandbox's own separate suite was reverified unchanged at 6/6.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint. GOV-008 specifically was not advanced: CLI wiring reuses `AssessmentService`'s existing entry point exactly as designed and was not expected to, and did not, generate new evidence toward it.
+- `Display`/`Serialize` for Runtime identity/enum types remains explicitly out of scope, per direct Chief Architect authorization — `modiq-cli` formats results with `{:?}`, matching the Sandbox's own established approach.
+- XML inspection (the next Evidence Collector) remains out of scope — the sole remaining candidate from the original three-item Sprint 6 roadmap, deferred to a future Sprint of its own rather than bundled into this one.
+- A minor, twice-observed architectural gap was named, not acted on: `modiq-engine` does not re-export `AssessmentReport`, so both real consumers of `AssessmentService` (the Sandbox and now `modiq-cli`) independently needed a direct `modiq-report` dependency just to name the type. Two data points, below this project's own usual three-point convergent-evidence bar — tracked, not yet a Governance Register item.
+- A formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced.
+
+## Released
+
+- Documented in `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record) and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`. Implementation committed as `397707f` on `feature/sprint6-cli`, merged into `feature/runtime-implementation` as `29657df`.
