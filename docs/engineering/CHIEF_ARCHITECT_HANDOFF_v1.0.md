@@ -272,6 +272,14 @@ Architecture Review
 Sprint Closeout
 ```
 
+**Repository Closeout**
+
+Repository Closeout reconciles the repository's authoritative documentation with the implementation following Sprint completion and integration.
+
+Its purpose is administrative consistency only.
+
+Repository Closeout must not introduce architectural, governance, or production-code changes.
+
 **Sprint Planning** is the Lead Engineer preparing a proposed Sprint Implementation Plan or phase scope. **Chief Architect Review** is evaluating that plan against architecture, governance, and crate boundaries before anything is authorized. **Authorization** is explicit sign-off to begin — per-phase, not a single blanket approval for an entire Sprint (Section 9). **Implementation** is the Lead Engineer's work against the authorized scope only. **Validation** is `cargo fmt`/`check`/`test`, both workspaces, zero warnings — run and confirmed before a phase is reported complete. **Implementation Report** is the Lead Engineer's standard report (files modified, tests added, design decisions, assumptions, concerns). **Architecture Review** is the Chief Architect applying Section 5's review questions to that report. **Sprint Closeout** is the administrative half of "done" — reconciliation, documentation audit, Engineering Release record — reviewed and approved before the Sprint is declared complete (Section 9).
 
 ---
