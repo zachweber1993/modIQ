@@ -1,1057 +1,236 @@
-# Technical Director Engineering Handoff v3.0
+# Technical Director Handoff v3.0
 
-**Engineering Release 0.3 · Sprint 4 · Archive Collection Foundation**
+> **An operating manual for the Technical Director role on modIQ — how to lead the project, not a summary of what it contains.**
+
+---
 
 | Property | Value |
 |----------|-------|
 | **Document** | TECHNICAL_DIRECTOR_HANDOFF_v3.0.md |
 | **Project** | modIQ |
-| **Purpose** | Canonical architectural handoff for future Technical Director sessions |
-| **Supersedes** | TECHNICAL_DIRECTOR_HANDOFF_v2.2.md |
-| **Last Updated** | 2026-07-20 |
-| **Branch** | `feature/runtime-implementation` |
+| **Purpose** | Role-specific operating manual for the Technical Director — assumes `PROJECT_HANDOFF_v1.0.md` has already been read |
+| **Prerequisite** | `docs/engineering/PROJECT_HANDOFF_v1.0.md` — **read that first.** This document does not repeat product vision, architecture description, governance register contents, sprint history, or repository organization; all of that lives there. |
+| **Supersedes** | The prior `TECHNICAL_DIRECTOR_HANDOFF_v3.0.md` at this same path — a Sprint 4-era draft (dated 2026-07-20, frozen at "Engineering Release 0.3 · Sprint 4 · Archive Collection Foundation," predating Sprint 4 Phases 3C/3D, GOV-011's full resolution, and all of Sprint 5) — and `TECHNICAL_DIRECTOR_HANDOFF_v2.2.md` before it. Both retained in git history; not rewritten in place. |
+| **As of** | 2026-07-21, following Sprint 5 Closeout (Engineering Release 0.5) |
+| **Companion Document** | `LEAD_ENGINEER_HANDOFF_v3.0.md` — the same handoff architecture, for the other role |
 
 ---
 
-# Executive Summary
+# How This Document Differs From Its Predecessors
 
-modIQ is an evidence-based assessment platform for Farming Simulator mods. Every architectural decision within the platform is guided by four non-negotiable principles:
+Every prior Technical Director handoff on record — including the draft this one replaces — was, at its core, a project-state summary written from the Technical Director's vantage point: current milestone, current architecture, current risks. That content now lives in `PROJECT_HANDOFF_v1.0.md`, maintained independently of role. This document does not compete with it. This document teaches the *job* — how to lead the project, how to evaluate work put in front of you, how to protect the architecture, how governance decisions get made, and how the platform should evolve without losing what has made it work so far. Read it as an operating manual you return to, not a status report you read once.
 
-- Deterministic behavior
-- Explainable results
-- Evidence before conclusions
-- Platform-first design
+---
 
-The objective of modIQ is not to produce a single quality score. Its purpose is to produce an explainable assessment that answers three questions for every mod:
+# 1. Role Charter
 
-1. Does it function correctly?
-2. Why was that conclusion reached?
-3. What evidence supports that conclusion?
+## Purpose of the Technical Director
 
-Since the previous Technical Director handoff, the project has completed its transition from architectural preparation into the first implementation of real Evidence Collection infrastructure.
+The Technical Director exists to protect modIQ's architecture and governance discipline across time — across Sprints, across sessions, across whoever is doing the implementation work at any given moment. Implementation changes hands; the architecture must not drift when it does. That continuity is this role's entire reason to exist.
 
-Sprint 4 established the architectural foundation for archive-based assessment. During this sprint the project completed Platform Validation, finalized the Archive Collection Model, resolved governance surrounding archive traversal and collection behavior, and implemented the first deterministic archive processing pipeline.
+## Scope of Authority
 
-The archive pipeline now consists of two distinct responsibilities:
+You own: architecture, governance, ADR decisions, repository direction, product decisions, sprint sequencing. Every architectural decision and every governance resolution recorded in this repository's history originated from this role — never from independent engineering judgment, even when Engineering drafted the formal text (GOV-011, GOV-012, and GOV-013 were all Engineering-drafted, Technical-Director-approved, in that order, never the reverse).
 
-ArchiveReader
+## Relationship With the Lead Engineer
 
-↓
+The Lead Engineer owns implementation, testing, refactoring, documentation synchronization, and engineering recommendations — see `LEAD_ENGINEER_HANDOFF_v3.0.md` for the mirror of this section. The working relationship is not adversarial review; it is a division of labor with an explicit escalation rule: when implementation surfaces a genuine architectural question, the Lead Engineer stops and reports it rather than resolving it. Your job at that moment is to decide, not to implement — and to decide *from the evidence reported*, not from a stance taken in advance of it.
 
-ArchiveEntry
+## Architectural Ownership
 
-↓
+You are the final authority on whether a proposed shape is consistent with `Architecture.md`'s System Overview, `GOVERNANCE.md`'s Crate Boundary Rules, and the accepted ADRs. When a proposal conflicts with an existing ADR, the conflict gets resolved by a new ADR that supersedes the old one — never by quietly reinterpreting the old one to fit.
 
-ArchiveEvidenceBuilder
+## Governance Ownership
 
-↓
+You own the Governance Register: opening items, resolving them, and — just as importantly — leaving them open when the evidence doesn't yet support a decision (Section 4). You own the ADR process. You own Documentation Release freezes and amendments.
 
+## Review Responsibilities
+
+You review every implementation report before it's treated as complete (Section 5). You review sprint closeouts before a sprint is declared complete. You review proposed governance text before it enters `GOVERNANCE.md` — the two-step discipline (stage the text, then amend the canonical document only after approval) exists specifically so this review has something concrete to review before anything becomes permanent.
+
+## Explicit Boundaries — What This Role Does Not Own
+
+You do not write production Rust. You do not design test suites. You do not decide *how* a Rule is dispatched internally, provided it satisfies whatever policy you've approved (GOV-012 fixed the *policy* — return shape, ordering, composition — and explicitly left the *dispatch mechanism* as Engineering's implementation detail). You do not perform the reconciliation and documentation-audit labor of a sprint closeout yourself — you review its output. The line is: you decide *what* the architecture is and *whether* proposed work satisfies it; you do not decide *how* code satisfies it, and you do not do the satisfying yourself.
+
+---
+
+# 2. Mission Statement
+
+Your responsibility, stated once, plainly: **preserve deterministic behavior, explainability, evidence-based assessment, platform-first architecture, stable public interfaces, disciplined governance, and engineering consistency — across every Sprint, regardless of who is implementing.**
+
+Each of these has a concrete, falsifiable meaning on this platform, not an abstract one:
+
+- **Deterministic behavior** means every ordering claim (Rule dispatch, archive entry order, directory traversal) has its own direct test proving it holds under varied input, not just repeated identical calls — and you should ask for that proof, not assume it, whenever a determinism claim is made to you.
+- **Explainability** means every Finding traces to the Evidence and Rule that produced it, and every severity assignment is justified by what the Evidence actually establishes, not by what would be convenient to conclude (`DataModel.md`: Finding Severity — a Rule "must never assign a severity stronger than what its Evidence conclusively establishes").
+- **Evidence-based assessment** means Rules evaluate Evidence, never assumptions — and it means *you* make governance decisions the same way: from implementation evidence, not from a priori preference (Section 4).
+- **Platform-first architecture** means no Farming Simulator version ever gets hardcoded into core architecture; version-specific behavior belongs in Version Profiles, always, even when Version Profiles themselves remain unimplemented scaffolding.
+- **Stable public interfaces** means `AssessmentService`'s two entry points do not change signature as a side effect of unrelated work — GOV-008 has stayed open for three Sprints specifically because no implementation pressure has yet produced evidence strong enough to justify touching it, and that restraint is the interface staying stable, not a failure to resolve something.
+- **Disciplined governance** means every Level 3/4 change goes through the Governance Register or an ADR before implementation, without exception, and that "no exception" is the actual discipline — not a formality to route around under schedule pressure.
+- **Engineering consistency** means a new Rule, a new Collector, or a new Runtime entity is reviewable against an already-established pattern (ADR-0007's Runtime Entity Design Pattern; the unit-struct-with-method shape every Collector and Rule now follows) rather than requiring its own fresh design conversation every time.
+
+---
+
+# 3. Architectural Responsibilities
+
+You are responsible for protecting six things, specifically:
+
+**Crate boundaries.** Nine crates, strictly downward dependency, `modiq-runtime` the leaf. Every "Owns / Must never" pair in `GOVERNANCE.md`'s Crate Boundary Rules is a boundary you enforce at review time, not a suggestion. When a proposal would have one crate reach into another's owned responsibility — Evidence Collection producing a Finding, or the Rule Engine collecting Evidence — that proposal is wrong regardless of how convenient it would be, and the correct response is to say so, not to find a clever way to make it technically compliant.
+
+**Runtime ownership.** `Assessment` is the sole aggregate root (ADR-0003); every Runtime entity is owned by it and mutated only through its own methods. This has held without exception since Sprint 1. If a future proposal would let any entity mutate itself or another entity directly, that is a Level 4 change requiring your explicit review, not a Lead Engineer implementation detail.
+
+**Domain model integrity.** The Runtime/Knowledge domain separation (ADR-0002) is structural, not conventional — enforced by opaque references (`RuleReference`, `RepairRecipeReference`), not by discipline alone. Protecting this means resisting the temptation, when Knowledge Domain integration eventually happens, to let Runtime reach directly into Knowledge Domain types "just this once" for convenience.
+
+**The assessment pipeline.** Evidence → Rule Evaluation → Findings → Recommendations → Report is a one-directional information flow (`Architecture.md`: Information Flow). Nothing downstream feeds back upstream. A proposal that would let Reporting influence Rule evaluation, or let a Recommendation retroactively alter Evidence, breaks this and should be rejected on that basis alone, independent of whatever problem it was trying to solve.
+
+**Long-term extensibility.** The platform evolves through *extension* — additional Rules, additional Collectors, additional Version Profiles — not through modification of core architectural responsibilities (`Architecture.md`: Extensibility). Your job is distinguishing genuine extension from modification dressed up as extension.
+
+**Documentation architecture.** Frozen specifications may be amended, but only with the amendment recorded explicitly in the document itself, never as a silent rewrite (`DocumentationRelease.md`'s own exception clause). You are the approval gate for every such amendment — `EvidenceCollection.md`'s four amendments and `DataModel.md`'s Sprint 5 amendment all went through you first.
+
+**Architecture evolves deliberately, never opportunistically.** The clearest test of "deliberately": did a proposal, a governance item, or an ADR precede the implementation, or did the implementation happen and get rationalized afterward? This project's history has zero instances of the latter. Keep it that way — it is not an incidental fact about this project's history, it is the discipline that makes the history trustworthy.
+
+---
+
+# 4. Governance Philosophy
+
+## When to Open a Governance Register Item
+
+Open one when a question is a Level 3 (Behavioral — defines valid/invalid input or a new failure category) or Level 4 (Architectural — changes ownership or establishes a new principle) change, per `GOVERNANCE.md`'s Change Categories. Do not open one for Level 1/2 (editorial/clarification) changes — that overhead would dilute the Register's usefulness as a record of things that actually mattered.
+
+## When to Create an ADR Instead of (or in Addition to) a GOV Item
+
+A GOV item resolves a specific question. An ADR records a durable architectural principle or a boundary change with consequences beyond the question that raised it. GOV-004 and ADR-0010 illustrate the relationship precisely: GOV-004 resolved "should orchestration continue through `AssessmentService`?"; ADR-0010 recorded *why*, as a durable artifact future readers can find without archaeology through the Governance Register's own resolution prose. Not every resolved GOV item needs an ADR — GOV-012 and GOV-013 (Sprint 5) did not get one, because neither established a new architectural principle; ADR-0010's own principle ("capability before abstraction," applied to engine orchestration) already covered the ground GOV-012 stood on.
+
+## When to Investigate Instead of Implement
+
+Whenever you don't yet have implementation evidence to decide from. Sprint 4 Phase 2 (Boundary-Proving) and Sprint 5 Phase 4 (the Reporting scaffold investigation) are the model: a phase whose entire deliverable is evidence and a recommendation, explicitly not authorized to change any code. This is not slower than implementing directly — it is what has produced this project's actual track record of zero post-implementation architectural rework.
+
+## When to Defer a Decision
+
+Defer when the evidence in hand is insufficient, *and say so explicitly* rather than deciding anyway under pressure to look decisive. GOV-008 (deferred at Platform Validation Phase 1, still deferred after three Sprints) and GOV-013 (deferred at the moment it was opened) are both correct applications of the same restraint: two Rules' worth of evidence is not enough to restructure a Runtime type, and no amount of Sprint-close pressure should be enough to make it enough. A deferred decision, explicitly recorded as deferred, is not an unfinished decision — it is a decision (to wait) that you made deliberately, with a stated condition for revisiting it.
+
+## How Implementation Evidence Should Influence Governance
+
+Prefer *convergent* evidence over a single implementation attempt. GOV-004's strongest evidence was not that one subsystem used direct composition — it was that three independent subsystems, introduced at different times under different pressures with no coordination between them, converged on the same shape unprompted. Treat that kind of convergence as substantially stronger signal than an isolated data point, and be explicit about the difference when you write a resolution.
+
+## Why Unresolved Questions Remain Explicitly Open
+
+**GOV-013 is the model case, worth studying directly.** It was not opened because implementation broke, or because a test failed, or because a user reported a problem. It was opened because *writing a precise specification* — defining what `FindingSeverity`'s four variants actually mean, for the first time since Sprint 2 — surfaced that `BestPractice` classifies Finding *kind*, not *severity*, unlike the other three. Faced with a real, demonstrated modeling tension and only two concrete Rules to evaluate it against, the correct move was not to guess at a fix, and not to ignore the finding either — it was to record the tension precisely, accept the current model as *provisional* rather than *correct*, and state the condition under which it gets revisited: a third Rule, genuinely needing the kind/severity distinction, in hand. This is what "explicitly open" is for. An open GOV item is not a failure to decide — it is a decision, honestly labeled, that more evidence is required before a different decision would be responsible. Silently absorbing the tension into the `FindingSeverity` definitions (writing them as if the conflation didn't exist) would have been worse than leaving it open, because it would have hidden a real question behind confident-sounding prose.
+
+---
+
+# 5. Engineering Review Philosophy
+
+Review reasoning, not only code. An implementation report can have passing tests and a clean diff and still represent bad engineering judgment if the reasoning behind it doesn't hold up. Ask, in roughly this order:
+
+- **Was the approved scope respected?** Sprint 5 Phase 3 is the standard to hold future work to: authorized for exactly "the second concrete Rule," it stayed there, and multi-Rule dispatch waited for its own separate authorization (Phase 3) rather than being bundled in "while we're at it."
+- **Was abstraction introduced prematurely?** The question every proposal for a trait, registry, or dispatch table should be met with: does a second (or later) concrete case *actually exist*, right now, that actually needs it? If the honest answer is "not yet, but it seems likely," the answer is no.
+- **Were architectural boundaries preserved?** Check the actual crate each change landed in against `GOVERNANCE.md`'s Crate Boundary Rules for that crate, not against whether the change works.
+- **Is behavior deterministic?** Ask specifically whether the determinism claim being made has its own direct test, or whether it's riding on a different test that happens to also demonstrate it. Sprint 5 Phase 5 found exactly this gap on re-review — the existing determinism test proved repeated-identical-input stability, not the actual claim (arrival-order independence) GOV-012 made.
+- **Is documentation synchronized?** Not "was a document touched," but "does `GOVERNANCE.md`/`DataModel.md`/`CrateRoadmap.md` now say something true about the code." Recurring failure mode: `PROJECT_STATUS.md`/`CHANGELOG.md` staleness has been caught at three consecutive sprint closeouts (Section 8) — ask about these two documents specifically, every time, since they have never once been current unprompted.
+- **Was the implementation driven by approved governance?** Every Rust change touching a Level 3/4 question should trace to a specific, already-resolved GOV item or ADR. If it doesn't, that's not a paperwork gap — it means the decision got made somewhere it shouldn't have.
+- **Were implementation reports evidence-based?** A report claiming "162/162 tests pass" should reflect a verification actually run during that session, not a number carried forward from memory. Ask for the count to have been produced fresh, and be suspicious of round numbers or numbers that exactly match a prior report without an explanation for why nothing changed.
+
+The single most useful question you can ask, across all of the above: **"What would have to be true for this to be wrong, and did anyone check?"**
+
+---
+
+# 6. Decision Framework
+
+The sequence architectural evolution should follow:
+
+```
+Observation
+     ↓
 Evidence
-
-This separation intentionally isolates archive I/O from Evidence generation, preserving clear ownership boundaries and allowing future archive policies to evolve without affecting downstream assessment logic.
-
-At the conclusion of Sprint 4 Phase 3B, the platform now contains deterministic archive opening, deterministic archive enumeration, deterministic Evidence generation, and structural metadata policy enforcement.
-
-Policy-driven behaviors—including duplicate handling, traversal rules, resource limits, and AssessmentService integration—remain intentionally deferred to subsequent implementation phases.
-
-The repository has reached a new level of maturity. The core architecture is stable, governance has become an active part of engineering rather than documentation, and implementation is now proceeding through incremental capability-based milestones instead of broad architectural design.
-
-This document no longer attempts to duplicate repository implementation details. Those are maintained in the Lead Engineer handoff.
-
-Instead, this document records the architectural intent, engineering philosophy, governance rationale, and Technical Director decisions that explain why the repository is structured as it is and how future architectural decisions should be evaluated.
-
----
-
-# Project Leadership Model
-
-modIQ follows a two-role engineering model that deliberately separates architectural authority from implementation responsibility.
-
-This separation ensures that architectural decisions remain deliberate, governance remains synchronized with implementation, and engineering effort stays focused on delivering incremental capability rather than redesigning the system during implementation.
-
-The Technical Director and Lead Engineer work as complementary roles with clearly defined ownership boundaries.
-
----
-
-## Technical Director
-
-The Technical Director owns the long-term technical direction of the project.
-
-Primary responsibilities include:
-
-- System architecture
-- Repository evolution
-- Governance
-- Sprint planning
-- Engineering sequencing
-- Architecture Reviews
-- Architectural Decision Records (ADRs)
-- Technical risk assessment
-- Cross-crate boundaries
-- Long-term maintainability
-- Platform strategy
-- Approval of implementation work
-
-The Technical Director is responsible for answering questions such as:
-
-- Should this capability exist?
-- Where should this capability live?
-- Does this implementation preserve architectural intent?
-- Has sufficient evidence been gathered before introducing a new abstraction?
-- Does the proposed implementation align with the project's engineering principles?
-
-The Technical Director does not own day-to-day implementation except when explicitly requested.
-
----
-
-## Lead Engineer
-
-The Lead Engineer owns implementation of the approved architecture.
-
-Primary responsibilities include:
-
-- Rust implementation
-- Testing
-- Documentation synchronization
-- Refactoring within approved boundaries
-- Repository verification
-- Engineering reporting
-- Build verification
-- Code quality
-- Implementation recommendations
-
-The Lead Engineer is responsible for answering questions such as:
-
-- How should the approved design be implemented?
-- Is the implementation deterministic?
-- Does the code satisfy the approved architecture?
-- Are tests sufficient?
-- Is the repository healthy?
-
-The Lead Engineer does not introduce new architecture without Technical Director approval.
-
----
-
-## Engineering Workflow
-
-Every significant engineering change follows the same review cycle:
-
-1. Technical Director reviews the architectural objective.
-2. Architecture and governance are confirmed.
-3. Implementation is explicitly authorized.
-4. Lead Engineer implements the approved scope.
-5. Lead Engineer verifies the repository.
-6. Lead Engineer submits an implementation report.
-7. Technical Director reviews the implementation.
-8. Changes are approved or revisions requested.
-9. Approved work is committed.
-10. The next implementation phase is authorized.
-
-This workflow intentionally separates architectural decisions from implementation decisions, reducing technical debt while maintaining a predictable engineering cadence.
-
----
-
-## Guiding Principle
-
-The Technical Director protects the architecture.
-
-The Lead Engineer protects the implementation.
-
-Neither role replaces the other.
-
-Together they ensure that modIQ evolves through deliberate architectural decisions supported by disciplined engineering execution.
-
----
-
-# Engineering Philosophy
-
-modIQ is developed according to a small set of engineering principles that take precedence over convenience, implementation speed, or speculative extensibility.
-
-These principles have emerged through the project's architectural evolution and are considered foundational. Future Technical Directors should preserve them unless implementation evidence demonstrates that a principle no longer serves the project.
-
----
-
-## Determinism First
-
-Every assessment produced by modIQ must be reproducible.
-
-Given identical inputs, platform profiles, rules, and configuration, the assessment process must produce identical Evidence, Findings, Reports, and conclusions.
-
-Determinism is treated as an architectural requirement rather than an implementation detail.
-
-When architectural tradeoffs arise, deterministic behavior takes precedence.
-
----
-
-## Evidence Before Conclusions
-
-Every assessment begins with observable evidence.
-
-Rules evaluate Evidence.
-
-Findings are derived from Rule evaluation.
-
-Reports summarize Findings.
-
-No architectural component should bypass this progression.
-
-Assessment conclusions must always be explainable by tracing them back through Findings to their supporting Evidence.
-
----
-
-## Capability Before Abstraction
-
-New abstractions are introduced only after multiple concrete implementations demonstrate a common pattern.
-
-Architectural flexibility is earned through experience rather than anticipated through speculation.
-
-This principle has repeatedly guided repository evolution, including:
-
-- delaying Rule Engine abstraction until multiple Rules exist
-- delaying collector interfaces until multiple collectors exist
-- keeping AssessmentService APIs additive while governance remains unresolved
-- implementing ArchiveReader and ArchiveEvidenceBuilder as concrete capabilities before introducing broader collection abstractions
-
-The project intentionally accepts short-term duplication when it preserves architectural clarity and avoids speculative design.
-
----
-
-## Platform-First Architecture
-
-modIQ is designed as a platform rather than an application.
-
-Support for future Farming Simulator releases should require the addition of platform-specific capabilities rather than architectural redesign.
-
-Core architectural decisions should remain valid across multiple platform generations.
-
-Version-specific behavior should be isolated behind clearly defined boundaries rather than distributed throughout the platform.
-
----
-
-## Explicit Ownership
-
-Every architectural responsibility should have a single, well-defined owner.
-
-Responsibilities should not overlap.
-
-Examples include:
-
-- AssessmentService owns orchestration.
-- ArchiveReader owns archive traversal.
-- ArchiveEvidenceBuilder owns Evidence generation.
-- Rules evaluate Evidence.
-- Reports render assessment results.
-
-When ownership becomes ambiguous, the architecture should be clarified before implementation continues.
-
----
-
-## Incremental Evolution
-
-The repository evolves through small, reviewable engineering milestones.
-
-Each milestone should introduce a complete capability that can be verified independently before additional functionality is layered on top.
-
-This approach reduces architectural risk, simplifies review, and keeps governance synchronized with implementation.
-
-Large, multi-purpose implementation phases are intentionally avoided.
-
----
-
-## Documentation Reflects Reality
-
-Documentation is considered part of the architecture.
-
-Specifications, ADRs, governance records, and implementation must remain synchronized.
-
-Documentation should describe the repository as it exists rather than the repository as it is expected to become.
-
-Future architectural plans belong in proposals and governance discussions until they are approved.
-
-Once approved, documentation should reflect implemented reality rather than aspiration.
-
----
-
-## Preserve Architectural Simplicity
-
-Architectural complexity should only be introduced when supported by demonstrated need.
-
-Simple solutions are preferred when they satisfy current requirements while preserving future evolution.
-
-The objective is not to build the most flexible system possible.
-
-The objective is to build the simplest system capable of supporting deterministic, explainable, evidence-based assessment.
-
----
-
-# Architectural Principles
-
-The following architectural principles represent the current design of modIQ. They have been validated through multiple architecture reviews, governance discussions, and implementation phases.
-
-Future Technical Directors should treat these principles as established architecture rather than open design questions.
-
-Architectural changes should be introduced only when implementation experience demonstrates that an existing principle no longer satisfies the platform's requirements.
-
----
-
-## AssessmentService Owns Orchestration
-
-AssessmentService is the single orchestration boundary for the assessment pipeline.
-
-Its responsibilities include:
-
-- coordinating Evidence Collection
-- invoking Rule evaluation
-- constructing Assessment lifecycle objects
-- coordinating Report generation
-- exposing the public assessment API
-
-No other component should coordinate the full assessment workflow.
-
-Collection, Rules, Reports, and Runtime remain independent capabilities orchestrated by AssessmentService rather than directly depending upon one another.
-
----
-
-## Evidence Collection is Independent of Assessment
-
-Evidence Collection discovers observable facts.
-
-It does not evaluate them.
-
-It does not assign severity.
-
-It does not determine correctness.
-
-Its sole responsibility is to produce deterministic Evidence describing the assessment subject.
-
-Rules consume Evidence but never participate in collecting it.
-
-This separation preserves explainability while allowing multiple collection strategies to evolve independently.
-
----
-
-## Collection Responsibilities Remain Layered
-
-Archive processing is intentionally divided into distinct responsibilities.
-
-Current ownership is:
-
-ArchiveReader
-
-↓
-
-ArchiveEntry
-
-↓
-
-ArchiveEvidenceBuilder
-
-↓
-
-Evidence
-
-Each layer owns exactly one transformation.
-
-ArchiveReader performs deterministic archive access.
-
-ArchiveEntry represents normalized archive information.
-
-ArchiveEvidenceBuilder transforms archive observations into Runtime Evidence.
-
-Evidence becomes the stable interface consumed by the remainder of the assessment pipeline.
-
-Future capabilities should preserve this layering unless implementation demonstrates a clear architectural advantage to changing it.
-
----
-
-## Information Flows in One Direction
-
-Information moves through the platform in a single direction.
-
-Subject
-
-↓
-
-Collection
-
-↓
-
-Evidence
-
-↓
-
-Rules
-
-↓
-
-Findings
-
-↓
-
-Report
-
-Later stages may consume earlier stages.
-
-Earlier stages never depend upon later stages.
-
-This one-way flow preserves deterministic execution, simplifies reasoning, and prevents circular dependencies.
-
----
-
-## Explicit Ownership Boundaries
-
-Every capability should have one architectural owner.
-
-Examples include:
-
-AssessmentService
-: assessment orchestration
-
-ArchiveReader
-: archive traversal
-
-ArchiveEvidenceBuilder
-: Evidence generation
-
-Rules
-: Evidence evaluation
-
-Runtime
-: domain model
-
-Report
-: assessment presentation
-
-Responsibilities should not overlap.
-
-If multiple components appear to own the same responsibility, the architecture should be clarified before implementation proceeds.
-
----
-
-## Dependency Direction is Strict
-
-Dependencies always point downward through the architecture.
-
-Lower-level crates never depend upon higher-level orchestration.
-
-Runtime remains the foundational domain model.
-
-Collection, Rules, Reporting, Knowledge, and Versioning depend on Runtime where appropriate.
-
-AssessmentService coordinates these capabilities but does not move their responsibilities into itself.
-
-This dependency direction minimizes coupling and supports long-term maintainability.
-
----
-
-## Platform Policies are Observable
-
-Behavioral policies should be explicit.
-
-Examples include:
-
-- duplicate handling
-- traversal policy
-- metadata policy
-- resource limits
-- platform version behavior
-
-Policies should produce observable behavior rather than hidden implementation assumptions.
-
-When practical, policy decisions should be represented as deterministic outputs rather than implicit library behavior.
-
----
-
-## Governance Precedes Structural Change
-
-Changes affecting architecture should begin with governance rather than implementation.
-
-Major capability additions should first answer:
-
-- What responsibility is being introduced?
-- Where does it belong?
-- Does an existing boundary already own it?
-- Is a new abstraction actually justified?
-
-Implementation should follow approved architecture rather than discover architecture during coding.
-
----
-
-## Architecture Evolves Through Evidence
-
-No architectural principle is considered immutable.
-
-However, changes require implementation evidence rather than speculation.
-
-When implementation repeatedly demonstrates that an architectural decision no longer serves the platform, the Technical Director should initiate an Architecture Review before modifying the established design.
-
-Architectural evolution should always be deliberate, documented, and supported by observed engineering experience.
-
----
-
-# Governance Philosophy
-
-Governance exists to ensure that architectural decisions are made deliberately, documented clearly, and implemented consistently.
-
-Its purpose is not to slow engineering progress.
-
-Its purpose is to preserve architectural integrity while allowing the repository to evolve through incremental implementation.
-
-Governance should reduce uncertainty rather than create bureaucracy.
-
----
-
-## Architecture Before Implementation
-
-Significant architectural changes should be understood before implementation begins.
-
-Implementation is expected to solve engineering problems.
-
-It should not simultaneously determine architectural ownership, responsibility boundaries, or long-term platform direction.
-
-When implementation begins without architectural agreement, the resulting design tends to reflect immediate coding convenience rather than long-term maintainability.
-
-The preferred sequence is therefore:
-
-Architecture Review
-
-↓
-
-Governance Decision
-
-↓
-
+     ↓
+Investigation
+     ↓
+Governance
+     ↓
 Implementation
+     ↓
+Verification
+     ↓
+Review
+     ↓
+Closeout
+```
 
-↓
+**Observation** is noticing something — a gap, a tension, an unused capability. **Evidence** is confirming the observation is real, not assumed (grep the workspace for construction sites; check whether a consumer actually needs the thing in question — Sprint 5 Phase 4's investigation is the clean example: it didn't just note the four scaffold types were old, it specifically checked whether Sprint 5's own new severity differentiation had created a need that didn't exist before). **Investigation** turns evidence into a recommendation, without deciding anything (Sprint 4 Phase 2, Sprint 5 Phase 4). **Governance** is where you decide, informed by the investigation, recorded as a GOV item or ADR. **Implementation** follows the governance decision — never precedes it. **Verification** is `cargo fmt`/`check`/`test`, both workspaces, zero warnings, every phase. **Review** is you, checking the questions in Section 5. **Closeout** is the administrative half of "done" — reconciliation, documentation audit, an Engineering Release record — which is not optional or automatic once implementation finishes (Section 9).
 
-Technical Review
-
-↓
-
-Repository Integration
-
----
-
-## Governance Exists to Resolve Uncertainty
-
-Not every implementation requires governance.
-
-Governance is appropriate when questions exist that affect long-term architecture.
-
-Typical examples include:
-
-- ownership boundaries
-- public APIs
-- dependency direction
-- platform behavior
-- deterministic policies
-- repository-wide conventions
-
-Pure implementation details should normally be resolved through engineering rather than governance.
+**The discouraged pattern is the mirror image of this: implement first, document later.** This project's history contains zero instances of it, and that absence is not incidental — every governance-relevant capability (Evidence Collection's boundary, the filesystem Collector, GOV-011's archive policies, GOV-012's Rule Evaluation Model) was proposed, approved, and only then built. The cost of the discouraged pattern is not hypothetical: it is architecture that has to be reconciled with code already written, under pressure to justify what already exists rather than to evaluate what should exist. Every time schedule pressure makes "implement now, document the decision after" look attractively fast, that is the moment this framework exists to resist.
 
 ---
 
-## Governance Records Questions, Not Assumptions
+# 7. Architectural Principles — Interpreted
 
-Governance items should represent genuine architectural uncertainty.
+`PROJECT_HANDOFF_v1.0.md` (Section 6) records nine principles this project's history has validated. Interpreting the five most load-bearing for your role specifically:
 
-They should not be created simply because future work exists.
+**Capability before abstraction.** This is not a preference for simple code. It is a falsifiable test you apply at review time: has a second concrete case actually arrived, or is the proposal justified by a case that might arrive? It has now held under real pressure at least six times — the Rule trait question, Collector dispatch (GOV-004), the Rule Engine's own internal dispatch (GOV-012), Reporting's scaffold-retirement question, and the original EngineAPI/`modiq-rules` retirement (ADR-0010) itself. Every one of those was a moment where building the abstraction would have been easier to defend in the room than declining it. The principle's value is precisely that it gives you a defensible reason to decline convenience.
 
-A Governance item should answer a question that cannot be resolved through implementation alone.
+**Governance follows evidence.** Not: governance follows your own architectural intuition, however well-informed. GOV-004's resolution rested on three independent subsystems converging unprompted — that is evidence in the sense a scientific claim needs evidence, not in the sense of "examples that support what I already believed." When you're tempted to resolve a GOV item from conviction alone, that is the signal to instead scope an investigation phase (Section 6) and wait for the evidence an investigation would produce.
 
-Once sufficient evidence exists, the question should be resolved and the repository updated accordingly.
+**Explicit orchestration.** `AssessmentService` composes every subsystem by direct, visible reference — never through an indirection layer whose job is to make future flexibility easier at the cost of present clarity. The lesson from ADR-0010 specifically: an indirection layer built for hypothetical future flexibility, never exercised across three Engineering Releases, is worse than no layer at all, because it creates a permanent question ("is this actually load-bearing?") for every future reader to re-answer.
 
-Governance is therefore considered an active engineering tool rather than a historical record.
+**Stable public APIs.** GOV-008's three-Sprint-long deferral is not indecision — it is the API remaining stable *because* no sufficient reason to break it has yet been demonstrated. The two-entry-point additive pattern (`execute`, `execute_from_assessment_input`) exists specifically so that adding a capability never requires breaking an existing consumer. Protect this pattern the next time a new capability seems to want a signature change — ask whether an additive entry point solves it first.
 
----
-
-## Architecture Reviews Establish Direction
-
-Architecture Reviews exist to explore competing approaches before implementation begins.
-
-Their objective is not to predict every implementation detail.
-
-Instead, they should:
-
-- identify architectural alternatives
-- evaluate tradeoffs
-- document reasoning
-- recommend an approach
-- identify questions requiring governance
-
-Approved Architecture Reviews become the basis for implementation.
+**Repository truth.** Documentation should say what the code actually does, not what it was intended to do or what an earlier plan said it would do. Every Frozen-specification amendment on record (`Architecture.md`, `EngineAPI.md`, `EvidenceCollection.md`, `DataModel.md`) exists because a document and the implementation it described had drifted, and the drift was corrected in the document's favor of matching reality — never by leaving the document wrong because it was inconvenient to fix. The recurring documentation-staleness pattern (`PROJECT_STATUS.md`/`CHANGELOG.md`, three Sprints running) is the same principle under-applied — a live, unresolved reminder that "repository truth" requires active maintenance, not a one-time correction.
 
 ---
 
-## Architectural Decision Records Preserve Decisions
+# 8. Common Failure Modes
 
-Architecture Decision Records (ADRs) document architectural decisions after they have been accepted.
+Each of these has either occurred and been caught, or represents a risk this project's own discipline has specifically been built to avoid. Recognize them early; the cost of correction grows the longer implementation continues on a wrong premise.
 
-They answer:
+**Premature abstraction.** Symptom: a proposal to build a trait, registry, or dispatch mechanism justified by "we'll probably need this for the next one." Correction: ask what concrete second case exists *today*. If none does, decline, and let the abstraction question resurface — if it's real — when a second case actually arrives.
 
-"What decision was made?"
+**Speculative extensibility.** Symptom: scaffolding built to match a specification's described shape before any real subsystem exists to test that shape against. This is exactly how the four `EngineAPI` service objects and the mirrored `modiq-rules` submodules came to exist at Sprint 0 — a reasonable decision at the time, given nothing else to build toward, but one that sat inert for three Engineering Releases before being retired (ADR-0010). Correction: when a specification describes a shape more granular than any current implementation needs, prefer building the minimal real thing and letting the specification catch up, rather than scaffolding the full described shape speculatively.
 
-and
+**Architectural drift.** Symptom: two specifications (or a specification and the implementation) quietly disagree, unnoticed, until something forces a direct comparison. `Architecture.md`'s System Overview and `EngineAPI.md`'s five-service model disagreed from Documentation Release 1.0 onward, unexamined, until GOV-004's evidence-gathering forced the comparison. Correction: when amending one specification, check whether a related one makes a claim your amendment now contradicts — don't assume prior consistency just because no one has complained.
 
-"Why was it made?"
+**Documentation drift.** Symptom: `PROJECT_STATUS.md`/`CHANGELOG.md` describing a milestone that has already passed. Confirmed at three consecutive sprint closeouts (3, 4, 5) despite reconciliation happening reliably *at* each closeout. Correction: this is now a standing, acknowledged risk, not a surprise — treat "are the living documents current" as a standard review question, not a discovery.
 
-They do not describe implementation progress.
+**Governance by intuition.** Symptom: resolving a GOV item because it feels obviously right, without the evidence an investigation phase would have produced. This project's actual history shows the opposite discipline consistently applied — but the discipline only holds as long as you keep applying it under pressure, including the pressure of a question that seems too small to warrant an investigation phase. It usually isn't too small; GOV-012 and GOV-013 both started as questions that could have been decided from intuition in a sentence, and weren't.
 
-Implementation status belongs in engineering documentation.
+**Hidden coupling.** Symptom: a consumer (the Sandbox, a future CLI) coming to depend on an internal detail of a subsystem rather than its stable public contract. The two-entry-point `AssessmentService` design and the strict, enforced dependency direction (`apps/sandbox` never depends on `modiq-collection`/`modiq-rules`/`modiq-report` directly) are the structural defenses against this. Correction: when reviewing a new consumer or a new capability, check what it actually imports, not just what it's supposed to depend on.
 
-Repository health belongs in engineering handoffs.
-
-The ADR remains stable unless the architectural decision itself changes.
+**Implementation-led architecture.** Symptom: code gets written, and the architecture is described (or governance is resolved) afterward to match what was built. The Decision Framework (Section 6) exists specifically to prevent this, and this project's history has no instances of it — protecting that record is worth resisting real schedule pressure for, because the record itself is evidence that the discipline is genuine, not aspirational.
 
 ---
 
-## Governance Evolves With Implementation
+# 9. Sprint Oversight Workflow
 
-Implementation frequently provides evidence that was unavailable during architectural planning.
+Your expected cadence across a Sprint:
 
-This is expected.
+```
+Planning
+     ↓
+Governance
+     ↓
+Implementation Authorization
+     ↓
+Implementation Review
+     ↓
+Sprint Closeout Review
+     ↓
+Repository Reconciliation
+     ↓
+Documentation Audit
+     ↓
+Engineering Release Approval
+```
 
-When implementation validates the approved architecture, governance should be resolved and documentation updated.
+**Planning** is reviewing (not writing) a proposed Sprint Implementation Plan — Sprint 5's own plan is the current model: named Design Questions, a candidate governance item, phases scoped narrowly enough that each can be separately authorized. **Governance** is resolving whatever the plan surfaces as a prerequisite before implementation begins (GOV-012 before Sprint 5 Phase 2; GOV-011 before Sprint 4 Phase 3). **Implementation Authorization** is explicit, per-phase, not a single blanket approval for the whole Sprint — every phase in Sprints 4 and 5 was individually authorized after the previous one was reviewed and accepted. **Implementation Review** applies Section 5's questions to each phase's report as it arrives. **Sprint Closeout Review** confirms every phase is genuinely complete against the plan's own checklist, not against a self-report. **Repository Reconciliation** and **Documentation Audit** are Lead Engineer labor you review, not perform — but you should specifically ask about `PROJECT_STATUS.md`/`CHANGELOG.md` staleness every time, given the pattern in Section 8. **Engineering Release Approval** is your sign-off that the Sprint's own record (`ENGINEERING_RELEASE_0.N.md`) accurately represents what happened.
 
-When implementation contradicts architectural assumptions, the Technical Director should initiate a new Architecture Review rather than quietly modifying the architecture during implementation.
-
-The repository should always explain why an architectural change occurred.
-
----
-
-## Documentation Reflects Approved Reality
-
-Documentation should describe the repository as it currently exists.
-
-Approved future direction belongs in proposals until implementation begins.
-
-Historical decisions belong in ADRs.
-
-Current architectural state belongs in architecture documentation.
-
-Implementation progress belongs in engineering handoffs.
-
-Keeping these responsibilities separate reduces ambiguity and prevents documentation from drifting away from the repository.
+**Sprint completion requires both halves — implementation and administrative closure.** A Sprint whose last code-bearing phase is reviewed and accepted is not yet complete; Sprint 4 and Sprint 5 both required a separate, explicitly authorized Closeout after their final implementation phase before either was declared done. Do not let "the code is done" substitute for "the Sprint is closed" — the gap between those two states is exactly where documentation drift (Section 8) has recurred three Sprints running.
 
 ---
 
-## Governance Supports Incremental Delivery
+# 10. Current Architectural State
 
-The preferred engineering model is:
+Full detail lives in `PROJECT_HANDOFF_v1.0.md` — this section only orients you to what matters right now, without repeating it.
 
-Resolve one architectural question.
-
-↓
-
-Implement one capability.
-
-↓
-
-Verify the implementation.
-
-↓
-
-Resolve the next architectural question.
-
-This approach minimizes risk, simplifies review, and allows architectural understanding to mature alongside implementation experience.
-
-Large governance efforts that attempt to solve multiple future problems simultaneously are intentionally avoided.
-
----
-
-# Major Architectural Decisions
-
-The following decisions have had the greatest influence on the architecture of modIQ. They are recorded here to preserve the reasoning behind the current design so that future Technical Directors understand not only what the architecture is, but why it evolved in its present form.
-
----
-
-## AssessmentService Remains the Orchestration Boundary
-
-Throughout development there were multiple opportunities to move orchestration responsibilities into other components.
-
-Those approaches were intentionally rejected.
-
-AssessmentService remains the single orchestration boundary because it represents the complete assessment lifecycle rather than any individual capability within that lifecycle.
-
-Collection discovers evidence.
-
-Rules evaluate evidence.
-
-Reporting presents results.
-
-AssessmentService coordinates those independent capabilities without absorbing their individual responsibilities.
-
-This separation allows each subsystem to evolve independently while preserving a single public entry point into the assessment process.
-
----
-
-## Evidence is the Platform's Common Language
-
-One of the earliest architectural goals was preventing individual subsystems from becoming tightly coupled.
-
-Evidence became the common language shared throughout the platform.
-
-Collection produces Evidence.
-
-Rules consume Evidence.
-
-Reports explain conclusions derived from Evidence.
-
-Knowledge, Version Profiles, and future capabilities can participate without requiring direct knowledge of one another.
-
-This decision significantly reduced coupling across the repository and established a stable integration boundary between independent subsystems.
-
----
-
-## Collection Was Separated from Assessment
-
-Collection is intentionally isolated from assessment logic.
-
-Collection answers one question:
-
-"What observable facts exist?"
-
-Assessment answers a different question:
-
-"What do those facts mean?"
-
-Keeping these responsibilities separate preserves explainability, simplifies testing, and allows new collection strategies to be introduced without affecting Rule evaluation.
-
-This separation also prevents business logic from becoming embedded inside collectors.
-
----
-
-## Archive Reading and Evidence Generation Are Independent Responsibilities
-
-Sprint 4 deliberately divided archive processing into two independent capabilities.
-
-ArchiveReader performs deterministic archive traversal and normalization.
-
-ArchiveEvidenceBuilder transforms normalized archive observations into Runtime Evidence.
-
-This separation was chosen because archive traversal and Evidence generation evolve for different reasons.
-
-ArchiveReader changes when archive policy changes.
-
-ArchiveEvidenceBuilder changes when the assessment model evolves.
-
-Keeping these responsibilities independent minimizes coupling and preserves clear ownership boundaries.
-
----
-
-## Policies Must Be Explicit
-
-Several implementation decisions demonstrated that behavior should never depend solely upon the underlying library being used.
-
-Examples include:
-
-- duplicate handling
-- traversal behavior
-- metadata generation
-- resource limits
-
-Rather than allowing implementation libraries to define platform behavior implicitly, modIQ exposes these behaviors as explicit architectural policies.
-
-Doing so improves determinism, makes behavior observable during testing, and documents the platform's intended semantics independently of third-party implementations.
-
----
-
-## Capability Before Abstraction Was Repeatedly Validated
-
-Multiple opportunities arose to introduce generalized interfaces before multiple implementations existed.
-
-These opportunities were intentionally declined.
-
-Examples include:
-
-- collector abstractions
-- dispatcher layers
-- Rule interfaces beyond demonstrated need
-- generalized routing infrastructure
-
-Instead, the repository consistently implemented concrete capabilities first.
-
-Only after implementation demonstrates stable patterns should broader abstractions be considered.
-
-This philosophy has repeatedly reduced unnecessary complexity while preserving future flexibility.
-
----
-
-## Incremental Capability Reduced Architectural Risk
-
-Sprint 4 intentionally avoided implementing archive collection as one large feature.
-
-Instead, the work was divided into independently reviewable phases:
-
-Foundation
-
-↓
-
-Evidence
-
-↓
-
-Policy
-
-↓
-
-Integration
-
-Each phase produced a complete capability with clear ownership and deterministic behavior.
-
-This sequencing made architectural review significantly easier and ensured governance remained synchronized with implementation.
-
-Future major capabilities should follow the same incremental approach whenever practical.
-
----
-
-## Governance Guided Implementation Rather Than Following It
-
-Throughout the project, governance decisions intentionally preceded implementation.
-
-Architecture Reviews established direction.
-
-Governance resolved uncertainty.
-
-Implementation followed approved boundaries.
-
-This ordering prevented implementation from becoming the primary driver of architecture and ensured that repository evolution remained deliberate rather than reactive.
-
-This principle should continue guiding future development as the platform grows.
-
----
-
-# Repository Maturity Assessment
-
-modIQ has transitioned from an architecture-first project into an implementation-first project.
-
-Earlier engineering efforts focused primarily on establishing architectural boundaries, governance processes, documentation, and repository structure. Those foundational decisions now provide a stable framework that allows implementation to proceed incrementally without requiring continuous architectural redesign.
-
-The repository has reached a level of maturity where architecture is no longer the primary source of project risk. Instead, the principal challenge is preserving architectural consistency as implementation expands across additional platform capabilities.
-
-This transition represents a significant milestone in the evolution of the project.
-
----
-
-## Architecture
-
-The core architecture is considered stable.
-
-Major subsystem boundaries have been established and validated through both governance and implementation.
-
-Current architectural responsibilities are clearly separated between:
-
-- Runtime
-- Collection
-- Rules
-- Reporting
-- Knowledge
-- Versioning
-- Assessment orchestration
-
-Future work is expected to extend these subsystems rather than fundamentally reorganize them.
-
-Architectural redesign should be considered exceptional rather than expected.
-
----
-
-## Governance
-
-Governance has matured alongside implementation.
-
-Earlier project phases established governance as a mechanism for resolving architectural uncertainty.
-
-Current governance activity is increasingly focused on policy decisions associated with new capabilities rather than defining fundamental repository structure.
-
-Governance should continue evolving in support of implementation rather than expanding independently of it.
-
----
-
-## Engineering
-
-Implementation is proceeding through incremental capability-based milestones.
-
-Recent implementation work has demonstrated that small, independently reviewable engineering phases provide predictable progress while minimizing architectural risk.
-
-This engineering model should continue for future capabilities.
-
-Large implementation efforts should remain the exception.
-
----
-
-## Documentation
-
-Repository documentation has reached a mature state.
-
-Architecture specifications, ADRs, governance records, and engineering documentation now serve distinct purposes with minimal overlap.
-
-Future documentation should emphasize maintaining consistency rather than increasing volume.
-
-Documentation should continue to describe implemented architecture rather than anticipated architecture.
-
----
-
-## Repository Health
-
-The repository is currently considered healthy.
-
-Architectural ownership is explicit.
-
-Subsystem boundaries are respected.
-
-Implementation remains aligned with approved governance.
-
-No significant architectural debt has been intentionally introduced during recent implementation work.
-
-Future Technical Directors should prioritize preserving this state over pursuing unnecessary architectural optimization.
-
----
-
-## Current Development Focus
-
-The project has entered the implementation phase of Evidence Collection.
-
-The remaining work within this initiative is no longer architectural in nature.
-
-Instead, it consists primarily of implementing approved policies, integrating completed capabilities into the assessment pipeline, and validating deterministic behavior under increasingly realistic assessment scenarios.
-
-The architecture supporting this work is considered sufficiently mature to support continued implementation without significant structural change.
-
----
-
-# Current Priorities & Future Direction
-
-The architecture of modIQ has reached a level of maturity where future engineering effort should focus on expanding platform capability rather than redesigning established subsystems.
-
-The Technical Director's primary responsibility is no longer creating architecture.
-
-It is preserving architectural consistency while implementation continues to mature.
-
----
-
-## Immediate Objective
-
-The repository is currently positioned to continue Sprint 4.
-
-The immediate architectural objective is the completion of the Archive Collection implementation.
-
-The remaining implementation work is expected to build upon the existing architecture rather than modify it.
-
-The next engineering milestone should complete the remaining archive collection policies before integrating the completed capability into the assessment pipeline.
-
-Future implementation should continue following the established incremental engineering model:
-
-Foundation
-
-↓
-
-Evidence
-
-↓
-
-Policy
-
-↓
-
-Integration
-
-This sequencing has proven successful throughout Sprint 4 and should remain the preferred approach for future subsystem development.
-
----
-
-## Technical Director Priorities
-
-Future Technical Directors should focus on preserving architectural integrity rather than accelerating implementation.
-
-Primary responsibilities include:
-
-- reviewing implementation against approved architecture
-- ensuring governance remains synchronized with implementation
-- preventing responsibility from crossing subsystem boundaries
-- evaluating proposals for new abstractions
-- protecting deterministic behavior
-- maintaining documentation consistency
-
-Implementation speed should never take precedence over architectural quality.
-
----
-
-## Architectural Risks
-
-At the current stage of development, the greatest architectural risks are no longer associated with missing functionality.
-
-Instead, they arise from gradual erosion of established design principles.
-
-Examples include:
-
-- expanding responsibilities across subsystem boundaries
-- introducing abstractions before multiple implementations justify them
-- allowing implementation convenience to replace deterministic behavior
-- duplicating orchestration outside AssessmentService
-- introducing undocumented architectural behavior
-
-Future Technical Directors should actively review implementation for these patterns.
-
-Architectural drift is significantly more difficult to reverse than missing functionality.
-
----
-
-## Future Evolution
-
-The existing architecture is expected to support continued expansion across multiple implementation phases.
-
-Future work will introduce additional collection capabilities, additional assessment rules, Knowledge integration, Version Profile integration, reporting enhancements, and eventually production application features.
-
-These additions should extend the existing architecture rather than redefine it.
-
-When implementation reveals legitimate architectural limitations, changes should proceed through the established Architecture Review and Governance process.
-
-The preferred solution is evolution through evidence rather than redesign through speculation.
-
----
-
-## Success Criteria
-
-The long-term success of modIQ should not be measured by repository size or feature count.
-
-Instead, success should be evaluated by the project's ability to consistently produce:
-
-- deterministic assessments
-- explainable conclusions
-- evidence-based findings
-- maintainable architecture
-- predictable engineering evolution
-
-Every architectural decision should strengthen one or more of these characteristics.
-
-If a proposed change weakens them, it should be reconsidered before implementation proceeds.
-
----
-
-## Final Guidance
-
-Protect the architecture.
-
-Allow implementation to validate architectural assumptions.
-
-Accept architectural change only when implementation evidence demonstrates that change is necessary.
-
-Prefer clarity over cleverness.
-
-Prefer simplicity over flexibility.
-
-Prefer deterministic behavior over convenience.
-
-The objective is not to build the most sophisticated assessment platform.
-
-The objective is to build the most trustworthy one.
-
----
-
-This document serves as the canonical architectural continuity document for modIQ.
-
-It preserves the architectural intent, engineering philosophy, governance rationale, and Technical Director guidance necessary to continue the project without loss of context.
-
-Implementation details, repository status, test counts, and engineering progress are maintained separately in the Lead Engineer Handoff.
-
-Together, these documents provide complete continuity for future Technical Director and Lead Engineer sessions.
+- **Repository maturity:** nine crates, stable dependency direction, zero architectural boundary violations across five Sprints. Two crates (`modiq-collection`, `modiq-rules`) carry real, recently-extended capability; four (`modiq-knowledge`, `modiq-versioning`, `modiq-cli`, `modiq-common`) remain deliberately deferred scaffolding, each correctly lacking a forcing function rather than neglected.
+- **Open governance investigations:** GOV-013 (open by design, awaiting a third Rule with a genuine kind/severity need — do not resolve it speculatively); GOV-008 (open across three Sprints, awaiting sufficient implementation evidence); GOV-001/002/003 (long-open, low-pressure). See `PROJECT_HANDOFF_v1.0.md`, Section 9, for the full list.
+- **Sprint 6 readiness:** the repository is ready — clean working tree, both workspaces green, zero unresolved implementation work from Sprint 5. **Sprint 6 itself is not scoped.** Three candidates are named (XML inspection, CLI wiring, acting on the Reporting scaffold-retirement recommendation) — scoping which one, and in what order, is the next decision this role owes the project, not a default to assume.
+- **Immediate architectural priorities:** none blocking. The most useful next act of architectural leadership is a scoping decision, not a technical one.
