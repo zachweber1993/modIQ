@@ -56,4 +56,4 @@ The review concluded with:
 - Git tag `v0.1.0`
 - Transition from documentation to implementation
 
-Documentation Release 2.0 (governance and terminology reconciliation) and Documentation Release 2.1 (Evidence Collection subsystem boundary — new specification `EvidenceCollection.md`) have since been completed. Implementation is currently at Engineering Release 0.4 (Sprint 4 complete, Phases 1–3D, plus Closeout); see `docs/engineering/ENGINEERING_RELEASE_0.4.md` and `docs/governance/PROJECT_STATUS.md` for current status.
+Documentation Release 2.0 (governance and terminology reconciliation) and Documentation Release 2.1 (Evidence Collection subsystem boundary — new specification `EvidenceCollection.md`) have since been completed. Implementation is currently at Engineering Release 0.5 (Sprint 5 complete, Phases 1–5, plus Closeout); see `docs/engineering/ENGINEERING_RELEASE_0.5.md` and `docs/governance/PROJECT_STATUS.md` for current status.

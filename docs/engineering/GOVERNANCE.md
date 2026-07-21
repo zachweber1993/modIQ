@@ -695,6 +695,76 @@ Full definition recorded in `EvidenceCollection.md`, Archive-Specific Outcomes, 
 
 ---
 
+## GOV-012
+
+Title
+
+Rule Evaluation Model
+
+Status
+
+Resolved
+
+Raised
+
+Sprint 5 Phase 1 (Assessment Intelligence Layer — Design Preparation)
+
+Description
+
+Since Sprint 1, `modiq-rules::RuleEngine` has evaluated exactly one Rule, applied unconditionally to all Evidence regardless of category. `SPRINT5_IMPLEMENTATION_PLAN.md` requires a second, category-specific Rule, which raises the same class of architectural question GOV-009/010/011 resolved for Evidence Collection, applied here to Rule Evaluation for the first time: how `RuleEngine::evaluate` represents more than one Rule's outcome, in what order, and whether Rules interact with or suppress one another.
+
+Question
+
+1. Does `RuleEngine::evaluate` return a single aggregated outcome, or one outcome per matching Rule?
+2. When more than one Rule matches, in what order are the resulting Findings and Recommendations produced?
+3. When more than one Rule matches the same Evidence, does a more specific Rule suppress a more general one, or do both fire independently?
+
+Resolution
+
+Approved by Technical Director in its entirety, following `SPRINT5_IMPLEMENTATION_PLAN.md`'s Design Questions 1–3. All three questions resolved:
+
+**Question 1 (return shape):** `RuleEngine::evaluate` returns `Vec<RuleOutcome>` — zero, one, or several `(Finding, Recommendation)` pairs, one per matching Rule. This requires no change to `Finding`'s or `Recommendation`'s existing one-Rule-per-Finding shape (`Finding.rule_reference` remains a single `RuleReference`), and keeps each Rule's Finding independently traceable to exactly the Rule and Evidence that produced it, per `RuleEngine.md`'s Traceability Management responsibility.
+
+**Question 2 (ordering):** Rules are evaluated, and their outcomes produced, in a fixed, explicit declaration order internal to `RuleEngine` — the order Rules are listed in `evaluate`'s own dispatch logic — never an order derived from Evidence's own arrival sequence. This mirrors the same discipline `ArchiveReader::entries()` and `EvidenceCollector`'s directory traversal already apply: explicit order imposed by the producer, never inherited from an unordered or incidentally-ordered source.
+
+**Question 3 (composition):** Rules compose independently; no suppression model exists. Every Rule is evaluated against whichever Evidence it applies to, regardless of whether another Rule also matches related or overlapping Evidence. An Assessment whose Evidence matches both the existing generic Rule and a new category-specific Rule produces both Rules' Findings and Recommendations, not one at the expense of the other. This avoids inventing a precedence/suppression mechanism this Sprint's own evidence does not yet justify — only two concrete Rules exist even after Sprint 5 — consistent with `RuleEngine.md`'s description of Rule Selection as determining "which Rules are applicable," plural and independent, not a single winner-takes-all choice.
+
+**Implementation-mechanism questions remaining:** the exact internal dispatch structure of `RuleEngine::evaluate` (a `match` over category, a sequence of `if let` checks, or another shape) is an implementation detail, not fixed by this resolution, provided no trait, registry, factory, or plugin mechanism is introduced — this document's Crate Boundary Rules already states inline fulfillment as `RuleEngine`'s approved pattern (ADR-0010, GOV-004), and this resolution does not revisit that.
+
+Full definition recorded in `SPRINT5_IMPLEMENTATION_PLAN.md`, Design Questions 1–3.
+
+---
+
+## GOV-013
+
+Title
+
+FindingSeverity Severity/Kind Conflation
+
+Status
+
+Open
+
+Raised
+
+Sprint 5 Phase 1 (Assessment Intelligence Layer — Design Preparation), during Technical Director review of the `FindingSeverity` semantic definitions
+
+Description
+
+`FindingSeverity` (`Error`, `Warning`, `Informational`, `BestPractice`) has existed in `modiq-runtime` since Sprint 2 but was exercised by only one variant, `Informational`, until Sprint 5's second Rule required a real choice among all four. Drafting semantic definitions for each variant surfaced that `BestPractice` does not sit on the same axis the other three do. `Error`/`Warning`/`Informational` answer one question — how urgent is this? — on a single ordered scale. `BestPractice` answers a different question — what kind of observation is this? — independent of urgency. A real best-practice deviation could independently be more or less urgent than another, and nothing in the current model can express that, since `BestPractice` and `Warning` are mutually exclusive values of the same field.
+
+Question
+
+Does this conflation warrant splitting `FindingSeverity` into two independent concepts — an ordered severity scale, and a separate, orthogonal classification of Finding kind — or is the existing four-variant model adequate as actually used in practice?
+
+Resolution
+
+Not resolved. Technical Director decision, recorded here rather than acted on: `FindingSeverity` remains unchanged for Sprint 5. The current model is provisionally accepted, not confirmed permanently correct. This item stays Open, to be revisited once the Rule Engine has multiple concrete Rules operating in practice and this question can be evaluated against real implementation evidence — not decided from two Rules alone. This is the same evidence-based resolution discipline GOV-004 and GOV-011 both already applied: a concrete forcing function should justify a model change, not the reverse.
+
+Full definition recorded in `DataModel.md`, Finding Severity section, and `SPRINT5_IMPLEMENTATION_PLAN.md`, Design Question 5.
+
+---
+
 # Documentation Release Process
 
 Architecture evolves through Documentation Releases.

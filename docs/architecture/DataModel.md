@@ -7,13 +7,13 @@
 | Property | Value |
 |----------|-------|
 | **Document** | DataModel.md |
-| **Version** | 1.0.1 |
-| **Status** | Frozen, with a Documentation Release 2.1 cross-reference addition |
+| **Version** | 1.1.0 |
+| **Status** | Frozen, amended for Finding Severity definitions (GOV-012/GOV-013) |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-15 |
-| **Last Updated** | 2026-07-19 |
+| **Last Updated** | 2026-07-21 |
 
 ---
 
@@ -197,6 +197,22 @@ Findings communicate observations generated during an Assessment.
 
 Multiple Findings contribute to the overall Assessment.
 
+### Finding Severity
+
+A Finding's severity (`Error`, `Warning`, `Informational`, `BestPractice`) classifies the nature of its conclusion, not merely its importance. Each Rule must assign the severity its Evidence actually supports — consistent with the Rule Engine's Evidence-Based execution principle (`RuleEngine.md`), a Rule must never assign a severity stronger than what its Evidence conclusively establishes.
+
+**Error.** The assessed mod will not function correctly, or a required expectation is violated, as conclusively established by Evidence alone. Reserved for conclusions a user should treat as blocking. A Rule must not assign `Error` for a suspected, probable, or environment-dependent problem — only for a defect Evidence directly proves.
+
+**Warning.** A genuine, Evidence-supported concern about the mod's reliability, correctness, or trustworthiness, where Evidence does not conclusively establish the mod is broken. The mod may still function; the condition is one a careful user should not ignore. Appropriate when a condition's real-world consequence is uncertain or depends on factors this platform's own Evidence cannot fully resolve.
+
+**Informational.** A neutral, factual observation about the mod's structure or content, carrying no implication that anything is wrong or suboptimal. Appropriate when a Rule's role is to report what was found, not to judge it.
+
+**BestPractice.** The mod does, or does not, follow a convention associated with quality, maintainability, or compatibility, where deviating from the convention does not itself indicate the mod is broken or untrustworthy. Distinguishes advisory, convention-level guidance from `Warning`'s genuine reliability concern.
+
+These four categories are not a single linear ranking. `Error` is the most severe in the sense that it alone indicates conclusive breakage. `Warning` and `BestPractice` are not ordered relative to each other — one flags an uncertain reliability concern, the other an advisory convention deviation — and `Informational` carries no judgment at all.
+
+**Provisional status (GOV-013, `GOVERNANCE.md`):** these definitions are the platform's accepted interpretation of `FindingSeverity` as it exists today, not a claim that the underlying model is permanently correct. Whether `BestPractice`'s classification-of-kind is adequately expressed by a value of the same enum as the ordered `Error`/`Warning`/`Informational` scale is an open architectural question, tracked separately, revisited once the Rule Engine has multiple concrete Rules operating in practice.
+
 ---
 
 ## Recommendation
@@ -333,8 +349,10 @@ Related specifications include:
 
 # Document Status
 
-**Current Version:** 1.0.1
+**Current Version:** 1.1.0
 
-**Status:** Frozen, with a Documentation Release 2.1 cross-reference addition
+**Status:** Frozen, amended for Finding Severity definitions (GOV-012/GOV-013)
 
 This specification establishes the authoritative conceptual runtime data model for the modIQ platform and serves as the foundation for the remaining technical specifications. Under Documentation Release 2.1 (Frozen, Technical Director approved), a cross-reference to the new EvidenceCollection.md was added above; no entity definition, relationship, or lifecycle ordering in this document changed — this document's Runtime Lifecycle already placed Evidence Collected before Findings Produced, which is the ordering ADR-0008 and the corresponding Architecture.md amendment now also reflect.
+
+Further amended (Sprint 5 Phase 1) to add a Finding Severity subsection under Finding: the first specification-level definition of what `Error`, `Warning`, `Informational`, and `BestPractice` each mean, and the criteria a Rule uses to choose among them. Approved by Technical Director as the platform's provisional interpretation, per `GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`. Recorded explicitly as provisional, not permanently settled — the tension these definitions surfaced (whether `BestPractice` is actually a severity, or an orthogonal classification of Finding kind) is tracked as GOV-013 (`GOVERNANCE.md`, Open), to be revisited once more concrete Rules exist to evaluate it against, not resolved by this amendment.

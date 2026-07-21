@@ -738,3 +738,188 @@ Two decisions recorded:
 2. **Documentation staleness — accepted as a process-improvement item, not an unresolved defect.** The Technical Director's direction: future sprints should formally include repository reconciliation and documentation audit as part of sprint closure, rather than as a catch-up performed only when explicitly scoped after the fact (as this Closeout itself was). This is a standing process expectation for future sprint-closing sessions, not an action item against Sprint 4's own record, which is now complete.
 
 **Sprint 4 is officially closed**, with zero open items from its own Closeout report. Recorded here as the formal closing event; the underlying reconciliation, validation, and retrospective content lives in `ENGINEERING_RELEASE_0.4.md` and the entries above, not repeated here.
+
+---
+
+## 2026-07-21
+
+### Sprint 5 Phase 1: GOV-012 Approved; GOV-013 Opened
+
+Status:
+Completed
+
+Affected Crates:
+- (none — governance and specification drafting only; no Rust code written)
+
+Affected Documents:
+- docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md
+- docs/engineering/GOV-012_AND_FINDINGSEVERITY_PREPARATION.md (new)
+
+Notes:
+Sprint 5 authorized for planning only, targeting the assessment intelligence layer (Rule Engine depth) rather than a third Evidence Collector, per Technical Director direction. `SPRINT5_IMPLEMENTATION_PLAN.md` drafted, mirroring `SPRINT4_IMPLEMENTATION_PLAN.md`'s structure, naming five Design Questions and one candidate governance item (GOV-012, Rule Evaluation Model) rather than presuming answers.
+
+**GOV-012 approved by Technical Director in full:** `RuleEngine::evaluate` returns `Vec<RuleOutcome>`; Rules are ordered by explicit declaration order, never Evidence arrival order; Rules compose independently, with no suppression model between a specific Rule and the existing generic one. Formal Governance Register entry drafted (`GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`, Part 1), staged for a final review pass before insertion into `GOVERNANCE.md`, mirroring the two-step discipline GOV-011 followed (`PROPOSAL_GOV-011.md` drafted the resolution text; `GOVERNANCE.md` was amended only after review).
+
+**`FindingSeverity` semantic definitions drafted** (Part 2) — the first time this project has defined what `Error`/`Warning`/`Informational`/`BestPractice` actually mean; neither `Glossary.md` nor `DataModel.md` previously did, and the taxonomy had been exercised by only one variant (`Informational`) in three Sprints of use.
+
+**GOV-013 opened, not by implementation surfacing it independently, but by Technical Director review of those definitions:** `BestPractice` does not sit on the same ordered "how urgent is this" axis `Error`/`Warning`/`Informational` do — it classifies what *kind* of observation a Finding represents, orthogonal to severity. Technical Director decision, recorded rather than acted on: `FindingSeverity` remains unchanged for Sprint 5; the model is provisionally accepted, not confirmed correct; the question stays Open, to be revisited once the Rule Engine has multiple concrete Rules operating in practice — the same evidence-based resolution discipline GOV-004 and GOV-011 both already applied, a concrete forcing function should justify a model change, not the reverse. Formal entry drafted (Part 3), Status Open, ready for insertion into `GOVERNANCE.md` immediately following GOV-012.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, unchanged at 150/150 — no production code was touched this session; this entry records governance and specification drafting only.
+
+No architectural change was made: `FindingSeverity`'s shape in `modiq-runtime` is unchanged.
+
+**Update, following Technical Director approval:** GOV-012 and GOV-013 inserted verbatim into `GOVERNANCE.md`'s Governance Register, immediately following GOV-011, exactly as drafted. The `FindingSeverity` semantic definitions inserted into `DataModel.md` as a new `### Finding Severity` subsection under `## Finding`, recorded explicitly as the platform's provisional interpretation (not a permanent claim), with a direct cross-reference to GOV-013. `DataModel.md` amended 1.0.1 → 1.1.0; Document Status footer updated to record the amendment, matching the frozen-document-amendment discipline `EvidenceCollection.md` established. Sprint 5 Phase 2 is now authorized and follows in the next entry.
+
+---
+
+### Sprint 5 Phase 2: Structural Duplication Rule
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-rules
+
+Affected Documents:
+- (none — code only; GOV-012, GOV-013, and the FindingSeverity definitions were already recorded in the prior entry)
+
+Notes:
+Implemented `StructuralDuplicationRule` (new, `crates/modiq-rules/src/rules/structural_duplication_rule.rs`), Sprint 5's second concrete Rule, per Technical Director authorization. Evaluates only `EvidenceCategory::StructuralDuplication` Evidence — every other category is ignored by this Rule, consistent with GOV-012 Question 3's independent-composition resolution. Assigns `FindingSeverity::Warning` per `DataModel.md`'s newly-recorded Finding Severity definitions: a well-formed archive containing duplicate entry names is a genuine reliability concern (which entry a reader actually extracts is not guaranteed by the archive format), not conclusive proof of breakage, so `Error` would overstate what the Evidence establishes.
+
+A unit-struct-with-method shape (`pub struct StructuralDuplicationRule; impl StructuralDuplicationRule { pub fn evaluate(...) }`), matching every other capability unit in this codebase (`EvidenceCollector`, `ArchiveCollector`, `ArchiveEvidenceBuilder`, `RuleEngine` itself) — not a bare free function. The first attempt used a bare `pub(crate) fn`, which triggered a `dead_code` warning under `cargo check` once written, since nothing outside its own tests called it yet (Phase 3, the multi-Rule dispatch wiring, is not yet authorized). Restructuring it as a `pub` unit struct resolved this the same way Sprint 4 Phase 3A/3B's `ArchiveReader`/`ArchiveEvidenceBuilder` never triggered the warning in the first place: public API surface is exempt from dead-code analysis, and this is genuinely public, tested, real capability, not yet wired into an orchestrator — the same state Phase 3A/3B were in before Phase 3D existed.
+
+Deliberately scoped to Phase 2 only, per Technical Director direction not to expand scope: `RuleEngine::evaluate`'s own signature and behavior are completely unchanged; `StructuralDuplicationRule` is not called from anywhere in production code. Six new tests cover every reachable outcome: empty Evidence; non-matching Evidence only; one matching item; a matching item alongside a non-matching one (confirming only the matching item's id is referenced, not the whole Evidence set); more than one matching item (both referenced); and determinism across repeated calls with identical input.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, zero warnings: root workspace test count grew from 150 to 156 (`modiq-rules` 3 → 9; every other crate unchanged). `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, 6/6 unchanged — expected, since neither `RuleEngine` nor `AssessmentService` was touched.
+
+No architectural boundary was crossed beyond what was explicitly authorized: no trait, registry, factory, or plugin mechanism; no change to `RuleEngine::evaluate`'s return type (that is Phase 3); no `modiq-engine` change; no `modiq-report` change (Design Question 4's investigation and any action on it remain deferred, per Technical Director direction). Sprint 5 Phase 3 (Multi-Rule Evaluation Assembly — wiring `StructuralDuplicationRule` and the existing generic Rule together behind `RuleEngine::evaluate`'s new `Vec<RuleOutcome>` return shape) remains to be authorized separately.
+
+---
+
+### Sprint 5 Phase 3: Multi-Rule Evaluation Assembly
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-rules
+- modiq-engine
+
+Affected Documents:
+- (none — code only; GOV-012 already recorded the policy this phase implements)
+
+Notes:
+Implemented `RuleEngine::evaluate`'s real multi-Rule dispatch, per Technical Director authorization following Phase 2's acceptance.
+
+Extracted the original Sprint 1 Rule (previously inline in `RuleEngine::evaluate`) into its own unit, `EvidencePresenceRule` (new, `crates/modiq-rules/src/rules/evidence_presence_rule.rs`), matching `StructuralDuplicationRule`'s shape exactly — identical behavior, identical description text and `RuleReference` identifier, moved rather than rewritten. `RuleEngine::evaluate`'s signature changed from `Option<RuleOutcome>` to `Vec<RuleOutcome>` (GOV-012, Question 1), dispatching to both Rules via two `if let` checks in fixed declaration order — `EvidencePresenceRule`, then `StructuralDuplicationRule` (GOV-012, Question 2) — with no suppression between them (GOV-012, Question 3): an Assessment whose Evidence includes a `StructuralDuplication` item produces outcomes from *both* Rules, since `EvidencePresenceRule` matches unconditionally on any non-empty Evidence regardless of category.
+
+`modiq-engine`'s `AssessmentService::execute` updated to loop over the new `Vec<RuleOutcome>` (`for outcome in rule_engine.evaluate(...)` replacing `if let Some(outcome) = ...`) — its own public signature is completely unchanged, confirmed by every pre-existing `execute`/`execute_from_assessment_input` test passing unmodified, including the Phase 3D archive-routing tests (none of Sprint 4's or 5's fixtures produce `StructuralDuplication` Evidence, so only `EvidencePresenceRule` fires for them — exactly the single-outcome behavior those tests already asserted).
+
+Five new tests in `engine.rs` covering the dispatch itself (no evidence → no outcomes; only the generic Rule matches → one outcome; both Rules match → two outcomes in the correct declaration order with the correct severities; multiple matching items still produce exactly two outcomes, not one per item; ordering is deterministic across repeated calls) plus three tests moved, unmodified in substance, from `engine.rs` into `evidence_presence_rule.rs`'s own module alongside `StructuralDuplicationRule`'s existing six.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, zero warnings: root workspace test count grew from 156 to 161 (`modiq-rules` 9 → 14; every other crate unchanged). `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, 6/6 unchanged — the Sandbox's own archive and filesystem fixtures produce no `StructuralDuplication` Evidence, so their reports are byte-for-byte unaffected by this phase.
+
+No architectural boundary was crossed beyond what was explicitly authorized: no trait, registry, factory, or plugin mechanism was introduced; `RuleEngine::evaluate`'s new shape and dispatch exactly match GOV-012's resolved policy; `AssessmentService`'s public entry points are unchanged in behavior; no `modiq-report` change. Sprint 5 Phase 4 (the Reporting scaffold-types investigation, recommendation only — no implementation, per Technical Director direction) and Phase 5 (final testing/documentation sync) remain to be performed.
+
+---
+
+### Sprint 5 Phase 4: Reporting Scaffold Investigation
+
+Status:
+Completed
+
+Affected Crates:
+- (none — investigation only; no Rust file modified)
+
+Affected Documents:
+- docs/engineering/SPRINT5_PHASE4_REPORTING_INVESTIGATION.md (new)
+- docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md
+
+Notes:
+Investigated whether `modiq-report`'s four unused scaffold types (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) should be built out or retired, per Design Question 4. Checked specifically whether Sprint 5's own new severity differentiation (two Rules, `Informational` and `Warning`) created any real need that didn't exist before: it did not. Confirmed zero construction sites for all four types, unchanged since the platform's first commit — the identical evidentiary shape GOV-004 used to retire the `EngineAPI`/`modiq-rules` scaffolding. Checked the one real consumer, `apps/sandbox/src/App.tsx`: it renders Evidence, Findings, and Recommendations as three independent flat lists, performing no summarization, no formatting beyond raw field display, and no traceability cross-referencing, and required zero changes to accommodate `StructuralDuplicationRule`'s new `Warning`-severity Finding.
+
+**Recommendation: retire all four**, on the same basis and by the same method GOV-004 used — not a claim that Reporting's assigned responsibilities (report formatting, summarization, traceability output, per `GOVERNANCE.md`'s Crate Boundary Rules) are wrong, only that these four specific, never-instantiated types are not evidenced as the right shape for fulfilling them yet. `TraceabilityReport` was assessed as the closest to a plausible future need (`Assessment`'s own `evidence_for_finding`/`findings_for_recommendation` methods already resolve these relationships programmatically, but nothing outside `modiq-runtime` has ever needed to), still with zero actual evidence of need today.
+
+Per Technical Director direction, this recommendation is not acted on: no `modiq-report` file was modified, created, or deleted. `SPRINT5_IMPLEMENTATION_PLAN.md`'s Completion Checklist item for Design Question 4 marked complete (investigated and recorded), separate from any future action item.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, unchanged at 161/161 — no production code was touched this session. `apps/sandbox/src-tauri` unchanged at 6/6.
+
+No architectural change was made or proposed. Sprint 5 Phase 5 (final testing/documentation sync) remains to close out the Sprint.
+
+---
+
+### Sprint 5 Phase 5: Testing & Verification
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-rules
+
+Affected Documents:
+- docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md
+- docs/implementation/CrateRoadmap.md
+
+Notes:
+Final testing and verification pass across Sprint 5's five phases, per Technical Director authorization. Re-reviewed Phase 2/3's own test suite for coverage gaps before treating this phase as pure re-confirmation. Found one genuine gap: `evaluate_ordering_is_deterministic_across_repeated_calls` (Phase 3) only proves `RuleEngine::evaluate` is deterministic across *repeated calls with identical input* — nothing proved the outcome order is independent of Evidence *arrival* order, the actual claim GOV-012 Question 2 makes ("never an order derived from Evidence's own arrival sequence"). Added `evaluate_outcome_order_is_independent_of_evidence_arrival_order` (`engine.rs`): evaluates the same two Evidence items in both possible orderings and confirms both produce outcomes in identical Rule-declaration order.
+
+`modiq-report` required no change — Phase 4's investigation recommendation is not acted on this Sprint. No Sandbox fixture produces `StructuralDuplication` Evidence, confirming this phase's own predicted "not expected to be required" for Sandbox test changes.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, zero warnings: root workspace test count grew from 161 to 162 (`modiq-rules` 14 → 15; every other crate unchanged). `apps/sandbox/src-tauri` independently reverified: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` all pass cleanly, 6/6 unchanged.
+
+**All five Sprint 5 implementation phases are now complete**, each reviewed and approved by the Technical Director in turn. No architectural change was made beyond what GOV-012/GOV-013 already authorized. Sprint 5 Closeout (repository reconciliation, documentation audit, `ENGINEERING_RELEASE_0.5.md`) is not yet authorized and has not been performed — mirroring Sprint 4's own pattern, where Closeout was requested as a separate, subsequent step after the last implementation phase completed.
+
+---
+
+### Sprint 5 Closeout: Repository Reconciliation, Documentation Audit, Engineering Release 0.5
+
+Status:
+Completed
+
+Affected Crates:
+- (none — documentation only; no Rust file modified)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/README.md
+- docs/implementation/CrateRoadmap.md
+- docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md
+- docs/engineering/ENGINEERING_RELEASE_0.5.md (new)
+
+Notes:
+Formal Sprint 5 closeout, per Technical Director authorization, following the same process as Sprint 4 Closeout: repository reconciliation, a documentation consistency audit, `PROJECT_STATUS.md`/`CHANGELOG.md` updates, `ENGINEERING_RELEASE_0.5.md`, an engineering retrospective (housed inside the release document, per `ENGINEERING_RELEASE_0.3.md`/`0.4.md`'s own precedent — no separate retrospective file), and final verification. No feature work was authorized or performed.
+
+**Repository Reconciliation:** verified all five Sprint 5 implementation phases against `SPRINT5_IMPLEMENTATION_PLAN.md`'s own Completion Checklist — every item now checked, including GOV-012/GOV-013's insertion into `GOVERNANCE.md`, the `FindingSeverity` definitions in `DataModel.md`, both Rules, multi-Rule dispatch, the Reporting investigation, and the Phase 5 determinism-gap closure. No Sprint 5 work found unintentionally incomplete.
+
+**Documentation Audit finding, recurring a third time:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` had gone stale again, mid-Sprint, still describing Sprint 4 as the current, complete milestone with "Sprint 5 not yet scoped" — despite Sprint 4 Closeout's own standing directive that future sprints formally include reconciliation at closure. That directive was honored exactly as written (this Closeout performs the reconciliation); it did not, and was never going to, prevent staleness occurring *between* closeouts, since it addressed catching the pattern, not the underlying cause. This is now the identical finding at three consecutive Sprint closeouts (3, 4, 5) — treated in `ENGINEERING_RELEASE_0.5.md`'s Lessons Learned as evidence the fix needs to touch when these documents get edited, not just whether they're eventually corrected.
+
+**A genuine, independent documentation error found and corrected:** both `PROJECT_STATUS.md` and `CHANGELOG.md` referenced a `docs/engineering/SPRINT4_RETROSPECTIVE.md` file that was never created — Sprint 4's retrospective has always lived inside `ENGINEERING_RELEASE_0.4.md` itself, per that release's own established pattern. Both stale citations corrected in place, with the correction itself noted rather than silently fixed.
+
+Corrected: `PROJECT_STATUS.md` header fields and a new `## Sprint 5 — Complete` section; `CHANGELOG.md`'s Sprint 4 citation and a new `# [Sprint 5]` entry mirroring the established Added/Deferred/Released structure; `docs/README.md`'s stale Engineering Release cross-reference (0.4 → 0.5); `CrateRoadmap.md`'s `modiq-report` crate-table row (recording Phase 4's retirement recommendation), a new `## Sprint 5 — Complete` narrative section, and revision-history rows 1.15.0–1.17.0.
+
+`ENGINEERING_RELEASE_0.5.md` published: full Sprint 5 record, retrospective, and completion report, mirroring `ENGINEERING_RELEASE_0.4.md`'s exact section structure — no new structure introduced.
+
+`cargo fmt`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, unchanged at 162/162 — no production code was touched this session. `apps/sandbox/src-tauri` unchanged at 6/6.
+
+No architectural change was made or proposed: no new capability, no new abstraction, no scope expansion, no Sprint 6 work begun. **Sprint 5 is now officially closed**, pending Technical Director review of this Closeout. Nothing from Sprint 5 has been committed to git as of this entry — flagged in `ENGINEERING_RELEASE_0.5.md`'s own Engineering Metrics as worth the Technical Director's attention when scoping the commit sequence for this release, since it differs from Sprint 4's own per-phase commit history.
+
+---
+
+### Technical Director Review: Sprint 5 Closeout Approved; Documentation-Staleness Process Refined; Sprint 5 Officially Complete
+
+Status:
+Completed
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- (none — this entry is the record)
+
+Notes:
+The Technical Director reviewed and accepted the full Sprint 5 Closeout: repository reconciliation confirmed Sprint 5 was completed per the approved plan, documentation is synchronized with implementation, and no unresolved work remains.
+
+**Documentation-staleness process refined**, not adopted as originally suggested. `ENGINEERING_RELEASE_0.5.md`'s Lessons Learned proposed updating `PROJECT_STATUS.md`'s "Current Phase" line per-phase, not only at Sprint close. The Technical Director accepted the underlying finding (three consecutive Sprints of identical staleness) as a valid process-improvement opportunity, but declined mandatory per-phase updates specifically. Direction: track this as an engineering workflow refinement aimed at keeping `PROJECT_STATUS.md` current at meaningful project milestones, rather than a fixed per-phase requirement. This softens, and supersedes in specificity, the Sprint 4 Closeout directive ("future sprints should formally include repository reconciliation... as part of sprint closure") without abandoning it — reconciliation at closeout remains standing practice; per-phase updates are not mandated, but keeping the document current at genuinely meaningful milestones (not necessarily every phase) is now the stated aim.
+
+**Sprint 5 is hereby declared complete.** The repository is authorized for final Sprint 5 commit and push. Following that commit, preparation of the Sprint 6 Technical Handoff is authorized as the next step.

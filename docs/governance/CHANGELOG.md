@@ -368,4 +368,30 @@ The Documentation Release 1.0 Final Review concluded with:
 
 ## Released
 
-- Documented in `docs/engineering/ENGINEERING_RELEASE_0.4.md` (release record), `docs/engineering/SPRINT4_RETROSPECTIVE.md` (engineering retrospective), and the `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` / `PROPOSAL_GOV-011.md` / `PROPOSAL_GOV-011_DUPLICATE_REPRESENTATION.md` proposals that preceded and shaped implementation.
+- Documented in `docs/engineering/ENGINEERING_RELEASE_0.4.md` (release record, including its own retrospective section — no separate `SPRINT4_RETROSPECTIVE.md` file was ever created; a prior reference to one in this entry was a documentation error, found and corrected during Sprint 5 Closeout), and the `PROPOSAL_ZIP_EVIDENCE_COLLECTION.md` / `PROPOSAL_GOV-011.md` / `PROPOSAL_GOV-011_DUPLICATE_REPRESENTATION.md` proposals that preceded and shaped implementation.
+
+---
+
+# [Sprint 5]
+
+**Status:** Complete (Phases 1–5, plus Closeout)
+
+## Added
+
+- **Phase 1 (Design Preparation)** — `SPRINT5_IMPLEMENTATION_PLAN.md` drafted, naming five Design Questions and one candidate governance item rather than presuming answers. GOV-012 (Rule Evaluation Model) approved by Technical Director in full: `RuleEngine::evaluate` returns `Vec<RuleOutcome>`; Rules dispatch in fixed, explicit declaration order; Rules compose independently, no suppression model. `FindingSeverity` semantic definitions drafted — the first time this project defined what `Error`/`Warning`/`Informational`/`BestPractice` actually mean. Drafting those definitions surfaced a real architectural tension (`BestPractice` classifies Finding *kind*, not severity), recorded as GOV-013, deliberately Open — provisionally accepted, not resolved, revisited once more concrete Rules exist. Both governance items formally inserted into `GOVERNANCE.md`; the `FindingSeverity` definitions inserted into `DataModel.md` (amended to v1.1.0).
+- **Phase 2 (Second Real Rule)** — `StructuralDuplicationRule` implemented (`modiq-rules`), evaluating `EvidenceCategory::StructuralDuplication` Evidence and assigning `FindingSeverity::Warning` per the newly-recorded definitions.
+- **Phase 3 (Multi-Rule Evaluation Assembly)** — the original Sprint 1 Rule extracted into its own unit, `EvidencePresenceRule`. `RuleEngine::evaluate` rewritten as a two-Rule dispatcher per GOV-012's resolved shape/ordering/composition. `modiq-engine`'s `AssessmentService::execute` updated internally to loop over the new return shape; its public signature is unchanged. No trait, registry, or dispatch abstraction introduced.
+- **Phase 4 (Reporting Scaffold Investigation)** — investigated whether `modiq-report`'s four unused scaffold types (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) should be built out or retired, specifically checking whether Sprint 5's own new severity differentiation created a real need (it did not). Recommended retirement, using the same evidentiary method GOV-004 used. No `modiq-report` code changed.
+- **Phase 5 (Testing & Verification)** — closed a real determinism-testing gap: confirmed `RuleEngine::evaluate`'s outcome order is independent of Evidence arrival order, not just repeated-identical-input order.
+- The root workspace test suite grew from 150 to 162 tests across the sprint (`modiq-rules` 3 → 15); the Sandbox's own separate suite was unaffected (unchanged at 6), since no Sandbox fixture produces `StructuralDuplication` Evidence.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, and GOV-008 remain open; none were addressed this Sprint.
+- GOV-013 (FindingSeverity Severity/Kind Conflation) remains deliberately Open — provisionally accepted, to be revisited once the Rule Engine has multiple concrete Rules operating in practice with real evidence bearing on the question, not decided from two Rules alone.
+- Retiring (or building out) `modiq-report`'s four scaffold types — recommended by Phase 4's investigation, eligible pending formal governance approval, but not acted on this Sprint.
+- XML inspection (the next Evidence Collector) and CLI wiring both remain out of scope, as originally planned — Sprint 5's own charter was to strengthen the assessment model before widening Evidence Collection further.
+
+## Released
+
+- Documented in `docs/engineering/ENGINEERING_RELEASE_0.5.md` (release record, including its own retrospective section), `docs/engineering/SPRINT5_IMPLEMENTATION_PLAN.md`, `docs/engineering/GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`, and `docs/engineering/SPRINT5_PHASE4_REPORTING_INVESTIGATION.md`.

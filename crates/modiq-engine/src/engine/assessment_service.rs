@@ -43,7 +43,7 @@ impl AssessmentService {
             .expect("evidence collection was just entered and has not yet transitioned away");
 
         let rule_engine = RuleEngine;
-        if let Some(outcome) = rule_engine.evaluate(assessment.evidence()) {
+        for outcome in rule_engine.evaluate(assessment.evidence()) {
             assessment
                 .add_finding(outcome.finding)
                 .expect("rule evaluation is active immediately after begin_rule_evaluation");
