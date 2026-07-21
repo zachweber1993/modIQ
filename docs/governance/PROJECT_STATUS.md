@@ -128,3 +128,24 @@ The documentation contained within this repository is the authoritative engineer
 Implementation should reconcile all engineering decisions against the frozen specifications.
 
 Architectural changes should be introduced through Architecture Decision Records (ADRs) and incorporated into future Documentation Releases rather than modifying Documentation Release 1.0.
+
+---
+
+## Governance Status
+
+Status: Frozen for Sprint 6
+
+The project's governance baseline is established.
+
+Authoritative governance documents:
+
+- PROJECT_HANDOFF_v1.0.md
+- CHIEF_ARCHITECT_HANDOFF_v1.0.md
+- LEAD_ENGINEER_HANDOFF_v3.0.md
+
+Future governance changes must be justified by implementation evidence,
+architectural evolution, or approved governance decisions.
+
+Sprint 6 begins under this governance baseline.
+
+---
