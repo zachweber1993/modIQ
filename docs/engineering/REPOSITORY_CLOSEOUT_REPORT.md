@@ -1,73 +1,115 @@
-# Repository Closeout Report — Sprint 7
+# Repository Closeout Report — Sprint 8
 
 | Property | Value |
-|----------|-------|
+|---|---|
 | **Document** | REPOSITORY_CLOSEOUT_REPORT.md |
 | **Project** | modIQ |
-| **Purpose** | Official closeout record for Sprint 7 (Multi-Source Evidence Collection, Engineering Workflow Consolidation) |
-| **Prepared by** | Lead Engineer, on `feature/runtime-implementation` |
-| **Status** | Sprint 7 formally closed. |
+| **Purpose** | Official closeout record for Sprint 8 (Version Profile-aware compatibility checking) |
+| **Prepared by** | Lead Engineer (Sonnet 5), on `feature/runtime-implementation` |
+| **Status** | Sprint 8 formally closed. |
 
 ---
 
-## 1. Repository Validation Summary
+## 1. Executive Summary
 
-Performed before any git operation, per instruction — all checks direct, none assumed:
+Sprint 8 delivered Version Profile-aware compatibility checking — the platform's first capability activating the Version Profile architectural dimension specified since Documentation Release 1.0 but unimplemented through seven Sprints — following the full Capability Definition → Architecture Evaluation → Architectural Resolution → Implementation Authorization → Implementation sequence. Six architectural decisions were evaluated, decided by the Chief Architect, and validated against fresh repository evidence before any code was written; implementation proceeded across seven independently-validated phases with zero conflicts against the approved architecture. One implementation refinement — `AssessmentService`'s two public entry points requiring no signature change at all, rather than the anticipated new additive entry point — was reviewed and explicitly accepted as an implementation simplification, not a capability deviation.
+
+This session performed final Repository Validation, synchronized all living documentation, produced `ENGINEERING_RELEASE_0.8.md` and `SPRINT8_IMPLEMENTATION_DEVIATIONS.md`, committed and pushed all Sprint 8 work as a single commit, and confirms Sprint 8 formally closed. **No blocking issue was found at any point in this session.**
+
+---
+
+## 2. Repository Validation
+
+Performed before any documentation change or git operation, per instruction — every check direct, none assumed:
 
 | Check | Result |
 |---|---|
-| Production code builds | `cargo check --workspace` — clean |
-| All tests pass (root) | `cargo test --workspace` — **187/187** |
-| All tests pass (Sandbox) | `cargo test` in `apps/sandbox/src-tauri` — **7/7** |
-| Formatting | `cargo fmt --all --check` — clean, both workspaces |
-| Documentation internal consistency | Confirmed in the prior session's own validation pass; re-confirmed here |
-| Canonical engineering workflow in one location | Confirmed — `Capability Definition` (the canonical diagram's first line) appears in exactly one file, `PROJECT_HANDOFF_v1.0.md` |
-| Archived workflow documents clearly marked | `ImplementationWorkflow.md` carries an explicit non-normative notice |
-| Repository references valid | All six Sprint 7 / consolidation documents cross-referenced from other files were confirmed to exist |
-| No temporary documentation | Confirmed — no stray, scratch, or draft files found |
-| No unresolved TODOs from Sprint 7 | Confirmed — zero `TODO`/`FIXME`/`XXX` in any file this Sprint touched |
-| No accidental files | Confirmed — every modified/new file in `git status` traced to Sprint 7 implementation, refinement, or workflow consolidation |
+| Production code builds (root) | `cargo check --workspace` — clean, zero warnings |
+| All tests pass (root) | `cargo test --workspace` — **205/205** (up from 187) |
+| All tests pass (Sandbox) | `cargo test` in `apps/sandbox/src-tauri` — **7/7**, unchanged, zero source modification required |
+| Formatting (root) | `cargo fmt --all --check` — clean |
+| Formatting (Sandbox) | `cargo fmt --check` in `apps/sandbox/src-tauri` — clean |
+| No unexpected warnings | Confirmed — zero warnings in either workspace |
+| Dependency graph matches implementation | Confirmed directly against `Cargo.lock` (both root and Sandbox): exactly two new internal edges (`modiq-engine` → `modiq-versioning`, `modiq-rules` → `modiq-versioning`); zero new external dependency; `modiq-runtime` confirmed still dependency-free; `modiq-versioning` confirmed still zero-dependency itself |
+| Working tree reviewed | `git status --porcelain` — every modified or new file traced directly to Sprint 8 implementation or planning; no stray, scratch, or accidental file found |
+| No unresolved TODOs from Sprint 8 | Confirmed — zero `TODO`/`FIXME`/`XXX`/`println!`/`dbg!` introduced in any file this Sprint touched, checked directly via `git diff` |
+| Manual end-to-end verification | The real `modiq-cli` binary run against both an unsupported-declared-version fixture and a supported one, confirming the capability works outside the test suite |
 
-**No blocking issue was found.** Proceeded to commit.
-
-## 2. Commit Information
-
-| | |
-|---|---|
-| **Commit** | `277aefd` |
-| **Title** | `feat: implement Multi-Source Evidence Collection (XML inspection), consolidate engineering workflow` |
-| **Scope** | Sprint 7 implementation, Sprint 7 post-implementation refinement, and Engineering Workflow Consolidation — bundled into one commit, per explicit instruction |
-| **Files** | 21 changed (7 new, 14 modified): `XmlCollector` and its call sites, five test files updated for the new evidence source, seven engineering-workflow documents reconciled, six new Sprint 7 / consolidation documents |
-
-## 3. Push Status
-
-Pushed to `origin/feature/runtime-implementation`. Fetch-verified after push: local and remote HEAD identical, 0 ahead / 0 behind.
-
-## 4. Merge Status
-
-**Not applicable this cycle.** Checked directly via `git branch -a` before acting: unlike Sprint 6 (`feature/sprint6-cli`, merged as `29657df`), no separate Sprint 7 feature branch was ever created — every Sprint 7 session worked directly on `feature/runtime-implementation`. Recording this as a factual finding rather than fabricating a merge step or silently working around its absence.
-
-## 5. Repository Closeout Summary
-
-Updated: `PROJECT_STATUS.md` (header fields, new `## Sprint 7 — Complete` section, Governance Status note), `CHANGELOG.md` (new `# [Sprint 7]` entry including its own Engineering Workflow Consolidation subsection), `ENGINEERING_LOG.md` (Sprint 7 Closeout entry), `docs/README.md` (release cross-reference). These four updates are committed and pushed alongside this report, in a second commit following the Sprint 7 work commit — consistent with this project's own established pattern (Sprint 6's implementation and its closeout were likewise two distinct commits).
-
-## 6. Project Milestone Recorded
-
-**Engineering Methodology Version 1.0.** Recorded in `PROJECT_HANDOFF_v1.0.md` Section 5 (the declaration itself, made last session), and now reflected in `PROJECT_STATUS.md`, `CHANGELOG.md`, and `ENGINEERING_LOG.md` as part of this closeout. Stated plainly, as project history rather than governance, per instruction: the engineering workflow has been exercised across multiple completed Sprints (5 through 7), consolidated into a single canonical process, and is now treated as a stable architectural artifact — expected to evolve only through implementation evidence, not routine amendment. No Governance Register item was opened for it.
-
-## 7. Current Repository Status
-
-- **Branch:** `feature/runtime-implementation`, in sync with origin.
-- **HEAD (after this closeout commit):** the Sprint 7 Closeout commit, following `277aefd`.
-- **Tests:** 187/187 root workspace, 7/7 Sandbox, zero warnings either.
-- **Crates:** ten, unchanged in count. `modiq-collection` gained its third real Collector (`XmlCollector`); `modiq-cli` unchanged since Sprint 6 (L2); `modiq-rules` untouched since Sprint 5.
-- **Engineering methodology:** Version 1.0.
-- **Outstanding, named rather than silently carried:** formal `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` records (every earlier Sprint produced one; neither exists yet); the dependency-extraction interpretation awaits validation against a real `modDesc.xml`; the Collector Composition Governance item remains deferred pending a second independent content Collector; `EngineeringGuide.md` still references "Technical Director" in its External Dependencies section.
-
-## 8. Recommended Next Sprint
-
-The Sprint 7 capability plan already named the field: **Version Profile-aware compatibility checking** is the clearest concrete beneficiary of this Sprint's own work — `modDesc.xml` declares the FS version(s) a mod targets, and `modiq-versioning` has gone seven Sprints with zero implementation and zero forcing function until now. This is a recommendation for Sprint 8 scoping to consider, not a scope decision made here — per this project's own capability-first discipline, Sprint 8 should begin the same way Sprint 7 did: with a capability question, not an assumed answer.
+**No blocking issue was found.** Proceeded to documentation synchronization and commit.
 
 ---
 
-**Sprint 7 is formally closed. The repository is ready to begin Sprint 8.**
+## 3. Documentation Updated
+
+- **`PROJECT_STATUS.md`** — header fields (Current Release, Current Milestone, Current Phase, Last Updated); new `## Sprint 8 — Complete` section; Current Focus paragraph and Governance Status note both updated to carry the baseline into Sprint 9.
+- **`CHANGELOG.md`** — new `# [Sprint 8]` entry, mirroring the established Added/Deferred/Released structure.
+- **`ENGINEERING_LOG.md`** — Sprint 8 Closeout entry; new **"Engineering Methodology Observations"** section recording the phased-execution-with-validation-gates observation from this Sprint's own implementation, explicitly as history for future consideration, not an adopted process change — no modification to the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5).
+- **`CrateRoadmap.md`** — Implementation Status table (`modiq-versioning` L1 → L2, `modiq-rules` and `modiq-engine` rows updated for the new dependency); dependency-hierarchy notes for the two new edges; Sprint 7 and Sprint 8 narrative sections added (Sprint 7's own entry had never been added to this document — corrected here alongside Sprint 8's, a pre-existing staleness found and fixed, not merely inherited); two new Revision History entries (1.19.0, 1.20.0).
+- **`docs/README.md`** — Engineering Release cross-reference updated to 0.8; a stale claim that Engineering Release 0.6/0.7 remained unproduced (though both had in fact been completed retroactively before this Sprint began) found and corrected.
+
+No architectural, governance, or Documentation Release change was made to any of the above — synchronization only, per instruction.
+
+---
+
+## 4. Engineering Release Created
+
+**`ENGINEERING_RELEASE_0.8.md`** — produced **at this Sprint's own Repository Closeout**, not retroactively, directly correcting the two-Sprint-running late-production pattern (`ENGINEERING_RELEASE_0.6.md`/`_0.7.md`, both produced after their own Sprints had already concluded) that Engineering Release 0.7's own Lessons Learned named as a risk not to repeat a third time. Follows the same 16-section structure as every prior Engineering Release since 0.4: Executive Summary, Scope of Sprint 8, Major Architectural/Implementation Accomplishments, Governance Completed, Documentation Completed, Testing Growth, Repository Maturity Assessment, Crate Maturity Review, Technical Debt Review, Sprint 8 Retrospective, Remaining Risks, Lessons Learned, Engineering Metrics, Repository Timeline, and Recommendation.
+
+---
+
+## 5. Implementation Deviation Record
+
+**`SPRINT8_IMPLEMENTATION_DEVIATIONS.md`** — produced per explicit Chief Architect request, as its own permanent document rather than folded into the Implementation Report alone. Documents three items, each with planned approach, implemented approach, repository evidence, engineering rationale, and why the change preserved or improved the architecture:
+
+1. **`AssessmentService`'s public entry points remain completely unchanged**, rather than gaining a new additive entry point as `SPRINT8_IMPLEMENTATION_AUTHORIZATION.md` anticipated — with the direct, honestly-stated consequence that `VersionProfile::fs25()` is now constructed internally by `AssessmentService` rather than caller-supplied, a departure from `SPRINT8_ARCHITECTURAL_RESOLUTION.md`'s own Decision 4 recommendation, accepted because "selecting" the platform's only Version Profile is a degenerate case with no real judgment involved.
+2. **`VersionProfileReference` (opaque reference)** — clarified as already the Implementation Authorization document's own recommendation, not a new implementation-time decision, included for completeness per explicit request since it represents a real refinement relative to the earlier Architectural Resolution session's more open framing.
+3. **Implementation phase order** (`modiq-rules` validated before `modiq-engine`, reversed from the authorized roadmap's own listed order) — noted as a minor sequencing choice with zero architectural consequence.
+
+---
+
+## 6. Git Operations
+
+| | |
+|---|---|
+| **Commit** | `fc60931` |
+| **Title** | `feat: implement Version Profile-aware compatibility checking (Sprint 8)` |
+| **Scope** | Sprint 8 implementation, full Sprint 8 planning/authorization record, and Repository Closeout documentation synchronization — bundled into one commit, per explicit instruction |
+| **Files** | 27 changed (11 new, 16 modified) |
+| **Push** | Pushed to `origin/feature/runtime-implementation`. Fetch-verified after push: local and remote HEAD identical (`fc60931`), 0 ahead / 0 behind. |
+| **Merge** | **Not applicable this cycle.** Checked directly via `git branch -a` before acting: no separate Sprint 8 feature branch was ever created — every Sprint 8 session (Initialization, Capability Definition, Architectural Resolution, Implementation Authorization, Implementation, this Closeout) worked directly on `feature/runtime-implementation`, mirroring Sprint 7's own precedent exactly. Recorded as a factual finding, not worked around or silently omitted. |
+
+Unlike Sprint 7 (implementation and closeout committed as two separate commits), Sprint 8's implementation and closeout documentation are bundled into this single commit, per this session's own explicit instruction ("Stage all Sprint 8 changes. Create one commit representing Sprint 8.").
+
+---
+
+## 7. Repository Status
+
+- **Branch:** `feature/runtime-implementation`, in sync with `origin`.
+- **HEAD:** `fc60931`.
+- **Working tree:** clean — confirmed via `git status` immediately after push.
+- **Tests:** 205/205 root workspace, 7/7 Sandbox, zero warnings either.
+- **Crates:** **nine**, unchanged in count — confirmed directly against `Cargo.toml`'s `[workspace] members`, correcting this report's own Sprint 7 predecessor, which stated "ten" (a pre-existing minor documentation inconsistency, not repeated here). `modiq-versioning` gained its first real content since Sprint 0 (L1 → L2); `modiq-rules` gained its third Rule; `modiq-cli` and `apps/sandbox` unchanged in both maturity and source code.
+- **Engineering methodology:** Version 1.0, unchanged this Sprint.
+- **Outstanding, named rather than silently carried:** GOV-008 (open across six Sprints, unaffected by this Sprint); the `modiq-versioning` Crate Boundary Rules gap in `GOVERNANCE.md` (named during Sprint 8 planning, deliberately unaddressed by explicit Chief Architect decision); `AssessmentReport` not yet exposing which Version Profile was active; the `DECLARED_DESC_VERSION_PREFIX` string-format coupling between `modiq-collection` and `modiq-rules`; `EngineeringGuide.md`'s "Technical Director" reference (named at Sprint 7, still open); git tag hygiene (`v0.4.0`–`v0.8.0` all available, untagged).
+
+---
+
+## 8. Sprint Status
+
+**Sprint 8: CLOSED.**
+
+All completion criteria satisfied: repository validated, documentation synchronized, Engineering Release created, Implementation Deviation Record created, tests passing (both workspaces), commit completed, push completed, merge explicitly deferred with stated reason, working tree clean.
+
+---
+
+## 9. Recommendation
+
+The repository is the new canonical baseline. **Sprint 9 shall begin from the repository, not from this or any prior session's conversation history**, per this project's own standing discipline and this session's explicit Expected Outcome.
+
+Candidates surfaced by Sprint 8's own work, named for Sprint 9 scoping to weigh — not decided here: a second Version Profile (the clearest concrete forcing function for the profile-selection question, the `AssessmentService` entry-point question this Sprint deliberately left dormant, and a real test of whether the current minimum-viable design generalizes); a fourth Rule; closing the `AssessmentReport` Version Profile visibility gap; or an entirely different capability question, per this project's own capability-first discipline — Sprint 9 should begin the way Sprint 7 and Sprint 8 both did, with a capability question, not an assumed answer.
+
+One process item continues to deserve attention: GOV-008, now aging across six Sprints. This report recommends Sprint 9 scoping explicitly ask whether its own capability is likely to finally produce the evidence needed to resolve it, rather than let it continue by default.
+
+---
+
+**Sprint 8 is formally closed. The repository is ready to begin Sprint 9.**
