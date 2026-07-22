@@ -3,7 +3,10 @@ use modiq_collection::collection::{
 };
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
-use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject, Evidence};
+use modiq_runtime::assessment::{
+    Assessment, AssessmentContext, AssessmentSubject, Evidence, VersionProfileReference,
+};
+use modiq_versioning::versioning::VersionProfile;
 
 use super::assessment_execution_error::AssessmentExecutionError;
 
@@ -22,13 +25,29 @@ impl AssessmentService {
     /// collection, Assessment Report generation, and completion.
     ///
     /// Returns the Assessment Report generated prior to completion.
+    ///
+    /// Every Assessment is executed against `VersionProfile::fs25`
+    /// (Sprint 8: Version Profile-aware compatibility checking) — the
+    /// platform's single, minimum-viable Version Profile. This keeps
+    /// `execute`'s own signature unchanged (Sprint 8 Architectural
+    /// Resolution, Decision 4: `AssessmentService` public APIs evolve
+    /// additively; no breaking change), since no second Version
+    /// Profile exists yet for a caller to meaningfully select between.
+    /// `Assessment` records only an opaque `VersionProfileReference`
+    /// to the active profile (Decision 1); the real `VersionProfile`
+    /// is held here and passed directly to the Rule Engine, never
+    /// exposed to Evidence Collection (Decision 3: version-aware
+    /// interpretation begins inside the Rule Engine).
     pub fn execute(
         &self,
         subject: AssessmentSubject,
         context: AssessmentContext,
         evidence: Vec<Evidence>,
     ) -> AssessmentReport {
-        let mut assessment = Assessment::new(subject, context);
+        let version_profile = VersionProfile::fs25();
+        let version_profile_reference =
+            VersionProfileReference::new(version_profile.game_version().name());
+        let mut assessment = Assessment::new(subject, context, version_profile_reference);
 
         assessment
             .begin_evidence_collection()
@@ -45,7 +64,7 @@ impl AssessmentService {
             .expect("evidence collection was just entered and has not yet transitioned away");
 
         let rule_engine = RuleEngine;
-        for outcome in rule_engine.evaluate(assessment.evidence()) {
+        for outcome in rule_engine.evaluate(assessment.evidence(), &version_profile) {
             assessment
                 .add_finding(outcome.finding)
                 .expect("rule evaluation is active immediately after begin_rule_evaluation");
@@ -143,7 +162,7 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     use modiq_collection::collection::{AssessmentInputError, CollectionError};
-    use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory};
+    use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory, FindingSeverity};
     use zip::ZipWriter;
     use zip::write::SimpleFileOptions;
 
@@ -556,17 +575,60 @@ mod tests {
             .expect("directory is accessible");
 
         // Two FileStructureAnalysis items (modDesc.xml, sample.txt,
-        // discovered in sorted order) plus two XmlInspection items
-        // (the well-formed confirmation and the declared dependency).
-        assert_eq!(report.evidence().len(), 4);
+        // discovered in sorted order) plus three XmlInspection items
+        // (the well-formed confirmation, the declared descVersion —
+        // Sprint 8 — and the declared dependency).
+        assert_eq!(report.evidence().len(), 5);
         let xml_evidence: Vec<_> = report
             .evidence()
             .iter()
             .filter(|item| item.category() == EvidenceCategory::XmlInspection)
             .collect();
-        assert_eq!(xml_evidence.len(), 2);
+        assert_eq!(xml_evidence.len(), 3);
         assert!(xml_evidence[0].description().contains("well-formed"));
-        assert!(xml_evidence[1].description().contains("FS25_example"));
+        assert!(
+            xml_evidence[1]
+                .description()
+                .contains("declares descVersion: 93")
+        );
+        assert!(xml_evidence[2].description().contains("FS25_example"));
+        // descVersion 93 is recognized by the active (FS25) Version
+        // Profile, so VersionCompatibilityRule does not fire — only
+        // the generic EvidencePresenceRule's Finding is produced.
+        assert_eq!(report.findings().len(), 1);
+    }
+
+    #[test]
+    fn execute_from_assessment_input_produces_a_warning_for_an_unrecognized_declared_version() {
+        // Sprint 8: Version Profile-aware compatibility checking,
+        // exercised end to end through the real engine pipeline.
+        let dir = TempDir::new("execute-unsupported-version");
+        fs::write(
+            dir.path().join("modDesc.xml"),
+            "<modDesc descVersion=\"42\"></modDesc>",
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        // EvidencePresenceRule (generic) plus VersionCompatibilityRule
+        // (Sprint 8) — fixed declaration order, GOV-012.
+        assert_eq!(report.findings().len(), 2);
+        let version_finding = report
+            .findings()
+            .iter()
+            .find(|finding| finding.rule_reference().identifier() == "version-compatibility-rule")
+            .expect("VersionCompatibilityRule produced a Finding");
+        assert_eq!(version_finding.severity(), FindingSeverity::Warning);
+        assert!(version_finding.description().contains("42"));
+        assert!(version_finding.description().contains("FS25"));
     }
 
     #[test]

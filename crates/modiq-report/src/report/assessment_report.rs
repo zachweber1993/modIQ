@@ -55,7 +55,7 @@ mod tests {
     use super::*;
     use modiq_runtime::assessment::{
         AssessmentContext, AssessmentSubject, EvidenceCategory, EvidenceId, FindingId,
-        FindingSeverity, RuleReference,
+        FindingSeverity, RuleReference, VersionProfileReference,
     };
 
     fn sample_evidence() -> Evidence {
@@ -80,7 +80,11 @@ mod tests {
 
     #[test]
     fn generate_reflects_empty_assessment_state() {
-        let assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        let assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
 
         let report = AssessmentReport::generate(&assessment);
 
@@ -93,7 +97,11 @@ mod tests {
 
     #[test]
     fn generate_reflects_collected_evidence_findings_and_recommendations() {
-        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
         assessment.begin_evidence_collection().unwrap();
         let evidence = sample_evidence();
         assessment.add_evidence(evidence.clone()).unwrap();
@@ -115,7 +123,11 @@ mod tests {
 
     #[test]
     fn generate_after_completion_matches_generate_before_completion() {
-        let mut assessment = Assessment::new(AssessmentSubject, AssessmentContext);
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
         assessment.begin_evidence_collection().unwrap();
         assessment.add_evidence(sample_evidence()).unwrap();
         assessment.begin_rule_evaluation().unwrap();

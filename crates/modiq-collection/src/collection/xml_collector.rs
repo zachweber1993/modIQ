@@ -11,6 +11,17 @@ use super::collection_error::CollectionError;
 /// expected to carry at its root.
 const MANIFEST_FILE_NAME: &str = "modDesc.xml";
 
+/// The exact prefix used when reporting a mod's declared `descVersion`
+/// attribute as Evidence (Sprint 8: Version Profile-aware compatibility
+/// checking). `modiq-rules`'s `VersionCompatibilityRule` parses this
+/// same, independently-duplicated prefix to recognize and evaluate
+/// this specific kind of `XmlInspection` fact — a data-format
+/// convention between the two crates, not a code dependency
+/// (`EvidenceCollection.md`: Collector Contract, "a Collector receives
+/// nothing else"; `modiq-collection` and `modiq-rules` remain
+/// architecturally independent).
+const DECLARED_DESC_VERSION_PREFIX: &str = "modDesc.xml declares descVersion: ";
+
 /// Produces `XmlInspection` Evidence from an Assessment Input's
 /// manifest file (`modDesc.xml`) — the platform's first
 /// content-inspecting Collector, and the first implementation of
@@ -118,11 +129,11 @@ impl XmlCollector {
     }
 
     /// Inspects the manifest's raw content: well-formedness first,
-    /// then, only if well-formed, every declared `<dependency>`
-    /// element's text content, in document order (already
-    /// deterministic — a document's own byte order — with no
-    /// additional sort needed, unlike filesystem or archive
-    /// traversal).
+    /// then, only if well-formed, the declared `descVersion` attribute
+    /// (Sprint 8) and every declared `<dependency>` element's text
+    /// content, in document order (already deterministic — a
+    /// document's own byte order — with no additional sort needed,
+    /// unlike filesystem or archive traversal).
     fn inspect(bytes: &[u8]) -> Vec<Evidence> {
         let text = match std::str::from_utf8(bytes) {
             Ok(text) => text,
@@ -134,7 +145,10 @@ impl XmlCollector {
             Err(_) => return vec![Self::malformed_manifest_evidence()],
         };
 
-        let mut evidence = vec![Self::found_manifest_evidence()];
+        let mut evidence = vec![
+            Self::found_manifest_evidence(),
+            Self::declared_desc_version_evidence(document.root_element().attribute("descVersion")),
+        ];
 
         for node in document.descendants() {
             if !node.has_tag_name("dependency") {
@@ -164,6 +178,30 @@ impl XmlCollector {
             MANIFEST_FILE_NAME,
         )
         .expect("description and location are non-empty")
+    }
+
+    /// Reports the manifest's declared `descVersion` attribute as a
+    /// purely factual observation — the raw declared value, never an
+    /// interpretation of whether it is supported (Sprint 8, Decision
+    /// 2: "Extraction is evidence collection only... No compatibility
+    /// interpretation shall occur within the Collector"). Whether a
+    /// declared value is recognized is the Rule Engine's later,
+    /// separate concern (`VersionCompatibilityRule`, `modiq-rules`).
+    fn declared_desc_version_evidence(desc_version: Option<&str>) -> Evidence {
+        match desc_version {
+            Some(value) => Evidence::with_location(
+                EvidenceCategory::XmlInspection,
+                format!("{DECLARED_DESC_VERSION_PREFIX}{value}"),
+                MANIFEST_FILE_NAME,
+            )
+            .expect("description and location are non-empty"),
+            None => Evidence::with_location(
+                EvidenceCategory::XmlInspection,
+                "modDesc.xml does not declare a descVersion attribute.",
+                MANIFEST_FILE_NAME,
+            )
+            .expect("description and location are non-empty"),
+        }
     }
 
     fn malformed_manifest_evidence() -> Evidence {
@@ -264,6 +302,11 @@ mod tests {
     <author>Example</author>
 </modDesc>"#;
 
+    const WELL_FORMED_MANIFEST_NO_DESC_VERSION: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc>
+    <author>Example</author>
+</modDesc>"#;
+
     const MALFORMED_MANIFEST: &str = "<modDesc><author>Example</modDesc>";
 
     #[test]
@@ -291,11 +334,16 @@ mod tests {
             .collect(&input)
             .expect("directory is accessible");
 
-        assert_eq!(evidence.len(), 3);
+        assert_eq!(evidence.len(), 4);
         assert!(evidence[0].description().contains("well-formed"));
         assert_eq!(evidence[0].location(), Some("modDesc.xml"));
-        assert!(evidence[1].description().contains("FS25_exampleModOne"));
-        assert!(evidence[2].description().contains("FS25_exampleModTwo"));
+        assert!(
+            evidence[1]
+                .description()
+                .contains("declares descVersion: 93")
+        );
+        assert!(evidence[2].description().contains("FS25_exampleModOne"));
+        assert!(evidence[3].description().contains("FS25_exampleModTwo"));
         for item in &evidence {
             assert_eq!(item.category(), EvidenceCategory::XmlInspection);
         }
@@ -314,8 +362,35 @@ mod tests {
             .collect(&input)
             .expect("directory is accessible");
 
-        assert_eq!(evidence.len(), 1);
+        assert_eq!(evidence.len(), 2);
         assert!(evidence[0].description().contains("well-formed"));
+        assert!(
+            evidence[1]
+                .description()
+                .contains("declares descVersion: 93")
+        );
+    }
+
+    #[test]
+    fn collect_reports_absence_of_a_desc_version_attribute() {
+        let dir = TempDir::new("dir-no-desc-version");
+        write_file(
+            &dir.path().join("modDesc.xml"),
+            WELL_FORMED_MANIFEST_NO_DESC_VERSION,
+        );
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        assert_eq!(evidence.len(), 2);
+        assert!(evidence[0].description().contains("well-formed"));
+        assert!(
+            evidence[1]
+                .description()
+                .contains("does not declare a descVersion attribute")
+        );
     }
 
     #[test]
@@ -354,8 +429,13 @@ mod tests {
 
         let evidence = XmlCollector.collect(&input).expect("file is accessible");
 
-        assert_eq!(evidence.len(), 1);
+        assert_eq!(evidence.len(), 2);
         assert!(evidence[0].description().contains("well-formed"));
+        assert!(
+            evidence[1]
+                .description()
+                .contains("declares descVersion: 93")
+        );
     }
 
     #[test]
@@ -380,10 +460,15 @@ mod tests {
 
         let evidence = XmlCollector.collect(&input).expect("archive is accessible");
 
-        assert_eq!(evidence.len(), 3);
+        assert_eq!(evidence.len(), 4);
         assert!(evidence[0].description().contains("well-formed"));
-        assert!(evidence[1].description().contains("FS25_exampleModOne"));
-        assert!(evidence[2].description().contains("FS25_exampleModTwo"));
+        assert!(
+            evidence[1]
+                .description()
+                .contains("declares descVersion: 93")
+        );
+        assert!(evidence[2].description().contains("FS25_exampleModOne"));
+        assert!(evidence[3].description().contains("FS25_exampleModTwo"));
     }
 
     #[test]

@@ -10,6 +10,7 @@ modiq-runtime = { path = "../modiq-runtime" }
 modiq-rules = { path = "../modiq-rules" }
 modiq-report = { path = "../modiq-report" }
 modiq-collection = { path = "../modiq-collection" }
+modiq-versioning = { path = "../modiq-versioning" }
 thiserror = { workspace = true }
 
 [dev-dependencies]

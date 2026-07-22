@@ -3,13 +3,13 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.7 — `docs/engineering/ENGINEERING_RELEASE_0.6.md` and `_0.7.md` both produced (retroactively, per `HISTORICAL_RELEASE_COMPLETION_REPORT.md`), completing the historical record for Sprints 6 and 7 |
+| **Current Release** | Engineering Release 0.8 — `docs/engineering/ENGINEERING_RELEASE_0.8.md`, produced at Sprint 8's own Repository Closeout (not retroactively — correcting the pattern named at Sprint 7's own Closeout as a risk not to repeat) |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 7 — Complete (Multi-Source Evidence Collection: XML inspection); Repository Closeout complete |
+| **Current Milestone** | Sprint 8 — Complete (Version Profile-aware compatibility checking); Repository Closeout complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 7 Repository Closeout complete; Sprint 8 not yet scoped |
-| **Engineering Methodology Version** | 1.0 — declared following Sprint 7 and the Engineering Workflow Consolidation (`PROJECT_HANDOFF_v1.0.md`, Section 5) |
-| **Last Updated** | 2026-07-21 |
+| **Current Phase** | Post-Sprint 8 Repository Closeout complete; Sprint 9 not yet scoped |
+| **Engineering Methodology Version** | 1.0 — unchanged this Sprint |
+| **Last Updated** | 2026-07-22 |
 
 ---
 
@@ -55,7 +55,17 @@ Sprint 7 also consolidated the repository's engineering workflow: nine independe
 
 Full record: `SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `SPRINT7_IMPLEMENTATION_REPORT.md`, `ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, `ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`, and `ENGINEERING_RELEASE_0.7.md`. `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` were both produced retroactively, after this Sprint's own close — see `HISTORICAL_RELEASE_COMPLETION_REPORT.md` for how, and for the process risk this gap itself represents.
 
-**Next implementation milestone:** not yet scoped. Sprint 8 has not begun as of this record.
+**Next implementation milestone (superseded by Sprint 8, below):** Version Profile-aware compatibility checking — the candidate `REPOSITORY_CLOSEOUT_REPORT.md` (Sprint 7) named as the clearest concrete beneficiary of Sprint 7's own work.
+
+## Sprint 8 — Complete (Version Profile-aware Compatibility Checking)
+
+Sprint 8 activated the Version Profile architectural dimension — specified since Documentation Release 1.0 (`VersionProfile.md`, ADR-0004) but unimplemented through seven Sprints — as the platform's first capability directly answering `ProductSpecification.md`'s named Player objective, "Compatibility Verification." Preceded by the full Capability Definition → Architecture Evaluation → Architectural Resolution → Implementation Authorization sequence: `SPRINT8_INITIALIZATION_REPORT.md` (repository orientation), `SPRINT8_CAPABILITY_AND_IMPLEMENTATION_PLAN.md` (capability definition and repository evidence, including a direct correction of a prior session's inaccurate "declared FS version already exists" framing), `SPRINT8_ARCHITECTURAL_RESOLUTION.md` (six architectural decisions evaluated, none resolved), and `SPRINT8_IMPLEMENTATION_AUTHORIZATION.md` (decisions validated against fresh repository evidence, implementation roadmap, Builder-pattern evaluation).
+
+`modiq-versioning` gained its first real content since Sprint 0: a minimal `GameVersion`/`VersionProfile` pair, with a single hardcoded `VersionProfile::fs25()` recognizing `descVersion` 93 — deliberately not exhaustive version knowledge. `XmlCollector` (Sprint 7) was extended to extract a mod's declared `descVersion` as a purely factual `XmlInspection` Evidence item, preserving the Collector Contract's observational boundary exactly. A new Rule, `VersionCompatibilityRule`, evaluates that declared value against the active Version Profile inside the Rule Engine — never upstream of it — producing a `Warning` Finding when unrecognized. `Assessment` records which Version Profile governed it through a new opaque `VersionProfileReference`, extending ADR-0007's established Opaque Runtime References pattern to a domain relationship for the first time; `modiq-runtime` gained no new dependency and remains the platform's sole dependency-free leaf, unbroken since Sprint 0. `AssessmentService`'s two public entry points (`execute`, `execute_from_assessment_input`) required **zero signature change** — both now execute every Assessment against `VersionProfile::fs25()` internally, an implementation simplification the Chief Architect accepted as part of this Sprint rather than the anticipated new additive entry point, since no second Version Profile yet exists for a caller to select between.
+
+The workspace grew from 187 to 205 root tests (`modiq-versioning` 0 → 4, its first tests ever; `modiq-rules` 15 → 25; `modiq-runtime` 82 → 84; `modiq-collection` 56 → 57; `modiq-engine` 18 → 19 unit); Sandbox unchanged at 7/7, requiring zero source modification. Two new internal dependency edges only (`modiq-engine`/`modiq-rules` → `modiq-versioning`), no new external dependency, no breaking public API change. Full record: `SPRINT8_IMPLEMENTATION_REPORT.md`, `SPRINT8_IMPLEMENTATION_DEVIATIONS.md`, and `ENGINEERING_RELEASE_0.8.md`.
+
+**Next implementation milestone:** not yet scoped. Sprint 9 has not begun as of this record.
 
 ---
 
@@ -130,6 +140,8 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). `DataModel.md` was separately amended to v1.1.0 during Sprint 5 to add Finding Severity definitions (GOV-012/GOV-013). Engineering Release 0.4 froze Sprint 4 (Phases 1–3D, plus Closeout); Engineering Release 0.5 froze Sprint 5 (Phases 1–5, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open, untouched by Sprints 4, 5, and 6 (Sprint 6 reused `AssessmentService`'s existing entry points exactly as designed and generated no new evidence toward it). Sprint 6 is complete: `modiq-cli` is wired to `modiq-engine`, and `modiq-report`'s four scaffold types are retired. XML inspection is the sole remaining candidate from the original three-item Sprint 6 roadmap, not yet scoped for Sprint 7.
 
+Sprint 7 (Multi-Source Evidence Collection: XML inspection) and Sprint 8 (Version Profile-aware compatibility checking) are both complete since this paragraph was last current. Neither required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, now unaffected by Sprint 8 as well — `AssessmentService`'s two public entry points required no signature change this Sprint either, generating no new evidence toward resolving it, the same non-outcome Sprint 6 and 7 each already produced.
+
 Implementation should remain consistent with the frozen engineering specification.
 
 ---
@@ -146,7 +158,7 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6, carried into Sprint 7 (both complete); baseline carries forward unchanged into Sprint 8. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline.
+Status: Frozen for Sprint 6, carried into Sprints 7 and 8 (all three complete); baseline carries forward unchanged into Sprint 9. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 8 introduced no Governance Register item, no ADR, and no Crate Boundary Rule update, by explicit Chief Architect decision (mirroring Sprint 7's own treatment of the Collector Composition Model): the `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, deliberately, pending future evidence.
 
 The project's governance baseline is established.
 
@@ -159,6 +171,6 @@ Authoritative governance documents:
 Future governance changes must be justified by implementation evidence,
 architectural evolution, or approved governance decisions.
 
-Sprint 6 begins under this governance baseline.
+Sprint 9 begins under this governance baseline.
 
 ---

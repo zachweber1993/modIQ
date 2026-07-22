@@ -1,7 +1,9 @@
 use modiq_runtime::assessment::{Evidence, Finding, Recommendation};
+use modiq_versioning::versioning::VersionProfile;
 
 use super::evidence_presence_rule::EvidencePresenceRule;
 use super::structural_duplication_rule::StructuralDuplicationRule;
+use super::version_compatibility_rule::VersionCompatibilityRule;
 
 /// The result of evaluating Evidence against a single deterministic Rule:
 /// one Finding and one Recommendation derived from it.
@@ -15,30 +17,44 @@ pub struct RuleOutcome {
 pub struct RuleEngine;
 
 impl RuleEngine {
-    /// Evaluates the given Evidence against every concrete Rule this
-    /// platform has (RuleEngine.md: Rule Selection, Evidence
-    /// Evaluation, Finding Generation, Recommendation Generation),
-    /// returning zero, one, or several outcomes — one per Rule that
-    /// matched (GOV-012, Question 1).
+    /// Evaluates the given Evidence, within the context of the active
+    /// `VersionProfile`, against every concrete Rule this platform has
+    /// (RuleEngine.md: Rule Selection, Evidence Evaluation, Finding
+    /// Generation, Recommendation Generation), returning zero, one, or
+    /// several outcomes — one per Rule that matched (GOV-012, Question
+    /// 1).
     ///
     /// Rules are evaluated in a fixed, explicit declaration order —
-    /// `EvidencePresenceRule`, then `StructuralDuplicationRule` — never
-    /// an order derived from Evidence's own arrival sequence (GOV-012,
-    /// Question 2). Rules compose independently: each is evaluated
-    /// against the full Evidence set regardless of whether another
-    /// Rule also matches it, and no Rule suppresses another (GOV-012,
-    /// Question 3). This is deliberately a fixed sequence of `if let`
-    /// checks, not a trait, registry, or dispatch table — an
-    /// implementation detail GOV-012 leaves open, provided no such
-    /// abstraction is introduced (`GOVERNANCE.md`: Crate Boundary
-    /// Rules, ADR-0010, GOV-004).
-    pub fn evaluate(&self, evidence: &[Evidence]) -> Vec<RuleOutcome> {
+    /// `EvidencePresenceRule`, then `StructuralDuplicationRule`, then
+    /// `VersionCompatibilityRule` (Sprint 8) — never an order derived
+    /// from Evidence's own arrival sequence (GOV-012, Question 2).
+    /// Rules compose independently: each is evaluated against the full
+    /// Evidence set regardless of whether another Rule also matches
+    /// it, and no Rule suppresses another (GOV-012, Question 3). This
+    /// is deliberately a fixed sequence of `if let` checks, not a
+    /// trait, registry, or dispatch table — an implementation detail
+    /// GOV-012 leaves open, provided no such abstraction is introduced
+    /// (`GOVERNANCE.md`: Crate Boundary Rules, ADR-0010, GOV-004).
+    ///
+    /// `version_profile` is consulted only by `VersionCompatibilityRule`
+    /// — every other Rule's applicability is unaffected by it
+    /// (Sprint 8 Architectural Resolution, Decision 3: version-aware
+    /// interpretation begins inside the Rule Engine, not upstream of
+    /// it).
+    pub fn evaluate(
+        &self,
+        evidence: &[Evidence],
+        version_profile: &VersionProfile,
+    ) -> Vec<RuleOutcome> {
         let mut outcomes = Vec::new();
 
         if let Some(outcome) = EvidencePresenceRule.evaluate(evidence) {
             outcomes.push(outcome);
         }
         if let Some(outcome) = StructuralDuplicationRule.evaluate(evidence) {
+            outcomes.push(outcome);
+        }
+        if let Some(outcome) = VersionCompatibilityRule.evaluate(evidence, version_profile) {
             outcomes.push(outcome);
         }
 
@@ -50,6 +66,10 @@ impl RuleEngine {
 mod tests {
     use super::*;
     use modiq_runtime::assessment::{EvidenceCategory, FindingSeverity};
+
+    fn fs25_profile() -> VersionProfile {
+        VersionProfile::fs25()
+    }
 
     fn structural_evidence() -> Evidence {
         Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
@@ -64,18 +84,27 @@ mod tests {
         .expect("category and description are valid")
     }
 
+    fn unrecognized_declared_version_evidence() -> Evidence {
+        Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            "modDesc.xml declares descVersion: 42",
+            "modDesc.xml",
+        )
+        .expect("description and location are valid")
+    }
+
     #[test]
     fn evaluate_returns_no_outcomes_for_no_evidence() {
         let engine = RuleEngine;
 
-        assert_eq!(engine.evaluate(&[]), vec![]);
+        assert_eq!(engine.evaluate(&[], &fs25_profile()), vec![]);
     }
 
     #[test]
     fn evaluate_returns_one_outcome_when_only_the_generic_rule_matches() {
         let engine = RuleEngine;
 
-        let outcomes = engine.evaluate(&[structural_evidence()]);
+        let outcomes = engine.evaluate(&[structural_evidence()], &fs25_profile());
 
         assert_eq!(outcomes.len(), 1);
         assert_eq!(
@@ -92,7 +121,7 @@ mod tests {
     fn evaluate_returns_both_outcomes_when_both_rules_match_in_declaration_order() {
         let engine = RuleEngine;
 
-        let outcomes = engine.evaluate(&[duplication_evidence()]);
+        let outcomes = engine.evaluate(&[duplication_evidence()], &fs25_profile());
 
         // duplication_evidence() is non-empty, so EvidencePresenceRule
         // matches unconditionally; it is also StructuralDuplication
@@ -124,7 +153,10 @@ mod tests {
         // structural_duplication_rule.rs's own tests).
         let engine = RuleEngine;
 
-        let outcomes = engine.evaluate(&[duplication_evidence(), duplication_evidence()]);
+        let outcomes = engine.evaluate(
+            &[duplication_evidence(), duplication_evidence()],
+            &fs25_profile(),
+        );
 
         assert_eq!(outcomes.len(), 2);
         assert_eq!(outcomes[1].finding.evidence_ids().len(), 2);
@@ -139,8 +171,14 @@ mod tests {
         // StructuralDuplicationRule.
         let engine = RuleEngine;
 
-        let structural_first = engine.evaluate(&[structural_evidence(), duplication_evidence()]);
-        let duplication_first = engine.evaluate(&[duplication_evidence(), structural_evidence()]);
+        let structural_first = engine.evaluate(
+            &[structural_evidence(), duplication_evidence()],
+            &fs25_profile(),
+        );
+        let duplication_first = engine.evaluate(
+            &[duplication_evidence(), structural_evidence()],
+            &fs25_profile(),
+        );
 
         for outcomes in [&structural_first, &duplication_first] {
             assert_eq!(outcomes.len(), 2);
@@ -156,12 +194,53 @@ mod tests {
     }
 
     #[test]
+    fn evaluate_dispatches_version_compatibility_rule_third_in_declaration_order() {
+        // Sprint 8: VersionCompatibilityRule is the third Rule, added
+        // additively after StructuralDuplicationRule (GOV-012's fixed
+        // declaration order, extended, never reordered).
+        let engine = RuleEngine;
+
+        let outcomes =
+            engine.evaluate(&[unrecognized_declared_version_evidence()], &fs25_profile());
+
+        assert_eq!(outcomes.len(), 2);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+        assert_eq!(
+            outcomes[1].finding.rule_reference().identifier(),
+            "version-compatibility-rule"
+        );
+        assert_eq!(outcomes[1].finding.severity(), FindingSeverity::Warning);
+    }
+
+    #[test]
+    fn evaluate_does_not_dispatch_version_compatibility_rule_for_a_supported_declared_version() {
+        let engine = RuleEngine;
+        let evidence = Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            "modDesc.xml declares descVersion: 93",
+            "modDesc.xml",
+        )
+        .expect("description and location are valid");
+
+        let outcomes = engine.evaluate(&[evidence], &fs25_profile());
+
+        assert_eq!(outcomes.len(), 1);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+    }
+
+    #[test]
     fn evaluate_ordering_is_deterministic_across_repeated_calls() {
         let engine = RuleEngine;
         let evidence = [duplication_evidence()];
 
-        let first = engine.evaluate(&evidence);
-        let second = engine.evaluate(&evidence);
+        let first = engine.evaluate(&evidence, &fs25_profile());
+        let second = engine.evaluate(&evidence, &fs25_profile());
 
         let first_references: Vec<&str> = first
             .iter()

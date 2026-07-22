@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-21 |
+| **Last Updated** | 2026-07-22 |
 
 ---
 
@@ -449,3 +449,27 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`, and `docs/engineering/ENGINEERING_RELEASE_0.7.md` (produced retroactively, alongside `_0.6.md`, after this Sprint's own close). Implementation, refinement, and consolidation committed together as `277aefd` directly on `feature/runtime-implementation` and pushed — no separate Sprint branch existed this cycle, unlike Sprint 6.
+
+---
+
+# [Sprint 8]
+
+**Status:** Complete (implementation, review, and Repository Closeout on `feature/runtime-implementation` — no separate Sprint branch this cycle, matching Sprint 7's own precedent)
+
+## Added
+
+- **Version Profile-aware compatibility checking** — `modiq-versioning` gained its first real content since Sprint 0: a minimal `GameVersion`/`VersionProfile` pair, with a single hardcoded `VersionProfile::fs25()` recognizing `descVersion` 93. `XmlCollector` (Sprint 7) extended to extract a mod's declared `descVersion` as a purely factual `XmlInspection` Evidence item — no interpretation, preserving the Collector Contract's observational boundary exactly. A new Rule, `VersionCompatibilityRule`, evaluates that declared value against the active Version Profile inside the Rule Engine, producing a `Warning` Finding when unrecognized; `RuleEngine::evaluate` gained a `VersionProfile` parameter, dispatching the new Rule third, after `StructuralDuplicationRule` (GOV-012's fixed declaration order, extended, never reordered). `Assessment` records which Version Profile governed it through a new opaque `VersionProfileReference`, extending ADR-0007's Opaque Runtime References pattern (`RuleReference`, `RepairRecipeReference`) to a domain relationship for the first time; `modiq-runtime` gained no new dependency and remains the platform's sole dependency-free leaf, unbroken since Sprint 0. `AssessmentService`'s two public entry points (`execute`, `execute_from_assessment_input`) required zero signature change — both execute every Assessment against `VersionProfile::fs25()` internally, an implementation simplification accepted in place of the originally anticipated new additive entry point, since no second Version Profile yet exists for a caller to select between.
+- Preceded by the full Capability Definition → Architecture Evaluation → Architectural Resolution → Implementation Authorization sequence, each producing its own reviewed document: `SPRINT8_INITIALIZATION_REPORT.md`, `SPRINT8_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `SPRINT8_ARCHITECTURAL_RESOLUTION.md`, `SPRINT8_IMPLEMENTATION_AUTHORIZATION.md`. Six architectural decisions (Version Profile ownership, extraction location, version-aware evaluation location, Assessment construction, crate dependencies, governance timing) were evaluated with alternatives and a recommendation each, then explicitly decided by the Chief Architect before implementation began — zero implementation-before-decision, consistent with this project's unbroken discipline.
+- The root workspace test suite grew from 187 to 205 tests (`modiq-versioning` +4, its first tests ever; `modiq-rules` +10; `modiq-runtime` +2; `modiq-collection` +1; `modiq-engine` +1); the Sandbox's own separate suite was unaffected (unchanged at 7/7, requiring zero source modification — neither entry point it calls changed signature).
+- Exactly two new internal dependency edges (`modiq-engine` → `modiq-versioning`, `modiq-rules` → `modiq-versioning`), both directly justified; no new external dependency; `modiq-versioning` → `modiq-common` deliberately not added.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint. GOV-008 specifically was not advanced: both `AssessmentService` entry points required no signature change, generating no new evidence toward it — the same non-outcome Sprint 6 and 7 each already produced.
+- No new Governance Register item was opened for the Version Profile Ownership, Version-aware Evaluation, or Assessment Construction decisions, by explicit Chief Architect decision — mirroring Sprint 7's own treatment of the Collector Composition Model (implementation evidence to precede formal governance codification, not the reverse).
+- The `modiq-versioning` Crate Boundary Rules gap in `GOVERNANCE.md`, named during Sprint 8 planning, remains open, deliberately.
+- Exhaustive Farming Simulator version knowledge, a profile-selection mechanism, Knowledge Domain integration, and general-purpose Rule Selection filtering all remain out of scope, as originally planned — Sprint 8's own charter was to establish the architecture, not complete the ecosystem.
+
+## Released
+
+- Documented in `docs/engineering/SPRINT8_INITIALIZATION_REPORT.md`, `docs/engineering/SPRINT8_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/SPRINT8_ARCHITECTURAL_RESOLUTION.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_REPORT.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_DEVIATIONS.md`, and `docs/engineering/ENGINEERING_RELEASE_0.8.md` (produced at this Sprint's own Closeout, not retroactively — correcting the two-Sprint-running pattern Engineering Release 0.7 itself named as a risk not to repeat a third time).

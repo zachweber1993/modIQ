@@ -17,6 +17,7 @@ pub mod recommendation_id;
 pub mod repair_recipe_reference;
 pub mod rule_reference;
 pub mod subject;
+pub mod version_profile_reference;
 
 pub use assessment::Assessment;
 pub use assessment_error::AssessmentError;
@@ -37,3 +38,4 @@ pub use recommendation_id::RecommendationId;
 pub use repair_recipe_reference::RepairRecipeReference;
 pub use rule_reference::RuleReference;
 pub use subject::AssessmentSubject;
+pub use version_profile_reference::VersionProfileReference;

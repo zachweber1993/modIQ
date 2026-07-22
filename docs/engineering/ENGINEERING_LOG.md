@@ -991,3 +991,59 @@ Formal Sprint 7 closeout, per Chief Architect authorization following review of 
 **Project Milestone recorded:** Engineering Methodology Version 1.0 — the engineering workflow has been exercised across multiple completed Sprints (5 through 7), consolidated into a single canonical process (`PROJECT_HANDOFF_v1.0.md`, Section 5), and is now treated as a stable architectural artifact expected to evolve only through implementation evidence, not routine amendment. Recorded as project history, not as a Governance Register item — no GOV item was opened for it, consistent with explicit direction that this is history rather than governance.
 
 No architectural change, no new Governance Register item, and no ADR were introduced this session. **Sprint 7 is now formally closed.**
+
+---
+
+### Sprint 8 Closeout: Repository Validation, Documentation Synchronization, Commit, Push, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-versioning (GameVersion, VersionProfile)
+- modiq-runtime (VersionProfileReference, Assessment construction)
+- modiq-collection (XmlCollector descVersion extraction)
+- modiq-rules (VersionCompatibilityRule, RuleEngine::evaluate signature)
+- modiq-engine (AssessmentService wiring)
+- modiq-report (test call sites only)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/implementation/CrateRoadmap.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_0.8.md (new)
+- docs/engineering/SPRINT8_IMPLEMENTATION_DEVIATIONS.md (new)
+- docs/engineering/REPOSITORY_CLOSEOUT_REPORT.md (new)
+
+Notes:
+Formal Sprint 8 closeout, per Chief Architect authorization following review of Sprint 8's full Capability Definition → Architecture Evaluation → Architectural Resolution → Implementation Authorization → Implementation sequence. Repository Validation performed before any documentation change or git operation: `cargo fmt --all --check`, `cargo check --workspace`, and `cargo test --workspace` (205/205, up from 187) on the root workspace; the same three checks independently against `apps/sandbox/src-tauri` (7/7, unchanged — zero source modification required there). Working tree reviewed directly (`git status --porcelain`): every modified or new file traced to Sprint 8 implementation or planning; no stray, accidental, or temporary file found. A direct search confirmed zero `TODO`/`FIXME`/`XXX` markers and zero debug `println!`/`dbg!` calls introduced this Sprint. Dependency graph reviewed against `Cargo.lock`: exactly two new internal edges (`modiq-engine` → `modiq-versioning`, `modiq-rules` → `modiq-versioning`), zero new external dependency, `modiq-runtime` confirmed still dependency-free.
+
+**Documentation Synchronization:** `PROJECT_STATUS.md` header fields updated (Current Release, Current Milestone, Current Phase, Last Updated) and a new `## Sprint 8 — Complete` section added; Current Focus and Governance Status notes both updated to reflect Sprint 8 and carry the baseline into Sprint 9. `CHANGELOG.md`'s new `# [Sprint 8]` entry added, mirroring the established Added/Deferred/Released structure. `CrateRoadmap.md`'s Implementation Status table and dependency diagram updated for `modiq-versioning`'s first real content and its two new consumer edges. `docs/README.md`'s Engineering Release cross-reference updated to 0.8.
+
+**Engineering Release:** `ENGINEERING_RELEASE_0.8.md` produced **at this Sprint's own Closeout**, not retroactively — directly correcting the two-Sprint-running late-production pattern `ENGINEERING_RELEASE_0.7.md`'s own Lessons Learned named as a risk not to repeat a third time.
+
+**Implementation Deviation Record:** `SPRINT8_IMPLEMENTATION_DEVIATIONS.md` produced, documenting every meaningful difference between `SPRINT8_IMPLEMENTATION_AUTHORIZATION.md`'s planned approach and actual implementation (the unchanged `AssessmentService` entry points; the `VersionProfileReference` ownership refinement; the leaner-than-planned dependency footprint), each with repository evidence and engineering rationale, per explicit Chief Architect request that this become part of permanent engineering history rather than a detail folded silently into the Implementation Report alone.
+
+**Commit:** all Sprint 8 changes (implementation and documentation synchronization) staged and committed together as a single commit, per instruction, on `feature/runtime-implementation` directly.
+
+**Push:** pushed to `origin/feature/runtime-implementation`.
+
+**Merge:** not applicable this cycle, mirroring Sprint 7's own precedent exactly — no separate Sprint 8 feature branch was ever created; all Sprint 8 work happened directly on `feature/runtime-implementation`.
+
+No architectural change, no new Governance Register item, and no ADR were introduced this session, consistent with explicit Chief Architect decision (Decision 6, `SPRINT8_ARCHITECTURAL_RESOLUTION.md`/`SPRINT8_IMPLEMENTATION_AUTHORIZATION.md`). **Sprint 8 is now formally closed.**
+
+---
+
+## Engineering Methodology Observations
+
+A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
+
+### Sprint 8: Phased Execution with Validation Gates
+
+Sprint 8's implementation session ran seven distinct phases (`modiq-versioning` domain content → `modiq-runtime` construction evolution → `modiq-collection` extraction → `modiq-rules` Rule and `RuleEngine` signature → `modiq-engine` wiring → `modiq-report` call-site updates → full-workspace and Sandbox validation), each validated independently (`cargo fmt`/`check`/`test` at the crate level) before the next began, rather than writing all seven phases' code first and validating once at the end.
+
+**Observation:** this per-phase validation gate caught what would otherwise have been a late-discovered, larger-surface-area problem. Because `modiq-collection`'s `descVersion` extraction was implemented and validated (crate-level `cargo test -p modiq-collection`) before `modiq-rules`' `VersionCompatibilityRule` was written, the exact evidence-description format `XmlCollector` actually produces was already confirmed, real, and test-covered by the time the Rule needed to parse it — rather than the Rule being written against an assumed format and a mismatch surfacing only once the full pipeline was assembled and tested together at the very end. The same held moving from `modiq-rules` to `modiq-engine`: `RuleEngine::evaluate`'s new signature was already fixed and tested before `AssessmentService`'s call site was touched, so the engine-level integration required no rework.
+
+**Why this is being recorded, not adopted:** Sprint 8 is one data point. This project's own governance discipline (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 4: "prefer convergent evidence over a single implementation attempt") holds that a single favorable Sprint does not, by itself, justify writing a new mandatory stage into the canonical workflow (`PROJECT_HANDOFF_v1.0.md`, Section 5's eleven-stage Implementation → Validation sequence already exists; this observation is about *sub-phase* granularity within that single stage, not a new stage). Whether this should become an explicit expectation of every future multi-crate implementation, or remains ordinary good practice not worth codifying, is left for a future Chief Architect session to evaluate — ideally once a second Sprint's own evidence exists to compare against, mirroring exactly how GOV-004's three-subsystem convergence, not a single favorable case, is this project's own standing bar for treating a pattern as settled.

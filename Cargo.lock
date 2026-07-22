@@ -354,6 +354,7 @@ dependencies = [
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",
+ "modiq-versioning",
  "thiserror",
  "zip",
 ]
@@ -374,6 +375,7 @@ name = "modiq-rules"
 version = "0.1.0"
 dependencies = [
  "modiq-runtime",
+ "modiq-versioning",
 ]
 
 [[package]]

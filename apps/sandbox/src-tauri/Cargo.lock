@@ -2161,6 +2161,7 @@ dependencies = [
  "modiq-report",
  "modiq-rules",
  "modiq-runtime",
+ "modiq-versioning",
  "thiserror 2.0.19",
 ]
 
@@ -2176,6 +2177,7 @@ name = "modiq-rules"
 version = "0.1.0"
 dependencies = [
  "modiq-runtime",
+ "modiq-versioning",
 ]
 
 [[package]]
@@ -2184,6 +2186,10 @@ version = "0.1.0"
 dependencies = [
  "thiserror 2.0.19",
 ]
+
+[[package]]
+name = "modiq-versioning"
+version = "0.1.0"
 
 [[package]]
 name = "muda"
