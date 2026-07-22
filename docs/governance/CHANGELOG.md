@@ -524,3 +524,34 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/SPRINT10_CAPABILITY_DEFINITION.md`, `docs/engineering/SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md`, and `docs/engineering/ENGINEERING_RELEASE_1.0.md` (produced at this Sprint's own Closeout, not retroactively).
+
+---
+
+# [Sprint 11]
+
+**Status:** Complete (Architectural Resolution, Implementation, Architectural Reconciliation, Repository Closeout, on `feature/runtime-implementation` — no separate Sprint branch this cycle, matching Sprints 7–10's own precedent)
+
+## Added
+
+- **Runtime Evidence Processing Architecture** — `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` resolved, grounded in Sprint 10's three real fixtures, the four questions `SPRINT11.md`'s Scope named: where a runtime observation enters the pipeline, `EvidenceCategory::RuntimeLogs`'s content shape, how the evidence is interpreted (including `FindingSeverity`), and fixture-corpus sufficiency. Included the Runtime Interpretation Decision Matrix (four rows, each citing real fixture evidence or an explicit generalization boundary) as a first-class deliverable, and an Architectural Invariants section restating Collector/Rule boundaries specifically for runtime evidence.
+- **`RuntimeLogCollector`** (`modiq-collection`) — locates `log.txt` at the Assessment Input's root (filesystem or archive, mirroring `XmlCollector`'s identical symmetry, justified by the already-approved Assessment Input model rather than fixture evidence specific to this capability), recognizes the one documented failure template (generalized over the mod name, not the message text), and produces `RuntimeLogs` Evidence only for a recognized match. A missing or unrecognized log is Legitimate Absence, never a recorded fact — a deliberate divergence from `XmlCollector`'s own missing-manifest-as-Evidence precedent, reasoned from the two content types' different expected-presence baselines. Composed inline into `AssessmentService::execute_from_assessment_input`, appended after `XmlCollector` — the second content-Collector under the Collector Composition Architecture's own extraction axis, not yet crossing its five-condition threshold for a dedicated coordinator.
+- **`RuntimeLoadFailureRule`** (`modiq-rules`) — filters `RuntimeLogs` Evidence, independently re-matching the same recognized template as a defense-in-depth safeguard against the Collector's own boundary, and assigns `FindingSeverity::Error` — the platform's first real use of that variant, reasoned directly from `DataModel.md`'s own Finding Severity definitions (a direct, conclusive observation of an actual failed load attempt, unlike `VersionCompatibilityRule`'s own static-declaration basis for `Warning`) rather than deferred to the game engine's own log wording. Dispatched fourth in `RuleEngine::evaluate`'s fixed declaration order (GOV-012), appended after `VersionCompatibilityRule`, never reordering the existing three. Recommendation is inline-authored with `repair_recipe_reference: None`, mirroring `VersionCompatibilityRule`'s own pre-Sprint-9 shape — no Knowledge Domain involvement.
+- Neither `AssessmentService`'s two public entry points nor `RuleEngine::evaluate`'s parameter shape required any change.
+- The root workspace test suite grew from 210 to 238 tests across the sprint (`modiq-collection` 57 → 70; `modiq-rules` 25 → 36; `modiq-engine` 19 → 23 unit); the Sandbox's own separate suite was unaffected (unchanged at 7/7).
+
+## Architectural Reconciliation
+
+- A dedicated, adversarial engineering verification pass — conducted specifically to attempt to disprove architectural consistency rather than confirm it, after implementation but before repository closeout — found a genuine internal contradiction: the architecture document's own Architectural Invariants section (v1.1.0) asserted that every unrecognized runtime observation remains Evidence until a Rule declines to interpret it, while `RuntimeLogCollector`, built against an earlier section of the same document, performs recognition *before* Evidence is created, so an unrecognized log line never becomes Evidence at all.
+- Per this project's standing discipline, implementation was halted and the contradiction reported rather than resolved unilaterally in either direction. Chief Architect review determined the implementation was correct and the invariant's wording was the inconsistency; `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` was revised to v1.2.0 to describe the Collector-recognizes-then-Evidence-exists model the implementation already realized, adding an explicit statement of the Collector's own deterministic recognition contract, a forward-looking note on how that contract may be extended by future, separately approved, fixture-grounded work, and a resolution of a secondary observation (archive-location support, justified by the already-approved Assessment Input model, not by fixture evidence specific to this capability).
+- **No Rust source, test, fixture, ADR, or Governance Register item was touched in this reconciliation** — only the architecture document's own wording.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint. GOV-013 specifically was documented as newly relevant (this Sprint's own `FindingSeverity::Error` assignment is offered as evidence for a future GOV-013 review) but deliberately not reopened or decided.
+- No new Governance Register item or ADR was opened — Rule dispatch extension is already covered by GOV-012's own general resolution; Collector composition extension is already covered by the Sprint 7 Collector Composition Architecture's own extraction threshold, not crossed by a second content-Collector.
+- Broader runtime log signature coverage (a second failure class), a non-macOS fixture capture, and any Knowledge Domain pairing (a Repair Recipe) for `RuntimeLoadFailureRule`'s own Finding all remain out of scope, as originally planned — named explicitly so they are not later rediscovered as surprises.
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 11.
+
+## Released
+
+- Documented in `docs/implementation/SPRINT11.md`, `docs/engineering/RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` (v1.2.0), and `docs/engineering/ENGINEERING_RELEASE_1.1.md` (produced at this Sprint's own Closeout, not retroactively).

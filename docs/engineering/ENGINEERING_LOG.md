@@ -1119,6 +1119,49 @@ No architectural change, no new Governance Register item, and no ADR were introd
 
 ---
 
+### Sprint 11 Closeout: Runtime Evidence Processing Architecture, Implementation, Architectural Reconciliation, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection (new: `RuntimeLogCollector`)
+- modiq-rules (new: `RuntimeLoadFailureRule`; `RuleEngine::evaluate` dispatch extended)
+- modiq-engine (`AssessmentService::execute_from_assessment_input` extended)
+
+Affected Documents:
+- docs/implementation/SPRINT11.md (new)
+- docs/engineering/RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md (new, v1.0.0 → v1.2.0 across this Sprint)
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/implementation/CrateRoadmap.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_1.1.md (new)
+
+Notes:
+Formal Sprint 11 closeout. Unlike Sprint 10, this Sprint delivered both the Architectural Resolution and its own implementation in the same cycle. `cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` confirm the final state directly: root workspace test suite grew from 210 to 238, Sandbox unchanged at 7/7, zero warnings.
+
+**Architectural Resolution:** `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` (v1.0.0) resolved all four questions `SPRINT11.md`'s Scope named, grounded directly in Sprint 10's three real fixtures, including the Runtime Interpretation Decision Matrix as a first-class deliverable. A Chief Architect-requested refinement pass (v1.1.0) added an explicit Architectural Invariants section and a governance-relationship clarification distinguishing this Sprint's own architectural interpretation from GOV-013's separate, unresolved question.
+
+**Implementation:** four independently reviewed milestones — `RuntimeLogCollector` (standalone, unit-tested), its wiring into `AssessmentService`, `RuntimeLoadFailureRule` (standalone, unit-tested), and its dispatch integration into `RuleEngine::evaluate` as the fourth entry in GOV-012's fixed order. Neither of `AssessmentService`'s two public entry points nor `RuleEngine::evaluate`'s parameter shape required any change.
+
+**Architectural Reconciliation (v1.1.0 → v1.2.0):** a dedicated, adversarial engineering verification pass — conducted specifically to attempt to disprove architectural consistency rather than confirm it — found that v1.1.0's own Architectural Invariants section asserted an Evidence-first, Rule-decides recognition model, while `RuntimeLogCollector`, built against an earlier section of the same document, performs recognition before Evidence is created. Implementation was halted and the contradiction reported, per this project's standing discipline, rather than resolved unilaterally. Chief Architect review confirmed the implementation was correct and directed the document's own wording to be reconciled to it — recorded in full detail in this Sprint's own "Engineering Methodology Observations" entry, below. No Rust source, test, fixture, ADR, or Governance Register item was touched in the reconciliation itself.
+
+**Documentation Synchronization:** `PROJECT_STATUS.md` header fields updated (Current Release, Current Milestone, Current Phase) and a new `## Sprint 11 — Complete` section added; Current Focus and Governance Status notes both updated to reflect Sprint 11 and carry the baseline into Sprint 12. `CHANGELOG.md`'s new `# [Sprint 11]` entry added, including its own Architectural Reconciliation subsection. `CrateRoadmap.md` gained a Sprint 11 narrative note, updated crate-table rows for `modiq-collection` and `modiq-rules`, and a new Revision History entry. `docs/README.md`'s Engineering Release cross-reference updated to 1.1.
+
+**Engineering Release:** `ENGINEERING_RELEASE_1.1.md` produced at this Sprint's own Closeout, following the full section structure established for implementation Sprints, with a dedicated Architectural Reconciliation section documenting the mid-Sprint contradiction and its resolution as part of the permanent engineering record, not a footnote.
+
+**Commit:** Sprint 11's own architecture, implementation, and reconciliation work, and this Closeout's documentation synchronization, are recommended as two separate commits, mirroring the two-commit precedent every Sprint since Sprint 7 has followed.
+
+**Push:** not performed this session — awaiting Chief Architect approval before repository history is pushed.
+
+**Merge:** not applicable this cycle — no separate Sprint 11 feature branch was created; all Sprint 11 work happened directly on `feature/runtime-implementation`.
+
+No new Governance Register item and no ADR were introduced this session; GOV-013 was documented as newly relevant, not reopened. **Sprint 11 is now formally closed, pending push.**
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
@@ -1142,5 +1185,13 @@ Sprint 9's initial Architectural Resolution draft conflated two distinct questio
 Sprint 10 (Runtime Fixture Corpus Acquisition) is the first Sprint in this project's history where an entire Sprint's own scope was evidence acquisition alone, with architecture and implementation explicitly and completely deferred — not one investigation phase within a larger implementation Sprint (Sprint 4 Phase 2's Boundary-Proving against the `zip` crate is the closest prior precedent, but that was one phase of a Sprint that also implemented against its findings in the same cycle). `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11 stated this as a requirement, not a suggestion: no architectural decision for Runtime Log Interpretation may assume a real log's structure, wording, stability, or formatting, and acquiring representative logs was named the first engineering activity that requirement demands.
 
 **Observation:** treating acquisition as its own complete Sprint, rather than a phase folded into an implementation Sprint, surfaced two real corpus-documentation gaps *before* any Rust code existed to be built against a wrong assumption — Installation State versus Savegame State (found capturing the very first fixture) and Warning Categorization (found capturing the second). Both were formalized as corpus policy, with the fixture that exposed each gap integrated only afterward, not worked around silently. Had this Sprint instead begun with a Collector implementation against an assumed log shape, both gaps would most likely have surfaced as implementation-time surprises or, worse, as silent incorrect assumptions baked into a Rule's own design — precisely the "implementation-led architecture" failure mode this project's own Decision Framework exists to prevent (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 6), here avoided one Sprint earlier than the pattern has ever been applied before.
+
+### Sprint 11: Adversarial Engineering Verification Found a Documentation Inconsistency Implementation-Review Would Not Have
+
+Every prior instance of "a review stage caught a real error before it compounded" recorded in this section (Sprint 8's `VersionProfileReference` refinement; Sprint 9's Repair Recipe authorship conflation) was an *architectural* review — a Chief Architect reading a not-yet-implemented resolution document and catching a design error before code existed. Sprint 11's own verification pass was a different, later-stage check: implementation was already complete, all four milestones individually reviewed and passing, and the explicit instruction was to verify the *finished* implementation against the architecture document *adversarially* — to attempt to disprove consistency rather than confirm it — before any repository closeout work began.
+
+**Observation:** this adversarial-verification framing found something the four individual milestone reviews, each conducted in good faith against the architecture document as it stood at the time, did not: the Architectural Invariants section (added to the architecture document *during* the implementation milestones, as a Chief Architect-requested refinement) asserted a general platform-wide recognition model — every unrecognized observation remains Evidence — that quietly contradicted the Collector-level recognition contract an earlier section of the same document, and the already-completed Milestone 1 implementation, both already used. No single milestone review re-checked the *whole* document for internal consistency against the *whole* implementation; each checked its own slice. The inconsistency was only visible from a vantage point deliberately looking for contradiction across the complete, finished picture.
+
+**Why this is being recorded, not adopted:** this is the first data point for a *different* class of review than Sprints 8–9 recorded (verify finished implementation against documentation, adversarially, as its own distinct step) rather than the class already observed twice (review a not-yet-implemented resolution before coding begins). Per this project's own standing bar, one instance does not justify writing a new mandatory stage into the canonical workflow. It is recorded here as a candidate: a documentation section added mid-implementation (as this Sprint's Architectural Invariants section was) may need to be explicitly re-checked against sections written earlier and against work already in progress, not merely reviewed for its own internal quality — a future Chief Architect session should decide whether this warrants its own named stage once a second instance exists to compare against.
 
 **Why this is being recorded, not adopted as a new mandatory stage:** one Sprint is one data point, the same standard already applied to Sprint 8's and Sprint 9's own observations above. Whether "evidence acquisition as its own complete, dedicated Sprint" should become the standing expectation whenever a future capability depends on a real-world artifact this repository does not yet possess, or whether Sprint 10's own shape was specific to Runtime Log Interpretation's own unusual precondition, is left for a future Chief Architect session to evaluate against a second instance, not decided here.

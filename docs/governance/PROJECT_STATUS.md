@@ -3,11 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 1.0 — `docs/engineering/ENGINEERING_RELEASE_1.0.md`, produced at Sprint 10's own Repository Closeout |
-| **Repository Status** | Implementation Ready — Runtime Log Interpretation capability itself (Collector, Rule, Evidence category activation) remains intentionally unimplemented; see below |
-| **Current Milestone** | Sprint 10 — Complete (Runtime Fixture Corpus Acquisition: Capability Definition and evidentiary foundation for Runtime Log Interpretation); Repository Closeout complete |
+| **Current Release** | Engineering Release 1.1 — `docs/engineering/ENGINEERING_RELEASE_1.1.md`, produced at Sprint 11's own Repository Closeout |
+| **Repository Status** | Implementation Ready — Runtime Log Interpretation is now real: `RuntimeLogCollector` and `RuntimeLoadFailureRule` are implemented, tested, and wired end to end; see below |
+| **Current Milestone** | Sprint 11 — Complete (Runtime Evidence Processing Architecture: Architectural Resolution, Implementation, Architectural Reconciliation); Repository Closeout complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 10 Repository Closeout complete; Sprint 11 not yet scoped |
+| **Current Phase** | Post-Sprint 11 Repository Closeout complete; Sprint 12 not yet scoped |
 | **Engineering Methodology Version** | 1.0 — unchanged this Sprint |
 | **Last Updated** | 2026-07-22 |
 
@@ -85,7 +85,19 @@ Real acquisition evidence twice revealed genuine gaps in the corpus's own docume
 
 No crate, test, Collector, Rule, Evidence category, Governance Register item, or ADR was touched. Full record: `SPRINT10_CAPABILITY_DEFINITION.md`, `SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md`, and `ENGINEERING_RELEASE_1.0.md`.
 
-**Next implementation milestone:** Runtime Log Interpretation's own Architectural Resolution and implementation (a Collector activating `EvidenceCategory::RuntimeLogs`, a Rule interpreting it), now grounded in three real, captured fixtures rather than assumption — not yet scoped in detail; a fourth fixture (`modded-map-only`, testing whether the recognized signal generalizes across Assessment Subject content types) was named as a deferred candidate, not decided.
+**Next implementation milestone (superseded by Sprint 11, below):** Runtime Log Interpretation's own Architectural Resolution and implementation, now grounded in three real, captured fixtures rather than assumption.
+
+## Sprint 11 — Complete (Runtime Evidence Processing Architecture)
+
+Sprint 11 defined and then implemented the Runtime Evidence Processing Architecture — the first Sprint since Sprint 10's own fixture acquisition to touch Runtime Log Interpretation at all. `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` resolved, grounded directly in Sprint 10's three real fixtures: where a runtime observation enters the pipeline (a second content-Collector, composed inline alongside `XmlCollector`, per the already-approved Collector Composition Architecture — its five-condition extraction threshold not yet met by a second participant); `EvidenceCategory::RuntimeLogs`'s content shape (a factual, template-bounded capture, mirroring `XmlCollector`'s Content Extraction discipline); how the evidence is interpreted (a new Rule, fourth in GOV-012's fixed dispatch order, `FindingSeverity::Error` — the platform's first real use of that variant, reasoned directly from `DataModel.md`'s own Finding Severity definitions rather than deferred to the game engine's own log wording); and the Runtime Interpretation Decision Matrix (four rows, each citing real fixture evidence).
+
+Implementation followed across four independently reviewed milestones: `RuntimeLogCollector` (`modiq-collection`), its wiring into `AssessmentService::execute_from_assessment_input`, `RuntimeLoadFailureRule` (`modiq-rules`), and its dispatch integration into `RuleEngine::evaluate`. A missing or unrecognized runtime log is Legitimate Absence, never a recorded fact — a deliberate, reasoned divergence from `XmlCollector`'s own missing-manifest precedent, since a log's ordinary case is absence, unlike a manifest's. `AssessmentService`'s two public entry points and `RuleEngine::evaluate`'s parameter shape both required zero change.
+
+A dedicated, adversarial engineering verification pass — conducted specifically to attempt to disprove architectural consistency rather than confirm it — found a genuine internal contradiction between the architecture document's own Architectural Invariants section and the Collector actually implemented against an earlier section of the same document. Implementation was halted and the contradiction reported, per this project's standing discipline, rather than resolved unilaterally either way. Chief Architect review confirmed the implementation was correct and revised the architecture document (v1.1.0 → v1.2.0) to describe the Collector-recognizes-then-Evidence-exists model the implementation already realized — no Rust source was touched in that reconciliation.
+
+The workspace grew from 210 to 238 root tests (`modiq-collection` 57 → 70; `modiq-rules` 25 → 36; `modiq-engine` 19 → 23 unit); Sandbox unchanged at 7/7. No crate added, no public entry point changed, no new `EvidenceCategory` variant, no new external or internal dependency edge, no new Governance Register item, no ADR. Full record: `SPRINT11.md`, `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` (v1.2.0), and `ENGINEERING_RELEASE_1.1.md`.
+
+**Next implementation milestone:** not yet scoped. Named, deferred candidates from this Sprint and Sprint 10: broader runtime log signature coverage (a second failure class, requiring its own real fixture evidence), a non-macOS runtime log capture, and any future Knowledge Domain pairing (a Repair Recipe) for `RuntimeLoadFailureRule`'s own Finding.
 
 ---
 
@@ -160,7 +172,7 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). `DataModel.md` was separately amended to v1.1.0 during Sprint 5 to add Finding Severity definitions (GOV-012/GOV-013). Engineering Release 0.4 froze Sprint 4 (Phases 1–3D, plus Closeout); Engineering Release 0.5 froze Sprint 5 (Phases 1–5, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open, untouched by Sprints 4, 5, and 6 (Sprint 6 reused `AssessmentService`'s existing entry points exactly as designed and generated no new evidence toward it). Sprint 6 is complete: `modiq-cli` is wired to `modiq-engine`, and `modiq-report`'s four scaffold types are retired. XML inspection is the sole remaining candidate from the original three-item Sprint 6 roadmap, not yet scoped for Sprint 7.
 
-Sprint 7 (Multi-Source Evidence Collection: XML inspection), Sprint 8 (Version Profile-aware compatibility checking), Sprint 9 (Repair Guidance), and Sprint 10 (Runtime Fixture Corpus Acquisition) are all complete since this paragraph was last current. None required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, unaffected by both Sprint 9 and Sprint 10 — the latter touched no Rust source at all, generating no evidence toward it either way. Sprint 9 gave `modiq-knowledge` its first real content since Sprint 0; Sprint 10 gave the repository its first real, external, provenance-tracked evidence corpus (`fixtures/runtime-logs/`), with two of its own findings (installation state vs. savegame state; Warning Categorization) formalized as corpus policy directly from real acquisition evidence, mirroring the same evidence-before-architecture discipline this project has applied to code since Sprint 1.
+Sprint 7 (Multi-Source Evidence Collection: XML inspection), Sprint 8 (Version Profile-aware compatibility checking), Sprint 9 (Repair Guidance), Sprint 10 (Runtime Fixture Corpus Acquisition), and Sprint 11 (Runtime Evidence Processing Architecture and Implementation) are all complete since this paragraph was last current. None required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, unaffected by Sprints 9, 10, or 11 — none of the three changed `AssessmentService`'s two public entry points. Sprint 9 gave `modiq-knowledge` its first real content since Sprint 0; Sprint 10 gave the repository its first real, external, provenance-tracked evidence corpus (`fixtures/runtime-logs/`); Sprint 11 activated that corpus's use, giving `EvidenceCategory::RuntimeLogs` its first real Collector and Rule after eleven Sprints dormant, and exercising `FindingSeverity::Error` for the first time in this platform's history.
 
 Implementation should remain consistent with the frozen engineering specification.
 
@@ -178,7 +190,7 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6, carried into Sprints 7, 8, 9, and 10 (all five complete); baseline carries forward unchanged into Sprint 11. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 10 introduced no Governance Register item and no ADR — Installation State vs. Savegame State and Warning Categorization are fixture-corpus documentation policies (`fixtures/runtime-logs/README.md`), not Governance Register items in `GOVERNANCE.md`'s own sense, since neither touches a crate boundary, a public API, or an architectural principle. The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 9 or Sprint 10.
+Status: Frozen for Sprint 6, carried into Sprints 7, 8, 9, 10, and 11 (all six complete); baseline carries forward unchanged into Sprint 12. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 10 introduced no Governance Register item and no ADR — Installation State vs. Savegame State and Warning Categorization are fixture-corpus documentation policies (`fixtures/runtime-logs/README.md`), not Governance Register items in `GOVERNANCE.md`'s own sense. Sprint 11 likewise introduced no new Governance Register item and no ADR: Rule dispatch extension is already covered by GOV-012's own general resolution, and Collector composition extension is already covered by the Sprint 7 Collector Composition Architecture's own extraction threshold, not crossed by a second content-Collector. GOV-013 (FindingSeverity Severity/Kind Conflation) remains Open, deliberately not reopened by Sprint 11's own `FindingSeverity::Error` assignment — documented as new evidence for a future GOV-013 review (`RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md`, Section 3.3), not decided by this Sprint. The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprints 9, 10, or 11.
 
 The project's governance baseline is established.
 
@@ -191,6 +203,6 @@ Authoritative governance documents:
 Future governance changes must be justified by implementation evidence,
 architectural evolution, or approved governance decisions.
 
-Sprint 11 begins under this governance baseline.
+Sprint 12 begins under this governance baseline.
 
 ---
