@@ -414,11 +414,11 @@ The Documentation Release 1.0 Final Review concluded with:
 - `Display`/`Serialize` for Runtime identity/enum types remains explicitly out of scope, per direct Chief Architect authorization — `modiq-cli` formats results with `{:?}`, matching the Sandbox's own established approach.
 - XML inspection (the next Evidence Collector) remains out of scope — the sole remaining candidate from the original three-item Sprint 6 roadmap, deferred to a future Sprint of its own rather than bundled into this one.
 - A minor, twice-observed architectural gap was named, not acted on: `modiq-engine` does not re-export `AssessmentReport`, so both real consumers of `AssessmentService` (the Sandbox and now `modiq-cli`) independently needed a direct `modiq-report` dependency just to name the type. Two data points, below this project's own usual three-point convergent-evidence bar — tracked, not yet a Governance Register item.
-- A formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced.
+- ~~A formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced.~~ **Resolved, retroactively:** `ENGINEERING_RELEASE_0.6.md` was produced after Sprint 7's own close, alongside `_0.7.md` — see `HISTORICAL_RELEASE_COMPLETION_REPORT.md`.
 
 ## Released
 
-- Documented in `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record) and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`. Implementation committed as `397707f` on `feature/sprint6-cli`, merged into `feature/runtime-implementation` as `29657df`.
+- Documented in `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record), `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`, and `docs/engineering/ENGINEERING_RELEASE_0.6.md` (produced retroactively after Sprint 7's own close). Implementation committed as `397707f` on `feature/sprint6-cli`, merged into `feature/runtime-implementation` as `29657df`.
 
 ---
 
@@ -444,8 +444,8 @@ The Documentation Release 1.0 Final Review concluded with:
 - Dependency extraction (`XmlCollector`'s `<dependency>` element interpretation) is implemented per a documented interpretation of `modDesc.xml` convention, not yet validated against a real Farming Simulator mod manifest — no such sample exists in this repository.
 - The Collector Composition Governance item remains deferred, per explicit Chief Architect direction: Sprint 7 is the first implementation evidence for the approved architecture, not the final governance evidence: it should wait for at least one more independent content Collector.
 - Two smaller items from the workflow consolidation remain open: whether `ImplementationWorkflow.md` should be deleted outright rather than archived, and whether `EngineeringGuide.md`'s remaining "Technical Director" reference and non-workflow content should be reconciled or relocated.
-- Formal `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` records, matching every earlier Sprint's own convention, have not yet been produced.
+- ~~Formal `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` records, matching every earlier Sprint's own convention, have not yet been produced.~~ **Resolved, retroactively:** both produced after Sprint 7's own close — see `HISTORICAL_RELEASE_COMPLETION_REPORT.md`. The gap itself (two Sprints before either record existed) is named in both new records' own Lessons Learned as a process risk not to repeat.
 
 ## Released
 
-- Documented in `docs/engineering/SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, and `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`. Implementation, refinement, and consolidation committed together as `277aefd` directly on `feature/runtime-implementation` and pushed — no separate Sprint branch existed this cycle, unlike Sprint 6.
+- Documented in `docs/engineering/SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`, and `docs/engineering/ENGINEERING_RELEASE_0.7.md` (produced retroactively, alongside `_0.6.md`, after this Sprint's own close). Implementation, refinement, and consolidation committed together as `277aefd` directly on `feature/runtime-implementation` and pushed — no separate Sprint branch existed this cycle, unlike Sprint 6.
