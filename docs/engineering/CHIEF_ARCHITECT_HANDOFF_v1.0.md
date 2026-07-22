@@ -158,6 +158,8 @@ The single most useful question you can ask, across all of the above: **"What wo
 
 # 6. Decision Framework
 
+Answers a different question than `PROJECT_HANDOFF_v1.0.md` Section 5's canonical Sprint lifecycle: not "what stages does a Sprint go through," but "how does an architectural question get resolved in general," which can happen outside any single Sprint's own boundaries. Related, not redundant — see `ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, Section 2.
+
 The sequence architectural evolution should follow:
 
 ```
@@ -222,6 +224,8 @@ Each of these has either occurred and been caught, or represents a risk this pro
 
 # 9. Sprint Oversight Workflow
 
+This role's own review cadence across a Sprint — a different lens on the same underlying process `PROJECT_HANDOFF_v1.0.md` Section 5 canonically defines, not a second, competing stage list. See `ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, Section 2.
+
 Your expected cadence across a Sprint:
 
 ```
@@ -250,37 +254,15 @@ Engineering Release Approval
 
 # 10. Engineering Workflow
 
-The Permanent Engineering Workflow defines the required execution sequence for all future implementation work. Other workflow diagrams within this document (Section 6's Decision Framework, Section 9's Sprint Oversight Workflow) describe governance reasoning or architectural review responsibilities and should be interpreted as complementary views of the same engineering process rather than separate procedures.
+**Canonical location:** `PROJECT_HANDOFF_v1.0.md`, Section 5, "The Permanent Engineering Workflow" — the repository's single authoritative definition of the eleven-stage Sprint lifecycle, project-wide and not owned by either role. This section no longer restates it; it previously did, and that copy had already drifted from the canonical version within two sessions (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`), which is the direct reason the full diagram no longer lives here. Other workflow diagrams within this document (Section 6's Decision Framework, Section 9's Sprint Oversight Workflow) describe governance reasoning and this role's own review cadence specifically — complementary views of the same underlying process, not competing redefinitions of it, per `PROJECT_HANDOFF_v1.0.md` Section 5.
 
-This is the standard project lifecycle, going forward, for how a unit of work moves from idea to closed Sprint:
+What follows is specific to the Chief Architect's own role at three of the eleven canonical stages, not a restatement of the stages themselves:
 
-```
-Sprint Planning
-     ↓
-Chief Architect Review
-     ↓
-Authorization
-     ↓
-Implementation
-     ↓
-Validation
-     ↓
-Implementation Report
-     ↓
-Architecture Review
-     ↓
-Sprint Closeout
-```
+**At Architectural Resolution:** every open architectural question raised during Architecture Evaluation or Capability Definition must be explicitly marked Accepted, Rejected, or Deferred before Implementation Authorization may be granted — whether the question came from a dedicated architecture study (Sprint 7's Collector Composition proposal) or arose directly during review of a Sprint plan. No open question carries silently into Implementation.
 
-**Repository Closeout**
+**At Architectural Conformance Review:** confirm the actual implementation matches what Architectural Resolution and Implementation Authorization approved — no undisclosed scope expansion, no unauthorized abstraction. Produce a short recorded statement, not only a passing remark at the top of a later session (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, Section 3).
 
-Repository Closeout reconciles the repository's authoritative documentation with the implementation following Sprint completion and integration.
-
-Its purpose is administrative consistency only.
-
-Repository Closeout must not introduce architectural, governance, or production-code changes.
-
-**Sprint Planning** is the Lead Engineer preparing a proposed Sprint Implementation Plan or phase scope. **Chief Architect Review** is evaluating that plan against architecture, governance, and crate boundaries before anything is authorized. **Authorization** is explicit sign-off to begin — per-phase, not a single blanket approval for an entire Sprint (Section 9). **Implementation** is the Lead Engineer's work against the authorized scope only. **Validation** is `cargo fmt`/`check`/`test`, both workspaces, zero warnings — run and confirmed before a phase is reported complete. **Implementation Report** is the Lead Engineer's standard report (files modified, tests added, design decisions, assumptions, concerns). **Architecture Review** is the Chief Architect applying Section 5's review questions to that report. **Sprint Closeout** is the administrative half of "done" — reconciliation, documentation audit, Engineering Release record — reviewed and approved before the Sprint is declared complete (Section 9).
+**At Repository Closeout:** reconciles the repository's authoritative documentation with the implementation following Sprint completion and integration. Administrative consistency only — must not introduce architectural, governance, or production-code changes.
 
 ---
 

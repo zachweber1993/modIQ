@@ -779,6 +779,8 @@ The two are intentionally independent.
 
 # Repository Development Cycle
 
+Operates at Documentation Release granularity, spanning multiple Sprints — distinct from `PROJECT_HANDOFF_v1.0.md` Section 5's canonical per-Sprint workflow, which this cycle contains one instance of at its "Sprint Planning → Implementation → Engineering Review" phase.
+
 The expected development cadence is:
 
 ```text

@@ -149,9 +149,9 @@ Lead Engineer
      ↓
 Implementation
      ↓
-Chief Architect Review
+Architectural Conformance Review
      ↓
-Sprint Closeout
+Repository Closeout
 ```
 
 The Project Owner sets priorities, approves the roadmap, and selects sprint objectives. The Chief Architect owns architecture, governance, and sprint scope authorization (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`); the Lead Engineer owns implementation, testing, and documentation synchronization within that authorized scope (`LEAD_ENGINEER_HANDOFF_v3.0.md`). Every architectural decision and governance resolution on record originated from the Chief Architect role, never from independent engineering judgment.
@@ -200,9 +200,49 @@ Distinct from Engineering Releases: a Documentation Release freezes the *specifi
 
 # 5. Engineering Workflow
 
-**Current permanent workflow:** `CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 10, defines the permanent Sprint lifecycle (Sprint Planning → Chief Architect Review → Authorization → Implementation → Validation → Implementation Report → Architecture Review → Sprint Closeout) as the standard operating procedure for future development. The cycle below is `EngineeringGuide.md`'s own, earlier articulation of the same underlying discipline (specification review before implementation, verification and reporting after) and is retained here as background rather than rewritten, per this project's own convention of amending rather than silently replacing prior text; where the two differ in stage granularity, Section 10 of `CHIEF_ARCHITECT_HANDOFF_v1.0.md` is current.
+**Engineering Methodology Version: 1.0** — declared following Sprint 7 and the Engineering Workflow Consolidation. Distinct from a Documentation Release (which freezes the platform's *specification*): this versions the engineering *methodology* itself — the workflow below and the philosophy behind it — as a stable architectural artifact, demonstrated across multiple completed engineering cycles (Sprints 5 through 7) rather than declared in advance of them. Future changes to it follow the same evidence-based evolution process used throughout this repository: a concrete forcing function, evaluated and resolved, before the methodology itself changes — not routine amendment.
 
-## The Proposal → Governance → Documentation → Implementation → Verification Cycle (`EngineeringGuide.md`)
+This section is the repository's single canonical source for the engineering workflow — project-wide, not owned by either role. `CHIEF_ARCHITECT_HANDOFF_v1.0.md` and `LEAD_ENGINEER_HANDOFF_v3.0.md` reference this section rather than restating it; where either document once carried its own full copy, that copy has been reduced to role-specific elaboration. Future workflow changes should update this section first (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, `ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`).
+
+## Engineering Philosophy
+
+The workflow below is a process description. What makes it work is a set of principles this project's own history has validated repeatedly, independent of any single Sprint — stated here once, in prose, rather than as a checklist to copy:
+
+A capability is defined before its implementation is designed — Sprint 7's own charter ("determine what new capability should exist — not how to implement it") generalizes a discipline this project already practiced informally since Sprint 1. Architecture evolves from implementation evidence, not from anticipation of it: every accepted architectural model on record — direct engine composition (ADR-0010, GOV-004), fixed-order Rule dispatch (GOV-012), inline Collector composition (this Sprint) — was decided only after a concrete case existed to test it against, never in advance of one. Evidence precedes evaluation, structurally as well as procedurally: Collectors observe and Rules evaluate, in that order, and Governance itself only ever resolves a question once an Investigation has produced evidence to resolve it from, never from intuition alone. Refinement is preferred over premature abstraction — the platform's own repeated "capability before abstraction" test (does a second concrete case actually exist, right now, that needs this?) has been applied to Collector dispatch, Rule dispatch, and Collector composition alike, and every time an abstraction was deferred rather than built early, the deferral held. Architectural boundaries are preserved, not routed around for convenience — a crate's "Owns" and "Must never" pair (`GOVERNANCE.md`) is enforced at review time, not treated as a suggestion. Every Sprint should increase product capability, statable in one sentence — "after this Sprint, modIQ can now..." — not merely advance infrastructure for its own sake; Sprint 7's own Capability Success Criteria is the standing model for this, expected of every Sprint going forward, not a one-off. And every engineering concern has exactly one authoritative source, never several hand-synchronized copies — this workflow section's own existence is the direct, repository-native consequence of that principle being applied to the workflow's own documentation, after distributed copies of it had already drifted out of sync with each other.
+
+## The Permanent Engineering Workflow
+
+The canonical Sprint lifecycle, terminology unified project-wide as of this consolidation — superseding "Sprint Planning," "Authorization," "Chief Architect Review"/"Architecture Review" (previously used, ambiguously, for two different stages), and "Sprint Closeout" wherever those terms appeared for the same stages elsewhere in this repository:
+
+```
+Capability Definition
+     ↓
+Architecture Evaluation
+     ↓
+Architectural Resolution
+     ↓
+Implementation Authorization
+     ↓
+Implementation
+     ↓
+Validation
+     ↓
+Implementation Report
+     ↓
+Architectural Conformance Review
+     ↓
+Commit
+     ↓
+Merge
+     ↓
+Repository Closeout
+```
+
+**Capability Definition** establishes what new capability the work should provide — grounded in product specification and repository evidence — before any architecture is designed (Sprint 7's own charter: "do not begin by asking how to implement X; determine what new capability X should provide"). **Architecture Evaluation** is where a genuine architectural question exists (not every Sprint has one): concrete design alternatives are evaluated against repository evidence and established principles, and one is recommended — not yet approved. **Architectural Resolution** marks every open architectural question Accepted, Rejected, or Deferred; nothing may carry forward silently into implementation. **Implementation Authorization** confirms every remaining precondition (dependency selection, final scope) is satisfied and gives explicit, recorded permission to begin — distinct from Resolution, since narrower non-architectural decisions can still sit between the two, as Sprint 7's own dependency selection did. **Implementation** is the Lead Engineer's work against the authorized scope only. **Validation** is `cargo fmt`/`check`/`test`, both workspaces, zero warnings — run continuously as work proceeds, not solely as one discrete gate after Implementation finishes, and confirmed complete before a phase is reported. **Implementation Report** is the Lead Engineer's standard report. **Architectural Conformance Review** confirms the actual implementation matches what was resolved and authorized — no undisclosed scope expansion, no unauthorized abstraction; this should produce its own short recorded statement, not remain a passing remark at the top of a later session. **Commit** and **Merge** are separately authorized steps, never assumed to carry forward from a prior authorization. **Repository Closeout** reconciles the repository's authoritative documentation with the implementation following Sprint completion and integration — administrative consistency only, and the final stage before a Sprint is considered complete, not merely implemented.
+
+## Historical Background
+
+`EngineeringGuide.md`'s own, earlier articulation of the same underlying discipline, retained here for history rather than deleted, per this project's own convention of amending rather than silently erasing prior text. Superseded by the workflow above wherever the two differ in stage granularity or terminology:
 
 1. Review the relevant specification.
 2. Identify affected architectural boundaries.

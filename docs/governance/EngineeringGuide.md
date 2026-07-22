@@ -197,15 +197,7 @@ Implementation is considered complete when:
 
 # Engineering Workflow
 
-Development should generally follow this sequence:
-
-1. Review the relevant specification.
-2. Identify affected architectural boundaries.
-3. Implement the feature.
-4. Write or update tests.
-5. Verify consistency with the Engineering Specification.
-6. Produce a standard implementation report.
-7. Submit for review.
+**Canonical location:** `PROJECT_HANDOFF_v1.0.md`, Section 5, "The Permanent Engineering Workflow" — the repository's single authoritative Sprint lifecycle. This section previously restated an earlier, shorter version of the same underlying discipline; that version is preserved as historical background in `PROJECT_HANDOFF_v1.0.md` Section 5 itself rather than duplicated here as well.
 
 ---
 

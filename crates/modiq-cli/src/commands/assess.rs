@@ -123,7 +123,11 @@ mod tests {
         let (message, exit_code) = AssessCommand::run(&dir.path().display().to_string());
 
         assert_eq!(exit_code, ExitCode::Success);
-        assert!(message.contains("Evidence (1)"));
+        // One FileStructureAnalysis item (sample.txt) plus one
+        // XmlInspection item (no modDesc.xml in this fixture) — Sprint
+        // 7's Multi-Source Evidence Collection now always runs
+        // alongside the structural Collector.
+        assert!(message.contains("Evidence (2)"));
         assert!(message.contains("Findings (1)"));
         assert!(message.contains("Recommendations (1)"));
     }

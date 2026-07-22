@@ -1,4 +1,6 @@
-use modiq_collection::collection::{ArchiveCollector, AssessmentInput, EvidenceCollector};
+use modiq_collection::collection::{
+    ArchiveCollector, AssessmentInput, EvidenceCollector, XmlCollector,
+};
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
 use modiq_runtime::assessment::{Assessment, AssessmentContext, AssessmentSubject, Evidence};
@@ -69,14 +71,27 @@ impl AssessmentService {
     /// Added alongside `execute` rather than changing its signature:
     /// whether `execute` itself should evolve to accept an
     /// AssessmentInput remains open (ADR-0009, GOV-008). This method
-    /// constructs the AssessmentInput, routes it to the appropriate
-    /// Collector (see `is_archive_location`), invokes Evidence
-    /// Collection, and then delegates to the existing, unchanged
+    /// constructs the AssessmentInput, invokes every participating
+    /// Collector, and then delegates to the existing, unchanged
     /// `execute` for the rest of the pipeline — in that order, so that
     /// `execute` (and therefore Assessment creation) is only ever
     /// reached once collection has already succeeded (Collection
-    /// Atomicity, `EvidenceCollection.md`): if any step fails, this
-    /// method returns before any Assessment exists at all.
+    /// Atomicity, `EvidenceCollection.md`): if any Collector fails,
+    /// this method returns before any Assessment exists at all.
+    ///
+    /// Multi-Source Evidence Collection (Sprint 7,
+    /// `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`): two
+    /// independent Collectors now participate in every Assessment. The
+    /// structural Collector (`EvidenceCollector` or `ArchiveCollector`,
+    /// chosen exactly as before by `is_archive_location`) and
+    /// `XmlCollector` are invoked directly, in that fixed order, each
+    /// against the same AssessmentInput, and their Evidence is
+    /// concatenated. Neither Collector consumes the other's output —
+    /// `XmlCollector` independently determines whether a manifest
+    /// exists at the same input's root. This composition is
+    /// intentionally inline, not a separate coordinator component
+    /// (Chief Architect Decision Record,
+    /// `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md` Section 14).
     pub fn execute_from_assessment_input(
         &self,
         subject: AssessmentSubject,
@@ -85,11 +100,12 @@ impl AssessmentService {
     ) -> Result<AssessmentReport, AssessmentExecutionError> {
         let assessment_input = AssessmentInput::new(input)?;
 
-        let evidence = if Self::is_archive_location(assessment_input.value()) {
+        let mut evidence = if Self::is_archive_location(assessment_input.value()) {
             ArchiveCollector.collect(assessment_input.value())?
         } else {
             EvidenceCollector.collect(&assessment_input)?
         };
+        evidence.extend(XmlCollector.collect(&assessment_input)?);
 
         Ok(self.execute(subject, context, evidence))
     }
@@ -287,7 +303,11 @@ mod tests {
             )
             .expect("directory is accessible");
 
-        assert_eq!(report.evidence().len(), 1);
+        // One FileStructureAnalysis item (sample.txt) plus one
+        // XmlInspection item (no modDesc.xml in this fixture) — Sprint
+        // 7's Multi-Source Evidence Collection now always runs
+        // XmlCollector alongside the structural Collector.
+        assert_eq!(report.evidence().len(), 2);
         assert_eq!(report.findings().len(), 1);
         assert_eq!(report.recommendations().len(), 1);
     }
@@ -394,7 +414,9 @@ mod tests {
             )
             .expect("archive is well-formed and accessible");
 
-        assert_eq!(report.evidence().len(), 1);
+        // One FileStructureAnalysis item (notes.txt) plus one
+        // XmlInspection item (no modDesc.xml in this archive fixture).
+        assert_eq!(report.evidence().len(), 2);
         assert_eq!(
             report.evidence()[0].category(),
             EvidenceCategory::FileStructureAnalysis
@@ -404,6 +426,10 @@ mod tests {
             "File discovered during archive collection."
         );
         assert_eq!(report.evidence()[0].location(), Some("notes.txt"));
+        assert_eq!(
+            report.evidence()[1].category(),
+            EvidenceCategory::XmlInspection
+        );
         assert_eq!(report.findings().len(), 1);
         assert_eq!(report.recommendations().len(), 1);
     }
@@ -423,7 +449,7 @@ mod tests {
             )
             .expect("archive is well-formed and accessible");
 
-        assert_eq!(report.evidence().len(), 1);
+        assert_eq!(report.evidence().len(), 2);
     }
 
     #[test]
@@ -464,10 +490,16 @@ mod tests {
             )
             .expect("file is accessible");
 
-        assert_eq!(report.evidence().len(), 1);
+        // One FileStructureAnalysis item (the file itself) plus one
+        // XmlInspection item (the file is not named modDesc.xml).
+        assert_eq!(report.evidence().len(), 2);
         assert_eq!(
             report.evidence()[0].description(),
             "File discovered during filesystem collection."
+        );
+        assert_eq!(
+            report.evidence()[1].category(),
+            EvidenceCategory::XmlInspection
         );
     }
 
@@ -502,5 +534,77 @@ mod tests {
             second.evidence().iter().map(Evidence::location).collect();
         assert_eq!(first_locations, second_locations);
         assert_eq!(first.findings().len(), second.findings().len());
+    }
+
+    #[test]
+    fn execute_from_assessment_input_finds_a_real_manifest_alongside_structural_evidence() {
+        let dir = TempDir::new("execute-manifest-found");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
+        fs::write(
+            dir.path().join("modDesc.xml"),
+            "<modDesc descVersion=\"93\"><dependencies><dependency>FS25_example</dependency></dependencies></modDesc>",
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        // Two FileStructureAnalysis items (modDesc.xml, sample.txt,
+        // discovered in sorted order) plus two XmlInspection items
+        // (the well-formed confirmation and the declared dependency).
+        assert_eq!(report.evidence().len(), 4);
+        let xml_evidence: Vec<_> = report
+            .evidence()
+            .iter()
+            .filter(|item| item.category() == EvidenceCategory::XmlInspection)
+            .collect();
+        assert_eq!(xml_evidence.len(), 2);
+        assert!(xml_evidence[0].description().contains("well-formed"));
+        assert!(xml_evidence[1].description().contains("FS25_example"));
+    }
+
+    #[test]
+    fn execute_from_assessment_input_multi_collector_evidence_order_is_deterministic() {
+        // Sprint 7's own new determinism claim: structural Evidence and
+        // XmlInspection Evidence are combined from two independently
+        // invoked Collectors — this must hold in a fixed order across
+        // repeated calls, not just within either Collector on its own
+        // (Sprint 5 Phase 5's lesson, applied to Collector composition
+        // for the first time).
+        let dir = TempDir::new("execute-multi-collector-deterministic");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
+        let service = AssessmentService;
+
+        let first = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+        let second = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        let first_categories: Vec<_> = first.evidence().iter().map(Evidence::category).collect();
+        let second_categories: Vec<_> = second.evidence().iter().map(Evidence::category).collect();
+        assert_eq!(first_categories, second_categories);
+        assert_eq!(
+            first_categories,
+            vec![
+                EvidenceCategory::FileStructureAnalysis,
+                EvidenceCategory::XmlInspection
+            ]
+        );
     }
 }

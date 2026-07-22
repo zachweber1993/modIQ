@@ -93,27 +93,28 @@ If asked to simply "continue" without a specific scope, the correct response is 
 
 # Standard Sprint Execution
 
-Every implementation sprint follows this sequence:
+**Canonical location:** `PROJECT_HANDOFF_v1.0.md`, Section 5, "The Permanent Engineering Workflow" — the repository's single authoritative eleven-stage Sprint lifecycle (Capability Definition → Architecture Evaluation → Architectural Resolution → Implementation Authorization → Implementation → Validation → Implementation Report → Architectural Conformance Review → Commit → Merge → Repository Closeout). This section no longer restates it; it previously did, under older terminology ("Sprint Planning," "Authorization," "Architecture Review"), and that copy had already drifted from the canonical version before this consolidation (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`).
 
-1. Prepare an implementation plan.
-2. Submit the plan for Chief Architect review.
-3. Do not begin implementation until authorization is explicitly granted.
-4. Implement only the approved scope.
-5. Complete validation:
+What follows is the Lead Engineer's own execution checklist against those stages, not a second definition of them:
+
+1. Prepare a Capability Definition and implementation plan.
+2. Submit for Architecture Evaluation and Architectural Resolution.
+3. Confirm every open architectural question has been explicitly marked Accepted, Rejected, or Deferred — none may carry forward silently.
+4. Do not begin Implementation until Implementation Authorization is explicitly granted.
+5. Implement only the authorized scope.
+6. Complete Validation continuously as work proceeds, not only at the end:
    - `cargo fmt`
    - `cargo check --workspace`
    - `cargo test --workspace`
    - Sandbox validation (`apps/sandbox/src-tauri`, where applicable)
-6. Produce an implementation report summarizing:
+7. Produce an Implementation Report summarizing:
    - completed work
    - validation results
    - architectural observations
    - governance observations
    - recommendations
-7. Await Chief Architect implementation review.
-8. After approval, finalize documentation, commit, push, and close the sprint.
-
-This is the same permanent lifecycle `CHIEF_ARCHITECT_HANDOFF_v1.0.md` Section 10 describes from the review side (Sprint Planning → Chief Architect Review → Authorization → Implementation → Validation → Implementation Report → Architecture Review → Sprint Closeout); this section states it from the execution side.
+8. Await Architectural Conformance Review.
+9. After approval, proceed to Commit, Merge, and Repository Closeout — each separately authorized, never assumed to carry forward from a prior authorization.
 
 ---
 

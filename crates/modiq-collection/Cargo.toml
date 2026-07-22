@@ -9,3 +9,4 @@ license.workspace = true
 modiq-runtime = { path = "../modiq-runtime" }
 thiserror = { workspace = true }
 zip = { workspace = true }
+roxmltree = "0.20"

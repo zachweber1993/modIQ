@@ -172,9 +172,13 @@ mod tests {
         // fixtures/sample-assessment-input contains one top-level file
         // (notes.txt), one subdirectory (nested), and one file within
         // it (nested/detail.txt) — three structural facts for the real
-        // filesystem collector to discover.
-        assert_eq!(summary.evidence_count, 3);
-        assert_eq!(summary.evidence.len(), 3);
+        // filesystem collector to discover — plus one XmlInspection
+        // item from XmlCollector (Sprint 7, Multi-Source Evidence
+        // Collection), which always runs alongside the structural
+        // Collector; this fixture has no modDesc.xml, so that item
+        // records absence.
+        assert_eq!(summary.evidence_count, 4);
+        assert_eq!(summary.evidence.len(), 4);
         assert_eq!(summary.finding_count, 1);
         assert_eq!(summary.recommendation_count, 1);
         assert_eq!(summary.findings.len(), 1);
@@ -193,13 +197,21 @@ mod tests {
     fn evidence_entries_reflect_the_fixture_directory_in_deterministic_order() {
         let summary = create_assessment();
 
-        for entry in &summary.evidence {
-            assert_eq!(entry.category, "FileStructureAnalysis");
+        // Filtered to the structural Collector's own output — Sprint
+        // 7's XmlCollector also contributes an XmlInspection item to
+        // this same evidence list, which this test (about filesystem
+        // traversal order specifically) is not concerned with.
+        let structural: Vec<_> = summary
+            .evidence
+            .iter()
+            .filter(|entry| entry.category == "FileStructureAnalysis")
+            .collect();
+
+        for entry in &structural {
             assert!(!entry.description.is_empty());
         }
 
-        let locations: Vec<String> = summary
-            .evidence
+        let locations: Vec<String> = structural
             .iter()
             .map(|entry| entry.location.clone().unwrap_or_default())
             .collect();
@@ -211,6 +223,25 @@ mod tests {
             locations,
             vec!["nested".to_string(), nested_detail, "notes.txt".to_string()]
         );
+    }
+
+    #[test]
+    fn evidence_entries_also_include_xml_inspection_output() {
+        // Sprint 7: XmlCollector always runs alongside the structural
+        // Collector. The fixture has no modDesc.xml, so this records
+        // absence — the same "always produces Evidence, never Empty
+        // Collection" guarantee `XmlCollector`'s own tests verify
+        // directly, exercised here through the real Sandbox pipeline.
+        let summary = create_assessment();
+
+        let xml_entries: Vec<_> = summary
+            .evidence
+            .iter()
+            .filter(|entry| entry.category == "XmlInspection")
+            .collect();
+
+        assert_eq!(xml_entries.len(), 1);
+        assert!(xml_entries[0].description.contains("No modDesc.xml"));
     }
 
     #[test]
@@ -231,9 +262,11 @@ mod tests {
         // (notes.txt), one directory entry (nested/), and one nested
         // file (nested/detail.txt) — three structural facts, this
         // time discovered by ArchiveCollector via AssessmentService's
-        // explicit .zip routing rather than the filesystem collector.
-        assert_eq!(summary.evidence_count, 3);
-        assert_eq!(summary.evidence.len(), 3);
+        // explicit .zip routing rather than the filesystem collector —
+        // plus one XmlInspection item (Sprint 7): the archive has no
+        // modDesc.xml, so XmlCollector records absence.
+        assert_eq!(summary.evidence_count, 4);
+        assert_eq!(summary.evidence.len(), 4);
         assert_eq!(summary.finding_count, 1);
         assert_eq!(summary.recommendation_count, 1);
     }
@@ -251,8 +284,14 @@ mod tests {
             .expect("the fixture archive exists and is well-formed");
         let summary = AssessmentSummary::from(&report);
 
-        for entry in &summary.evidence {
-            assert_eq!(entry.category, "FileStructureAnalysis");
+        // Filtered to the structural Collector's own output — see
+        // `evidence_entries_reflect_the_fixture_directory_in_deterministic_order`
+        // for why.
+        for entry in summary
+            .evidence
+            .iter()
+            .filter(|entry| entry.category == "FileStructureAnalysis")
+        {
             assert!(entry.description.contains("archive collection"));
         }
     }
@@ -267,8 +306,12 @@ mod tests {
         // Evidence as filesystem — not archive — collection output.
         let summary = create_assessment();
 
-        assert_eq!(summary.evidence_count, 3);
-        for entry in &summary.evidence {
+        assert_eq!(summary.evidence_count, 4);
+        for entry in summary
+            .evidence
+            .iter()
+            .filter(|entry| entry.category == "FileStructureAnalysis")
+        {
             assert!(entry.description.contains("filesystem collection"));
         }
     }
