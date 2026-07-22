@@ -1,5 +1,5 @@
 use modiq_collection::collection::{
-    ArchiveCollector, AssessmentInput, EvidenceCollector, XmlCollector,
+    ArchiveCollector, AssessmentInput, EvidenceCollector, RuntimeLogCollector, XmlCollector,
 };
 use modiq_report::report::AssessmentReport;
 use modiq_rules::rules::RuleEngine;
@@ -99,18 +99,24 @@ impl AssessmentService {
     /// this method returns before any Assessment exists at all.
     ///
     /// Multi-Source Evidence Collection (Sprint 7,
-    /// `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`): two
-    /// independent Collectors now participate in every Assessment. The
-    /// structural Collector (`EvidenceCollector` or `ArchiveCollector`,
-    /// chosen exactly as before by `is_archive_location`) and
-    /// `XmlCollector` are invoked directly, in that fixed order, each
-    /// against the same AssessmentInput, and their Evidence is
-    /// concatenated. Neither Collector consumes the other's output —
-    /// `XmlCollector` independently determines whether a manifest
-    /// exists at the same input's root. This composition is
-    /// intentionally inline, not a separate coordinator component
-    /// (Chief Architect Decision Record,
-    /// `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md` Section 14).
+    /// `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`; extended
+    /// Sprint 11, `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` Section
+    /// 1.1): three independent Collectors now participate in every
+    /// Assessment. The structural Collector (`EvidenceCollector` or
+    /// `ArchiveCollector`, chosen exactly as before by
+    /// `is_archive_location`), `XmlCollector`, and `RuntimeLogCollector`
+    /// are invoked directly, in that fixed order, each against the same
+    /// AssessmentInput, and their Evidence is concatenated. No
+    /// Collector consumes another's output — `RuntimeLogCollector`, like
+    /// `XmlCollector` before it, independently determines whether its
+    /// own recognized content (`log.txt`) exists at the same input's
+    /// root. `RuntimeLogCollector` is the second content-Collector under
+    /// this axis, not the third — the Collector Composition Architecture's
+    /// own extraction threshold (three or more content Collectors) is
+    /// not yet met, so this composition remains intentionally inline,
+    /// not a separate coordinator component (Chief Architect Decision
+    /// Record, `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md` Section
+    /// 14).
     pub fn execute_from_assessment_input(
         &self,
         subject: AssessmentSubject,
@@ -125,6 +131,7 @@ impl AssessmentService {
             EvidenceCollector.collect(&assessment_input)?
         };
         evidence.extend(XmlCollector.collect(&assessment_input)?);
+        evidence.extend(RuntimeLogCollector.collect(&assessment_input)?);
 
         Ok(self.execute(subject, context, evidence))
     }
@@ -639,6 +646,147 @@ mod tests {
             .find(|recommendation| recommendation.finding_ids().contains(&version_finding.id()))
             .expect("VersionCompatibilityRule produced a Recommendation");
         assert!(version_recommendation.repair_recipe_reference().is_some());
+    }
+
+    #[test]
+    fn execute_from_assessment_input_recognizes_a_bundled_runtime_log_failure() {
+        // Sprint 11: Runtime Evidence Processing Architecture —
+        // RuntimeLogCollector now participates in every Assessment
+        // alongside XmlCollector, mirroring the exact recognized
+        // template `single-incompatible-mod` documents.
+        let dir = TempDir::new("execute-runtime-log-failure");
+        fs::write(
+            dir.path().join("log.txt"),
+            "Error: Unsupported mod description version in mod FS25_DodgeChallengerHellcat",
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        // One FileStructureAnalysis item (log.txt, discovered
+        // structurally like any other file) plus one XmlInspection item
+        // (no modDesc.xml) plus one RuntimeLogs item (the recognized
+        // failure line).
+        assert_eq!(report.evidence().len(), 3);
+        let runtime_log_evidence: Vec<_> = report
+            .evidence()
+            .iter()
+            .filter(|item| item.category() == EvidenceCategory::RuntimeLogs)
+            .collect();
+        assert_eq!(runtime_log_evidence.len(), 1);
+        assert!(
+            runtime_log_evidence[0]
+                .description()
+                .contains("FS25_DodgeChallengerHellcat")
+        );
+    }
+
+    #[test]
+    fn execute_from_assessment_input_aggregates_runtime_log_evidence_alongside_xml_evidence() {
+        let dir = TempDir::new("execute-runtime-log-and-xml");
+        fs::write(
+            dir.path().join("modDesc.xml"),
+            "<modDesc descVersion=\"93\"></modDesc>",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("log.txt"),
+            "Error: Unsupported mod description version in mod FS25_ExampleMod",
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        let categories: Vec<_> = report.evidence().iter().map(Evidence::category).collect();
+        assert!(categories.contains(&EvidenceCategory::XmlInspection));
+        assert!(categories.contains(&EvidenceCategory::RuntimeLogs));
+    }
+
+    #[test]
+    fn execute_from_assessment_input_produces_an_error_finding_for_a_recognized_runtime_log_failure()
+     {
+        // Sprint 11: Runtime Evidence Processing Architecture, exercised
+        // end to end through the real engine pipeline — Collector,
+        // through Assessment, through the now-wired RuleEngine dispatch
+        // (Decision Matrix row 3).
+        let dir = TempDir::new("execute-runtime-log-finding");
+        fs::write(
+            dir.path().join("log.txt"),
+            "Error: Unsupported mod description version in mod FS25_DodgeChallengerHellcat",
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        // EvidencePresenceRule (generic) plus RuntimeLoadFailureRule
+        // (Sprint 11) — fixed declaration order, GOV-012.
+        assert_eq!(report.findings().len(), 2);
+        let runtime_finding = report
+            .findings()
+            .iter()
+            .find(|finding| finding.rule_reference().identifier() == "runtime-load-failure-rule")
+            .expect("RuntimeLoadFailureRule produced a Finding");
+        assert_eq!(runtime_finding.severity(), FindingSeverity::Error);
+        assert!(
+            runtime_finding
+                .description()
+                .contains("FS25_DodgeChallengerHellcat")
+        );
+
+        let runtime_recommendation = report
+            .recommendations()
+            .iter()
+            .find(|recommendation| recommendation.finding_ids().contains(&runtime_finding.id()))
+            .expect("RuntimeLoadFailureRule produced a Recommendation");
+        assert_eq!(runtime_recommendation.repair_recipe_reference(), None);
+    }
+
+    #[test]
+    fn execute_from_assessment_input_legitimate_absence_of_a_runtime_log_does_not_fail_collection()
+    {
+        // No log.txt is bundled — the ordinary, unremarkable case
+        // (RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md, Section 1.2).
+        // Collection must still succeed, and must contribute no
+        // RuntimeLogs Evidence at all.
+        let dir = TempDir::new("execute-no-runtime-log");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject,
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible, with no runtime log bundled");
+
+        assert!(
+            !report
+                .evidence()
+                .iter()
+                .any(|item| item.category() == EvidenceCategory::RuntimeLogs)
+        );
     }
 
     #[test]

@@ -2,6 +2,7 @@ use modiq_runtime::assessment::{Evidence, Finding, Recommendation};
 use modiq_versioning::versioning::VersionProfile;
 
 use super::evidence_presence_rule::EvidencePresenceRule;
+use super::runtime_load_failure_rule::RuntimeLoadFailureRule;
 use super::structural_duplication_rule::StructuralDuplicationRule;
 use super::version_compatibility_rule::VersionCompatibilityRule;
 
@@ -26,21 +27,25 @@ impl RuleEngine {
     ///
     /// Rules are evaluated in a fixed, explicit declaration order —
     /// `EvidencePresenceRule`, then `StructuralDuplicationRule`, then
-    /// `VersionCompatibilityRule` (Sprint 8) — never an order derived
-    /// from Evidence's own arrival sequence (GOV-012, Question 2).
-    /// Rules compose independently: each is evaluated against the full
-    /// Evidence set regardless of whether another Rule also matches
-    /// it, and no Rule suppresses another (GOV-012, Question 3). This
-    /// is deliberately a fixed sequence of `if let` checks, not a
-    /// trait, registry, or dispatch table — an implementation detail
-    /// GOV-012 leaves open, provided no such abstraction is introduced
-    /// (`GOVERNANCE.md`: Crate Boundary Rules, ADR-0010, GOV-004).
+    /// `VersionCompatibilityRule` (Sprint 8), then `RuntimeLoadFailureRule`
+    /// (Sprint 11) — never an order derived from Evidence's own arrival
+    /// sequence (GOV-012, Question 2). Rules compose independently:
+    /// each is evaluated against the full Evidence set regardless of
+    /// whether another Rule also matches it, and no Rule suppresses
+    /// another (GOV-012, Question 3). This is deliberately a fixed
+    /// sequence of `if let` checks, not a trait, registry, or dispatch
+    /// table — an implementation detail GOV-012 leaves open, provided
+    /// no such abstraction is introduced (`GOVERNANCE.md`: Crate
+    /// Boundary Rules, ADR-0010, GOV-004).
     ///
     /// `version_profile` is consulted only by `VersionCompatibilityRule`
     /// — every other Rule's applicability is unaffected by it
     /// (Sprint 8 Architectural Resolution, Decision 3: version-aware
     /// interpretation begins inside the Rule Engine, not upstream of
-    /// it).
+    /// it). `RuntimeLoadFailureRule` likewise does not consume it,
+    /// mirroring `EvidencePresenceRule`'s and
+    /// `StructuralDuplicationRule`'s own signature
+    /// (`RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md`, Section 3.1).
     pub fn evaluate(
         &self,
         evidence: &[Evidence],
@@ -55,6 +60,9 @@ impl RuleEngine {
             outcomes.push(outcome);
         }
         if let Some(outcome) = VersionCompatibilityRule.evaluate(evidence, version_profile) {
+            outcomes.push(outcome);
+        }
+        if let Some(outcome) = RuntimeLoadFailureRule.evaluate(evidence) {
             outcomes.push(outcome);
         }
 
@@ -89,6 +97,25 @@ mod tests {
             EvidenceCategory::XmlInspection,
             "modDesc.xml declares descVersion: 42",
             "modDesc.xml",
+        )
+        .expect("description and location are valid")
+    }
+
+    fn recognized_runtime_log_failure_evidence() -> Evidence {
+        Evidence::with_location(
+            EvidenceCategory::RuntimeLogs,
+            "Runtime log records: Unsupported mod description version in mod \
+             FS25_DodgeChallengerHellcat",
+            "log.txt",
+        )
+        .expect("description and location are valid")
+    }
+
+    fn unrecognized_runtime_log_evidence() -> Evidence {
+        Evidence::with_location(
+            EvidenceCategory::RuntimeLogs,
+            "Runtime log records: some other, unrecognized observation",
+            "log.txt",
         )
         .expect("description and location are valid")
     }
@@ -231,6 +258,88 @@ mod tests {
         assert_eq!(
             outcomes[0].finding.rule_reference().identifier(),
             "evidence-presence-rule"
+        );
+    }
+
+    #[test]
+    fn evaluate_dispatches_runtime_load_failure_rule_fourth_in_declaration_order() {
+        // Sprint 11: RuntimeLoadFailureRule is the fourth Rule, added
+        // additively after VersionCompatibilityRule (GOV-012's fixed
+        // declaration order, extended, never reordered).
+        let engine = RuleEngine;
+
+        let outcomes = engine.evaluate(
+            &[recognized_runtime_log_failure_evidence()],
+            &fs25_profile(),
+        );
+
+        assert_eq!(outcomes.len(), 2);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+        assert_eq!(
+            outcomes[1].finding.rule_reference().identifier(),
+            "runtime-load-failure-rule"
+        );
+        assert_eq!(outcomes[1].finding.severity(), FindingSeverity::Error);
+        assert!(
+            outcomes[1]
+                .finding
+                .description()
+                .contains("FS25_DodgeChallengerHellcat")
+        );
+    }
+
+    #[test]
+    fn evaluate_does_not_dispatch_runtime_load_failure_rule_for_unsupported_runtime_logs_evidence()
+    {
+        // Decision Matrix row 4: RuntimeLogs Evidence exists but does
+        // not match the recognized template — must not produce an
+        // inferred Finding.
+        let engine = RuleEngine;
+
+        let outcomes = engine.evaluate(&[unrecognized_runtime_log_evidence()], &fs25_profile());
+
+        assert_eq!(outcomes.len(), 1);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+    }
+
+    #[test]
+    fn evaluate_dispatches_all_four_rules_independently_when_all_match() {
+        // GOV-012 (Question 3): Rules compose independently, no
+        // suppression — every Rule fires when its own Evidence is
+        // present, regardless of how many others also match.
+        let engine = RuleEngine;
+
+        let outcomes = engine.evaluate(
+            &[
+                duplication_evidence(),
+                unrecognized_declared_version_evidence(),
+                recognized_runtime_log_failure_evidence(),
+            ],
+            &fs25_profile(),
+        );
+
+        assert_eq!(outcomes.len(), 4);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+        assert_eq!(
+            outcomes[1].finding.rule_reference().identifier(),
+            "structural-duplication-rule"
+        );
+        assert_eq!(
+            outcomes[2].finding.rule_reference().identifier(),
+            "version-compatibility-rule"
+        );
+        assert_eq!(
+            outcomes[3].finding.rule_reference().identifier(),
+            "runtime-load-failure-rule"
         );
     }
 
