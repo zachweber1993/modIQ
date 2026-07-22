@@ -3,21 +3,28 @@
 | Property | Value |
 |---|---|
 | **Fixture ID** | `clean-base-game` |
-| **Status** | **Awaiting capture** — no log file present in this directory |
-| **Farming Simulator Version** | Pending capture — record the exact version/build/patch number at capture time |
-| **Platform** | Pending capture |
-| **Map** | The game's own default/official map, no modded map installed |
-| **Enabled Mods** | None (clean base game) — this fixture's entire purpose depends on zero mods being active |
+| **Status** | **Captured.** Reclassified once (see Notes) before this valid capture was acquired. |
+| **Farming Simulator Version** | Farming Simulator 25 (Steam), Version 1.16.0.3 b37986, ModDesc Version 106. GIANTS Engine Runtime 10.0.0 (build 44540, Feb 9 2026). |
+| **Platform** | macOS 26.5.2 (Apple M1 Max, ARM) |
+| **Map** | The game's own default/official map (`data/maps/mapUS/mapUS.i3d`), no modded map installed |
+| **Installed Mods (global)** | **Verified empty — by direct action, not inference.** Prior to capture, the existing global mods directory was removed from the runtime environment and replaced with an empty mods directory (`/Users/REDACTED_USER/Library/Application Support/FarmingSimulator2025/mods/`). This is the primary basis for this field. The log's own content corroborates it: zero mod names, zero `mods/`-rooted asset paths, and zero mod-related lines appear anywhere in 1,448 lines — consistent with, but not itself the basis for, the empty-directory conclusion. |
+| **Savegame Mod State** | A savegame created and played during this capture (`savegame2`, saved successfully once), using none of the map's own optional systems in any mod-related way — there were no mods installed to use. |
 | **Purpose** | Establish ground truth for what a normal, successful session's log output looks like with no mod-related content whatsoever — the platform's baseline for "nothing is wrong." Without this, there is no way to know what a Rule must *not* flag. |
-| **Expected Observable Behavior** | The log should show a normal load and session with no mod-related errors, warnings, or failure signatures of any kind. Any Runtime Log Interpretation Rule must produce no Finding against this fixture. |
-| **Source** | Pending capture |
-| **Consent / Licensing** | Pending capture — expected to be modIQ engineering's own controlled capture, requiring no third-party permission |
-| **Captured** | Pending |
-| **Redaction Applied** | Pending capture — to be assessed once the real log is in hand |
-| **Format Notes** | Pending capture |
-| **Known Limitations** | A single sample of "no mods installed." Does not by itself establish that every possible clean-base-game session log looks identical — later fixtures or repeated captures may be warranted if the log format proves session-dependent. |
-| **File(s)** | None yet |
+| **Expected Observable Behavior** | The log should show a normal load and session with no mod-related errors, warnings, or failure signatures of any kind, and no mod enumeration of any kind. Any Runtime Log Interpretation Rule must produce no Finding against this fixture. **Confirmed:** zero `Error` lines; the four `Warning` occurrences present are unrelated to mods (see Known Limitations) — none constitutes a failure signature. |
+| **Source** | Captured directly by modIQ engineering, 2026-07-22, on a controlled macOS test install, with the global mods directory explicitly emptied beforehand (see Installed Mods (global)). |
+| **Consent / Licensing** | modIQ engineering's own controlled capture; no third-party content or permission involved. |
+| **Captured** | 2026-07-22 |
+| **Normalization Applied** | Every occurrence of the path prefix `/Users/<macOS username>/` was replaced with the fixed token `/Users/REDACTED_USER/`, within the `Mod Directory` line — 2 substitutions total, at log lines 122 and 1443 of the original capture (the version/Mod Directory header block reprints once per savegame load; see Format Notes). No other personally identifying or machine-specific content was found. **Deterministic:** re-applying this exact substitution to the original, unmodified capture reproduces this fixture byte for byte — verified directly: +18 bytes relative to the original (exactly accounted for by two 4→13-character replacements), line count (1,448), line ordering, and CRLF line endings unchanged, no parser-relevant content or runtime semantics altered. Strictly substitutive, per this corpus's own "Runtime Log Normalization" policy (`README.md`). |
+| **Format Notes** | ASCII text, CRLF line terminators, no byte-order mark, 1,448 lines. The Farming Simulator version / Mod Directory header block is **not** printed only once at application launch — it reprints each time a savegame is loaded within the same run; this file contains two such blocks (one at initial load, one after `savegame2` was saved and reloaded) before a final, clean `Application quit`. |
+| **Known Limitations** | A single sample of "no mods installed," on one platform (macOS), one map, one short session. Does not by itself establish that every possible clean-base-game session log looks identical on every platform — a Windows or Linux capture of the same scenario remains uncaptured. The log does contain four literal occurrences of the word "Warning": two are an unrelated asset filename (`signWarningRisingWaterlevel.i3d`) containing the word incidentally, and two are genuine, base-game-only engine warnings unconnected to any mod (`Warning (performance): Foliage lod 1 mesh 'meadow'/'grass'...`, and `Warning (...): Unknown fillType "ONION"...`). This is real, useful confirmation — not merely a hedge — that a future Runtime Log Interpretation Rule cannot treat the literal word "Warning" as itself a failure signal; this fixture is direct evidence such text can appear in a completely clean session. |
+| **File(s)** | `log.txt` |
 
 ## Notes
 
 **Acquisition priority: 1st of 3.** Establishing what "no failure present" looks like, in the simplest possible case (zero mods), is the precondition every other fixture in this corpus builds on. Captured first, before `single-compatible-mod` and `single-incompatible-mod`, so both later fixtures can be read against an already-established baseline rather than in isolation.
+
+**Reclassified following a real acquisition finding:** an attempt to capture this fixture by simply creating a new savegame did not produce a base-game runtime environment. The runtime log enumerates all mods present in the game's global mods directory regardless of which savegame is active — a new savegame does not clear, hide, or otherwise affect this enumeration. "Clean base game" is therefore a claim about **installation state**, not savegame state, and cannot be achieved by savegame manipulation alone.
+
+**Corrected acquisition procedure:** before attempting this capture again, directly verify the global mods directory is empty (or fully remove its contents for the duration of the capture), independently of whatever savegame is used. Record exactly what was checked in **Installed Mods (global)** above — do not infer emptiness from the savegame being new.
+
+**Resolved:** the corrected procedure was followed — the global mods directory was physically removed and replaced with an empty one prior to this capture, independent of the savegame used. This fixture is now `Captured`, satisfying its own documented definition on the basis of that direct action, with the log's own content (zero mod-related lines across 1,448 lines) serving as corroborating evidence, not the basis for the conclusion.

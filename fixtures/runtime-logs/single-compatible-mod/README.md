@@ -3,21 +3,28 @@
 | Property | Value |
 |---|---|
 | **Fixture ID** | `single-compatible-mod` |
-| **Status** | **Awaiting capture** — no log file present in this directory |
-| **Farming Simulator Version** | Pending capture |
-| **Platform** | Pending capture |
-| **Map** | The game's own default/official map — kept identical to `clean-base-game` and `single-incompatible-mod` so the mod itself is the only variable |
-| **Enabled Mods** | Exactly one mod, known to be fully compatible and to load successfully |
+| **Status** | **Captured.** |
+| **Farming Simulator Version** | Farming Simulator 25 (Steam), Version 1.16.0.3 b37986, ModDesc Version 106 (runtime). GIANTS Engine Runtime 10.0.0 (build 44540, Feb 9 2026). |
+| **Platform** | macOS 26.5.2 (Apple M1 Max, ARM) |
+| **Map** | The game's own default/official map (`data/maps/mapUS/mapUS.i3d`) — identical to `clean-base-game` |
+| **Installed Mods (global)** | **Verified — by direct action, not inference.** The global mods directory was intentionally configured to contain only `FS25_2011_Silverado_2500_Short_Bed.zip` before capture. This is the primary basis for this field. The log's own content corroborates it: exactly one `Available mod:` entry appears (reprinted once, on savegame reload, per the behavior already documented for `clean-base-game`), always referring to the same mod, hash, and version — consistent with, but not itself the basis for, the single-mod conclusion. |
+| **Savegame Mod State** | A savegame (`savegame3`) that actively used the one installed mod — its vehicle (`2011 Chevy Silverado 2500 Shorty`) loaded successfully and its own asset files (`DirtyShorty.i3d`, `I3D/flashled.i3d`) were read without error. |
 | **Purpose** | The negative control for the positive signal `single-incompatible-mod` establishes. Confirms that ordinary, successful mod-loading activity in the log — which may itself be verbose, or contain the word "warning" in a benign context — is not mistakenly recognized as a failure signature. A Rule that cannot correctly stay silent here is not safe to ship, regardless of how well it recognizes genuine failures. |
-| **Expected Observable Behavior** | The log should show the mod loading and running successfully, with no failure signature of the kind `single-incompatible-mod` is expected to show. Any Runtime Log Interpretation Rule must produce no Finding against this fixture. |
-| **Source** | Pending capture |
-| **Consent / Licensing** | Pending capture — expected to be modIQ engineering's own controlled capture, using a mod with clearly documented, unambiguous compatibility |
-| **Captured** | Pending |
-| **Redaction Applied** | Pending capture |
-| **Format Notes** | Pending capture |
-| **Known Limitations** | One sample of one successful-load case. Does not by itself establish that every compatible mod's log output is free of anything superficially resembling a failure signature — a real risk this fixture exists specifically to surface early. |
-| **File(s)** | None yet |
+| **Expected Observable Behavior** | The log should show the mod loading and running successfully, with no failure signature of the kind `single-incompatible-mod` is expected to show. Any Runtime Log Interpretation Rule must produce no Finding against this fixture. **Confirmed:** zero `Error` lines; `Load mod: FS25_2011_Silverado_2500_Short_Bed` followed by successful, timed loads of the mod's own assets; runtime `ModDesc Version` (106) matches the mod's own declared `descVersion` (106) exactly; clean, deliberate shutdown (`Application quit`), no crash. |
+| **Source** | Captured directly by modIQ engineering, 2026-07-22, on a controlled macOS test install, with the global mods directory intentionally configured to contain only `FS25_2011_Silverado_2500_Short_Bed.zip` beforehand (see Installed Mods (global)). |
+| **Consent / Licensing** | modIQ engineering's own controlled capture. The mod itself (`2011 Silverado 2500 Short Bed`, © Coopers Mods, Canada FS) is real, third-party content — it is **not** stored in this repository; only the runtime log it produced, and factual metadata about it independently verified from its own `modDesc.xml` and archive contents, are recorded here. |
+| **Captured** | 2026-07-22 |
+| **Normalization Applied** | Every occurrence of the path prefix `/Users/<macOS username>/` was replaced with the fixed token `/Users/REDACTED_USER/` — 4 substitutions total (the `Mod Directory` header, reprinted once per savegame load, plus two mod-asset load lines naming the mod's own install path directly). **Deterministic:** re-applying this exact substitution to the original, unmodified capture reproduces this fixture byte for byte — verified directly: +36 bytes relative to the original (exactly accounted for by four 4→13-character replacements), line count (1,461), line ordering, and CRLF line endings unchanged, no parser-relevant content or runtime semantics altered. Strictly substitutive, per this corpus's own "Runtime Log Normalization" policy (`README.md`). |
+| **Format Notes** | ASCII text, CRLF line terminators, no byte-order mark, 1,461 lines. Same version/Mod-Directory header-reprint-per-savegame-load behavior documented for `clean-base-game`; two header blocks present here as well. |
+| **Known Limitations** | One sample of one successful-load case, one mod, one platform (macOS). Does not by itself establish that every compatible mod's log output is free of anything superficially resembling a failure signature. **Warnings present (7 occurrences of the word), classified per `README.md`'s Warning Categorization policy:** 5 are **Base-game warnings** — byte-identical to warnings already present in `clean-base-game`'s own log (an asset filename containing the word incidentally; two foliage LOD-mismatch warnings; two `Unknown fillType "ONION"` warnings) — direct cross-fixture confirmation they are unrelated to this mod. 2 are **Fixture warnings** — `Warning: Shape 'AFAssault'/'leaf_springs' ... from 'DirtyShorty.i3d.shapes' is too big (15231/15775 KB). Maximum supported size on Consoles is 14336 KB.` — attributable directly to the mod's own large geometry file, but advisory only (a console-platform size limit; this session ran on macOS) and does not prevent successful loading. No **Fixture-affecting warnings** were found. |
+| **File(s)** | `log.txt` |
 
 ## Notes
 
-**Acquisition priority: 2nd of 3 — captured before `single-incompatible-mod`, deliberately.** This ordering establishes what ordinary, successful mod-loading log output looks like before the failure case is ever examined, so that fixture can be read against a real contrastive baseline rather than in isolation (see `single-incompatible-mod`'s own Notes). Should be captured using a mod as structurally different as reasonably possible from whatever mod ultimately produces `single-incompatible-mod` (different scripting footprint, different dependency shape), so that any resemblance between the two fixtures' log output points toward the actual failure signature, not an artifact of the two mods happening to be similar.
+**Acquisition priority: 2nd of 3 — captured before `single-incompatible-mod`, deliberately.** This ordering establishes what ordinary, successful mod-loading log output looks like before the failure case is ever examined, so that fixture can be read against a real contrastive baseline rather than in isolation (see `single-incompatible-mod`'s own Notes).
+
+**Mod choice and its relationship to `single-incompatible-mod`:** a single, standard-type vehicle (`type="car"`) with zero Lua scripts and no custom specializations — chosen specifically to be structurally simple and unambiguous, per this fixture's own acquisition criteria. `single-incompatible-mod`'s own mod choice remains independent of this one.
+
+**Before capturing:** verify the global mods directory contains only the intended mod — the `clean-base-game` finding (a new savegame does not affect what the log enumerates from the global mods directory) applies here too. This was followed: the mods directory was configured to contain only this one mod before capture.
+
+**Resolved:** captured successfully. The mod's declared `descVersion` (106) matches the runtime's recognized `ModDesc Version` (106) exactly — a clean, unambiguous compatibility case, consistent with this fixture's own documented Purpose.

@@ -7,7 +7,7 @@
 | **Purpose** | Design and prepare the permanent repository structure for Runtime Log engineering fixtures, satisfying `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11's strengthened precondition, before Architectural Resolution begins |
 | **Prepared by** | Lead Engineer (Sonnet 5), on `feature/runtime-implementation` |
 | **Repository baseline** | `feature/runtime-implementation`, HEAD `b7cb4a6` |
-| **Status** | **Fixture-preparation session only. No implementation, no Collector, no Rule, no Architectural Resolution.** Repository structure and documentation created; no log content, real or synthetic, added. Revised once, during Repository Stabilization (acquisition order corrected, Section 4; terminology reviewed, Executive Summary of that session). Awaiting Chief Architect approval before Architectural Resolution. |
+| **Status** | **Fixture-preparation and integration record. No implementation, no Collector, no Rule, no Architectural Resolution.** Repository structure and documentation created; two of three real fixtures now captured and integrated (`clean-base-game`, Section 10; `single-compatible-mod`, Section 11) — no other log content, real or synthetic, added; no mod archive stored. Revised four times: during Repository Stabilization (acquisition order corrected, Section 4; terminology reviewed); following a real acquisition finding (installation state vs. savegame state, Section 8; `clean-base-game` reclassified); following `clean-base-game`'s successful capture (Section 10); and following `single-compatible-mod`'s capture, which also formalized Warning Categorization (Section 11). Awaiting Chief Architect approval before Architectural Resolution. |
 
 ---
 
@@ -58,12 +58,13 @@ Evaluated against each named design criterion:
 | Field | Why it is required |
 |---|---|
 | Fixture ID, Status | Identifies the fixture and states plainly whether it is real content or a documented placeholder awaiting capture — the single most important field for preventing a planned-but-empty fixture from being mistaken for a real one. |
-| Farming Simulator Version, Platform, Map, Enabled Mods | The complete, exact conditions under which the log was produced — without these, a captured log cannot be reproduced, compared, or trusted to isolate the one variable it is meant to isolate. |
+| Farming Simulator Version, Platform, Map | The complete, exact conditions under which the log was produced — without these, a captured log cannot be reproduced, compared, or trusted to isolate the one variable it is meant to isolate. |
+| **Installed Mods (global)**, **Savegame Mod State** | Added as two separate fields (Section 8) after a real acquisition finding showed a single "Enabled Mods" field conflates two independent facts: what the game's global mods directory contains, and what a specific savegame actually uses. The runtime log has been directly observed to reflect the former regardless of the latter. |
 | Purpose | Forces the fixture's reason for existing to be stated as a falsifiable claim, not inferred from its name alone. |
 | Expected Observable Behavior | States what the log should show, in advance of (or immediately following) capture — the concrete target a future Rule's test assertions are written against. |
 | Source, Consent / Licensing | The two fields this platform's own culture would otherwise be most tempted to skip under time pressure. A real runtime log is third-party-adjacent data by nature (it may describe a real person's install); this repository must never store one without being able to state plainly who provided it and on what basis. |
 | Captured | A date, for the same reproducibility reason as the version/platform/map/mod fields. |
-| Redaction Applied | Explicit, not implied. "None" is an acceptable value, but it must be a stated conclusion, not a silent omission — the field's absence is treated the same as an unredacted fixture until proven otherwise. |
+| Normalization Applied | Explicit, not implied. "None" is an acceptable value, but it must be a stated conclusion, not a silent omission — the field's absence is treated the same as an un-normalized fixture until proven otherwise. Formalized as its own corpus-wide policy (`fixtures/runtime-logs/README.md`, "Runtime Log Normalization") following `clean-base-game`'s own integration — see Section 10. |
 | Format Notes | Encoding and line-ending details a future byte-level test will otherwise have to rediscover the hard way. |
 | Known Limitations | Prevents a single fixture from being over-generalized into a claim it cannot support — the same discipline `VersionCompatibilityRule` already applies to what a single declared-version mismatch can and cannot conclude. |
 | File(s) | A direct pointer from metadata to content, since the two are stored as siblings, not merged. |
@@ -83,10 +84,11 @@ Evaluated against each named design criterion:
 ## Deprioritized, not created
 
 4. **`modded-map-only`** — the original progression's third item. **Recommended for deferral, not inclusion in the initial corpus**, unchanged from the original fixture-preparation session's own reasoning: `SPRINT10_CAPABILITY_DEFINITION.md`, Section 7 scopes this Sprint to recognizing *one* class of signal (a mod failed to load); a modded-map fixture tests whether that signal generalizes across a different Assessment Subject content type, a legitimate but secondary question this Sprint's own Capability Definition did not scope to answer. Recommended as the natural first addition to the corpus *after* `single-incompatible-mod` is captured and a real signature is in hand to test for generalization against.
+5. **`installed-mods-unused-in-savegame`** (new candidate, named following Section 8's finding) — mods present in the global mods directory, none of them used by the active savegame. Realistic and likely common (few real players clear their mods folder between saves), and now known to be a genuinely distinct condition from every fixture in this initial set. **Not created this session** — the three-fixture initial corpus already establishes the core signal and its two controls; adding a fourth dimension now, before the first three are even captured, would risk the same premature-breadth problem `modded-map-only` was deferred for. Named here so it is not rediscovered as a surprise later.
 
 ## Correctly deferred, unchanged
 
-5. **`real-world-mod-profile`** — already named as future work in the original progression, unrevised. Presupposes the signal already exists and is recognized in the minimal case first. No directory is created for it.
+6. **`real-world-mod-profile`** — already named as future work in the original progression, unrevised. Presupposes the signal already exists and is recognized in the minimal case first. No directory is created for it.
 
 ---
 
@@ -98,7 +100,7 @@ Reviewed during Repository Stabilization against the same four pillars named at 
 - **Immutability.** A captured fixture's raw log content is never edited in place, without exception. A correction, a redaction found necessary after the fact, or a re-capture against a newer game version is always a *new* fixture directory; the old one's `Status` is updated to `Superseded`, naming its replacement directly. This mirrors this project's own standing convention that historical records (ADRs, Engineering Releases, handoff snapshots) are superseded, never silently rewritten.
 - **Versioning.** No version suffix is applied to a fixture's directory name by default — the `Farming Simulator Version` field in its own `README.md` is the authoritative record. A version suffix should only be introduced once more than one game version's worth of fixtures genuinely coexist — not anticipated speculatively now.
 - **Provenance.** No fixture may be added without its `Source` and `Consent / Licensing` fields stated plainly and specifically — "captured internally" or "found online" are not acceptable values on their own; the exact capture method and, where the content did not originate from modIQ's own controlled capture, the specific permission obtained, must be recorded.
-- **Redaction of personal information.** Mandatory, and must occur *before* a fixture is ever committed to version control — git history is not a safe place to correct a redaction mistake after the fact. A real Farming Simulator log may contain a Windows username embedded in a file path, a Steam identifier, or other locally-identifying detail; every fixture's `README.md` must state explicitly what was redacted and how (a fixed, consistent placeholder token, not an ad hoc one per fixture), or explicitly state that nothing required redaction.
+- **Normalization of personal or machine-specific information.** Mandatory, and must occur *before* a fixture is ever committed to version control — git history is not a safe place to correct a mistake after the fact. A real Farming Simulator log may contain a username embedded in a file path, a Steam identifier, or other locally-identifying detail; every fixture's `README.md` must state explicitly what was normalized and how (a fixed, consistent placeholder token, not an ad hoc one per fixture), or explicitly state that nothing required it. Normalization is strictly substitutive — it must never alter parser-relevant content, runtime semantics, ordering, line counts, or formatting beyond the documented substitution itself (formalized in full at `fixtures/runtime-logs/README.md`, "Runtime Log Normalization," following `clean-base-game`'s own integration — Section 10).
 - **Future expansion.** The structure and schema are expected to scale by addition alone — new fixture directories, no schema change — for the foreseeable growth this Sprint anticipates (more failure classes, more platforms, eventually the deferred `modded-map-only` and `real-world-mod-profile` fixtures). A shared or cross-referenced metadata mechanism should only be introduced once a real, repeated duplication forcing function appears — not built into the schema preemptively.
 
 ---
@@ -107,19 +109,66 @@ Reviewed during Repository Stabilization against the same four pillars named at 
 
 - `fixtures/runtime-logs/README.md` — corpus-level documentation: purpose, structure, how to add a fixture, platform-independence note, terminology (Repository Language, added during Repository Stabilization).
 - `fixtures/runtime-logs/TEMPLATE.md` — the canonical, blank per-fixture metadata schema.
-- `fixtures/runtime-logs/clean-base-game/README.md` — fully documented, `Status: Awaiting capture`, no log file.
-- `fixtures/runtime-logs/single-compatible-mod/README.md` — fully documented, `Status: Awaiting capture`, no log file.
+- `fixtures/runtime-logs/clean-base-game/README.md` — fully documented; originally `Status: Awaiting capture`, no log file. **Now superseded — see Section 10: this fixture has since been captured.**
+- `fixtures/runtime-logs/single-compatible-mod/README.md` — fully documented; originally `Status: Awaiting capture`, no log file. **Now superseded — see Section 11: this fixture has since been captured.**
 - `fixtures/runtime-logs/single-incompatible-mod/README.md` — fully documented, `Status: Awaiting capture`, no log file.
 - `fixtures/README.md` (added during Repository Stabilization) — the top-level corpus directory's own README, explaining why `fixtures/` exists as distinct from `apps/sandbox/src-tauri/fixtures/`, and how future engineering corpora beyond `runtime-logs/` should be organized.
 
-**No log content — real, synthetic, or placeholder — was added anywhere.** No directory was created for `modded-map-only` or `real-world-mod-profile`. No repository code, Collector, Rule, or Architectural Resolution was performed at any point across either session.
+**No log content — real, synthetic, or placeholder — was added anywhere.** No directory was created for `modded-map-only`, `installed-mods-unused-in-savegame`, or `real-world-mod-profile`. No repository code, Collector, Rule, or Architectural Resolution was performed at any point across any session.
 
 ---
 
-# 7. Recommendation
+# 7. What Was Updated Following a Real Acquisition Finding
 
-**Ready for Chief Architect approval as the repository's prepared state for Runtime Log Interpretation.** The next engineering activity — per `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11's own requirement — is acquiring and validating real Farming Simulator runtime logs against the three `Awaiting capture` fixtures, in the order Section 4 now recommends: `clean-base-game` first, `single-compatible-mod` second (to establish a compatible-mod baseline before the failure case is examined), and `single-incompatible-mod` third. Architectural Resolution should not proceed on any assumption about log structure, wording, stability, or formatting until at least the third fixture is real.
+- `fixtures/runtime-logs/TEMPLATE.md` — "Enabled Mods" split into **Installed Mods (global)** and **Savegame Mod State**.
+- `fixtures/runtime-logs/README.md` — new "Installation state versus savegame state" section; acquisition checklist gained an explicit pre-capture verification step.
+- `fixtures/runtime-logs/clean-base-game/README.md` — reclassified: `Status` now records that a first attempt did not meet the fixture's own precondition; fields and Notes corrected to state the true requirement (a verified-empty global mods directory, not merely a new savegame) and the corrected acquisition procedure.
+- `fixtures/runtime-logs/single-compatible-mod/README.md`, `fixtures/runtime-logs/single-incompatible-mod/README.md` — both updated to require the same explicit verification, since their own "exactly one mod" claims were equally exposed to the same conflation.
+
+See Section 8 for the finding itself.
 
 ---
 
-Awaiting Chief Architect approval before Architectural Resolution. No implementation, Collector, Rule, governance item, or ADR has been created across either session.
+# 8. Engineering Finding: Installation State versus Savegame State
+
+**Discovered during real acquisition, not anticipated in advance:** an attempt to capture `clean-base-game` by creating a new savegame did not produce a base-game runtime environment. The runtime log enumerates all mods present in the game's global mods directory, regardless of which savegame is active or whether that savegame itself uses any of them. Creating a new savegame has no effect on this enumeration.
+
+**Why this matters beyond the one fixture.** Every fixture in this corpus implicitly assumed a single "which mods are involved" fact per fixture. That assumption is now known to be false: there are two independent facts — what is *installed* (global, savegame-independent) and what a *savegame actually uses* (a possible subset, possibly disjoint if the savegame is new) — and the log reflects the first, not the second. Any fixture whose isolation claim ("no mods," "exactly one mod") was based only on savegame state, without independently verifying the global mods directory, cannot be trusted.
+
+**Action taken:**
+1. `clean-base-game` is reclassified, not discarded — its intended meaning (zero mod-related content in the log) is still correct and still the right fixture to have; what was wrong was the assumed procedure for achieving it. Its own `README.md` now states the corrected precondition explicitly.
+2. `single-compatible-mod` and `single-incompatible-mod` were reviewed for the same risk and updated to require the same explicit verification, since neither's own documentation had previously distinguished "added to the savegame" from "the only thing in the mods directory."
+3. The metadata schema (`TEMPLATE.md`) was changed to require this distinction always, not only for this one fixture — a real, concrete forcing function (an actual acquisition mistake, not a hypothetical one), meeting this project's own standing bar for a schema change.
+4. A new, distinct future fixture candidate — mods installed but unused by the active savegame — was named as deferred work (Section 4, item 5), since it is now known to be a real and likely common condition this initial corpus does not yet cover, but adding it now would be premature breadth before the core three fixtures are even captured.
+
+**Should the corpus distinguish installation state from savegame state before further acquisition proceeds? Yes — and it now does**, via the schema change above. No fixture should be acquired or considered valid going forward without both fields independently verified and recorded.
+
+**Flagged, not decided, for Architectural Resolution:** whether modIQ's own eventual Evidence model needs to represent "installed" and "used-by-this-savegame" as two different kinds of fact (mirroring the distinction this corpus now makes) is a real, open architectural question this finding surfaces — named here for that session's attention, not answered by this one.
+
+---
+
+# 9. Recommendation
+
+**Ready for Chief Architect approval as the repository's prepared state for Runtime Log Interpretation.** The next engineering activity — per `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11's own requirement — is acquiring and validating a real Farming Simulator runtime log against the one remaining `Awaiting capture` fixture, `single-incompatible-mod`. No fixture should be captured without first directly verifying the global mods directory's actual contents, per Section 8's finding. Architectural Resolution should not proceed on any assumption about log structure, wording, stability, or formatting until that final fixture is real (see Sections 10–11 for the first two).
+
+---
+
+# 10. First Fixture Captured: `clean-base-game`
+
+Following Section 8's corrected acquisition procedure, `clean-base-game` was captured and integrated: the global mods directory was physically removed and replaced with an empty one prior to capture — the direct, independent verification the corrected precondition requires — with the resulting log's own content (zero mod-related lines across 1,448 lines) serving as corroborating evidence, not the basis for the conclusion. `Status` is now `Captured`; a real, redacted log (`log.txt`) is present in the fixture's own directory. Full detail — Farming Simulator Version, Platform, exact redaction performed, format observations (the version/Mod Directory header reprints per savegame load, not only at launch), and the base-game-only `Warning` lines the log contains — is recorded in the fixture's own `README.md`, not duplicated here.
+
+This is the first real evidence this corpus has ever held.
+
+---
+
+# 11. Second Fixture Captured: `single-compatible-mod`; Warning Categorization Formalized
+
+`single-compatible-mod` was captured and integrated using the same verification discipline as `clean-base-game`: the global mods directory was intentionally configured to contain only the one target mod (`FS25_2011_Silverado_2500_Short_Bed.zip`, a single standard-type vehicle with zero Lua scripts) before capture — direct action as the primary basis, the log's own single `Available mod:` entry serving only as corroboration. The mod's own `modDesc.xml` (`descVersion="106"`) matches the runtime's recognized `ModDesc Version` (106) exactly, and its assets loaded successfully with zero `Error` lines and a clean shutdown. **The mod's own ZIP archive was not stored in this repository** — only the runtime log it produced, and factual metadata independently verified from its archive contents, are recorded; this is real, third-party content, not modIQ's own.
+
+**A real documentation gap was found and closed before this fixture was integrated, per this session's own explicit instruction to stop rather than classify warnings against an undocumented standard.** This fixture's log contains two `Warning` lines directly attributable to the mod's own large geometry file (a console-platform size advisory), alongside the same five base-game warnings already documented for `clean-base-game` — the corpus's first case of a genuinely mod-attributable warning. No taxonomy existed to classify it consistently. **Warning Categorization** was formalized in `fixtures/runtime-logs/README.md`: every warning a fixture's log contains is now classified as a **Base-game warning** (verified by direct cross-reference against `clean-base-game`'s own content), a **Fixture warning** (attributable to the fixture's own mod, but not a failure), or a **Fixture-affecting warning** (calls the fixture's own validity into question) — attribution-based categories, deliberately, not a severity scale, consistent with this project's evidence-first discipline. Both fixtures captured to date have been reviewed against this taxonomy; neither contains a Fixture-affecting warning.
+
+Two of three initial fixtures are now real. `single-incompatible-mod` remains `Awaiting capture` — the corpus's own most critical remaining acquisition, per Section 4's own reasoning.
+
+---
+
+Awaiting Chief Architect approval before Architectural Resolution. No implementation, Collector, Rule, governance item, or ADR has been created across any session.
