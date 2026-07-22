@@ -1076,6 +1076,49 @@ No architectural change, no new Governance Register item, and no ADR were introd
 
 ---
 
+### Sprint 10 Closeout: Runtime Fixture Corpus Acquisition, Documentation Synchronization, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- (none — no Rust source was modified this Sprint)
+
+Affected Documents:
+- fixtures/README.md (new)
+- fixtures/runtime-logs/README.md (new)
+- fixtures/runtime-logs/TEMPLATE.md (new)
+- fixtures/runtime-logs/clean-base-game/README.md (new), log.txt (new)
+- fixtures/runtime-logs/single-compatible-mod/README.md (new), log.txt (new)
+- fixtures/runtime-logs/single-incompatible-mod/README.md (new), log.txt (new)
+- docs/engineering/SPRINT10_CAPABILITY_DEFINITION.md (new)
+- docs/engineering/SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md (new)
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/implementation/CrateRoadmap.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_1.0.md (new)
+
+Notes:
+Formal Sprint 10 closeout. Unlike Sprints 1 through 9, this Sprint's own scope was Capability Definition and evidence acquisition only — `cargo fmt`/`check`/`test` were re-run to confirm this directly rather than assumed: root workspace test suite unchanged at 210/210, Sandbox unchanged at 7/7, zero warnings, zero Rust source file touched. `git status` confirmed every changed or new file traced directly to fixture-corpus documentation or the real, normalized runtime logs themselves; no stray, accidental, or temporary file found; no mod archive present anywhere in the repository (per Sprint 10's own explicit policy).
+
+**Capability Definition and Fixture Acquisition:** `SPRINT10_CAPABILITY_DEFINITION.md` scoped Runtime Log Interpretation to recognizing one class of signal, grounded in `Vision.md`'s own named question. `SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md` records the full history of the corpus's own design and all three fixture captures, including two real documentation gaps found and closed during acquisition (Installation State vs. Savegame State; Warning Categorization) — both detailed in `ENGINEERING_LOG.md`'s own Engineering Methodology Observations, below.
+
+**Documentation Synchronization:** `PROJECT_STATUS.md` header fields updated (Current Release, Current Milestone, Current Phase) and a new `## Sprint 10 — Complete` section added, explicit that the Runtime Log Interpretation capability's own implementation remains deferred; Current Focus and Governance Status notes both updated to reflect Sprint 10 and carry the baseline into Sprint 11. `CHANGELOG.md`'s new `# [Sprint 10]` entry added, mirroring the established Added/Deferred/Released structure. `CrateRoadmap.md` gained a Sprint 10 narrative note (no crate maturity changed) and a new Revision History entry. `docs/README.md`'s Engineering Release cross-reference updated to 1.0.
+
+**Engineering Release:** `ENGINEERING_RELEASE_1.0.md` produced at this Sprint's own Closeout, using a narrower structure than the full 16-section template established for implementation Sprints (0.4 through 0.9) — this Sprint changed no code, so Testing Growth, Crate Maturity Review, and similar sections would have reported "unchanged" throughout; the release instead follows the specific outline this Sprint's own scope calls for (objectives, work completed, corpus acquired, documentation completed, engineering decisions, known limitations, explicit deferral statement, next-Sprint continuation).
+
+**Commit:** Sprint 10's own fixture acquisition and Capability Definition work, and this Closeout's documentation synchronization, are staged as two separate commits per explicit instruction (implementation commit: complete runtime fixture corpus; closeout commit: engineering release and closeout) — mirroring the two-commit precedent every Sprint since Sprint 7 has followed.
+
+**Push:** not performed this session — awaiting Chief Architect approval before repository history is pushed.
+
+**Merge:** not applicable this cycle — no separate Sprint 10 feature branch was ever created; all Sprint 10 work happened directly on `feature/runtime-implementation`.
+
+No architectural change, no new Governance Register item, and no ADR were introduced this session. **Sprint 10 is now formally closed, pending push.**
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
@@ -1093,3 +1136,11 @@ Sprint 9's initial Architectural Resolution draft conflated two distinct questio
 **Observation:** the Chief Architect's own review of the Architectural Resolution document — a distinct step this project's workflow already reserves for exactly this purpose — caught the conflation before any implementation code was written. The correction was made by revising the resolution document itself (decision, rationale, alternatives, and every downstream section it touched), not by appending a caveat alongside the original error, so that implementation proceeded against a single, internally consistent record rather than a draft plus a patch. This is the same category of finding Sprint 8's own Lessons Learned recorded for `VersionProfileReference` (a validation pass surfacing a real design question a single careful pass did not) — recorded here as a second, independent data point for the same observation: dedicated review stages between architectural decision and implementation continue to find real errors, not merely formalities to pass through.
 
 **Why this is being recorded, not adopted:** Sprint 8 is one data point. This project's own governance discipline (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 4: "prefer convergent evidence over a single implementation attempt") holds that a single favorable Sprint does not, by itself, justify writing a new mandatory stage into the canonical workflow (`PROJECT_HANDOFF_v1.0.md`, Section 5's eleven-stage Implementation → Validation sequence already exists; this observation is about *sub-phase* granularity within that single stage, not a new stage). Whether this should become an explicit expectation of every future multi-crate implementation, or remains ordinary good practice not worth codifying, is left for a future Chief Architect session to evaluate — ideally once a second Sprint's own evidence exists to compare against, mirroring exactly how GOV-004's three-subsystem convergence, not a single favorable case, is this project's own standing bar for treating a pattern as settled.
+
+### Sprint 10: Evidence Acquisition as Its Own Pre-Architecture Phase
+
+Sprint 10 (Runtime Fixture Corpus Acquisition) is the first Sprint in this project's history where an entire Sprint's own scope was evidence acquisition alone, with architecture and implementation explicitly and completely deferred — not one investigation phase within a larger implementation Sprint (Sprint 4 Phase 2's Boundary-Proving against the `zip` crate is the closest prior precedent, but that was one phase of a Sprint that also implemented against its findings in the same cycle). `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11 stated this as a requirement, not a suggestion: no architectural decision for Runtime Log Interpretation may assume a real log's structure, wording, stability, or formatting, and acquiring representative logs was named the first engineering activity that requirement demands.
+
+**Observation:** treating acquisition as its own complete Sprint, rather than a phase folded into an implementation Sprint, surfaced two real corpus-documentation gaps *before* any Rust code existed to be built against a wrong assumption — Installation State versus Savegame State (found capturing the very first fixture) and Warning Categorization (found capturing the second). Both were formalized as corpus policy, with the fixture that exposed each gap integrated only afterward, not worked around silently. Had this Sprint instead begun with a Collector implementation against an assumed log shape, both gaps would most likely have surfaced as implementation-time surprises or, worse, as silent incorrect assumptions baked into a Rule's own design — precisely the "implementation-led architecture" failure mode this project's own Decision Framework exists to prevent (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 6), here avoided one Sprint earlier than the pattern has ever been applied before.
+
+**Why this is being recorded, not adopted as a new mandatory stage:** one Sprint is one data point, the same standard already applied to Sprint 8's and Sprint 9's own observations above. Whether "evidence acquisition as its own complete, dedicated Sprint" should become the standing expectation whenever a future capability depends on a real-world artifact this repository does not yet possess, or whether Sprint 10's own shape was specific to Runtime Log Interpretation's own unusual precondition, is left for a future Chief Architect session to evaluate against a second instance, not decided here.

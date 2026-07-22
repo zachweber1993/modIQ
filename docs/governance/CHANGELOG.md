@@ -497,3 +497,30 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/SPRINT9_CAPABILITY_DEFINITION.md`, `docs/engineering/SPRINT9_ARCHITECTURAL_RESOLUTION.md`, `docs/engineering/SPRINT9_REPOSITORY_REVIEW.md`, and `docs/engineering/ENGINEERING_RELEASE_0.9.md` (produced at this Sprint's own Closeout, not retroactively).
+
+---
+
+# [Sprint 10]
+
+**Status:** Complete (Capability Definition and Runtime Fixture Corpus Acquisition only — Runtime Log Interpretation's own implementation intentionally deferred; no separate Sprint branch this cycle)
+
+## Added
+
+- **Runtime Fixture Corpus** — a new, permanent, top-level `fixtures/runtime-logs/` corpus: real, provenance-tracked Farming Simulator runtime log fixtures, structurally and documentation-wise separate from `apps/sandbox/src-tauri/fixtures/`'s own unrelated synthetic-fixture convention. A consistent per-fixture metadata schema (`TEMPLATE.md`) and all three of the corpus's initial fixtures were captured, normalized, and integrated: `clean-base-game` (a verified mod-free baseline), `single-compatible-mod` (a successful third-party mod load, the negative control), and `single-incompatible-mod` (a real, fully evidenced failure — a mod's declared `descVersion` exceeding the runtime's own recognized version, rejected at modDesc validation, before registration or asset loading ever began). No mod archive was stored in the repository at any point — only runtime logs and independently verified factual metadata about the mods that produced them.
+- **Runtime Log Normalization** policy — every fixture must have personally identifying or machine-specific information (e.g., a username embedded in a filesystem path) replaced with a fixed, standardized placeholder before entering the corpus, verified deterministic (the same raw source, normalized the same documented way, always produces the same fixture byte for byte), and strictly substitutive (never altering parser-relevant content, runtime semantics, ordering, line counts, or formatting beyond the exact documented substitution).
+- **Installation State versus Savegame State** — a real acquisition finding (a runtime log enumerates the global mods directory regardless of which savegame is active; a new savegame does not clear it) split `TEMPLATE.md`'s schema into two independent fields, `Installed Mods (global)` and `Savegame Mod State`, closing a conflation the corpus's own first fixture (`clean-base-game`) was originally, and incorrectly, captured against.
+- **Warning Categorization** policy — every warning a fixture's log contains is classified as a `Base-game warning` (verified by direct cross-reference against `clean-base-game`'s own mod-free content), a `Fixture warning` (attributable to the fixture's own mod, but not a failure), or a `Fixture-affecting warning` (calls the fixture's own validity into question) — attribution-based categories, deliberately, not a severity scale.
+- Preceded by Capability Definition (`SPRINT10_CAPABILITY_DEFINITION.md`), which scoped the capability to recognizing one class of signal (a mod failed to load) and established, as an engineering requirement rather than an observation, that no architectural decision may assume a real log's structure, wording, stability, or formatting — acquiring and validating representative logs was named as the first engineering activity that requirement demands, and this Sprint completed exactly that activity, recorded in full in `SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md`.
+- The root workspace test suite is **unchanged at 210/210**; Sandbox unchanged at 7/7. No Rust source file was modified this Sprint.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint — this Sprint touched no Rust source at all, generating no evidence toward any of them either way.
+- No new Governance Register item or ADR was opened. Installation State vs. Savegame State and Warning Categorization are fixture-corpus documentation policies, not Governance Register items — neither touches a crate boundary, a public API, or an architectural principle.
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 10.
+- **Runtime Log Interpretation's own implementation — a Collector activating `EvidenceCategory::RuntimeLogs`, and a Rule interpreting it — remains intentionally deferred.** This Sprint's own charter was acquiring and validating real evidence, not building against it; Architectural Resolution and implementation are explicitly future work, not begun here.
+- A fourth fixture (`modded-map-only`, testing whether the recognized signal generalizes across Assessment Subject content types) and a fifth (`real-world-mod-profile`) both remain named, deferred candidates for a future corpus expansion — not built this Sprint, per the same minimum-viable-first discipline applied throughout.
+
+## Released
+
+- Documented in `docs/engineering/SPRINT10_CAPABILITY_DEFINITION.md`, `docs/engineering/SPRINT10_RUNTIME_LOG_FIXTURE_PREPARATION.md`, and `docs/engineering/ENGINEERING_RELEASE_1.0.md` (produced at this Sprint's own Closeout, not retroactively).
