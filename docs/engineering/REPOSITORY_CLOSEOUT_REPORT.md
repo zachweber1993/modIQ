@@ -73,20 +73,21 @@ No architectural, governance, or Documentation Release change was made to any of
 |---|---|
 | **Commit** | `fc60931` |
 | **Title** | `feat: implement Version Profile-aware compatibility checking (Sprint 8)` |
-| **Scope** | Sprint 8 implementation, full Sprint 8 planning/authorization record, and Repository Closeout documentation synchronization — bundled into one commit, per explicit instruction |
+| **Scope** | Sprint 8 implementation, full Sprint 8 planning/authorization record, and Repository Closeout documentation synchronization (`PROJECT_STATUS.md`, `CHANGELOG.md`, `ENGINEERING_LOG.md`, `CrateRoadmap.md`, `docs/README.md`, `ENGINEERING_RELEASE_0.8.md`, `SPRINT8_IMPLEMENTATION_DEVIATIONS.md`) — bundled into one commit, per explicit instruction |
 | **Files** | 27 changed (11 new, 16 modified) |
-| **Push** | Pushed to `origin/feature/runtime-implementation`. Fetch-verified after push: local and remote HEAD identical (`fc60931`), 0 ahead / 0 behind. |
+| **Follow-up commit** | `892440b` — this report itself (`docs: complete Sprint 8 repository closeout`), necessarily separate since it records `fc60931`'s own hash and could not exist inside that commit, mirroring Sprint 7's own two-commit precedent for the identical structural reason |
+| **Push** | Both commits pushed to `origin/feature/runtime-implementation`. Fetch-verified after each push: local and remote HEAD identical, 0 ahead / 0 behind. |
 | **Merge** | **Not applicable this cycle.** Checked directly via `git branch -a` before acting: no separate Sprint 8 feature branch was ever created — every Sprint 8 session (Initialization, Capability Definition, Architectural Resolution, Implementation Authorization, Implementation, this Closeout) worked directly on `feature/runtime-implementation`, mirroring Sprint 7's own precedent exactly. Recorded as a factual finding, not worked around or silently omitted. |
 
-Unlike Sprint 7 (implementation and closeout committed as two separate commits), Sprint 8's implementation and closeout documentation are bundled into this single commit, per this session's own explicit instruction ("Stage all Sprint 8 changes. Create one commit representing Sprint 8.").
+Sprint 8's implementation and closeout documentation are bundled into one commit (`fc60931`), per this session's own explicit instruction ("Stage all Sprint 8 changes. Create one commit representing Sprint 8."); this report is the sole exception, for the self-reference reason stated above.
 
 ---
 
 ## 7. Repository Status
 
 - **Branch:** `feature/runtime-implementation`, in sync with `origin`.
-- **HEAD:** `fc60931`.
-- **Working tree:** clean — confirmed via `git status` immediately after push.
+- **HEAD (after this closeout commit):** the Sprint 8 Closeout commit, following `fc60931`.
+- **Working tree:** clean — confirmed via `git status` immediately after each push.
 - **Tests:** 205/205 root workspace, 7/7 Sandbox, zero warnings either.
 - **Crates:** **nine**, unchanged in count — confirmed directly against `Cargo.toml`'s `[workspace] members`, correcting this report's own Sprint 7 predecessor, which stated "ten" (a pre-existing minor documentation inconsistency, not repeated here). `modiq-versioning` gained its first real content since Sprint 0 (L1 → L2); `modiq-rules` gained its third Rule; `modiq-cli` and `apps/sandbox` unchanged in both maturity and source code.
 - **Engineering methodology:** Version 1.0, unchanged this Sprint.
