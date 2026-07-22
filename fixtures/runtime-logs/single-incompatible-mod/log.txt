@@ -1,0 +1,1450 @@
+GIANTS Engine Runtime 10.0.0 (44540) Steam (Build Date: Feb  9 2026)
+Copyright (c) 2008-2026, GIANTS Software GmbH (giants-software.com), All Rights Reserved.
+Copyright (c) 2003-2026, Christian Ammann and Stefan Geiger, All Rights Reserved.
+Application: FarmingSimulator2025
+Main System
+  CPU: 10 @ 30.2 GHZ [ARM]
+  Virtual Cores: 10
+  Memory: 65536 MB
+  OS: macOS 26.5.2
+Physics System
+  Version: 6.3.7
+  Thread(s): 2
+Audio System
+  Driver: SoftMixer CoreAudio Stereo
+  Version: 2018.11
+  Frequency: 44100
+  Max. active sources: 256
+Render System
+  Driver: Metal 2
+  Device: Apple M1 Max
+Started 3 threads for threadpool 'GIANTS Render threadpool'
+Hardware Profile
+  Level: Custom Medium
+  Recommended Window Size: 1920 x 1080px
+  UI Scaling Factor: 1.000000
+  3D Scaling Factor: 1.000000
+  View Distance Factor: 1.400000
+  LOD Distance Factor: 1.400000
+  Terrain LOD Distance Factor: 1.400000
+  Foliage View Distance Factor: 1.400000
+  Foliage LOD Distance Factor: 1.400000
+  Displacement View Distance Factor: 1.200000
+  Foliage Shadows: false
+  Volume Mesh Tesselation Factor: 1.500000
+  Tyre Track Segments Factor: 0.500000
+  Shadow Quality: 1.000000
+  Shadow Distance Quality: Low
+  Allow Shadow Focus Box: false
+  Shadowmap Size: 1024
+  Shadowmap Filter Size: 4
+  Max. Number of Shadow Lights: 1
+  Shader Quality: Medium
+  Skip Mipmaps: 0
+  Texture Filtering mode: Aniso 4
+  Reflection Map Ratio: 1.000000
+  Terrain Quality: High
+  Max. Full Terrain Tile Rendered Per Frame: 16
+  Max. Partial Terrain Tile Rendered Per Frame: 32
+  MSAA: Off
+  Post-process AA: TAA
+  DRS Quality: Off
+  DRS Target FPS: 60
+  Sharpness: 1.000000
+  Max. Number of Lights: 128
+  Max. Number of Dir Lights: 4
+  Max. Number of Lights Per Cluster: 32
+  SSAO Quality: Low
+  Bloom Quality: Medium
+  Depth-of-Field Quality: Default
+  Lensflare Quality: Off
+  Enable Texture Streaming: true
+  Enable Envmap Blending: true
+  Enable Dynamic Specular Envmap: false
+  Atmosphere Quality: High
+  Volumetric Fog Quality: Low
+  Max. Number of Volumetric Lights: 0
+  Shading Rate Quality: Medium
+  Texture Streaming Memory Budget: 3221225472
+  Texture Streaming Downgrade Delay: 2000.000000
+  Texture Streaming Target Texel-to-Pixel Ratio: 1.000000
+  Shadow Filter Quality: PCF
+  Shadow Denoising Quality: Off
+  Intel VALAR Quality: Off
+  Intel VALAR Power Mode: Low
+  Screenspace Shadows Quality: Off
+  Cloud Shadows Quality: Off
+  Rain Amount Factor: 0.500000
+  Shadow Buffer Pixel Quality: 8 Bit
+  Screenspace Reflections Quality: Off
+  Screenspace Reflections Upsampling Quality: Off
+  Precipitation Quality: High
+Input System
+  Keyboard enabled
+  Mouse enabled
+  Gamepad/Joystick enabled
+  Force Feedback disabled
+  Devices:
+    PS5 Controller (VID: 054C PID: 0CE6 VER: FFFF Cat: GAMEPAD)
+      Number of Axes: 6
+      Number of Buttons: 17
+[ImageDescIndexer] Loaded 24368 imageDescs from database
+ Used Start Parameters:
+    name FarmingSimulator2025
+    exe FarmingSimulator2025Game
+Platform: loading defaults
+Platform: loading Steam
+  Setting 'Master Volume': 1.000
+  Setting 'Is Train Tabbable': true
+  Setting 'Radio Vehicle Only': true
+  Setting 'Radio Active': false
+  Setting 'Use Colorblind Mode': false
+  Setting 'Easy Arm Control': true
+  Setting 'Show Trigger Marker': true
+  Setting 'Show Help Trigger': true
+  Setting 'Show Field-Info': true
+  Setting 'Invert Y-Look': false
+  Setting 'Show Help Icons': true
+  Setting 'Radio Volume': 0.600
+  Setting 'Vehicle Volume': 1.000
+  Setting 'Environment Volume': 0.700
+  Setting 'Character Volume': 0.700
+  Setting 'GUI Volume': 0.500
+  Setting 'Game Volume While Not In Focus': 0.000
+  Setting 'Master Volume': 1.000
+  Setting 'Music Volume': 0.450
+Farming Simulator 25 (Steam)
+  Version: 1.16.0.3 b37986
+  Available Languages: en de jp pl cz fr es ru it pt hu nl cs ct br tr ro kr ea da fi no sv fc uk vi id
+  Language: en
+  Time: 2026-07-22 17:07:44
+  ModDesc Version: 106
+  Mod Directory: /Users/REDACTED_USER/Library/Application Support/FarmingSimulator2025/mods/
+Available mod: (Hash: 98e7e08a7f9175c321ab783abf123603) (Version: 1.0.0.4) FS25_DodgeChallengerHellcat
+Error: Unsupported mod description version in mod FS25_DodgeChallengerHellcat
+dataS/character/playerAnimations/animations.i3d (110.90 ms)
+dataS/character/playerAnimations/animationsVehicleCharacter.i3d (0.94 ms)
+dataS/character/playerAnimations/animationsPedestrians.i3d (22.00 ms)
+2026-07-22 17:10:25.305   Info: Starting singleplayer game...
+2026-07-22 17:10:25.380   Info: Loaded "vehicle" specializations
+2026-07-22 17:10:25.392   Info: Loaded "placeable" specializations
+2026-07-22 17:10:25.393   Info: Loaded "handTool" specializations
+2026-07-22 17:10:25.403   Loaded vehicle types
+2026-07-22 17:10:25.405   Loaded placeable types
+2026-07-22 17:10:25.405   Loaded handTool types
+2026-07-22 17:10:25.407   Info:   Loaded construction brush types
+2026-07-22 17:10:25.509   Register configuration 'baseColor'
+2026-07-22 17:10:25.509   Register configuration 'vehicleType'
+2026-07-22 17:10:25.509   Register configuration 'component'
+2026-07-22 17:10:25.509   Register configuration 'design'
+2026-07-22 17:10:25.509   Register configuration 'designColor'
+2026-07-22 17:10:25.509   Register configuration 'design2'
+2026-07-22 17:10:25.509   Register configuration 'designColor2'
+2026-07-22 17:10:25.509   Register configuration 'design3'
+2026-07-22 17:10:25.509   Register configuration 'designColor3'
+2026-07-22 17:10:25.509   Register configuration 'design4'
+2026-07-22 17:10:25.509   Register configuration 'designColor4'
+2026-07-22 17:10:25.509   Register configuration 'design5'
+2026-07-22 17:10:25.509   Register configuration 'designColor5'
+2026-07-22 17:10:25.509   Register configuration 'design6'
+2026-07-22 17:10:25.509   Register configuration 'designColor6'
+2026-07-22 17:10:25.509   Register configuration 'design7'
+2026-07-22 17:10:25.509   Register configuration 'designColor7'
+2026-07-22 17:10:25.509   Register configuration 'design8'
+2026-07-22 17:10:25.509   Register configuration 'designColor8'
+2026-07-22 17:10:25.509   Register configuration 'design9'
+2026-07-22 17:10:25.509   Register configuration 'designColor9'
+2026-07-22 17:10:25.509   Register configuration 'design10'
+2026-07-22 17:10:25.509   Register configuration 'designColor10'
+2026-07-22 17:10:25.509   Register configuration 'design11'
+2026-07-22 17:10:25.509   Register configuration 'designColor11'
+2026-07-22 17:10:25.509   Register configuration 'design12'
+2026-07-22 17:10:25.509   Register configuration 'designColor12'
+2026-07-22 17:10:25.509   Register configuration 'design13'
+2026-07-22 17:10:25.509   Register configuration 'designColor13'
+2026-07-22 17:10:25.509   Register configuration 'design14'
+2026-07-22 17:10:25.509   Register configuration 'designColor14'
+2026-07-22 17:10:25.509   Register configuration 'design15'
+2026-07-22 17:10:25.509   Register configuration 'designColor15'
+2026-07-22 17:10:25.509   Register configuration 'design16'
+2026-07-22 17:10:25.509   Register configuration 'designColor16'
+2026-07-22 17:10:25.578   Register configuration 'color'
+2026-07-22 17:10:25.580   Register configuration 'ai'
+2026-07-22 17:10:25.580 data/shared/ai/trafficCollision.i3d (0.25 ms)
+2026-07-22 17:10:25.580   Register configuration 'animation'
+2026-07-22 17:10:25.582   Register configuration 'inputAttacherJoint'
+2026-07-22 17:10:25.584   Register configuration 'attacherJoint'
+2026-07-22 17:10:25.586   Register configuration 'automaticArmControlForwarder'
+2026-07-22 17:10:25.586   Register configuration 'automaticArmControlHarvester'
+2026-07-22 17:10:25.589   Register configuration 'baler'
+2026-07-22 17:10:25.589   Register workAreaType 'BALER'
+2026-07-22 17:10:25.608   Register configuration 'wrappingColor'
+2026-07-22 17:10:25.608   Register configuration 'wrappingAnimation'
+2026-07-22 17:10:25.611   Register configuration 'multipleItemPurchaseAmount'
+2026-07-22 17:10:25.612   Register workAreaType 'COMBINECHOPPER'
+2026-07-22 17:10:25.612   Register workAreaType 'COMBINESWATH'
+2026-07-22 17:10:25.625   Register configuration 'consumable'
+2026-07-22 17:10:25.625   Register configuration 'consumable2'
+2026-07-22 17:10:25.628   Register configuration 'cover'
+2026-07-22 17:10:25.629   Register workAreaType 'CULTIVATOR'
+2026-07-22 17:10:25.629   Register workAreaType 'CUTTER'
+2026-07-22 17:10:25.629   Register workAreaType 'HAULMDROP'
+2026-07-22 17:10:25.633   Register configuration 'cylindered'
+2026-07-22 17:10:25.637   Register configuration 'dischargeable'
+2026-07-22 17:10:25.647   Register configuration 'enterablePassenger'
+2026-07-22 17:10:25.650   Register configuration 'fillUnit'
+2026-07-22 17:10:25.659   Register configuration 'fillVolume'
+2026-07-22 17:10:25.660   Register configuration 'folding'
+2026-07-22 17:10:25.660   Register workAreaType 'FORAGEWAGON'
+2026-07-22 17:10:25.664   Register configuration 'frontloader'
+2026-07-22 17:10:25.664   Register workAreaType 'FRUITPREPARER'
+2026-07-22 17:10:25.664   Register configuration 'groundAdjustedNode'
+2026-07-22 17:10:25.664   Register configuration 'handToolHolder'
+2026-07-22 17:10:25.674   Register configuration 'liftableAxle'
+2026-07-22 17:10:25.674   Register configuration 'beaconLight'
+2026-07-22 17:10:25.675   Register configuration 'logGrab'
+2026-07-22 17:10:25.677   Register configuration 'motor'
+2026-07-22 17:10:25.690   Register workAreaType 'MULCHER'
+2026-07-22 17:10:25.693   Register workAreaType 'MOWER'
+2026-07-22 17:10:25.698   Register configuration 'pipe'
+2026-07-22 17:10:25.698   Register configuration 'plow'
+2026-07-22 17:10:25.699   Register workAreaType 'PLOW'
+2026-07-22 17:10:25.699   Register workAreaType 'PLOWSHARE'
+2026-07-22 17:10:25.700   Register configuration 'powerConsumer'
+2026-07-22 17:10:25.704   Register workAreaType 'RIDGEFORMER'
+2026-07-22 17:10:25.705   Register configuration 'ridgeMarker'
+2026-07-22 17:10:25.705   Register workAreaType 'RIDGEMARKER'
+2026-07-22 17:10:25.705   Register configuration 'roller'
+2026-07-22 17:10:25.705   Register workAreaType 'ROLLER'
+2026-07-22 17:10:25.705   Register workAreaType 'SALTSPREADER'
+2026-07-22 17:10:25.709   Register configuration 'slopeCompensation'
+2026-07-22 17:10:25.709   Register workAreaType 'SOWINGMACHINE'
+2026-07-22 17:10:25.712   Register workAreaType 'SPRAYER'
+2026-07-22 17:10:25.720   Register workAreaType 'STONEPICKER'
+2026-07-22 17:10:25.725   Register workAreaType 'STUMPCUTTER'
+2026-07-22 17:10:25.732   Register workAreaType 'TEDDER'
+2026-07-22 17:10:25.735   Register configuration 'tensionBelts'
+2026-07-22 17:10:25.736   Register configuration 'trailer'
+2026-07-22 17:10:25.737   Register configuration 'treeSaplingType'
+2026-07-22 17:10:25.742   Register configuration 'variableWorkWidth'
+2026-07-22 17:10:25.742   Register configuration 'vineCutter'
+2026-07-22 17:10:25.745   Register workAreaType 'WEEDER'
+2026-07-22 17:10:25.745   Register configuration 'wheel'
+2026-07-22 17:10:25.745   Register configuration 'rimColor'
+2026-07-22 17:10:25.749   Register configuration 'winch'
+2026-07-22 17:10:25.752   Register workAreaType 'WINDROWER'
+2026-07-22 17:10:25.755   Register configuration 'woodContainer'
+2026-07-22 17:10:25.762   Register workAreaType 'DEFAULT'
+2026-07-22 17:10:25.762   Register workAreaType 'AUXILIARY'
+2026-07-22 17:10:25.762   Register configuration 'workArea'
+2026-07-22 17:10:25.762   Register configuration 'workMode'
+2026-07-22 17:10:25.779   Register configuration 'incomePerHour'
+2026-07-22 17:10:25.779   Register configuration 'solarPanels'
+2026-07-22 17:10:25.779   Register configuration 'dogHouse'
+2026-07-22 17:10:25.779   Register configuration 'bunkerSilo'
+2026-07-22 17:10:25.779   Register configuration 'productionPoint'
+2026-07-22 17:10:25.779   Register configuration 'milk'
+2026-07-22 17:10:25.940 data/shared/assets/marker/navigationMarker.i3d (10.87 ms)
+2026-07-22 17:10:27.564   Info: Loading ConnectionHoses from 'data/shared/connectionHoses/connectionHoses.xml'
+2026-07-22 17:10:27.583 data/shared/connectionHoses/hoses.i3d (18.85 ms)
+2026-07-22 17:10:27.585 data/shared/connectionHoses/connectors.i3d (2.91 ms)
+2026-07-22 17:10:27.586 data/shared/connectionHoses/hoseMaterialHolder.i3d (0.15 ms)
+2026-07-22 17:10:27.587 data/shared/connectionHoses/electricType2/electricType2.i3d (0.86 ms)
+2026-07-22 17:10:27.588 data/objects/consumables/baleNet/baleNet.i3d (1.53 ms)
+2026-07-22 17:10:27.589 data/objects/consumables/baleTwine/baleTwine.i3d (1.10 ms)
+2026-07-22 17:10:27.592 data/objects/consumables/baleWrap/raniPlast/raniPlast.i3d (2.77 ms)
+2026-07-22 17:10:27.595   Info: Loaded fruit type 'WHEAT' from 'data/foliage/wheat/wheat.xml'
+2026-07-22 17:10:27.595   Info: Loaded fruit type 'BARLEY' from 'data/foliage/barley/barley.xml'
+2026-07-22 17:10:27.596   Info: Loaded fruit type 'CANOLA' from 'data/foliage/canola/canola.xml'
+2026-07-22 17:10:27.596   Info: Loaded fruit type 'OAT' from 'data/foliage/oat/oat.xml'
+2026-07-22 17:10:27.596   Info: Loaded fruit type 'MAIZE' from 'data/foliage/maize/maize.xml'
+2026-07-22 17:10:27.597   Info: Loaded fruit type 'SUNFLOWER' from 'data/foliage/sunflower/sunflower.xml'
+2026-07-22 17:10:27.597   Info: Loaded fruit type 'SOYBEAN' from 'data/foliage/soybean/soybean.xml'
+2026-07-22 17:10:27.597   Info: Loaded fruit type 'POTATO' from 'data/foliage/potato/potato.xml'
+2026-07-22 17:10:27.597   Info: Loaded fruit type 'RICE' from 'data/foliage/rice/rice.xml'
+2026-07-22 17:10:27.598   Info: Loaded fruit type 'RICELONGGRAIN' from 'data/foliage/riceLongGrain/riceLongGrain.xml'
+2026-07-22 17:10:27.598   Info: Loaded fruit type 'SUGARBEET' from 'data/foliage/sugarbeet/sugarbeet.xml'
+2026-07-22 17:10:27.598   Info: Loaded fruit type 'SUGARCANE' from 'data/foliage/sugarcane/sugarcane.xml'
+2026-07-22 17:10:27.598   Info: Loaded fruit type 'COTTON' from 'data/foliage/cotton/cotton.xml'
+2026-07-22 17:10:27.599   Info: Loaded fruit type 'SORGHUM' from 'data/foliage/sorghum/sorghum.xml'
+2026-07-22 17:10:27.599   Info: Loaded fruit type 'GRAPE' from 'data/foliage/grape/grape.xml'
+2026-07-22 17:10:27.600   Info: Loaded fruit type 'OLIVE' from 'data/foliage/olive/olive.xml'
+2026-07-22 17:10:27.600   Info: Loaded fruit type 'POPLAR' from 'data/foliage/poplar/poplar.xml'
+2026-07-22 17:10:27.600   Info: Loaded fruit type 'BEETROOT' from 'data/foliage/beetRoot/beetRoot.xml'
+2026-07-22 17:10:27.601   Info: Loaded fruit type 'CARROT' from 'data/foliage/carrot/carrot.xml'
+2026-07-22 17:10:27.601   Info: Loaded fruit type 'PARSNIP' from 'data/foliage/parsnip/parsnip.xml'
+2026-07-22 17:10:27.601   Info: Loaded fruit type 'GREENBEAN' from 'data/foliage/greenBean/greenBean.xml'
+2026-07-22 17:10:27.601   Info: Loaded fruit type 'PEA' from 'data/foliage/pea/pea.xml'
+2026-07-22 17:10:27.602   Info: Loaded fruit type 'SPINACH' from 'data/foliage/spinach/spinach.xml'
+2026-07-22 17:10:27.602   Info: Loaded fruit type 'GRASS' from 'data/foliage/grass/grass.xml'
+2026-07-22 17:10:27.602   Info: Loaded fruit type 'OILSEEDRADISH' from 'data/foliage/oilseedRadish/oilseedRadish.xml'
+2026-07-22 17:10:27.602   Info: Loaded fruit type 'MEADOW' from 'data/foliage/meadow/meadowUS/meadowUS.xml'
+2026-07-22 17:10:27.610 data/objects/riceSaplings/saplingBox/saplingBox.i3d (17.62 ms)
+2026-07-22 17:10:27.610 data/effects/unload/particle/potato/potato.i3d (0.46 ms)
+2026-07-22 17:10:27.610 data/effects/unload/particle/sugarBeet/sugarBeet.i3d (0.33 ms)
+2026-07-22 17:10:27.611 data/effects/unload/particle/beetroot/beetroot.i3d (0.67 ms)
+2026-07-22 17:10:27.612 data/effects/unload/particle/carrot/carrot.i3d (0.79 ms)
+2026-07-22 17:10:27.613 data/effects/unload/particle/parsnip/parsnip.i3d (0.79 ms)
+2026-07-22 17:10:27.618 data/objects/bales/roundbales/roundbale125/roundbale125.i3d (5.71 ms)
+2026-07-22 17:10:28.258 data/objects/bales/roundbales/roundbale150/roundbale150.i3d (639.91 ms)
+2026-07-22 17:10:28.260 data/objects/bales/roundbales/roundbale180/roundbale180.i3d (1.22 ms)
+2026-07-22 17:10:28.260 data/objects/bales/roundbales/cotton/cottonBale238.i3d (0.70 ms)
+2026-07-22 17:10:28.261 data/objects/bales/roundbales/biomass/biomassBale125.i3d (0.97 ms)
+2026-07-22 17:10:28.263 data/objects/bales/squarebales/squarebale240/squarebale240.i3d (1.57 ms)
+2026-07-22 17:10:28.264 data/objects/bales/squarebales/squarebale220/squarebale220.i3d (1.19 ms)
+2026-07-22 17:10:28.265 data/objects/bales/squarebales/squarebale180/squarebale180.i3d (1.30 ms)
+2026-07-22 17:10:28.267 data/objects/bales/squarebales/squarebale120/squarebale120.i3d (1.34 ms)
+2026-07-22 17:10:28.269 data/objects/bales/squarebales/squarebale120/packedSquareBale120.i3d (2.20 ms)
+2026-07-22 17:10:28.269 data/objects/bales/squarebales/cotton/cottonSquarebale488.i3d (0.31 ms)
+2026-07-22 17:10:28.269 dataS/character/npc/npcBase.i3d (0.12 ms)
+2026-07-22 17:10:28.328   Info: resetSplitShapes()
+2026-07-22 17:10:28.349 data/sky/sky.i3d (6.67 ms)
+2026-07-22 17:10:28.349 dataS/character/playerM/playerM.i3d (79.73 ms)
+2026-07-22 17:10:28.351   Info: Loading map: data/maps/mapUS/mapUS.i3d
+2026-07-22 17:10:28.410 dataS/character/playerF/playerF.i3d (61.12 ms)
+2026-07-22 17:10:28.418 data/shared/alphabet/fontMaterialHolder.i3d (7.99 ms)
+2026-07-22 17:10:28.423 data/sky/rain.i3d (4.69 ms)
+2026-07-22 17:10:28.424 data/sky/hail.i3d (0.65 ms)
+2026-07-22 17:10:28.425 data/sky/snow.i3d (1.07 ms)
+2026-07-22 17:10:28.425 data/sky/dust.i3d (0.35 ms)
+2026-07-22 17:10:28.433 data/sky/twister.i3d (7.67 ms)
+2026-07-22 17:10:29.086 SparseDensityMap at 0xbbb08a580 [Initial state after loading]
+2026-07-22 17:10:29.086  - Sparseness 0 / 1048576 [max 65535]
+2026-07-22 17:10:29.086  - Compressed bytes : 0KB
+2026-07-22 17:10:29.087 data/maps/textures/shared/props/motorex/motorexOilBarrel.i3d (0.41 ms)
+2026-07-22 17:10:29.090 New Terrain (compressed heightmap) resolution 4096; tile size 128
+2026-07-22 17:10:29.127 data/placeables/mapUS/grainElevatorMuseum/grainElevatorMuseum.i3d (39.82 ms)
+2026-07-22 17:10:29.128 data/maps/mapUS/textures/props/donationBox.i3d (0.65 ms)
+2026-07-22 17:10:29.128 data/maps/textures/shared/props/woodContainerCart.i3d (0.23 ms)
+2026-07-22 17:10:29.129 data/maps/mapUS/textures/props/trashcanStorage02.i3d (0.40 ms)
+2026-07-22 17:10:29.129 data/maps/mapUS/textures/props/trafficCone.i3d (0.15 ms)
+2026-07-22 17:10:29.129 data/maps/textures/shared/props/boardStack02/boardStack02.i3d (0.27 ms)
+2026-07-22 17:10:29.130 data/maps/textures/shared/props/boardStack02/boardStack01.i3d (0.17 ms)
+2026-07-22 17:10:29.130 data/maps/mapEU/textures/props/wheelBarrow01.i3d (0.31 ms)
+2026-07-22 17:10:29.130 data/maps/mapAS/textures/props/barrel04.i3d (0.21 ms)
+2026-07-22 17:10:29.131 data/placeables/brandless/lightsResidential/streetLight03/streetLight03.i3d (0.38 ms)
+2026-07-22 17:10:29.138 data/maps/mapUS/textures/buildings/ropeMakerShed/ropeMakerShed.i3d (6.08 ms)
+2026-07-22 17:10:29.138 data/maps/textures/shared/props/industrialProps/container23.i3d (0.21 ms)
+2026-07-22 17:10:29.139 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.50 ms)
+2026-07-22 17:10:29.139 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.14 ms)
+2026-07-22 17:10:29.139 data/maps/mapUS/textures/props/electricConnection02.i3d (0.73 ms)
+2026-07-22 17:10:29.182 data/maps/mapUS/textures/buildings/playgroundMaker/playgroundMakerShip.i3d (42.06 ms)
+2026-07-22 17:10:29.191 data/placeables/mapUS/wagonBuilder/wagonBuilder.i3d (8.30 ms)
+2026-07-22 17:10:29.191 data/maps/mapEU/textures/props/woodenLadder.i3d (0.27 ms)
+2026-07-22 17:10:29.196 data/maps/mapUS/textures/props/letterBox01.i3d (0.50 ms)
+2026-07-22 17:10:29.196 data/maps/mapUS/textures/props/woodenBank.i3d (0.14 ms)
+2026-07-22 17:10:29.198 data/maps/mapUS/textures/props/farmWagonOld.i3d (1.11 ms)
+2026-07-22 17:10:29.198 data/maps/mapEU/textures/props/sawhorse.i3d (0.17 ms)
+2026-07-22 17:10:29.198 data/maps/textures/shared/props/boardStack01/boardBarStackLarge.i3d (0.31 ms)
+2026-07-22 17:10:29.199 data/maps/mapUS/textures/props/garbageContainerSmall.i3d (0.42 ms)
+2026-07-22 17:10:29.199 data/maps/mapAS/textures/props/pallet02.i3d (0.23 ms)
+2026-07-22 17:10:29.199 data/maps/textures/shared/props/palletTruck.i3d (0.57 ms)
+2026-07-22 17:10:29.200 data/maps/mapAS/textures/props/wheelOld/wheelOld01.i3d (0.24 ms)
+2026-07-22 17:10:29.200 data/maps/mapUS/textures/props/vintageTools/castIronAnvil.i3d (0.24 ms)
+2026-07-22 17:10:29.200 data/maps/mapUS/textures/props/vintageTools/woodenCrate01.i3d (0.31 ms)
+2026-07-22 17:10:29.201 data/maps/mapUS/textures/props/vintageTools/woodenCrate02.i3d (0.18 ms)
+2026-07-22 17:10:29.201 data/maps/mapUS/textures/props/vintageTools/woodenCrate03.i3d (0.16 ms)
+2026-07-22 17:10:29.201 data/maps/mapUS/textures/props/vintageTools/milkingStool.i3d (0.35 ms)
+2026-07-22 17:10:29.201 data/maps/mapUS/textures/props/vintageTools/castIronTongs.i3d (0.29 ms)
+2026-07-22 17:10:29.202 data/maps/mapUS/textures/props/vintageTools/sheepScissor.i3d (0.18 ms)
+2026-07-22 17:10:29.202 data/maps/mapUS/textures/props/vintageTools/castIronVise.i3d (0.32 ms)
+2026-07-22 17:10:29.203 data/maps/textures/shared/props/boardStack01/boardStacksTiny.i3d (0.14 ms)
+2026-07-22 17:10:29.203 data/maps/textures/shared/props/boardStack01/boardStackMedium.i3d (0.19 ms)
+2026-07-22 17:10:29.203 data/maps/textures/shared/props/boardStack01/boardStackSmall.i3d (0.19 ms)
+2026-07-22 17:10:29.204 data/maps/mapEU/textures/props/wheelBarrow02.i3d (0.30 ms)
+2026-07-22 17:10:29.204 data/maps/mapUS/textures/props/signTheBestSavetyDevice.i3d (0.16 ms)
+2026-07-22 17:10:29.205 data/maps/mapUS/textures/props/waterPumpSmall.i3d (0.76 ms)
+2026-07-22 17:10:29.205 data/maps/mapUS/textures/props/hydrant04.i3d (0.23 ms)
+2026-07-22 17:10:29.205 data/maps/mapUS/textures/props/trashcan02.i3d (0.32 ms)
+2026-07-22 17:10:29.206 data/maps/mapUS/textures/props/garbageCartGreen.i3d (0.52 ms)
+2026-07-22 17:10:29.206 data/maps/mapEU/textures/props/oldCart.i3d (0.63 ms)
+2026-07-22 17:10:29.207 New Terrain (geometry quadtree) max resolution 16384; max tile size 64
+2026-07-22 17:10:29.218 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding05.i3d (11.00 ms)
+2026-07-22 17:10:29.222 data/maps/mapEU/textures/props/rotaryClothesDryer.i3d (3.63 ms)
+2026-07-22 17:10:29.225 data/maps/mapUS/textures/buildings/gardenSheds/gardenShed02.i3d (2.20 ms)
+2026-07-22 17:10:29.226 data/maps/mapAS/textures/props/foodCartProps/cartonBox.i3d (0.33 ms)
+2026-07-22 17:10:29.226 data/maps/mapUS/textures/props/vintageTools/pitchFork.i3d (0.26 ms)
+2026-07-22 17:10:29.226 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.18 ms)
+2026-07-22 17:10:29.228 data/placeables/mapUS/decoration/windWheelMedium/windWheelMedium.i3d (1.33 ms)
+2026-07-22 17:10:29.232 data/maps/mapUS/textures/buildings/gardenSheds/gardenShed03.i3d (1.43 ms)
+2026-07-22 17:10:29.232 data/maps/textures/shared/props/boardStack02/boardStack02Board.i3d (0.18 ms)
+2026-07-22 17:10:29.232 data/maps/mapAS/textures/props/canister.i3d (0.20 ms)
+2026-07-22 17:10:29.233 data/maps/mapAS/textures/props/foodCartProps/gasBottle.i3d (0.20 ms)
+2026-07-22 17:10:29.236 data/placeables/brandless/constructiblesTwister/oldSmallBarn07.i3d (2.27 ms)
+2026-07-22 17:10:29.236 data/maps/mapAS/textures/props/pallet03.i3d (0.19 ms)
+2026-07-22 17:10:29.237 data/placeables/brandless/constructiblesTwister/woodenLadder02.i3d (0.20 ms)
+2026-07-22 17:10:29.238 data/maps/mapUS/textures/props/cratePacking01.i3d (0.26 ms)
+2026-07-22 17:10:29.238 data/maps/mapUS/textures/props/paperboat.i3d (0.26 ms)
+2026-07-22 17:10:29.240 data/placeables/mapUS/decoration/farmShedSmallOld/farmShedSmallOld.i3d (2.13 ms)
+2026-07-22 17:10:29.242 data/placeables/mapUS/decoration/farmBarnSmallOld/farmBarnSmallOld.i3d (1.72 ms)
+2026-07-22 17:10:29.247 data/shared/assets/marker/markerIconExclamationMark.i3d (0.36 ms)
+2026-07-22 17:10:29.247 data/maps/mapUS/textures/buildings/footballField/footballfield.i3d (2.77 ms)
+2026-07-22 17:10:29.247 data/maps/mapUS/textures/mapBoundaries/mapBoundaries.i3d (0.35 ms)
+2026-07-22 17:10:29.248 data/maps/textures/shared/mapBoundsX.i3d (0.31 ms)
+2026-07-22 17:10:29.261 data/maps/mapUS/textures/props/gameplay/vehicleBarge.i3d (12.64 ms)
+2026-07-22 17:10:29.266 data/maps/mapUS/textures/props/gameplay/riverFerry02.i3d (4.96 ms)
+2026-07-22 17:10:29.267 data/maps/mapUS/textures/props/gameplay/riverFerryDock.i3d (1.35 ms)
+2026-07-22 17:10:29.269 data/maps/mapUS/textures/props/letterBox02.i3d (0.50 ms)
+2026-07-22 17:10:29.269 data/maps/mapUS/textures/props/signSet/signFerry02lastFerryInArkansas.i3d (0.22 ms)
+2026-07-22 17:10:29.269 data/maps/mapUS/textures/props/signSet/signFerry01DriveSlowOntoFerry.i3d (0.17 ms)
+2026-07-22 17:10:29.270 data/maps/mapAS/textures/props/craneSmall02.i3d (0.82 ms)
+2026-07-22 17:10:29.271 data/maps/mapUS/textures/props/concreteStopper.i3d (0.28 ms)
+2026-07-22 17:10:29.271 data/maps/mapAS/textures/props/rope04.i3d (0.23 ms)
+2026-07-22 17:10:29.272 data/maps/mapUS/textures/buildings/grainBargeTerminal01/riverWallCorner01.i3d (0.17 ms)
+2026-07-22 17:10:29.272 data/maps/mapUS/textures/buildings/grainBargeTerminal01/riverWallStraight02.i3d (0.78 ms)
+2026-07-22 17:10:29.273 data/maps/mapUS/textures/buildings/grainBargeTerminal01/riverWallStraight01.i3d (0.15 ms)
+2026-07-22 17:10:29.278 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding14.i3d (5.02 ms)
+2026-07-22 17:10:29.278 data/maps/mapAS/textures/props/boxesPlastic/boxPlastic03.i3d (0.20 ms)
+2026-07-22 17:10:29.279 data/maps/mapAS/textures/props/foodCartProps/garbageCan.i3d (0.29 ms)
+2026-07-22 17:10:29.282 data/maps/mapUS/textures/buildings/boatShop/boatShop.i3d (3.18 ms)
+2026-07-22 17:10:29.287 data/maps/mapUS/textures/buildings/riverHouse/riverHouse.i3d (3.27 ms)
+2026-07-22 17:10:29.289 data/maps/mapUS/textures/props/signWarningRisingWaterlevel.i3d (0.32 ms)
+2026-07-22 17:10:29.293 data/maps/mapUS/textures/buildings/ropeMakerShed/ropeMakerShedProps.i3d (0.82 ms)
+2026-07-22 17:10:29.293 data/maps/mapUS/textures/props/rockingChair.i3d (0.36 ms)
+2026-07-22 17:10:29.298 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding03.i3d (3.69 ms)
+2026-07-22 17:10:29.298 data/maps/mapUS/textures/props/letterBox06.i3d (0.22 ms)
+2026-07-22 17:10:29.299 data/maps/mapUS/textures/props/trashcan03.i3d (0.31 ms)
+2026-07-22 17:10:29.299 data/maps/mapUS/textures/props/gardenGrill.i3d (0.36 ms)
+2026-07-22 17:10:29.300 data/maps/mapAS/textures/props/foodCartProps/cupHolder.i3d (0.18 ms)
+2026-07-22 17:10:29.300 data/maps/mapAS/textures/props/hangingDecoration/hangingDecoration01.i3d (0.22 ms)
+2026-07-22 17:10:29.300 data/maps/mapAS/textures/props/hangingDecoration/hangingDecoration07.i3d (0.15 ms)
+2026-07-22 17:10:29.303 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding07.i3d (2.50 ms)
+2026-07-22 17:10:29.304 data/maps/mapUS/textures/props/gardenBedRing01.i3d (0.59 ms)
+2026-07-22 17:10:29.304 data/maps/mapUS/textures/props/gardenFountainStand.i3d (0.27 ms)
+2026-07-22 17:10:29.304 data/maps/mapUS/textures/props/flowerpot01.i3d (0.24 ms)
+2026-07-22 17:10:29.305 data/maps/mapAS/textures/props/harborAreaSet/lifeBuoy.i3d (0.17 ms)
+2026-07-22 17:10:29.310 data/shared/assets/marker/markerIconShopping.i3d (0.21 ms)
+2026-07-22 17:10:29.310 data/maps/mapUS/textures/waterplanes.i3d (0.44 ms)
+2026-07-22 17:10:29.317 data/maps/mapUS/textures/buildings/gasStation/gasStation.i3d (6.47 ms)
+2026-07-22 17:10:29.317 data/maps/mapUS/textures/buildings/gasStation/gasStationSign.i3d (0.30 ms)
+2026-07-22 17:10:29.318 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.60 ms)
+2026-07-22 17:10:29.320 data/placeables/brandless/lightsResidential/fluorescentLight01/fluorescentLight01.i3d (0.50 ms)
+2026-07-22 17:10:29.322 data/maps/mapEU/textures/props/bicycle03.i3d (0.78 ms)
+2026-07-22 17:10:29.322 data/maps/mapUS/textures/props/hydrant02.i3d (0.44 ms)
+2026-07-22 17:10:29.324 data/maps/textures/shared/props/grassPatches/grassPatch05.i3d (1.03 ms)
+2026-07-22 17:10:29.326 data/maps/mapEU/textures/props/bicycle04.i3d (0.81 ms)
+2026-07-22 17:10:29.326 data/maps/mapEU/textures/props/bicycleStand.i3d (0.50 ms)
+2026-07-22 17:10:29.326 data/maps/mapUS/textures/props/mailDropBox.i3d (0.25 ms)
+2026-07-22 17:10:29.335 data/maps/mapUS/textures/buildings/gasStation02/gasStation02.i3d (8.88 ms)
+2026-07-22 17:10:29.336 data/maps/mapEU/textures/props/noticeBoard.i3d (0.58 ms)
+2026-07-22 17:10:29.351 data/maps/mapUS/textures/buildings/vehicleTrader/vehicleTrader.i3d (12.90 ms)
+2026-07-22 17:10:29.353 data/maps/textures/shared/props/industrialProps/container21.i3d (0.86 ms)
+2026-07-22 17:10:29.353 data/maps/textures/shared/props/industrialProps/container20.i3d (0.16 ms)
+2026-07-22 17:10:29.354 data/maps/mapAS/textures/props/airConditioner02.i3d (0.54 ms)
+2026-07-22 17:10:29.354 data/maps/textures/shared/props/industrialProps/container02.i3d (0.22 ms)
+2026-07-22 17:10:29.354 data/maps/textures/shared/props/industrialProps/container08.i3d (0.28 ms)
+2026-07-22 17:10:29.355 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.20 ms)
+2026-07-22 17:10:29.355 data/maps/mapUS/textures/buildings/vehicleTrader/vehicleTraderProps.i3d (3.50 ms)
+2026-07-22 17:10:29.355 data/placeables/mapUS/sellingPoints/sellingStationVehicles/sellingStationVehicles.i3d (0.15 ms)
+2026-07-22 17:10:29.357 data/maps/textures/shared/props/motorex/motorexAdvertisingFlag.i3d (0.26 ms)
+2026-07-22 17:10:29.357 data/maps/mapAS/textures/props/bench08.i3d (0.19 ms)
+2026-07-22 17:10:29.381 data/maps/mapUS/textures/buildings/animalTrader/animalTrader.i3d (23.43 ms)
+2026-07-22 17:10:29.381 data/maps/mapAS/textures/props/pipes/pipes05.i3d (0.28 ms)
+2026-07-22 17:10:29.382 data/maps/textures/shared/props/industrialProps/container05.i3d (0.33 ms)
+2026-07-22 17:10:29.382 data/maps/textures/shared/props/industrialProps/container18.i3d (0.25 ms)
+2026-07-22 17:10:29.382 data/maps/mapUS/textures/props/foodPantry01.i3d (0.26 ms)
+2026-07-22 17:10:29.383 data/maps/mapAS/textures/props/harborAreaSet/bollard.i3d (0.19 ms)
+2026-07-22 17:10:29.383 data/maps/mapAS/textures/props/harborAreaSet/anchor.i3d (0.22 ms)
+2026-07-22 17:10:29.391 data/placeables/shared/buyingStations/buyingStationLiquidManure/buyingStationLiquidManure.i3d (4.33 ms)
+2026-07-22 17:10:29.392 data/placeables/shared/buyingStations/buyingStationManure/buyingStationManure.i3d (0.98 ms)
+2026-07-22 17:10:29.397 data/shared/assets/marker/markerIconAnimals.i3d (0.22 ms)
+2026-07-22 17:10:29.398 data/placeables/shared/sellingStationGeneric/sellingStationProducts.i3d (0.17 ms)
+2026-07-22 17:10:29.399 data/placeables/brandless/limeStation/limeStation.i3d (1.42 ms)
+2026-07-22 17:10:29.399 data/placeables/mapUS/sellingPoints/gasStation/gasStation.i3d (0.13 ms)
+2026-07-22 17:10:29.404 data/placeables/mapUS/farmHouse01/farmHouse01.i3d (4.38 ms)
+2026-07-22 17:10:29.404 data/maps/mapUS/textures/props/flowerPot02.i3d (0.45 ms)
+2026-07-22 17:10:29.405 data/maps/mapUS/textures/props/porchSwing02.i3d (0.38 ms)
+2026-07-22 17:10:29.405 data/maps/mapUS/textures/props/trashcan01.i3d (0.24 ms)
+2026-07-22 17:10:29.406 data/maps/mapUS/textures/props/flowerPot04.i3d (0.23 ms)
+2026-07-22 17:10:29.406 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture08.i3d (0.25 ms)
+2026-07-22 17:10:29.407 data/maps/mapUS/textures/props/gardenTireSwing.i3d (0.51 ms)
+2026-07-22 17:10:29.407 data/maps/mapAS/textures/props/harborAreaSet/tireBuoy.i3d (0.22 ms)
+2026-07-22 17:10:29.408 data/maps/mapUS/textures/props/flowerPot03.i3d (0.46 ms)
+2026-07-22 17:10:29.410 data/placeables/mapUS/tinySheds/tinyShed01.i3d (1.74 ms)
+2026-07-22 17:10:29.410 data/maps/textures/shared/props/boardStack01/barBeamLong.i3d (0.20 ms)
+2026-07-22 17:10:29.413 data/maps/mapAS/textures/props/metalTools/metalTools02.i3d (0.21 ms)
+2026-07-22 17:10:29.414 data/maps/mapUS/textures/props/signCompany01.i3d (0.68 ms)
+2026-07-22 17:10:29.414 data/maps/mapUS/textures/props/letterbox05.i3d (0.45 ms)
+2026-07-22 17:10:29.419 data/placeables/mapUS/stable01/stable01.i3d (4.00 ms)
+2026-07-22 17:10:29.419 data/maps/mapUS/textures/props/publicLightSet/publicLigh02.i3d (0.43 ms)
+2026-07-22 17:10:29.420 data/maps/mapUS/textures/props/publicLightSet/publicLigh01.i3d (0.28 ms)
+2026-07-22 17:10:29.433 data/placeables/mapUS/garage01/garage01.i3d (12.15 ms)
+2026-07-22 17:10:29.437 data/placeables/brandless/dieselTanks/level01/dieselTanksLevel01.i3d (0.85 ms)
+2026-07-22 17:10:29.440 data/placeables/brandless/farmerKioskSmall/farmerKioskSmall.i3d (3.38 ms)
+2026-07-22 17:10:29.442 data/placeables/mapUS/decoration/farmGrainBinOld/farmGrainBinOld.i3d (1.18 ms)
+2026-07-22 17:10:29.444 data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.i3d (0.63 ms)
+2026-07-22 17:10:29.446 data/placeables/mapUS/farmSilo/farmSilo.i3d (2.17 ms)
+2026-07-22 17:10:29.447 data/maps/mapUS/textures/props/sunflowerBaleDecoration.i3d (0.43 ms)
+2026-07-22 17:10:29.450 data/placeables/brandless/baleFeedingPot/baleFeedingPotSquare.i3d (2.33 ms)
+2026-07-22 17:10:29.450 data/placeables/brandless/animalHusbandries/cowBarnSmall/cowBarnSmall.i3d (3.05 ms)
+2026-07-22 17:10:29.460 data/placeables/mapUS/objectStorage/objectStorage.i3d (9.24 ms)
+2026-07-22 17:10:29.461 data/placeables/brandless/gardenSheds/level02/gardenShed02.i3d (1.28 ms)
+2026-07-22 17:10:29.470 data/placeables/brandless/constructiblesTwister/oldSmallBarn03.i3d (7.52 ms)
+2026-07-22 17:10:29.471 data/placeables/brandless/beeHives/beeHivePalletSpawner/beeHivePalletSpawner.i3d (0.22 ms)
+2026-07-22 17:10:29.472 data/placeables/brandless/beeHives/beehiveGeneric02/beehiveGeneric02.i3d (1.13 ms)
+2026-07-22 17:10:29.473 data/maps/mapUS/textures/props/scarecrow03.i3d (0.60 ms)
+2026-07-22 17:10:29.473 data/maps/mapUS/textures/props/sunflowerBeeSign.i3d (0.30 ms)
+2026-07-22 17:10:29.474 data/placeables/brandless/beeHives/beehiveGeneric01/beehiveGeneric01.i3d (0.84 ms)
+2026-07-22 17:10:29.479 data/placeables/mapUS/farmHouse02/farmHouse02.i3d (4.92 ms)
+2026-07-22 17:10:29.479 data/maps/mapUS/textures/props/letterbox04.i3d (0.47 ms)
+2026-07-22 17:10:29.480 data/maps/mapAS/textures/props/wheelOld/wheelOld02.i3d (0.42 ms)
+2026-07-22 17:10:29.485 data/placeables/mapUS/storage/storage.i3d (3.71 ms)
+2026-07-22 17:10:29.490 data/placeables/mapUS/quonsetHut/quonsetHut.i3d (3.78 ms)
+2026-07-22 17:10:29.493 data/placeables/mapUS/tinySheds/tinyShed02.i3d (3.24 ms)
+2026-07-22 17:10:29.503 data/placeables/mapUS/barnStable/barnStable.i3d (8.44 ms)
+2026-07-22 17:10:29.517 data/placeables/brandless/constructiblesTwister/oldSmallBarn05.i3d (11.07 ms)
+2026-07-22 17:10:29.523 data/placeables/mapUS/farmHouse03/farmHouse03.i3d (5.64 ms)
+2026-07-22 17:10:29.533 data/placeables/mapUS/garage02/garage02.i3d (5.42 ms)
+2026-07-22 17:10:29.539 data/placeables/mapUS/stable02/stable02.i3d (4.96 ms)
+2026-07-22 17:10:29.542 data/maps/mapUS/textures/props/letterbox08.i3d (0.75 ms)
+2026-07-22 17:10:29.544 data/placeables/mapUS/tinySheds/tinyShed03.i3d (1.59 ms)
+2026-07-22 17:10:29.545 data/maps/mapEU/textures/props/stepStool.i3d (0.20 ms)
+2026-07-22 17:10:29.555 data/placeables/mapUS/barn02/barn02.i3d (8.17 ms)
+2026-07-22 17:10:29.562 data/placeables/mapUS/farmHouse04/farmHouse04.i3d (3.40 ms)
+2026-07-22 17:10:29.563 data/maps/mapEU/textures/props/gardenTrampoline.i3d (0.53 ms)
+2026-07-22 17:10:29.564 data/maps/mapUS/textures/props/letterBox09.i3d (0.56 ms)
+2026-07-22 17:10:29.569 data/placeables/mapUS/stable03/stable03.i3d (4.55 ms)
+2026-07-22 17:10:29.570 data/maps/mapUS/textures/props/windWheelSmall.i3d (0.64 ms)
+2026-07-22 17:10:29.576 data/placeables/mapUS/decoration/farmSiloSmallOld/farmSiloSmallOld.i3d (2.18 ms)
+2026-07-22 17:10:29.582 data/placeables/brandless/constructiblesTwister/oldSmallBarn04.i3d (6.13 ms)
+2026-07-22 17:10:29.584 data/placeables/brandless/animalHusbandries/chickenCoop02/chickenCoop02.i3d (1.37 ms)
+2026-07-22 17:10:29.590 data/placeables/mapUS/farmHouse05/farmHouse05.i3d (3.96 ms)
+2026-07-22 17:10:29.590 data/maps/mapAS/textures/props/bench12.i3d (0.29 ms)
+2026-07-22 17:10:29.602 data/placeables/mapUS/barn01/barn01.i3d (5.36 ms)
+2026-07-22 17:10:29.607 data/placeables/mapUS/shack/shack.i3d (2.01 ms)
+2026-07-22 17:10:29.618 data/placeables/brandless/greenhouses/greenHousesSaplings/greenHousesSaplings.i3d (8.48 ms)
+2026-07-22 17:10:29.622 data/placeables/brandless/hayLoft/hayLoft.i3d (3.99 ms)
+2026-07-22 17:10:29.625 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding11.i3d (3.21 ms)
+2026-07-22 17:10:29.628 data/placeables/mapUS/decoration/carports/carport02.i3d (1.01 ms)
+2026-07-22 17:10:29.629 data/maps/mapUS/textures/props/letterbox07.i3d (0.45 ms)
+2026-07-22 17:10:29.629 data/maps/mapUS/textures/props/flowerPot05.i3d (0.19 ms)
+2026-07-22 17:10:29.634 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding02.i3d (3.00 ms)
+2026-07-22 17:10:29.640 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding09.i3d (4.50 ms)
+2026-07-22 17:10:29.645 data/maps/mapAS/textures/props/hangingDecoration/hangingDecoration02.i3d (0.34 ms)
+2026-07-22 17:10:29.647 data/maps/mapUS/textures/buildings/garages/garage01.i3d (1.73 ms)
+2026-07-22 17:10:29.648 data/maps/mapUS/textures/buildings/garages/garage01Props.i3d (0.70 ms)
+2026-07-22 17:10:29.649 data/maps/mapAS/textures/props/wateringCan.i3d (0.27 ms)
+2026-07-22 17:10:29.652 data/maps/mapEU/textures/props/gardenWindmill.i3d (0.58 ms)
+2026-07-22 17:10:29.654 data/maps/mapEU/textures/props/gardenWell02.i3d (1.01 ms)
+2026-07-22 17:10:29.654 data/placeables/mapUS/decoration/carports/carport01.i3d (0.46 ms)
+2026-07-22 17:10:29.655 data/placeables/mapUS/decoration/windWheelSmall/windWheelSmall.i3d (0.49 ms)
+2026-07-22 17:10:29.656 data/maps/mapUS/textures/props/sunflowerPaintedSilo.i3d (1.04 ms)
+2026-07-22 17:10:29.657 data/maps/mapUS/textures/props/sunflowerPhotoOp01.i3d (0.47 ms)
+2026-07-22 17:10:29.657 data/maps/mapUS/textures/props/sunflowerPhotoOp02.i3d (0.51 ms)
+2026-07-22 17:10:29.659 data/maps/mapUS/textures/props/sunflowerSwing.i3d (0.66 ms)
+2026-07-22 17:10:29.660 data/maps/mapUS/textures/props/flowerStand.i3d (0.86 ms)
+2026-07-22 17:10:29.661 data/maps/mapEU/textures/props/scarecrow.i3d (0.61 ms)
+2026-07-22 17:10:29.668 data/maps/mapUS/textures/props/sunflowerWaySign.i3d (0.50 ms)
+2026-07-22 17:10:29.673 data/maps/mapUS/textures/props/sunflowerEntrySign.i3d (0.85 ms)
+2026-07-22 17:10:29.678 data/maps/mapUS/textures/props/gameplay/lifeBuoyActive.i3d (0.29 ms)
+2026-07-22 17:10:29.678 data/maps/mapEU/textures/props/workBench02.i3d (0.24 ms)
+2026-07-22 17:10:29.691 data/placeables/brandless/constructiblesTwister/oldSmallBarn06.i3d (12.71 ms)
+2026-07-22 17:10:29.696 data/placeables/brandless/beeHives/beehive02/beehive02.i3d (1.37 ms)
+2026-07-22 17:10:29.697 data/maps/mapEU/textures/props/bench03.i3d (0.43 ms)
+2026-07-22 17:10:29.720 data/placeables/planET/bga1mw/bga1mw_mixers.i3d (22.21 ms)
+2026-07-22 17:10:29.721 data/placeables/planET/bgaBunkerSilo/bgaBunkerSilo.i3d (0.81 ms)
+2026-07-22 17:10:29.724 data/placeables/brandless/weighingStations/weighingStationLarge/weighingStationLarge.i3d (2.51 ms)
+2026-07-22 17:10:29.730 data/placeables/planET/bga1mw/bga1mwPipeAreaLoad.i3d (6.00 ms)
+2026-07-22 17:10:29.735 data/maps/mapAS/textures/props/barrierStone/barrierStone02.i3d (0.49 ms)
+2026-07-22 17:10:29.740 data/placeables/mapUS/bakeryUS/bakeryUS.i3d (4.53 ms)
+2026-07-22 17:10:29.742 data/placeables/brandless/lightsResidential/fluorescentLight02/fluorescentLight02.i3d (0.62 ms)
+2026-07-22 17:10:29.749 data/placeables/mapUS/cannedPackagedFactoryUS/cannedPackagedFactoryUS.i3d (6.18 ms)
+2026-07-22 17:10:29.757 data/placeables/mapUS/cementFactoryUS/cementFactoryUS.i3d (4.17 ms)
+2026-07-22 17:10:29.758 data/maps/textures/shared/props/boardStack01/boardPlankLong.i3d (0.21 ms)
+2026-07-22 17:10:29.761 data/maps/mapEU/textures/props/cementMixer01.i3d (0.49 ms)
+2026-07-22 17:10:29.762 data/maps/mapUS/textures/props/railroadHut.i3d (0.74 ms)
+2026-07-22 17:10:29.773 data/placeables/mapUS/dredgingBoat/dredgingBoat.i3d (10.49 ms)
+2026-07-22 17:10:29.774 data/maps/mapUS/textures/props/tugboatTiny.i3d (1.19 ms)
+2026-07-22 17:10:29.775 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture01.i3d (0.26 ms)
+2026-07-22 17:10:29.775 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture02.i3d (0.21 ms)
+2026-07-22 17:10:29.776 data/maps/mapAS/textures/props/harborAreaSet/fishingNetBig.i3d (0.63 ms)
+2026-07-22 17:10:29.781 data/placeables/mapUS/cooperUS/cooperUS.i3d (5.55 ms)
+2026-07-22 17:10:29.784 data/placeables/mapUS/cooperUS/cooperUSSign.i3d (0.31 ms)
+2026-07-22 17:10:29.785 data/maps/mapAS/textures/props/rope02.i3d (0.21 ms)
+2026-07-22 17:10:29.803 data/placeables/mapUS/dairyUS/dairyUS.i3d (16.12 ms)
+2026-07-22 17:10:29.812 data/maps/mapEU/textures/props/lockedContainer01.i3d (0.31 ms)
+2026-07-22 17:10:29.812 data/maps/mapEU/textures/props/lockedContainer02.i3d (0.16 ms)
+2026-07-22 17:10:29.822 data/maps/mapUS/textures/buildings/fishHachery/fishHatchery.i3d (10.19 ms)
+2026-07-22 17:10:29.826 data/maps/mapUS/textures/buildings/warehouse02/warehouse02.i3d (3.27 ms)
+2026-07-22 17:10:29.837 data/maps/mapEU/textures/props/containerOffice.i3d (1.30 ms)
+2026-07-22 17:10:29.838 data/maps/mapUS/textures/props/waterPipes.i3d (0.71 ms)
+2026-07-22 17:10:29.851 data/placeables/mapUS/grainFlourMillUS/grainFlourMillUS.i3d (13.31 ms)
+2026-07-22 17:10:29.860 data/placeables/mapUS/oilPlantUS/oilPlantUS.i3d (8.43 ms)
+2026-07-22 17:10:29.864 data/maps/mapAS/textures/props/rope03.i3d (0.43 ms)
+2026-07-22 17:10:29.865 data/placeables/mapUS/oilPlantUS/oilPlantUSSign.i3d (0.27 ms)
+2026-07-22 17:10:29.896 data/placeables/mapUS/paperMill/paperMill.i3d (30.55 ms)
+2026-07-22 17:10:29.899 data/placeables/mapUS/paperMill/paperMillProps.i3d (2.27 ms)
+2026-07-22 17:10:29.912 data/placeables/mapUS/playgroundMaker/playgroundMakerHall.i3d (3.96 ms)
+2026-07-22 17:10:29.913 data/maps/mapAS/textures/props/oldTable.i3d (0.22 ms)
+2026-07-22 17:10:29.916 data/maps/mapUS/textures/props/letterBox10.i3d (0.58 ms)
+2026-07-22 17:10:29.924 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding12.i3d (4.84 ms)
+2026-07-22 17:10:29.928 data/placeables/mapUS/ropemakerUS/ropeMakerUS.i3d (3.04 ms)
+2026-07-22 17:10:29.931 data/placeables/mapUS/ropemakerUS/ropeMakerUSSign.i3d (0.62 ms)
+2026-07-22 17:10:29.932 data/maps/mapUS/textures/props/canoe.i3d (0.49 ms)
+2026-07-22 17:10:29.935 data/maps/mapUS/textures/props/sailingMotorBoat.i3d (1.88 ms)
+2026-07-22 17:10:29.936 data/maps/mapAS/textures/props/bench02.i3d (0.40 ms)
+2026-07-22 17:10:29.954 data/placeables/mapUS/sawmillUS/sawmillUS.i3d (17.33 ms)
+2026-07-22 17:10:29.955 data/maps/textures/shared/props/industrialProps/container12.i3d (0.51 ms)
+2026-07-22 17:10:29.955 data/maps/textures/shared/props/industrialProps/container11.i3d (0.39 ms)
+2026-07-22 17:10:29.956 data/maps/textures/shared/props/industrialProps/container09.i3d (0.28 ms)
+2026-07-22 17:10:29.956 data/maps/textures/shared/props/industrialProps/container04.i3d (0.38 ms)
+2026-07-22 17:10:29.956 data/maps/textures/shared/props/industrialProps/container07.i3d (0.20 ms)
+2026-07-22 17:10:29.956 data/maps/textures/shared/props/industrialProps/container06.i3d (0.18 ms)
+2026-07-22 17:10:29.957 data/maps/textures/shared/props/industrialProps/container16.i3d (0.22 ms)
+2026-07-22 17:10:29.957 data/maps/textures/shared/props/industrialProps/container17.i3d (0.45 ms)
+2026-07-22 17:10:29.957 data/maps/textures/shared/props/industrialProps/container15.i3d (0.17 ms)
+2026-07-22 17:10:29.958 data/maps/textures/shared/props/industrialProps/container14.i3d (0.23 ms)
+2026-07-22 17:10:29.958 data/maps/textures/shared/props/industrialProps/container13.i3d (0.23 ms)
+2026-07-22 17:10:29.965 data/placeables/mapUS/sawmillUS/sawmillUSSign.i3d (0.44 ms)
+2026-07-22 17:10:29.973 data/placeables/woodMizer/lt15/lt15.i3d (6.80 ms)
+2026-07-22 17:10:29.976 data/maps/mapAS/textures/props/cage01.i3d (0.34 ms)
+2026-07-22 17:10:29.992 data/placeables/mapUS/spinnery/spinneryUS.i3d (15.14 ms)
+2026-07-22 17:10:30.000 data/placeables/mapUS/tailorUS/tailorUS.i3d (4.95 ms)
+2026-07-22 17:10:30.014 data/placeables/unia/farma/farma200/farma200_visual.i3d (2.56 ms)
+2026-07-22 17:10:30.014 data/placeables/mapUS/farmersMarketUS/farmersMarketUS.i3d (13.22 ms)
+2026-07-22 17:10:30.020 data/maps/mapAS/textures/props/stoneStatues01.i3d (0.58 ms)
+2026-07-22 17:10:30.022 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding10.i3d (2.22 ms)
+2026-07-22 17:10:30.025 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding08.i3d (2.91 ms)
+2026-07-22 17:10:30.029 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture07.i3d (0.37 ms)
+2026-07-22 17:10:30.030 data/maps/mapAS/textures/props/terraceUmbrella/terraceUmbrella01.i3d (0.85 ms)
+2026-07-22 17:10:30.061 data/maps/mapUS/textures/buildings/grainElevator/grainElevator.i3d (29.78 ms)
+2026-07-22 17:10:30.066 data/maps/mapEU/textures/props/accessPoint.i3d (1.07 ms)
+2026-07-22 17:10:30.102 data/maps/mapUS/textures/buildings/grainBargeTerminal01/grainBargeTerminal01.i3d (34.64 ms)
+2026-07-22 17:10:30.102 data/maps/mapAS/textures/props/harborAreaSet/metalRing.i3d (0.27 ms)
+2026-07-22 17:10:30.105 data/maps/mapAS/textures/props/craneSmall01.i3d (1.15 ms)
+2026-07-22 17:10:30.113 data/maps/mapUS/textures/buildings/townBuilding03/townBuilding03.i3d (2.01 ms)
+2026-07-22 17:10:30.118 data/maps/mapUS/textures/buildings/warehouse/warehouse.i3d (4.52 ms)
+2026-07-22 17:10:30.119 data/maps/textures/shared/props/industrialProps/container03.i3d (0.23 ms)
+2026-07-22 17:10:30.119 data/maps/mapUS/textures/buildings/warehouse/warehouseProps.i3d (1.13 ms)
+2026-07-22 17:10:30.138 data/maps/mapUS/textures/buildings/grainRiverSilo/grainRiverSilo.i3d (18.36 ms)
+2026-07-22 17:10:30.160 data/maps/mapUS/textures/buildings/grainBargeTerminal02/grainBargeTerminal02.i3d (16.95 ms)
+2026-07-22 17:10:30.161 data/maps/mapEU/textures/props/wheelBarrow.i3d (0.60 ms)
+2026-07-22 17:10:30.162 data/maps/mapAS/textures/props/pallet01.i3d (0.20 ms)
+2026-07-22 17:10:30.163 data/maps/mapAS/textures/props/cablesElectricity/cable04.i3d (0.60 ms)
+2026-07-22 17:10:30.164 data/maps/mapAS/textures/props/cablesElectricity/cable10.i3d (0.68 ms)
+2026-07-22 17:10:30.164 data/maps/textures/shared/props/industrialProps/container22.i3d (0.25 ms)
+2026-07-22 17:10:30.173 data/maps/mapUS/textures/buildings/riverRestaurant/riverRestaurant.i3d (9.02 ms)
+2026-07-22 17:10:30.175 data/maps/mapAS/textures/props/awningsSet/awning3mAc.i3d (0.50 ms)
+2026-07-22 17:10:30.176 data/maps/mapAS/textures/props/awningsSet/awning6mAc.i3d (0.33 ms)
+2026-07-22 17:10:30.176 data/maps/mapAS/textures/props/bench09.i3d (0.16 ms)
+2026-07-22 17:10:30.176 data/maps/mapEU/textures/props/bench01.i3d (0.46 ms)
+2026-07-22 17:10:30.177 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture06.i3d (0.25 ms)
+2026-07-22 17:10:30.185 data/maps/mapUS/textures/buildings/trainWarehouse/trainWarehouse.i3d (6.47 ms)
+2026-07-22 17:10:30.185 data/maps/mapAS/textures/props/pipes/pipes08.i3d (0.24 ms)
+2026-07-22 17:10:30.196 data/placeables/mapUS/warehouseLogisticUS/warehouseLogisticUS.i3d (10.31 ms)
+2026-07-22 17:10:30.202 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding13.i3d (3.03 ms)
+2026-07-22 17:10:30.204 data/maps/mapUS/textures/buildings/garages/garage02.i3d (2.04 ms)
+2026-07-22 17:10:30.210 data/placeables/mapUS/carpenterUS/carpenterUS.i3d (5.14 ms)
+2026-07-22 17:10:30.210 data/maps/mapUS/textures/props/signOpen01.i3d (0.30 ms)
+2026-07-22 17:10:30.213 data/maps/mapUS/textures/buildings/townBuilding01/townBuilding01.i3d (2.58 ms)
+2026-07-22 17:10:30.213 data/maps/mapAS/textures/props/cartonBoxes/cartonBox03.i3d (0.17 ms)
+2026-07-22 17:10:30.214 data/maps/mapAS/textures/props/cartonBoxes/cartonBox01.i3d (0.14 ms)
+2026-07-22 17:10:30.218 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding06.i3d (2.87 ms)
+2026-07-22 17:10:30.226 data/maps/mapUS/textures/buildings/trainStation/trainStation.i3d (6.11 ms)
+2026-07-22 17:10:30.233 data/maps/mapUS/textures/buildings/townBuilding02/townBuilding02.i3d (2.81 ms)
+2026-07-22 17:10:30.234 data/maps/mapEU/textures/props/bench02.i3d (0.17 ms)
+2026-07-22 17:10:30.234 data/maps/mapEU/textures/props/bench04.i3d (0.34 ms)
+2026-07-22 17:10:30.239 data/maps/mapUS/textures/buildings/bank/bank.i3d (4.96 ms)
+2026-07-22 17:10:30.240 data/maps/mapUS/textures/props/bankATM.i3d (0.67 ms)
+2026-07-22 17:10:30.241 data/maps/mapUS/textures/buildings/bank/bankSignPost.i3d (1.01 ms)
+2026-07-22 17:10:30.244 data/maps/mapUS/textures/buildings/carRepairService/carRepairService.i3d (2.54 ms)
+2026-07-22 17:10:30.248 data/maps/mapUS/textures/buildings/groceryStore/groceryStore.i3d (2.79 ms)
+2026-07-22 17:10:30.250 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture03.i3d (0.28 ms)
+2026-07-22 17:10:30.251 data/maps/mapAS/textures/props/terraceFurniture/terraceFurniture04.i3d (0.22 ms)
+2026-07-22 17:10:30.252 data/maps/mapEU/textures/props/bench05.i3d (0.41 ms)
+2026-07-22 17:10:30.253 data/maps/mapEU/textures/props/bicycle01.i3d (0.54 ms)
+2026-07-22 17:10:30.255 data/maps/mapAS/textures/props/foodCartProps/waterBottle.i3d (0.19 ms)
+2026-07-22 17:10:30.255 data/maps/mapAS/textures/props/jarSmall/jarSmall01.i3d (0.20 ms)
+2026-07-22 17:10:30.256 data/maps/mapAS/textures/props/foodCartProps/coolingBox.i3d (0.23 ms)
+2026-07-22 17:10:30.256 data/maps/mapUS/textures/buildings/riverHouse/riverHouseProps.i3d (1.56 ms)
+2026-07-22 17:10:30.256 data/maps/mapEU/textures/props/bicycle02.i3d (0.55 ms)
+2026-07-22 17:10:30.265 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding01.i3d (3.86 ms)
+2026-07-22 17:10:30.266 data/maps/mapAS/textures/props/antenna.i3d (0.51 ms)
+2026-07-22 17:10:30.266 data/maps/mapAS/textures/props/airConditioner.i3d (0.23 ms)
+2026-07-22 17:10:30.273 data/placeables/brandless/constructiblesTwister/oldSmallBarn02.i3d (5.25 ms)
+2026-07-22 17:10:30.276 data/maps/mapUS/textures/buildings/riverHomes/riverHome01.i3d (3.64 ms)
+2026-07-22 17:10:30.284 data/maps/mapAS/textures/props/tentMarket01.i3d (0.95 ms)
+2026-07-22 17:10:30.288 data/maps/mapUS/textures/buildings/riverHomes/riverHome02.i3d (3.93 ms)
+2026-07-22 17:10:30.295 data/maps/mapUS/textures/buildings/riverHomes/riverHome03.i3d (5.75 ms)
+2026-07-22 17:10:30.296 data/maps/mapAS/textures/props/flowerPots/flowerPotMedium01.i3d (0.20 ms)
+2026-07-22 17:10:30.297 data/maps/mapAS/textures/props/woodMetalTools/woodMetalTools02.i3d (0.49 ms)
+2026-07-22 17:10:30.297 data/maps/mapAS/textures/props/flowerPots/flowerPotSmall01.i3d (0.18 ms)
+2026-07-22 17:10:30.305 data/maps/mapUS/textures/buildings/postOffice/postOffice.i3d (3.71 ms)
+2026-07-22 17:10:30.305 data/maps/mapAS/textures/props/awningsSet/awning6mAa.i3d (0.36 ms)
+2026-07-22 17:10:30.305 data/maps/mapAS/textures/props/terraceUmbrella/terraceUmbrella02.i3d (0.19 ms)
+2026-07-22 17:10:30.307 data/maps/mapUS/textures/props/boatLiftFloat.i3d (0.49 ms)
+2026-07-22 17:10:30.315 data/maps/mapUS/textures/buildings/residentialBuildings/residentialBuilding04.i3d (2.69 ms)
+2026-07-22 17:10:30.327 data/maps/mapAS/textures/props/barrel01.i3d (0.34 ms)
+2026-07-22 17:10:30.334 data/maps/mapUS/textures/props/letterBox03.i3d (0.33 ms)
+2026-07-22 17:10:30.334 data/maps/mapUS/textures/props/porchSwing01.i3d (0.34 ms)
+2026-07-22 17:10:30.336 data/maps/mapUS/textures/props/outsidePool01.i3d (0.98 ms)
+2026-07-22 17:10:30.338 data/maps/mapUS/textures/props/gardenStoneRing02.i3d (0.80 ms)
+2026-07-22 17:10:30.340 data/maps/mapAS/textures/props/flowerPots/flowerPotBig01.i3d (0.20 ms)
+2026-07-22 17:10:30.340 data/maps/mapAS/textures/props/flowerPots/flowerPotBig02.i3d (0.18 ms)
+2026-07-22 17:10:30.340 data/maps/mapAS/textures/props/flowerPots/flowerPotBig03.i3d (0.17 ms)
+2026-07-22 17:10:30.340 data/maps/mapEU/textures/props/fluorescentLight01.i3d (0.29 ms)
+2026-07-22 17:10:30.350 data/maps/mapEU/textures/props/fluorescentLight03.i3d (0.33 ms)
+2026-07-22 17:10:30.354 data/maps/mapEU/textures/props/gardenSwing.i3d (0.41 ms)
+2026-07-22 17:10:30.359 data/maps/mapUS/textures/buildings/generalStore/generalStore.i3d (4.13 ms)
+2026-07-22 17:10:30.360 data/maps/mapUS/textures/props/signTheGeneralStore.i3d (0.53 ms)
+2026-07-22 17:10:30.366 data/maps/mapUS/textures/buildings/carRepairService/carRepairServiceProps.i3d (0.48 ms)
+2026-07-22 17:10:30.374 data/maps/mapUS/textures/buildings/highSchool/highschool.i3d (4.92 ms)
+2026-07-22 17:10:30.379 data/maps/mapAS/textures/props/awningsSet/awning3mCa.i3d (0.24 ms)
+2026-07-22 17:10:30.382 data/maps/mapUS/textures/buildings/gardenSheds/gardenShed01.i3d (1.42 ms)
+2026-07-22 17:10:30.386 data/maps/mapAS/textures/props/vendingMachine/vendingMachine02.i3d (0.20 ms)
+2026-07-22 17:10:30.386 data/maps/mapUS/textures/buildings/townBuilding01/townBuilding01Props.i3d (1.26 ms)
+2026-07-22 17:10:30.388 data/maps/mapUS/textures/buildings/boatShop/boatShopProps.i3d (0.56 ms)
+2026-07-22 17:10:30.389 data/maps/mapUS/textures/buildings/garages/garage02Props.i3d (0.73 ms)
+2026-07-22 17:10:30.391 data/maps/mapAS/textures/props/storeShuttersSign/storeShuttersSign01.i3d (1.06 ms)
+2026-07-22 17:10:30.400 data/maps/mapUS/textures/buildings/fireStation/firestationUS.i3d (4.06 ms)
+2026-07-22 17:10:30.402 data/maps/mapUS/textures/buildings/fireStation/firestationUSProps.i3d (1.35 ms)
+2026-07-22 17:10:30.405 data/maps/mapUS/textures/buildings/postOffice/postOfficeProps.i3d (1.19 ms)
+2026-07-22 17:10:30.412 data/maps/mapUS/textures/buildings/tunnelCurved/tunnelCurved.i3d (2.83 ms)
+2026-07-22 17:10:30.414 data/maps/mapUS/textures/buildings/tunnelStraight/tunnelStraight.i3d (1.06 ms)
+2026-07-22 17:10:30.420 data/maps/mapUS/textures/buildings/watchTower/watchtower.i3d (5.53 ms)
+2026-07-22 17:10:30.424 data/maps/mapUS/textures/buildings/waterTowers/waterTower01.i3d (3.13 ms)
+2026-07-22 17:10:30.426 data/maps/mapUS/textures/buildings/waterTowers/waterTower02.i3d (2.14 ms)
+2026-07-22 17:10:30.429 data/maps/mapUS/textures/buildings/waterTowers/waterTower03.i3d (2.75 ms)
+2026-07-22 17:10:30.432 data/maps/mapUS/textures/buildings/waterTowers/waterTower04.i3d (2.48 ms)
+2026-07-22 17:10:30.437 data/maps/mapUS/textures/buildings/waterTowers/waterTower05.i3d (2.35 ms)
+2026-07-22 17:10:30.440 data/maps/mapUS/textures/buildings/smallBridge5m/smallBridge5m.i3d (0.68 ms)
+2026-07-22 17:10:30.445 data/maps/mapUS/textures/buildings/bridgeRiverShort/bridgeRiverShort.i3d (4.75 ms)
+2026-07-22 17:10:30.447 data/maps/mapUS/textures/buildings/drainageBridge01/drainageBridge01.i3d (2.27 ms)
+2026-07-22 17:10:30.454 data/maps/mapUS/textures/buildings/railwayBridge02/railwayBridge02.i3d (5.98 ms)
+2026-07-22 17:10:30.458 data/maps/mapUS/textures/buildings/railwayBridge04/railwayBridge04.i3d (4.61 ms)
+2026-07-22 17:10:30.471 data/maps/mapUS/textures/buildings/bridgeRiver/bridgeRiver.i3d (13.00 ms)
+2026-07-22 17:10:30.480 data/maps/mapUS/textures/buildings/bridgeConcreteLong/bridgeConcreteLong.i3d (8.25 ms)
+2026-07-22 17:10:30.489 data/maps/mapUS/textures/buildings/bridgeRailroadShort/bridgeRailroadShort.i3d (9.92 ms)
+2026-07-22 17:10:30.491 data/maps/mapUS/textures/buildings/smallBridge14/smallBridge14.i3d (1.82 ms)
+2026-07-22 17:10:30.496 data/maps/mapUS/textures/buildings/riverBridge/riverBridge01.i3d (4.75 ms)
+2026-07-22 17:10:30.502 data/maps/mapUS/textures/buildings/drainageTunnel05/drainageTunnel05.i3d (5.56 ms)
+2026-07-22 17:10:30.504 data/maps/mapUS/textures/buildings/drainageTunnel04/drainageTunnel04.i3d (2.35 ms)
+2026-07-22 17:10:30.506 data/maps/mapUS/textures/buildings/drainageTunnel03/drainageTunnel03.i3d (2.10 ms)
+2026-07-22 17:10:30.510 data/maps/mapUS/textures/buildings/mobileBridge02/mobileBridge02.i3d (3.34 ms)
+2026-07-22 17:10:30.512 data/maps/mapUS/textures/props/crossingBarrier.i3d (1.58 ms)
+2026-07-22 17:10:30.514 data/maps/mapUS/textures/props/hydrant01.i3d (1.90 ms)
+2026-07-22 17:10:30.515 data/maps/mapUS/textures/props/hydrant03.i3d (0.97 ms)
+2026-07-22 17:10:30.516 data/maps/mapUS/textures/props/signPost01.i3d (0.95 ms)
+2026-07-22 17:10:30.517 data/maps/mapUS/textures/props/signWelcomeHome.i3d (1.48 ms)
+2026-07-22 17:10:30.519 data/maps/mapUS/textures/props/signRiver02.i3d (1.84 ms)
+2026-07-22 17:10:30.520 data/maps/mapUS/textures/props/pipeRoads.i3d (0.67 ms)
+2026-07-22 17:10:30.520 data/maps/mapUS/textures/props/signSet/signFun01.i3d (0.33 ms)
+2026-07-22 17:10:30.525 data/maps/mapUS/textures/props/fieldWaterControl.i3d (3.50 ms)
+2026-07-22 17:10:30.527 data/maps/mapUS/textures/props/signFarmMarket.i3d (2.62 ms)
+2026-07-22 17:10:30.529 data/maps/mapUS/textures/props/roadGate02.i3d (2.11 ms)
+2026-07-22 17:10:30.612 data/maps/mapUS/textures/backgroundMesh/backgroundMesh.i3d (79.18 ms)
+2026-07-22 17:10:30.636 data/maps/trees/downyServiceBerry/downyServiceBerry_stage03.i3d (24.49 ms)
+2026-07-22 17:10:30.642 data/maps/trees/downyServiceBerry/downyServiceBerry_stage02.i3d (6.32 ms)
+2026-07-22 17:10:30.656 data/maps/trees/americanElm/americanElm_stage02.i3d (12.85 ms)
+2026-07-22 17:10:30.673 data/maps/trees/americanElm/americanElm_stage05.i3d (17.16 ms)
+2026-07-22 17:10:30.690 data/maps/trees/americanElm/americanElm_stage04.i3d (16.95 ms)
+2026-07-22 17:10:30.713 data/maps/trees/shagbarkHickory/shagbarkHickory_stage04.i3d (23.32 ms)
+2026-07-22 17:10:30.739 data/maps/trees/boxelder/boxelder_stage03.i3d (26.13 ms)
+2026-07-22 17:10:30.774 data/maps/trees/oak/oak_stage03.i3d (34.34 ms)
+2026-07-22 17:10:30.808 data/maps/trees/shagbarkHickory/shagbarkHickory_stage03.i3d (32.87 ms)
+2026-07-22 17:10:30.816 data/maps/trees/downyServiceBerry/downyServiceBerry_stage01.i3d (7.12 ms)
+2026-07-22 17:10:30.849 data/maps/trees/oak/oak_stage05.i3d (32.41 ms)
+2026-07-22 17:10:30.883 data/maps/trees/aspen/aspen_stage04.i3d (33.56 ms)
+2026-07-22 17:10:30.887 data/maps/mapUS/textures/creek/creekH8L40Right.i3d (1.75 ms)
+2026-07-22 17:10:30.889 data/maps/mapUS/textures/creek/creekH8L40Left.i3d (2.28 ms)
+2026-07-22 17:10:30.892 data/maps/mapUS/textures/creek/creekH6L30Left.i3d (2.25 ms)
+2026-07-22 17:10:30.894 data/maps/mapUS/textures/creek/creekH4L20Center.i3d (2.31 ms)
+2026-07-22 17:10:30.897 data/maps/mapUS/textures/creek/waterFallRock04m.i3d (3.39 ms)
+2026-07-22 17:10:30.900 data/maps/mapUS/textures/creek/creekH6L30Right.i3d (2.19 ms)
+2026-07-22 17:10:30.921 data/maps/mapUS/textures/buildings/infrastructure/decalsInfrastucture.i3d (21.20 ms)
+2026-07-22 17:10:30.956 data/maps/mapUS/textures/buildings/infrastructure/infrastucture.i3d (34.95 ms)
+2026-07-22 17:10:30.973 data/maps/mapUS/textures/buildings/infrastructure/pavements.i3d (16.98 ms)
+2026-07-22 17:10:30.979 data/maps/mapUS/textures/props/railroads/railroadCrossings.i3d (5.93 ms)
+2026-07-22 17:10:31.008 data/maps/mapUS/textures/props/signSet/signTruckUseLowGear.i3d (0.65 ms)
+2026-07-22 17:10:31.010 data/maps/mapUS/textures/props/signRiverAccess.i3d (2.02 ms)
+2026-07-22 17:10:31.011 data/maps/mapUS/textures/props/signSet/signSchool01.i3d (0.22 ms)
+2026-07-22 17:10:31.011 data/maps/mapUS/textures/props/signSet/sign27angle.i3d (0.22 ms)
+2026-07-22 17:10:31.012 data/maps/mapUS/textures/buildings/riverRestaurant/riverRestaurantSign.i3d (0.87 ms)
+2026-07-22 17:10:31.012 data/maps/mapUS/textures/props/signSet/signsignSecureYourLoad.i3d (0.20 ms)
+2026-07-22 17:10:31.020 data/maps/trees/shagbarkHickory/shagbarkHickory_stage02.i3d (6.31 ms)
+2026-07-22 17:10:31.051 data/maps/trees/northernCatalpa/northernCatalpa_stage03.i3d (30.20 ms)
+2026-07-22 17:10:31.088 data/maps/trees/northernCatalpa/northernCatalpa_stage04.i3d (36.76 ms)
+2026-07-22 17:10:31.099 data/maps/trees/americanElm/americanElm_stage03.i3d (9.23 ms)
+2026-07-22 17:10:31.110 data/maps/trees/lodgepolePine/lodgepolePine_stage02.i3d (10.25 ms)
+2026-07-22 17:10:31.117 data/maps/trees/lodgepolePine/lodgepolePine_stage03.i3d (6.71 ms)
+2026-07-22 17:10:31.128 data/maps/trees/aspen/aspen_stage03.i3d (10.96 ms)
+2026-07-22 17:10:31.134 data/maps/trees/aspen/aspen_stage02.i3d (6.41 ms)
+2026-07-22 17:10:31.165 data/maps/trees/aspen/aspen_stage05.i3d (30.84 ms)
+2026-07-22 17:10:31.171 data/maps/trees/lodgepolePine/lodgepolePine_stage01.i3d (5.08 ms)
+2026-07-22 17:10:31.182 data/maps/trees/americanElm/americanElm_stage01.i3d (8.45 ms)
+2026-07-22 17:10:31.191 data/maps/trees/deadwood/deadwood.i3d (6.75 ms)
+2026-07-22 17:10:31.202 data/maps/trees/boxelder/boxelder_stage01.i3d (8.35 ms)
+2026-07-22 17:10:31.224 data/maps/trees/boxelder/boxelder_stage02.i3d (21.40 ms)
+2026-07-22 17:10:31.230 data/maps/trees/aspen/aspen_stage01.i3d (6.36 ms)
+2026-07-22 17:10:31.246 data/maps/trees/aspen/aspen_stage06_var02.i3d (16.12 ms)
+2026-07-22 17:10:31.266 data/maps/trees/aspen/aspen_stage06_var01.i3d (19.23 ms)
+2026-07-22 17:10:31.280 data/maps/trees/northernCatalpa/northernCatalpa_stage02.i3d (12.57 ms)
+2026-07-22 17:10:31.296 data/maps/trees/shagbarkHickory/shagbarkHickory_stage01.i3d (14.11 ms)
+2026-07-22 17:10:31.327 data/maps/trees/oak/oak_stage04.i3d (30.72 ms)
+2026-07-22 17:10:31.338 data/maps/trees/northernCatalpa/northernCatalpa_stage01.i3d (10.06 ms)
+2026-07-22 17:10:31.357 data/maps/trees/lodgepolePine/lodgepolePine_stage03Var2.i3d (7.20 ms)
+2026-07-22 17:10:31.406 data/maps/mapUS/textures/powerLines.i3d (9.81 ms)
+2026-07-22 17:10:31.412 data/placeables/brandless/lightsResidential/streetLight03/streetLight03b.i3d (1.14 ms)
+2026-07-22 17:10:31.414 data/maps/mapUS/textures/props/electricConnection01.i3d (1.12 ms)
+2026-07-22 17:10:31.431 Procedural Placement's unprocessed height map not set
+2026-07-22 17:10:31.437 data/maps/mapUS/mapUS.i3d (3004.13 ms)
+2026-07-22 17:10:31.490 data/maps/mapUS/sounds/sounds.i3d (52.77 ms)
+2026-07-22 17:10:31.493 data/foliage/decoBush/decoBush.i3d (51.75 ms)
+2026-07-22 17:10:31.494 Info: transform group 'data/maps/mapUS/data/densityMap_groundFoliage.png' has elements very far out from the cell edge (59.65% expansion)
+2026-07-22 17:10:31.598 data/foliage/decoFoliage/decoFoliageUS.i3d (103.89 ms)
+2026-07-22 17:10:31.652 data/foliage/decoBush/decoBushUS/decoBushUS.i3d (51.69 ms)
+2026-07-22 17:10:31.660 dataS/character/playerM/fullBody/fullBodyNpcQG01.i3d (170.47 ms)
+2026-07-22 17:10:31.666 data/foliage/meadow/meadowUS/meadowUS.i3d (10.53 ms)
+2026-07-22 17:10:31.666 Warning (performance): Foliage lod 1 mesh 'meadow' 'cutRolled' 'roller' is much larger than lod 0 mesh (min/maxY (-0.011/0.104 vs -0.030/0.054).
+2026-07-22 17:10:31.705 data/foliage/forestPlants/forestPlants.i3d (39.14 ms)
+2026-07-22 17:10:31.722 data/foliage/waterPlants/waterPlants.i3d (16.08 ms)
+2026-07-22 17:10:31.744 data/foliage/grass/grass.i3d (21.66 ms)
+2026-07-22 17:10:31.744 Warning (performance): Foliage lod 1 mesh 'grass' 'cutRolled' 'roller' is much larger than lod 0 mesh (min/maxY (0.016/0.128 vs -0.127/0.044).
+2026-07-22 17:10:31.767 dataS/character/playerM/heads/npcQG01.i3d (107.07 ms)
+2026-07-22 17:10:31.772 data/foliage/wheat/wheat.i3d (27.78 ms)
+2026-07-22 17:10:31.784 dataS/character/playerM/pants/botJeans.i3d (17.18 ms)
+2026-07-22 17:10:31.798 data/foliage/canola/canola.i3d (25.72 ms)
+2026-07-22 17:10:31.826 data/foliage/barley/barley.i3d (28.45 ms)
+2026-07-22 17:10:31.861 data/foliage/maize/maize.i3d (34.48 ms)
+2026-07-22 17:10:31.889 data/foliage/potato/potato.i3d (27.64 ms)
+2026-07-22 17:10:31.897 data/foliage/potato/potatoHaulm.i3d (7.20 ms)
+2026-07-22 17:10:31.923 data/foliage/sugarbeet/sugarbeet.i3d (26.06 ms)
+2026-07-22 17:10:31.926 data/foliage/sugarbeet/sugarbeetHaulm.i3d (2.47 ms)
+2026-07-22 17:10:31.954 data/foliage/sunflower/sunflower.i3d (27.88 ms)
+2026-07-22 17:10:31.980 data/foliage/soybean/soybean.i3d (25.90 ms)
+2026-07-22 17:10:31.985 data/foliage/oilseedRadish/oilseedRadish.i3d (4.79 ms)
+2026-07-22 17:10:32.005 data/foliage/poplar/poplar.i3d (20.20 ms)
+2026-07-22 17:10:32.021 dataS/character/playerM/heads/mHead08.i3d (236.90 ms)
+2026-07-22 17:10:32.033 data/foliage/oat/oat.i3d (28.00 ms)
+2026-07-22 17:10:32.039 dataS/character/playerM/shirts/topPlaidShirt01.i3d (17.66 ms)
+2026-07-22 17:10:32.045 dataS/character/playerM/shoes/workboot01.i3d (6.30 ms)
+2026-07-22 17:10:32.060 data/foliage/sugarcane/sugarcane.i3d (26.73 ms)
+2026-07-22 17:10:32.062 data/foliage/sugarcane/sugarCaneHaulm.i3d (1.23 ms)
+2026-07-22 17:10:32.088 dataS/character/playerM/hairStyles/hairStyleSideParted.i3d (42.60 ms)
+2026-07-22 17:10:32.101 data/foliage/cotton/cotton.i3d (38.93 ms)
+2026-07-22 17:10:32.132 data/foliage/sorghum/sorghum.i3d (31.16 ms)
+2026-07-22 17:10:32.158 data/foliage/beetRoot/beetRoot.i3d (25.51 ms)
+2026-07-22 17:10:32.161 data/foliage/beetRoot/beetRootHaulm.i3d (2.31 ms)
+2026-07-22 17:10:32.184 data/foliage/carrot/carrot.i3d (23.83 ms)
+2026-07-22 17:10:32.187 data/foliage/carrot/carrotHaulm.i3d (2.05 ms)
+2026-07-22 17:10:32.211 data/foliage/parsnip/parsnip.i3d (23.61 ms)
+2026-07-22 17:10:32.213 data/foliage/parsnip/parsnipHaulm.i3d (2.13 ms)
+2026-07-22 17:10:32.214 data/foliage/grape/grape.i3d (0.74 ms)
+2026-07-22 17:10:32.215 data/foliage/olive/olive.i3d (0.76 ms)
+2026-07-22 17:10:32.241 dataS/character/playerM/heads/mHead04.i3d (152.74 ms)
+2026-07-22 17:10:32.241 data/foliage/riceLongGrain/riceLongGrain.i3d (26.02 ms)
+2026-07-22 17:10:32.243 data/foliage/riceLongGrain/riceLongGrainHaulm.i3d (2.07 ms)
+2026-07-22 17:10:32.253 dataS/character/playerM/shirts/topCollaredShirt01.i3d (12.73 ms)
+2026-07-22 17:10:32.258 dataS/character/playerM/attachments/headgearBallcap.i3d (4.52 ms)
+2026-07-22 17:10:32.266 dataS/character/playerM/attachments/glassesClassic.i3d (7.91 ms)
+2026-07-22 17:10:32.271 data/foliage/rice/rice.i3d (27.21 ms)
+2026-07-22 17:10:32.272 dataS/character/playerM/shoes/sneaker01.i3d (6.32 ms)
+2026-07-22 17:10:32.273 data/foliage/rice/riceHaulm.i3d (1.93 ms)
+2026-07-22 17:10:32.299 dataS/character/playerM/hairStyles/hairStyle3070.i3d (26.77 ms)
+2026-07-22 17:10:32.300 data/foliage/greenBean/greenBean.i3d (27.63 ms)
+2026-07-22 17:10:32.303 data/foliage/greenBean/greenBeanHaulm.i3d (2.18 ms)
+2026-07-22 17:10:32.315 dataS/character/playerM/hairStyles/hairStyleBuzzCut01.i3d (16.05 ms)
+2026-07-22 17:10:32.329 data/foliage/pea/pea.i3d (26.13 ms)
+2026-07-22 17:10:32.348 dataS/character/playerM/heads/mHead07.i3d (32.96 ms)
+2026-07-22 17:10:32.348 data/foliage/pea/peaHaulm.i3d (19.07 ms)
+2026-07-22 17:10:32.376 data/foliage/spinach/spinach.i3d (28.19 ms)
+2026-07-22 17:10:32.377 Info: transform group 'data/maps/mapUS/data/densityMap_fruits.png' has elements very far out from the cell edge (79.00% expansion)
+2026-07-22 17:10:32.393 data/foliage/weed/weed.i3d (15.57 ms)
+2026-07-22 17:10:32.400 data/foliage/stone/stone.i3d (6.46 ms)
+2026-07-22 17:10:32.454 dataS/character/playerM/jacket/topFarmJacketM.i3d (106.21 ms)
+2026-07-22 17:10:32.458 dataS/character/playerM/attachments/headgearVintage.i3d (4.01 ms)
+2026-07-22 17:10:32.476 dataS/character/playerM/shoes/workboot02.i3d (17.64 ms)
+2026-07-22 17:10:32.514 dataS/character/playerF/fullBody/onePieceSynthetic.i3d (38.14 ms)
+2026-07-22 17:10:32.671 dataS/character/playerF/heads/fHead01.i3d (156.85 ms)
+2026-07-22 17:10:32.687 dataS/character/playerF/shoes/galoshes.i3d (15.77 ms)
+2026-07-22 17:10:32.717 dataS/character/playerF/hairStyles/hairStyleWavy03.i3d (30.26 ms)
+2026-07-22 17:10:32.719 data/maps/mapUS/licensePlates/licensePlatesUS.i3d (2.23 ms)
+2026-07-22 17:10:32.740 data/effects/cutter/maize/maize_harvestReadyDry.i3d (20.94 ms)
+2026-07-22 17:10:32.755 data/effects/cutter/sunflower/sunflower_harvestReady.i3d (14.73 ms)
+2026-07-22 17:10:32.763 data/effects/cutter/maize/maize_harvestReadyGreen.i3d (7.99 ms)
+2026-07-22 17:10:32.775 data/effects/cutter/grass/grass_greenBig.i3d (11.90 ms)
+2026-07-22 17:10:32.786 data/effects/cutter/grass/grass_harvestReady.i3d (11.14 ms)
+2026-07-22 17:10:32.809 data/effects/cutter/sunflower/sunflower_greenBig.i3d (22.38 ms)
+2026-07-22 17:10:32.826 data/effects/cutter/wheat/wheat_greenBig.i3d (17.05 ms)
+2026-07-22 17:10:32.848 data/effects/cutter/wheat/wheat_harvestReady.i3d (21.93 ms)
+2026-07-22 17:10:32.865 data/effects/cutter/barley/barley_greenBig.i3d (16.98 ms)
+2026-07-22 17:10:32.887 data/effects/cutter/barley/barley_harvestReady.i3d (22.24 ms)
+2026-07-22 17:10:32.907 data/effects/cutter/oat/oat_greenBig.i3d (19.70 ms)
+2026-07-22 17:10:32.925 FoliageTransformGroup 'data/maps/mapUS/data/densityMap_groundFoliage.png' may need space for up to 423200 instances (200 per cell x 2116 cells)
+2026-07-22 17:10:32.935 data/effects/cutter/oat/oat_harvestReady.i3d (28.82 ms)
+2026-07-22 17:10:32.952 data/effects/cutter/canola/canola_greenBig.i3d (16.17 ms)
+2026-07-22 17:10:32.975 data/effects/cutter/canola/canola_harvestReady.i3d (23.19 ms)
+2026-07-22 17:10:32.987 data/effects/cutter/soybean/soybean_greenBig.i3d (12.24 ms)
+2026-07-22 17:10:32.996 FoliageTransformGroup 'data/maps/mapUS/data/densityMap_fruits.png' may need space for up to 7312896 instances (3456 per cell x 2116 cells)
+2026-07-22 17:10:33.002 data/effects/cutter/soybean/soybean_harvestReady.i3d (15.10 ms)
+2026-07-22 17:10:33.004 FoliageTransformGroup 'data/maps/mapUS/data/densityMap_weed.png' may need space for up to 401408 instances (512 per cell x 784 cells)
+2026-07-22 17:10:33.005 FoliageTransformGroup 'data/maps/mapUS/data/densityMap_stones.png' may need space for up to 524288 instances (512 per cell x 1024 cells)
+2026-07-22 17:10:33.020 data/effects/cutter/sorghum/sorghum_greenBig.i3d (17.21 ms)
+2026-07-22 17:10:33.032 data/effects/cutter/sorghum/sorghum_harvestReady.i3d (12.72 ms)
+2026-07-22 17:10:33.040 data/effects/cutter/riceLongGrain/riceLongGrain_greenBig.i3d (7.35 ms)
+2026-07-22 17:10:33.049 data/effects/cutter/riceLongGrain/riceLongGrain_harvestReady.i3d (9.37 ms)
+2026-07-22 17:10:33.056 data/effects/cutter/rice/rice_greenBig.i3d (7.06 ms)
+2026-07-22 17:10:33.058 data/effects/cutter/rice/rice_harvestReady_grain.i3d (2.03 ms)
+2026-07-22 17:10:33.065 data/effects/cutter/rice/rice_harvestReady_forage.i3d (7.05 ms)
+2026-07-22 17:10:33.068 data/effects/cutter/maize/maize_fruits.i3d (2.97 ms)
+2026-07-22 17:10:33.070 data/effects/cutter/sunflower/sunflower_fruits.i3d (1.80 ms)
+2026-07-22 17:10:33.073 data/effects/cutter/maize/maize_threshing.i3d (2.87 ms)
+2026-07-22 17:10:33.075 data/effects/cutter/sunflower/sunflower_threshing.i3d (2.37 ms)
+2026-07-22 17:10:33.087 data/effects/fertilizer/fertilizer.i3d (11.54 ms)
+2026-07-22 17:10:33.115 data/effects/chopper/strawChopper.i3d (28.32 ms)
+2026-07-22 17:10:33.122 data/effects/tedder/tedder.i3d (6.97 ms)
+2026-07-22 17:10:33.129 data/effects/topLifting/beetRoot/beetRoot_fruitsLeaves.i3d (6.82 ms)
+2026-07-22 17:10:33.133 data/effects/topLifting/beetRoot/beetRoot_fruitsClean.i3d (3.67 ms)
+2026-07-22 17:10:33.137 data/effects/topLifting/beetRoot/beetRoot_threshing.i3d (4.64 ms)
+2026-07-22 17:10:33.142 data/effects/topLifting/carrot/carrot_fruitsLeaves.i3d (4.51 ms)
+2026-07-22 17:10:33.144 data/effects/topLifting/carrot/carrot_fruitsClean.i3d (2.03 ms)
+2026-07-22 17:10:33.151 data/effects/topLifting/carrot/carrot_threshing.i3d (6.79 ms)
+2026-07-22 17:10:33.155 data/effects/topLifting/parsnip/parsnip_fruitsLeaves.i3d (4.25 ms)
+2026-07-22 17:10:33.157 data/effects/topLifting/parsnip/parsnip_fruitsClean.i3d (1.71 ms)
+2026-07-22 17:10:33.164 data/effects/topLifting/parsnip/parsnip_threshing.i3d (6.74 ms)
+2026-07-22 17:10:33.174 data/effects/windrower/windrower.i3d (10.23 ms)
+2026-07-22 17:10:33.194 data/effects/cultivator/cultivator.i3d (20.12 ms)
+2026-07-22 17:10:33.207 data/effects/plow/plow.i3d (12.84 ms)
+2026-07-22 17:10:33.230 data/effects/pickup/pickupIN.i3d (23.55 ms)
+2026-07-22 17:10:33.232 data/effects/pickup/pickupOUT.i3d (1.64 ms)
+2026-07-22 17:10:33.247 data/effects/mower/mower.i3d (15.27 ms)
+2026-07-22 17:10:33.249 data/effects/mixerWagon/mixerWagon.i3d (2.14 ms)
+2026-07-22 17:10:33.253 data/effects/grape/grape_fruitsLeaves.i3d (3.63 ms)
+2026-07-22 17:10:33.255 data/effects/grape/grape_fruitsClean.i3d (1.69 ms)
+2026-07-22 17:10:33.256 data/effects/grape/grape_fruitsHarvested.i3d (1.01 ms)
+2026-07-22 17:10:33.257 data/effects/grape/grape_threshing.i3d (0.83 ms)
+2026-07-22 17:10:33.258 data/effects/grape/grape_prePruner.i3d (0.92 ms)
+2026-07-22 17:10:33.261 data/effects/olive/olive_fruitsLeaves.i3d (3.15 ms)
+2026-07-22 17:10:33.265 data/effects/olive/olive_fruitsClean.i3d (3.75 ms)
+2026-07-22 17:10:33.267 data/effects/olive/olive_threshing.i3d (2.50 ms)
+2026-07-22 17:10:33.276 data/effects/manure/manure.i3d (8.73 ms)
+2026-07-22 17:10:33.278 data/effects/stone/small/stone.i3d (2.62 ms)
+2026-07-22 17:10:33.281 data/effects/stone/medium/stone.i3d (2.91 ms)
+2026-07-22 17:10:33.285 data/effects/stone/big/stone.i3d (3.87 ms)
+2026-07-22 17:10:33.286 data/effects/wood/wood_cutter.i3d (1.29 ms)
+2026-07-22 17:10:33.289 data/effects/sugarcane/sugarcane_prepareFruit.i3d (2.10 ms)
+2026-07-22 17:10:33.293 data/effects/sugarcane/sugarcane_chopper.i3d (3.89 ms)
+2026-07-22 17:10:33.294 data/effects/sugarcane/sugarcane_chaffer.i3d (1.65 ms)
+2026-07-22 17:10:33.295 data/effects/sugarcane/sugarcane_cutter.i3d (0.70 ms)
+2026-07-22 17:10:33.304 data/effects/snow/snowPieces.i3d (8.73 ms)
+2026-07-22 17:10:33.307 data/effects/snow/snowDust.i3d (3.68 ms)
+2026-07-22 17:10:33.310 data/effects/greenbean/greenbean_beltFruitsLeaves.i3d (2.74 ms)
+2026-07-22 17:10:33.312 data/effects/greenbean/greenbean_beltFruitsClean.i3d (1.81 ms)
+2026-07-22 17:10:33.314 data/effects/greenbean/greenbean_beltLeaves.i3d (1.64 ms)
+2026-07-22 17:10:33.316 data/effects/greenbean/greenbean_threshing.i3d (2.78 ms)
+2026-07-22 17:10:33.317 data/effects/greenbean/greenbean_threshingBelt.i3d (0.73 ms)
+2026-07-22 17:10:33.322 data/effects/water/water.i3d (4.99 ms)
+2026-07-22 17:10:33.336 dataS/character/playerM/pants/botLeather.i3d (13.57 ms)
+2026-07-22 17:10:33.485 dataS/character/playerM/heads/mHead01.i3d (149.77 ms)
+2026-07-22 17:10:33.510 dataS/character/playerM/jacket/topLeatherJacket.i3d (24.29 ms)
+2026-07-22 17:10:33.518 dataS/character/playerM/attachments/headgearCowboy.i3d (8.67 ms)
+2026-07-22 17:10:33.538 dataS/character/playerM/shoes/cowboy.i3d (19.42 ms)
+2026-07-22 17:10:33.563 dataS/character/playerM/hairStyles/hairStyleDiablo.i3d (24.81 ms)
+2026-07-22 17:10:33.577 dataS/character/playerM/pants/botCargo.i3d (13.97 ms)
+2026-07-22 17:10:33.578 dataS/character/playerM/shirts/topTShirt01.i3d (1.53 ms)
+2026-07-22 17:10:33.598 dataS/character/playerM/shoes/elten/maddoxLowYellow.i3d (19.84 ms)
+2026-07-22 17:10:33.623 dataS/character/playerM/hairStyles/hairStyleMullet.i3d (24.81 ms)
+2026-07-22 17:10:33.629 dataS/character/playerM/facialHair/mHead01/horseshoeMustache1.i3d (6.53 ms)
+2026-07-22 17:10:33.650 dataS/character/playerM/jacket/topSlimCoat.i3d (20.82 ms)
+2026-07-22 17:10:33.654 dataS/character/playerM/gloves/glovesHorseRiding.i3d (3.40 ms)
+2026-07-22 17:10:33.730 dataS/character/playerM/shoes/elten/terenceXXG5.i3d (76.30 ms)
+2026-07-22 17:10:33.752 dataS/character/playerM/fullBody/onePieceMechanic.i3d (22.38 ms)
+2026-07-22 17:10:33.759 dataS/character/playerM/heads/mHead02.i3d (6.04 ms)
+2026-07-22 17:10:33.772 dataS/character/playerM/shoes/riding.i3d (13.18 ms)
+2026-07-22 17:10:33.798 dataS/character/playerM/hairStyles/hairStyleUnkempt.i3d (26.42 ms)
+2026-07-22 17:10:33.813 dataS/character/playerM/facialHair/mHead02/goatee01.i3d (14.53 ms)
+2026-07-22 17:10:33.817 dataS/character/playerM/fullBody/onePieceSynthetic.i3d (3.86 ms)
+2026-07-22 17:10:33.842 dataS/character/playerM/hairStyles/hairStyleReceding01.i3d (25.15 ms)
+2026-07-22 17:10:33.848 dataS/character/playerM/facialHair/mHead02/walrusXL.i3d (6.59 ms)
+2026-07-22 17:10:34.002 dataS/character/playerM/heads/mHead03.i3d (153.53 ms)
+2026-07-22 17:10:34.027 dataS/character/playerM/hairStyles/hairStyleMidParted01.i3d (25.31 ms)
+2026-07-22 17:10:34.037 dataS/character/playerM/pants/botChinos.i3d (10.15 ms)
+2026-07-22 17:10:34.055 dataS/character/playerM/jacket/topPuffJacket.i3d (17.16 ms)
+2026-07-22 17:10:34.081 dataS/character/playerM/hairStyles/hairStyleFringe.i3d (26.16 ms)
+2026-07-22 17:10:34.091 dataS/character/playerM/facialHair/mHead03/goatee01.i3d (9.95 ms)
+2026-07-22 17:10:34.108 dataS/character/playerM/jacket/topDeckJacket.i3d (17.36 ms)
+2026-07-22 17:10:34.132 dataS/character/playerM/hairStyles/hairStyleBaldTop.i3d (23.46 ms)
+2026-07-22 17:10:34.140 dataS/character/playerM/facialHair/mHead04/trimmedBeard.i3d (8.11 ms)
+2026-07-22 17:10:34.153 dataS/character/playerM/pants/botSlacks.i3d (12.87 ms)
+2026-07-22 17:10:34.153 dataS/character/playerM/attachments/glassesVintage.i3d (0.67 ms)
+2026-07-22 17:10:34.173 dataS/character/playerM/shoes/newHolland/newHolland01.i3d (19.44 ms)
+2026-07-22 17:10:34.198 dataS/character/playerM/hairStyles/hairStyleManBun.i3d (25.15 ms)
+2026-07-22 17:10:34.208 dataS/character/playerM/facialHair/mHead04/goatee01.i3d (9.63 ms)
+2026-07-22 17:10:34.359 dataS/character/playerM/heads/mHead05.i3d (151.20 ms)
+2026-07-22 17:10:34.432 dataS/character/playerM/shirts/zipNeckPullover.i3d (73.43 ms)
+2026-07-22 17:10:34.440 dataS/character/playerM/facialHair/mHead05/goatee02.i3d (7.64 ms)
+2026-07-22 17:10:34.588 dataS/character/playerM/heads/mHead06.i3d (148.34 ms)
+2026-07-22 17:10:34.595 dataS/character/playerM/facialHair/mHead01/walrusTame.i3d (6.63 ms)
+2026-07-22 17:10:34.597 dataS/character/playerF/pants/botCargo.i3d (2.37 ms)
+2026-07-22 17:10:34.615 dataS/character/playerF/jacket/topVest.i3d (17.86 ms)
+2026-07-22 17:10:34.617 dataS/character/playerF/shoes/workboot02.i3d (2.15 ms)
+2026-07-22 17:10:34.625 Virtual Texture initialized at 8388608 x 8388608 resolution
+2026-07-22 17:10:34.643 dataS/character/playerF/hairStyles/hairStylePonyTail03.i3d (25.89 ms)
+2026-07-22 17:10:34.645 dataS/character/playerF/pants/botJeans.i3d (2.20 ms)
+2026-07-22 17:10:34.648 dataS/character/playerF/shirts/zipNeckPullover.i3d (2.41 ms)
+2026-07-22 17:10:34.648 dataS/character/playerF/attachments/glassesClassic.i3d (0.53 ms)
+2026-07-22 17:10:34.650 dataS/character/playerF/shoes/sneaker01.i3d (2.00 ms)
+2026-07-22 17:10:34.659 dataS/character/playerF/pants/botYogaPants.i3d (8.63 ms)
+2026-07-22 17:10:34.743 dataS/character/playerF/heads/fHead02.i3d (83.65 ms)
+2026-07-22 17:10:34.781 dataS/character/playerF/shirts/topTankTop.i3d (38.64 ms)
+2026-07-22 17:10:34.855 dataS/character/playerF/shoes/sportSneaker.i3d (73.98 ms)
+2026-07-22 17:10:34.881 dataS/character/playerF/hairStyles/hairStyleLongSideParted.i3d (25.46 ms)
+2026-07-22 17:10:34.897 dataS/character/playerF/pants/botJeansCapris.i3d (16.49 ms)
+2026-07-22 17:10:34.915 dataS/character/playerF/jacket/topWindBreaker.i3d (17.16 ms)
+2026-07-22 17:10:34.975 dataS/character/playerF/shoes/laceUpSneaker.i3d (60.84 ms)
+2026-07-22 17:10:35.000 dataS/character/playerF/hairStyles/hairStyleStraightSideBang.i3d (24.94 ms)
+2026-07-22 17:10:35.150 dataS/character/playerF/heads/fHead03.i3d (149.23 ms)
+2026-07-22 17:10:35.171 dataS/character/playerF/jacket/topDenimJacket.i3d (20.81 ms)
+2026-07-22 17:10:35.172 dataS/character/playerF/shoes/workboot01.i3d (1.30 ms)
+2026-07-22 17:10:35.323 dataS/character/playerF/heads/fHead04.i3d (150.65 ms)
+2026-07-22 17:10:35.330 dataS/character/playerF/shirts/topLightSweater.i3d (6.97 ms)
+2026-07-22 17:10:35.330 dataS/character/playerF/attachments/glassesReading.i3d (0.74 ms)
+2026-07-22 17:10:35.332 dataS/character/playerF/shoes/newHolland/newHolland01.i3d (1.86 ms)
+2026-07-22 17:10:35.358 dataS/character/playerF/hairStyles/hairStyleMeryl.i3d (25.36 ms)
+2026-07-22 17:10:35.360 dataS/character/playerF/pants/botChinos.i3d (2.00 ms)
+2026-07-22 17:10:35.443 dataS/character/playerF/heads/fHead06.i3d (83.11 ms)
+2026-07-22 17:10:35.485 dataS/character/playerF/shirts/topBlouse.i3d (42.75 ms)
+2026-07-22 17:10:35.512 dataS/character/playerF/hairStyles/hairStyleMidSideParted.i3d (26.77 ms)
+2026-07-22 17:10:38.828 data/effects/cultivator/particle/soilParticle.i3d (12.14 ms)
+2026-07-22 17:10:38.831 data/effects/cultivator/cultivatorMeshes_materialHolder.i3d (3.01 ms)
+2026-07-22 17:10:38.837 data/effects/slurry/slurryEffects_materialHolder.i3d (6.27 ms)
+2026-07-22 17:10:38.850 data/effects/unload/unloadMeshes_materialHolder.i3d (13.01 ms)
+2026-07-22 17:10:38.855 data/effects/unload/unloadParticles_materialHolder.i3d (5.17 ms)
+2026-07-22 17:10:38.856 data/effects/unload/unloadParticles.i3d (0.50 ms)
+2026-07-22 17:10:38.856 data/effects/smoke/smokeParticles.i3d (0.46 ms)
+2026-07-22 17:10:38.857 data/effects/smoke/smokeParticles_materialHolder.i3d (0.36 ms)
+2026-07-22 17:10:38.859 data/effects/smoke/industrial/smokeParticles.i3d (1.86 ms)
+2026-07-22 17:10:38.860 data/effects/wheel/wheelParticles.i3d (1.16 ms)
+2026-07-22 17:10:38.860 data/effects/bees/beesParticles.i3d (0.60 ms)
+2026-07-22 17:10:38.861 data/effects/horse/horseStepParticleSystem.i3d (0.28 ms)
+2026-07-22 17:10:38.861 data/effects/sprayer/particle/washer.i3d (0.25 ms)
+2026-07-22 17:10:38.865 data/effects/sprayer/sprayerMeshes_materialHolder.i3d (3.84 ms)
+2026-07-22 17:10:38.869 data/effects/sprayCan/sprayCan_materialHolder.i3d (4.53 ms)
+2026-07-22 17:10:38.870 data/effects/sprayCan/particle/sprayCan.i3d (0.27 ms)
+2026-07-22 17:10:38.870 data/effects/leveler/levelerMeshes_materialHolder.i3d (0.70 ms)
+2026-07-22 17:10:38.873 data/effects/wood/particle/forestry.i3d (2.45 ms)
+2026-07-22 17:10:38.887 data/effects/belt/beltMeshes_materialHolder.i3d (13.92 ms)
+2026-07-22 17:10:38.888   Warning (beltMeshes_materialHolder|beltOnionDirt_materialHolder (7)): Unknown fillType "ONION" in user attribute 'fillType' for "MaterialUtil.onCreateMaterial"
+2026-07-22 17:10:38.888   Warning (beltMeshes_materialHolder|beltOnionClean_materialHolder (8)): Unknown fillType "ONION" in user attribute 'fillType' for "MaterialUtil.onCreateMaterial"
+2026-07-22 17:10:38.889 data/effects/potato/particle/potato.i3d (2.37 ms)
+2026-07-22 17:10:38.891 data/effects/sugarBeet/particle/sugarBeet.i3d (2.13 ms)
+2026-07-22 17:10:38.893 data/effects/cotton/particle/cotton.i3d (1.22 ms)
+2026-07-22 17:10:38.897 data/effects/stone/particle/stone.i3d (4.30 ms)
+2026-07-22 17:10:38.898 data/effects/hydraulicHammer/particle/debris.i3d (1.38 ms)
+2026-07-22 17:10:38.900 data/effects/hydraulicHammer/particle/smoke.i3d (1.65 ms)
+2026-07-22 17:10:38.900 data/effects/hydraulicHammer/particle/smokeDestroy.i3d (0.54 ms)
+2026-07-22 17:10:38.901 data/effects/smoke/train/smokeMainParticles.i3d (0.31 ms)
+2026-07-22 17:10:38.901 data/effects/smoke/train/smokeSideParticles.i3d (0.17 ms)
+2026-07-22 17:10:38.909 data/shared/materialHolders/tensionBelts/tensionBeltMaterialHolder.i3d (7.69 ms)
+2026-07-22 17:10:38.912 data/shared/materialHolders/tireTrackMaterialHolder.i3d (2.98 ms)
+2026-07-22 17:10:38.912 data/shared/materialHolders/waterSimulationMaterialHolder.i3d (0.44 ms)
+2026-07-22 17:10:38.916 data/fillPlanes/fillPlane_materialHolder.i3d (3.93 ms)
+2026-07-22 17:10:38.917 data/objects/bales/wrapBale_materialHolder.i3d (1.00 ms)
+2026-07-22 17:10:38.937 dataS/character/playerM/heads/npcQG01FacialAnim.i3d (20.42 ms)
+2026-07-22 17:10:38.948 dataS/character/playerM/heads/mHead08FacialAnim.i3d (10.64 ms)
+2026-07-22 17:10:38.956 dataS/character/playerM/heads/mHead04FacialAnim.i3d (7.83 ms)
+2026-07-22 17:10:38.972 dataS/character/playerM/heads/mHead07FacialAnim.i3d (15.70 ms)
+2026-07-22 17:10:38.980 dataS/character/playerF/heads/fHead01FacialAnim.i3d (7.97 ms)
+2026-07-22 17:10:39.174 dataS/character/playerM/heads/npcQG01FacialAnimExpressions.i3d (2.44 ms)
+2026-07-22 17:10:39.176 dataS/character/playerM/heads/mHead08FacialAnimExpressions.i3d (2.14 ms)
+2026-07-22 17:10:39.178 dataS/character/playerM/heads/mHead04FacialAnimExpressions.i3d (2.13 ms)
+2026-07-22 17:10:39.181 dataS/character/playerM/heads/mHead07FacialAnimExpressions.i3d (2.13 ms)
+2026-07-22 17:10:39.183 dataS/character/playerF/heads/fHead01FacialAnimExpressions.i3d (2.16 ms)
+2026-07-22 17:10:39.631 data/shared/ai/fieldCourseVisuals.i3d (3.26 ms)
+2026-07-22 17:10:39.633 data/placeables/mapUS/trainSystem/trainSystem.i3d (1.97 ms)
+2026-07-22 17:10:39.633 data/shared/assets/marker/markerIconSleep.i3d (0.60 ms)
+2026-07-22 17:10:39.634 data/shared/assets/marker/markerIconWardrobe.i3d (0.28 ms)
+2026-07-22 17:10:39.637 data/placeables/mapUS/farmHouse01/farmHouse01Props.i3d (3.48 ms)
+2026-07-22 17:10:39.638 data/shared/assets/lights/lizard/buildings/industrialLight03.i3d (0.83 ms)
+2026-07-22 17:10:39.645 data/shared/assets/lights/rudolfHormann/powerSwitch.i3d (2.07 ms)
+2026-07-22 17:10:39.646 data/shared/assets/lights/lizard/buildings/industrialWallLight.i3d (0.93 ms)
+2026-07-22 17:10:39.658 data/maps/mapUS/textures/props/hydrant04.i3d (0.32 ms)
+2026-07-22 17:10:39.658 data/maps/mapAS/textures/props/wheelOld/wheelOld01.i3d (0.27 ms)
+2026-07-22 17:10:39.658 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.18 ms)
+2026-07-22 17:10:39.660 data/placeables/mapUS/garage01/garage01Props.i3d (7.12 ms)
+2026-07-22 17:10:39.662 data/shared/assets/lights/terraLed/fluorescentTube50W.i3d (2.29 ms)
+2026-07-22 17:10:39.668 data/shared/assets/marker/markerIconWater.i3d (0.51 ms)
+2026-07-22 17:10:39.669 data/placeables/mapUS/decoration/waterPumpTowerOld/waterPumpTowerOld.i3d (1.33 ms)
+2026-07-22 17:10:39.669 data/shared/assets/marker/markerIconExclamationMark.i3d (0.14 ms)
+2026-07-22 17:10:39.670 data/shared/assets/marker/markerIconPallet.i3d (0.18 ms)
+2026-07-22 17:10:39.676 data/shared/assets/marker/markerIconLoad.i3d (0.22 ms)
+2026-07-22 17:10:39.676 data/shared/assets/marker/markerIconUnload.i3d (0.19 ms)
+2026-07-22 17:10:39.681 data/placeables/shared/sellingStationGeneric/sellingStationGenericNoCover.i3d (4.43 ms)
+2026-07-22 17:10:39.681 data/shared/assets/marker/markerIconWrench.i3d (0.37 ms)
+2026-07-22 17:10:39.690 data/shared/assets/marker/markerIconFood.i3d (0.28 ms)
+2026-07-22 17:10:39.690 data/shared/assets/marker/markerIconAnimals.i3d (0.13 ms)
+2026-07-22 17:10:39.690 data/shared/assets/marker/markerIconBales.i3d (0.16 ms)
+2026-07-22 17:10:39.691 data/placeables/brandless/fences/husbandries/cowFence/cowFence.i3d (1.22 ms)
+2026-07-22 17:10:39.790 data/effects/chimneySmoke/smokeTrailSubUV.i3d (5.60 ms)
+2026-07-22 17:10:39.796 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.20 ms)
+2026-07-22 17:10:39.797 data/placeables/mapUS/farmHouse05/farmHouse05Props.i3d (6.47 ms)
+2026-07-22 17:10:39.798 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.25 ms)
+2026-07-22 17:10:39.798 data/placeables/mapUS/barn01/barn01Props.i3d (1.58 ms)
+2026-07-22 17:10:39.813 data/placeables/brandless/greenhouses/vegetables/riceSaplings/riceSaplings.i3d (10.22 ms)
+2026-07-22 17:10:39.817 data/placeables/mapUS/farmHouse03/farmHouse03Props.i3d (3.98 ms)
+2026-07-22 17:10:39.818 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.19 ms)
+2026-07-22 17:10:39.818 data/placeables/mapUS/barn02/barn02Props.i3d (1.17 ms)
+2026-07-22 17:10:39.821 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.24 ms)
+2026-07-22 17:10:39.821 data/maps/mapAS/textures/props/wheelOld/wheelOld01.i3d (0.27 ms)
+2026-07-22 17:10:39.821 data/maps/mapAS/textures/props/pallet01.i3d (0.19 ms)
+2026-07-22 17:10:39.821 data/placeables/mapUS/garage02/garage02Props.i3d (3.57 ms)
+2026-07-22 17:10:39.834 data/maps/mapAS/textures/props/boxesPlastic/boxPlastic03.i3d (0.30 ms)
+2026-07-22 17:10:39.835 data/maps/mapAS/textures/props/foodCartProps/waterBottle.i3d (0.20 ms)
+2026-07-22 17:10:39.835 data/placeables/mapUS/farmHouse02/farmHouse02Props.i3d (9.57 ms)
+2026-07-22 17:10:39.838 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.31 ms)
+2026-07-22 17:10:39.838 data/maps/mapAS/textures/props/barrel01.i3d (0.21 ms)
+2026-07-22 17:10:39.839 data/maps/mapAS/textures/props/barrel02.i3d (0.89 ms)
+2026-07-22 17:10:39.839 data/placeables/mapUS/barnStable/barnStableProps.i3d (3.79 ms)
+2026-07-22 17:10:39.840 data/shared/assets/lights/lizard/buildings/industrialLight01.i3d (0.89 ms)
+2026-07-22 17:10:39.845 data/maps/mapAS/textures/props/pallet03.i3d (0.41 ms)
+2026-07-22 17:10:39.845 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.20 ms)
+2026-07-22 17:10:39.845 data/placeables/mapUS/storage/storageProps.i3d (4.93 ms)
+2026-07-22 17:10:39.852 data/placeables/mapUS/farmHouse04/farmHouse04Props.i3d (7.14 ms)
+2026-07-22 17:10:39.852 data/placeables/brandless/animalHusbandries/chickenCoop02/navigationMesh.i3d (0.51 ms)
+2026-07-22 17:10:40.231 data/shared/assets/lights/lizard/buildings/industrialLight05.i3d (1.11 ms)
+2026-07-22 17:10:40.232 data/shared/assets/lights/lizard/buildings/industrialLight04.i3d (0.92 ms)
+2026-07-22 17:10:40.233 data/placeables/mapUS/playgroundMaker/props/playGroundMakerProps.i3d (0.99 ms)
+2026-07-22 17:10:40.235 data/placeables/mapUS/playgroundMaker/props/playgroundSet.i3d (1.53 ms)
+2026-07-22 17:10:40.238 data/placeables/mapUS/wagonBuilder/props/stagecoach.i3d (2.97 ms)
+2026-07-22 17:10:40.238 data/placeables/mapUS/sellingPoints/sellingStationTrain/sellingStationTrain.i3d (0.55 ms)
+2026-07-22 17:10:40.241 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.34 ms)
+2026-07-22 17:10:40.241 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.23 ms)
+2026-07-22 17:10:40.241 data/maps/textures/shared/props/industrialProps/container02.i3d (0.26 ms)
+2026-07-22 17:10:40.241 data/placeables/mapUS/farmersMarketUS/farmersMarketUSProps.i3d (3.37 ms)
+2026-07-22 17:10:40.242 data/placeables/shared/sellingStationGeneric/sellingStationProducts.i3d (0.21 ms)
+2026-07-22 17:10:40.243 data/placeables/mapUS/sellingPoints/grainElevatorTriggers/grainElevatorTriggers.i3d (1.40 ms)
+2026-07-22 17:10:40.243 data/placeables/mapUS/sellingPoints/grainBargeTerminal01Triggers/grainBargeTerminal01Triggers.i3d (0.21 ms)
+2026-07-22 17:10:40.244 data/placeables/mapUS/sellingPoints/grainBargeTerminal02Triggers/grainBargeTerminal02Triggers.i3d (0.19 ms)
+2026-07-22 17:10:40.244 data/placeables/mapUS/sellingPoints/grainRiverSilo01Triggers/grainRiverSilo01Triggers.i3d (0.19 ms)
+2026-07-22 17:10:40.244 data/shared/assets/marker/markerIconShopping.i3d (0.12 ms)
+2026-07-22 17:10:40.248 data/maps/textures/shared/props/industrialProps/container03.i3d (0.26 ms)
+2026-07-22 17:10:40.248 data/maps/textures/shared/props/industrialProps/container22.i3d (0.16 ms)
+2026-07-22 17:10:40.249 data/maps/textures/shared/props/industrialProps/container05.i3d (0.33 ms)
+2026-07-22 17:10:40.249 data/maps/textures/shared/props/industrialProps/container02.i3d (0.23 ms)
+2026-07-22 17:10:40.249 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.15 ms)
+2026-07-22 17:10:40.249 data/maps/textures/shared/props/industrialProps/container13.i3d (0.24 ms)
+2026-07-22 17:10:40.250 data/maps/textures/shared/props/industrialProps/container18.i3d (0.26 ms)
+2026-07-22 17:10:40.250 data/maps/textures/shared/props/industrialProps/container23.i3d (0.17 ms)
+2026-07-22 17:10:40.250 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.27 ms)
+2026-07-22 17:10:40.250 data/maps/mapAS/textures/props/pallet03.i3d (0.23 ms)
+2026-07-22 17:10:40.251 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.20 ms)
+2026-07-22 17:10:40.251 data/maps/mapAS/textures/props/cartonBoxes/cartonBox03.i3d (0.21 ms)
+2026-07-22 17:10:40.251 data/maps/mapAS/textures/props/pallet01.i3d (0.20 ms)
+2026-07-22 17:10:40.252 data/maps/textures/shared/props/industrialProps/container21.i3d (0.26 ms)
+2026-07-22 17:10:40.252 data/maps/textures/shared/props/industrialProps/container09.i3d (0.30 ms)
+2026-07-22 17:10:40.252 data/maps/textures/shared/props/industrialProps/container06.i3d (0.18 ms)
+2026-07-22 17:10:40.252 data/maps/textures/shared/props/industrialProps/container20.i3d (0.15 ms)
+2026-07-22 17:10:40.252 data/placeables/mapUS/warehouseLogisticUS/warehouseLogisticUSProps.i3d (8.40 ms)
+2026-07-22 17:10:40.253 data/placeables/shared/buyingStations/buyingStationWater/buyingStationWater.i3d (0.52 ms)
+2026-07-22 17:10:40.255 data/maps/textures/shared/props/industrialProps/container23.i3d (0.17 ms)
+2026-07-22 17:10:40.255 data/maps/mapAS/textures/props/airConditioner.i3d (0.24 ms)
+2026-07-22 17:10:40.255 data/maps/mapAS/textures/props/airConditioner02.i3d (0.30 ms)
+2026-07-22 17:10:40.256 data/maps/textures/shared/props/industrialProps/container21.i3d (0.23 ms)
+2026-07-22 17:10:40.256 data/maps/textures/shared/props/industrialProps/container15.i3d (0.16 ms)
+2026-07-22 17:10:40.257 data/maps/mapAS/textures/props/cablesElectricity/cable07.i3d (1.15 ms)
+2026-07-22 17:10:40.257 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.17 ms)
+2026-07-22 17:10:40.257 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.12 ms)
+2026-07-22 17:10:40.257 data/placeables/mapUS/bakeryUS/bakeryUSProps.i3d (4.65 ms)
+2026-07-22 17:10:40.261 data/maps/textures/shared/props/industrialProps/container22.i3d (0.20 ms)
+2026-07-22 17:10:40.262 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.26 ms)
+2026-07-22 17:10:40.262 data/maps/mapAS/textures/props/cablesElectricity/cable04.i3d (0.62 ms)
+2026-07-22 17:10:40.262 data/maps/textures/shared/props/industrialProps/container05.i3d (0.32 ms)
+2026-07-22 17:10:40.263 data/maps/textures/shared/props/industrialProps/container23.i3d (0.16 ms)
+2026-07-22 17:10:40.263 data/maps/textures/shared/props/industrialProps/container21.i3d (0.22 ms)
+2026-07-22 17:10:40.263 data/maps/mapAS/textures/props/pipes/pipes02.i3d (0.42 ms)
+2026-07-22 17:10:40.264 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.20 ms)
+2026-07-22 17:10:40.264 data/maps/mapAS/textures/props/pipes/pipes05.i3d (0.17 ms)
+2026-07-22 17:10:40.264 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.13 ms)
+2026-07-22 17:10:40.264 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.12 ms)
+2026-07-22 17:10:40.264 data/maps/mapAS/textures/props/airConditioner02.i3d (0.32 ms)
+2026-07-22 17:10:40.265 data/maps/textures/shared/props/industrialProps/container16.i3d (0.30 ms)
+2026-07-22 17:10:40.265 data/maps/mapAS/textures/props/pallet03.i3d (0.19 ms)
+2026-07-22 17:10:40.265 data/maps/mapAS/textures/props/barrel04.i3d (0.22 ms)
+2026-07-22 17:10:40.268 data/maps/mapAS/textures/props/cartBig.i3d (2.87 ms)
+2026-07-22 17:10:40.268 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.20 ms)
+2026-07-22 17:10:40.269 data/maps/mapAS/textures/props/barrel03.i3d (0.78 ms)
+2026-07-22 17:10:40.269 data/maps/textures/shared/props/industrialProps/container15.i3d (0.19 ms)
+2026-07-22 17:10:40.270 data/maps/textures/shared/props/industrialProps/container07.i3d (0.19 ms)
+2026-07-22 17:10:40.270 data/maps/textures/shared/props/industrialProps/container14.i3d (0.22 ms)
+2026-07-22 17:10:40.270 data/maps/textures/shared/props/industrialProps/container06.i3d (0.17 ms)
+2026-07-22 17:10:40.270 data/maps/textures/shared/props/industrialProps/container08.i3d (0.27 ms)
+2026-07-22 17:10:40.271 data/placeables/mapUS/cannedPackagedFactoryUS/cannedPackagedFactoryUSProps.i3d (13.28 ms)
+2026-07-22 17:10:40.272 data/placeables/shared/sellingStationGeneric/sellingStationGenericNoCoverWideGrid.i3d (1.43 ms)
+2026-07-22 17:10:40.275 data/maps/textures/shared/props/industrialProps/container21.i3d (0.44 ms)
+2026-07-22 17:10:40.276 data/maps/textures/shared/props/industrialProps/container23.i3d (0.22 ms)
+2026-07-22 17:10:40.276 data/maps/textures/shared/props/industrialProps/container22.i3d (0.18 ms)
+2026-07-22 17:10:40.277 data/maps/mapAS/textures/props/airConditioner02.i3d (0.36 ms)
+2026-07-22 17:10:40.277 data/maps/mapAS/textures/props/airConditioner.i3d (0.27 ms)
+2026-07-22 17:10:40.277 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.16 ms)
+2026-07-22 17:10:40.277 data/maps/mapAS/textures/props/pipes/pipes05.i3d (0.17 ms)
+2026-07-22 17:10:40.277 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.12 ms)
+2026-07-22 17:10:40.278 data/maps/textures/shared/props/industrialProps/container05.i3d (0.34 ms)
+2026-07-22 17:10:40.278 data/maps/textures/shared/props/industrialProps/container18.i3d (0.24 ms)
+2026-07-22 17:10:40.278 data/maps/textures/shared/props/industrialProps/container14.i3d (0.22 ms)
+2026-07-22 17:10:40.278 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.20 ms)
+2026-07-22 17:10:40.279 data/maps/mapAS/textures/props/pipes/pipes02.i3d (0.12 ms)
+2026-07-22 17:10:40.279 data/maps/textures/shared/props/industrialProps/container16.i3d (0.22 ms)
+2026-07-22 17:10:40.279 data/maps/mapAS/textures/props/cablesElectricity/cable07.i3d (0.54 ms)
+2026-07-22 17:10:40.280 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.25 ms)
+2026-07-22 17:10:40.280 data/maps/textures/shared/props/industrialProps/container13.i3d (0.23 ms)
+2026-07-22 17:10:40.280 data/maps/textures/shared/props/industrialProps/container09.i3d (0.29 ms)
+2026-07-22 17:10:40.281 data/maps/textures/shared/props/industrialProps/container02.i3d (0.27 ms)
+2026-07-22 17:10:40.281 data/placeables/mapUS/carpenterUS/carpenterUSProps.i3d (8.53 ms)
+2026-07-22 17:10:40.282 data/maps/textures/shared/props/industrialProps/container23.i3d (0.19 ms)
+2026-07-22 17:10:40.282 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.16 ms)
+2026-07-22 17:10:40.283 data/maps/mapAS/textures/props/cablesElectricity/cable07.i3d (0.48 ms)
+2026-07-22 17:10:40.283 data/maps/mapAS/textures/props/airConditioner.i3d (0.21 ms)
+2026-07-22 17:10:40.284 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.23 ms)
+2026-07-22 17:10:40.284 data/maps/textures/shared/props/industrialProps/container13.i3d (0.28 ms)
+2026-07-22 17:10:40.284 data/maps/textures/shared/props/industrialProps/container05.i3d (0.29 ms)
+2026-07-22 17:10:40.284 data/maps/textures/shared/props/industrialProps/container07.i3d (0.17 ms)
+2026-07-22 17:10:40.285 data/maps/mapAS/textures/props/pallet03.i3d (0.15 ms)
+2026-07-22 17:10:40.285 data/placeables/mapUS/dredgingBoat/dredgingBoatProps.i3d (3.87 ms)
+2026-07-22 17:10:40.286 data/maps/textures/shared/props/industrialProps/container23.i3d (0.20 ms)
+2026-07-22 17:10:40.287 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.26 ms)
+2026-07-22 17:10:40.287 data/placeables/mapUS/cooperUS/cooperUSProps.i3d (2.29 ms)
+2026-07-22 17:10:40.291 data/maps/textures/shared/props/industrialProps/container02.i3d (0.29 ms)
+2026-07-22 17:10:40.292 data/maps/textures/shared/props/industrialProps/container03.i3d (0.27 ms)
+2026-07-22 17:10:40.292 data/maps/textures/shared/props/industrialProps/container23.i3d (0.16 ms)
+2026-07-22 17:10:40.292 data/maps/textures/shared/props/industrialProps/container05.i3d (0.43 ms)
+2026-07-22 17:10:40.292 data/maps/textures/shared/props/industrialProps/container06.i3d (0.20 ms)
+2026-07-22 17:10:40.293 data/maps/textures/shared/props/industrialProps/container07.i3d (0.23 ms)
+2026-07-22 17:10:40.293 data/maps/textures/shared/props/industrialProps/container09.i3d (0.29 ms)
+2026-07-22 17:10:40.293 data/maps/textures/shared/props/industrialProps/container13.i3d (0.24 ms)
+2026-07-22 17:10:40.294 data/maps/textures/shared/props/industrialProps/container15.i3d (0.22 ms)
+2026-07-22 17:10:40.294 data/maps/textures/shared/props/industrialProps/container16.i3d (0.22 ms)
+2026-07-22 17:10:40.294 data/maps/textures/shared/props/industrialProps/container17.i3d (0.41 ms)
+2026-07-22 17:10:40.294 data/maps/textures/shared/props/industrialProps/container21.i3d (0.23 ms)
+2026-07-22 17:10:40.295 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.16 ms)
+2026-07-22 17:10:40.295 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.13 ms)
+2026-07-22 17:10:40.295 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.20 ms)
+2026-07-22 17:10:40.296 data/maps/mapAS/textures/props/pipes/pipes05.i3d (0.19 ms)
+2026-07-22 17:10:40.296 data/maps/mapAS/textures/props/pallet03.i3d (0.20 ms)
+2026-07-22 17:10:40.296 data/maps/mapUS/textures/props/trashcan02.i3d (0.35 ms)
+2026-07-22 17:10:40.297 data/placeables/mapUS/dairyUS/dairyUSProps.i3d (10.38 ms)
+2026-07-22 17:10:40.301 data/maps/mapAS/textures/props/barrel02.i3d (0.33 ms)
+2026-07-22 17:10:40.301 data/maps/mapAS/textures/props/cablesElectricity/cable03.i3d (0.26 ms)
+2026-07-22 17:10:40.301 data/maps/mapAS/textures/props/cablesElectricity/cable07.i3d (0.50 ms)
+2026-07-22 17:10:40.303 data/maps/mapAS/textures/props/cablesElectricity/cable08.i3d (1.29 ms)
+2026-07-22 17:10:40.303 data/maps/textures/shared/props/industrialProps/container02.i3d (0.25 ms)
+2026-07-22 17:10:40.303 data/maps/textures/shared/props/industrialProps/container23.i3d (0.17 ms)
+2026-07-22 17:10:40.303 data/maps/textures/shared/props/industrialProps/container05.i3d (0.31 ms)
+2026-07-22 17:10:40.304 data/maps/textures/shared/props/industrialProps/container07.i3d (0.19 ms)
+2026-07-22 17:10:40.304 data/maps/textures/shared/props/industrialProps/container16.i3d (0.22 ms)
+2026-07-22 17:10:40.304 data/maps/mapAS/textures/props/pallet03.i3d (0.17 ms)
+2026-07-22 17:10:40.304 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.20 ms)
+2026-07-22 17:10:40.305 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.18 ms)
+2026-07-22 17:10:40.305 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.13 ms)
+2026-07-22 17:10:40.305 data/placeables/mapUS/grainFlourMillUS/grainFlourMillUSProps.i3d (7.60 ms)
+2026-07-22 17:10:40.306 data/placeables/shared/sellingStationGeneric/sellingStationGenericMedium.i3d (1.53 ms)
+2026-07-22 17:10:40.309 data/maps/textures/shared/props/industrialProps/container23.i3d (0.19 ms)
+2026-07-22 17:10:40.309 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.15 ms)
+2026-07-22 17:10:40.309 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.14 ms)
+2026-07-22 17:10:40.310 data/maps/textures/shared/props/industrialProps/container08.i3d (0.30 ms)
+2026-07-22 17:10:40.310 data/maps/textures/shared/props/industrialProps/container18.i3d (0.29 ms)
+2026-07-22 17:10:40.310 data/maps/textures/shared/props/industrialProps/container13.i3d (0.23 ms)
+2026-07-22 17:10:40.310 data/maps/mapAS/textures/props/airConditioner02.i3d (0.32 ms)
+2026-07-22 17:10:40.311 data/maps/textures/shared/props/industrialProps/container21.i3d (0.24 ms)
+2026-07-22 17:10:40.311 data/maps/textures/shared/props/industrialProps/container15.i3d (0.14 ms)
+2026-07-22 17:10:40.311 data/maps/textures/shared/props/industrialProps/container20.i3d (0.15 ms)
+2026-07-22 17:10:40.311 data/maps/textures/shared/props/industrialProps/container22.i3d (0.16 ms)
+2026-07-22 17:10:40.312 data/maps/mapAS/textures/props/pipes/pipes03.i3d (0.23 ms)
+2026-07-22 17:10:40.312 data/maps/mapAS/textures/props/pipes/pipes04.i3d (0.89 ms)
+2026-07-22 17:10:40.313 data/maps/mapAS/textures/props/pipes/pipes05.i3d (0.21 ms)
+2026-07-22 17:10:40.313 data/maps/textures/shared/props/boardStack02/boardStack02Board.i3d (0.14 ms)
+2026-07-22 17:10:40.313 data/maps/mapAS/textures/props/pipes/pipes02.i3d (0.12 ms)
+2026-07-22 17:10:40.313 data/maps/textures/shared/props/industrialProps/container06.i3d (0.20 ms)
+2026-07-22 17:10:40.314 data/maps/mapAS/textures/props/pallet03.i3d (0.18 ms)
+2026-07-22 17:10:40.314 data/maps/mapAS/textures/props/jarLarge/jarLarge01.i3d (0.15 ms)
+2026-07-22 17:10:40.314 data/maps/mapAS/textures/props/cartonBoxes/cartonBox03.i3d (0.12 ms)
+2026-07-22 17:10:40.314 data/maps/mapAS/textures/props/cartonBoxes/cartonBox01.i3d (0.15 ms)
+2026-07-22 17:10:40.314 data/maps/textures/shared/props/industrialProps/container02.i3d (0.22 ms)
+2026-07-22 17:10:40.315 data/maps/textures/shared/props/industrialProps/container04.i3d (0.39 ms)
+2026-07-22 17:10:40.315 data/placeables/mapUS/oilPlantUS/oilPlantUSProps.i3d (8.23 ms)
+2026-07-22 17:10:40.316 data/maps/textures/shared/props/industrialProps/container23.i3d (0.20 ms)
+2026-07-22 17:10:40.317 data/maps/textures/shared/props/industrialProps/container05.i3d (0.32 ms)
+2026-07-22 17:10:40.317 data/placeables/mapUS/spinnery/spinneryUSProps.i3d (2.12 ms)
+2026-07-22 17:10:40.319 data/maps/textures/shared/props/industrialProps/container23.i3d (0.19 ms)
+2026-07-22 17:10:40.319 data/maps/mapAS/textures/props/pipes/pipes06.i3d (0.14 ms)
+2026-07-22 17:10:40.319 data/maps/mapAS/textures/props/pipes/pipes07.i3d (0.13 ms)
+2026-07-22 17:10:40.319 data/placeables/mapUS/tailorUS/tailorUSProps.i3d (2.23 ms)
+2026-07-22 17:10:40.346 data/maps/mapUS/missions/deadwoodSpots.i3d (0.27 ms)
+2026-07-22 17:10:40.347 data/maps/mapUS/missions/transportSpots.i3d (0.43 ms)
+2026-07-22 17:10:40.347 data/maps/mapUS/missions/destructibleRocksSpots.i3d (0.20 ms)
+2026-07-22 17:10:40.359 data/shared/assets/marker/rockMissionFlag.i3d (11.60 ms)
+2026-07-22 17:10:40.361 data/shared/assets/exhaustLicencePlateHolder.i3d (1.13 ms)
+2026-07-22 17:10:40.361 data/vehicles/challenger/mt655/mt655.i3d (40.15 ms)
+2026-07-22 17:10:40.376 data/shared/assets/reflectors/lizard/bigTriangle.i3d (2.60 ms)
+2026-07-22 17:10:40.376 data/vehicles/johnDeere/cultivator980/cultivator980.i3d (14.91 ms)
+2026-07-22 17:10:40.405 data/vehicles/greatPlains/seeder1500/seeder1500.i3d (28.55 ms)
+2026-07-22 17:10:40.442 data/vehicles/johnDeere/series3650/series3650.i3d (37.39 ms)
+2026-07-22 17:10:40.482 data/shared/assets/extinguisher.i3d (2.70 ms)
+2026-07-22 17:10:40.482 data/vehicles/masseyFerguson/mf8570/mf8570.i3d (39.92 ms)
+2026-07-22 17:10:40.489 data/shared/assets/reflectors/lizard/redTriangle_02.i3d (1.93 ms)
+2026-07-22 17:10:40.489 data/vehicles/masseyFerguson/mf8570Trailer/mf8570Trailer.i3d (6.92 ms)
+2026-07-22 17:10:40.507 data/vehicles/masseyFerguson/mf8570Header/mf8570Header.i3d (17.93 ms)
+2026-07-22 17:10:40.518 data/shared/assets/reflectors/lizard/bigTriangle.i3d (0.27 ms)
+2026-07-22 17:10:40.520 data/shared/assets/reflectors/lizard/yellowRound_01.i3d (0.96 ms)
+2026-07-22 17:10:40.520 data/vehicles/farmtech/edk650/edk650.i3d (13.01 ms)
+2026-07-22 17:10:40.528 data/objects/bigBag/bigBag.i3d (7.69 ms)
+2026-07-22 17:10:40.570 data/store/ui/shop.i3d (42.69 ms)
+2026-07-22 17:10:40.570 dataS/menu/licensePlate/creationBox.i3d (0.13 ms)
+2026-07-22 17:10:40.571 dataS/menu/colorPicker/colorPickerScene.i3d (0.97 ms)
+2026-07-22 17:10:40.586 data/store/ui/shop.i3d (14.40 ms)
+2026-07-22 17:10:40.586 data/shared/assets/marker/markerIconTrain.i3d (0.47 ms)
+2026-07-22 17:10:40.587 data/sounds/vehicles/cabin/rainInVehicle.gls version 17 (0.01 ms)
+2026-07-22 17:10:40.590 data/vehicles/challenger/mt655/sounds/mt655.gls version 15 (0.02 ms)
+2026-07-22 17:10:40.590 data/vehicles/challenger/mt655/sounds/Fan.gls version 15 (0.01 ms)
+2026-07-22 17:10:40.591 data/sounds/vehicles/transmission/transmissionModern_05.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.591 data/sounds/vehicles/cabin/cabin_01.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.616 data/shared/wheels/hubs/hubs.i3d (29.55 ms)
+2026-07-22 17:10:40.620 data/shared/wheels/rims/rim001.i3d (4.42 ms)
+2026-07-22 17:10:40.624 data/shared/wheels/rims/rim006.i3d (3.98 ms)
+2026-07-22 17:10:40.633 data/shared/wheels/tires/trelleborg/TM900/600_70R28.i3d (8.57 ms)
+2026-07-22 17:10:40.633 data/effects/wheel/wheelEmitterShape.i3d (0.47 ms)
+2026-07-22 17:10:40.636 data/effects/wheel/water/water.i3d (2.56 ms)
+2026-07-22 17:10:40.638 data/shared/wheels/tires/trelleborg/TM900/650_85R38.i3d (1.52 ms)
+2026-07-22 17:10:40.639 data/effects/exhaust/exhaust.i3d (1.23 ms)
+2026-07-22 17:10:40.641 data/shared/assets/lights/lizard/rearLight78.i3d (1.88 ms)
+2026-07-22 17:10:40.642 data/shared/assets/lights/lizard/workingLight47.i3d (1.45 ms)
+2026-07-22 17:10:40.644 data/shared/assets/upperLinks/walterscheidHO_110_700.i3d (2.21 ms)
+2026-07-22 17:10:40.647 data/shared/assets/toolbars/toolbars.i3d (3.12 ms)
+2026-07-22 17:10:40.660 data/shared/wheels/tires/bkt/i1/7_60__15.i3d (2.77 ms)
+2026-07-22 17:10:40.674 data/shared/assets/lights/lizard/rearLight67Red.i3d (2.44 ms)
+2026-07-22 17:10:40.676 data/shared/assets/lights/lizard/rearLight67Orange.i3d (1.53 ms)
+2026-07-22 17:10:40.703 data/shared/wheels/tires/bkt/i1/11L__16.i3d (1.23 ms)
+2026-07-22 17:10:40.733 data/shared/assets/reflectors/lizard/bigTriangle.i3d (0.24 ms)
+2026-07-22 17:10:40.751 data/vehicles/johnDeere/shared/weightSet/weightSet.i3d (4.93 ms)
+2026-07-22 17:10:40.754 data/shared/wheels/rims/rim005.i3d (2.54 ms)
+2026-07-22 17:10:40.758 data/shared/wheels/tires/trelleborg/TM600/420_85R24.i3d (3.36 ms)
+2026-07-22 17:10:40.760 data/shared/wheels/rims/rim004.i3d (2.42 ms)
+2026-07-22 17:10:40.761 data/shared/wheels/tires/trelleborg/TM600/460_85R38.i3d (1.35 ms)
+2026-07-22 17:10:40.762 data/vehicles/johnDeere/series3650/sounds/series3650.gls version 15 (0.03 ms)
+2026-07-22 17:10:40.763 data/sounds/vehicles/transmission/transmissionModern_04.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.779 data/shared/assets/upperLinks/walterscheidHO_90_600.i3d (1.01 ms)
+2026-07-22 17:10:40.780 data/shared/assets/upperLinks/walterscheidSO_65_460.i3d (0.92 ms)
+2026-07-22 17:10:40.782 data/shared/connectionHoses/AdditionalTopRightHose.i3d (0.66 ms)
+2026-07-22 17:10:40.784 data/shared/connectionHoses/toolConnectionHoseMounts/vaderstadProceedV.i3d (1.31 ms)
+2026-07-22 17:10:40.802 data/shared/wheels/tires/trelleborg/TM2000/650_75R32.i3d (2.75 ms)
+2026-07-22 17:10:40.803 data/sounds/vehicles/fan/fanHarvester02.gls version 15 (0.01 ms)
+2026-07-22 17:10:40.803 data/shared/wheels/tires/trelleborg/TM600/380_85R24.i3d (1.45 ms)
+2026-07-22 17:10:40.804 data/sounds/vehicles/transmission/transmissionHarvester_01.gls version 15 (0.01 ms)
+2026-07-22 17:10:40.804 data/sounds/vehicles/cabin/cabinHarvester01.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.805 data/vehicles/masseyFerguson/mf8570/sounds/8570_loop.gls version 15 (0.01 ms)
+2026-07-22 17:10:40.810 data/shared/assets/lights/lizard/plateNumberLight03.i3d (1.52 ms)
+2026-07-22 17:10:40.811 data/shared/assets/lights/lizard/workingLight35.i3d (1.60 ms)
+2026-07-22 17:10:40.813 data/shared/assets/lights/lizard/rearLight19Orange.i3d (2.10 ms)
+2026-07-22 17:10:40.817 data/shared/assets/beaconLights/lizard/beaconLight05.i3d (3.08 ms)
+2026-07-22 17:10:40.824 data/vehicles/masseyFerguson/beta7360AL4/sounds/beta7360AL4Left_loop.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.825 data/vehicles/masseyFerguson/beta7360AL4/sounds/beta7360AL4Right_loop.gls version 14 (0.01 ms)
+2026-07-22 17:10:40.834 data/shared/assets/wheelChocks/wheelChockSupport01.i3d (1.90 ms)
+2026-07-22 17:10:40.836 data/shared/assets/wheelChocks/wheelChock02.i3d (1.16 ms)
+2026-07-22 17:10:40.839 data/shared/wheels/tires/trelleborg/AW305/260_70R15_3.i3d (2.77 ms)
+2026-07-22 17:10:40.841 data/shared/assets/lights/lizard/rearLight66.i3d (1.84 ms)
+2026-07-22 17:10:40.844 data/shared/assets/lights/lizard/rearLight23.i3d (3.24 ms)
+2026-07-22 17:10:40.885 data/shared/assets/wheelChocks/wheelChock03.i3d (1.67 ms)
+2026-07-22 17:10:40.888 data/shared/wheels/tires/bkt/ridemaxFL693M/425_55R17.i3d (2.78 ms)
+2026-07-22 17:10:40.890 data/shared/assets/lights/lizard/rearLight52.i3d (2.35 ms)
+2026-07-22 17:10:40.892 data/shared/assets/lights/lizard/plateNumberLight04.i3d (1.09 ms)
+2026-07-22 17:10:40.893 data/shared/assets/lights/lizard/sideMarker24.i3d (1.45 ms)
+2026-07-22 17:10:40.895 data/shared/assets/lights/lizard/sideMarker30.i3d (1.55 ms)
+2026-07-22 17:10:43.155 FTG 'data/maps/mapUS/data/densityMap_groundFoliage.png' max needed CPU instances = 0.007935 MB / 6.460938 MB
+2026-07-22 17:10:43.161 FTG 'data/maps/mapUS/data/densityMap_fruits.png' max needed CPU instances = 5.741791 MB / 111.585938 MB
+2026-07-22 17:10:47.142   Info: Entered Gameplay
+2026-07-22 17:10:47.144 dataS/character/shared/kinematicHelper.i3d (0.18 ms)
+2026-07-22 17:10:47.146   Info: Savegame Setting 'dirtInterval': 3
+2026-07-22 17:10:47.146   Info: Savegame Setting 'snowEnabled': true
+2026-07-22 17:10:47.146   Info: Savegame Setting 'trafficEnabled': true
+2026-07-22 17:10:47.146   Info: Savegame Setting 'growthMode': SEASONAL
+2026-07-22 17:10:47.146   Info: Savegame Setting 'fuelUsage': 2
+2026-07-22 17:10:47.146   Info: Savegame Setting 'plowingRequiredEnabled': false
+2026-07-22 17:10:47.146   Info: Savegame Setting 'weedsEnabled': true
+2026-07-22 17:10:47.146   Info: Savegame Setting 'limeRequired': true
+2026-07-22 17:10:47.146   Info: Savegame Setting 'stonesEnabled': true
+2026-07-22 17:10:47.146   Info: Savegame Setting 'economicDifficulty': EASY
+2026-07-22 17:10:47.146   Info: Savegame Setting 'fixedSeasonalVisuals': nil
+2026-07-22 17:10:47.146   Info: Savegame Setting 'plannedDaysPerPeriod': 1
+2026-07-22 17:10:47.147   Info: TreePlantManager - NumTrees 13174 (0 split) / MaxNumTrees: 14000
+2026-07-22 17:10:47.148 data/handTools/brandless/flashlight/flashlight.i3d (3.98 ms)
+2026-07-22 17:10:47.148   Info: No vehicle navigation cost map found. Start scanning map...
+2026-07-22 17:10:47.166 data/vehicles/train/locomotiveUS/forestryLocomotive.i3d (16.91 ms)
+2026-07-22 17:10:47.178 data/vehicles/train/wagonGrainEU/wagonGrainEU.i3d (11.75 ms)
+2026-07-22 17:10:47.190 data/vehicles/train/wagonSugarbeetsEU/wagonSugarbeetsEU.i3d (12.02 ms)
+2026-07-22 17:10:47.202 data/vehicles/train/wagonWoodChipsEU/wagonWoodChipsEU.i3d (12.20 ms)
+2026-07-22 17:10:47.216 data/vehicles/train/wagonTimberUS/wagonTimberUS.i3d (13.90 ms)
+2026-07-22 17:10:47.225 data/vehicles/train/wagonFlatBedUS/wagonFlatBedUS.i3d (8.80 ms)
+2026-07-22 17:10:47.309 FTG 'data/maps/mapUS/data/densityMap_groundFoliage.png' max needed CPU instances = 0.015991 MB / 6.460938 MB
+2026-07-22 17:10:47.314 FTG 'data/maps/mapUS/data/densityMap_weed.png' max needed CPU instances = 0.538971 MB / 6.125000 MB
+2026-07-22 17:10:47.410 dataS/character/playerM/pants/strauss/concretePants.i3d (74.98 ms)
+2026-07-22 17:10:47.416 dataS/character/playerM/heads/mHead01.i3d (6.37 ms)
+2026-07-22 17:10:47.419 dataS/character/playerM/jacket/topPuffJacket.i3d (2.62 ms)
+2026-07-22 17:10:47.421 dataS/character/playerM/attachments/eroHat.i3d (1.99 ms)
+2026-07-22 17:10:47.428 dataS/character/playerM/shoes/elten/maddoxLowRed.i3d (6.87 ms)
+2026-07-22 17:10:47.454 dataS/character/playerM/hairStyles/hairStyleMidParted01.i3d (26.47 ms)
+2026-07-22 17:10:47.466 dataS/character/playerM/facialHair/mHead01/fullBeard.i3d (11.45 ms)
+2026-07-22 17:10:47.468 data/shared/assets/beaconLights/lizard/beaconLight01.i3d (2.89 ms)
+2026-07-22 17:10:47.496 dataS/character/playerF/pants/botCargo.i3d (2.44 ms)
+2026-07-22 17:10:47.500 dataS/character/playerF/jacket/topVest.i3d (3.50 ms)
+2026-07-22 17:10:47.502 dataS/character/playerF/shoes/workboot02.i3d (2.34 ms)
+2026-07-22 17:10:47.510 dataS/character/playerF/hairStyles/hairStylePonyTail03.i3d (7.81 ms)
+2026-07-22 17:10:49.894 FTG 'data/maps/mapUS/data/densityMap_groundFoliage.png' max needed CPU instances = 0.027924 MB / 6.460938 MB
+2026-07-22 17:10:49.902 FTG 'data/maps/mapUS/data/densityMap_fruits.png' max needed CPU instances = 10.438995 MB / 111.585938 MB
+2026-07-22 17:11:03.909 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/welcome_en.bin' version 3
+2026-07-22 17:11:04.343 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/soGood_en.bin' version 3
+2026-07-22 17:11:04.559 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/makeHappy_en.bin' version 3
+2026-07-22 17:11:04.742 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/fatherSaid_en.bin' version 3
+2026-07-22 17:11:04.924 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/calledIt_en.bin' version 3
+2026-07-22 17:11:05.108 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/stepOnManure_en.bin' version 3
+2026-07-22 17:11:05.307 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/sellFarm_en.bin' version 3
+2026-07-22 17:11:05.522 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/stayInFamily_en.bin' version 3
+2026-07-22 17:11:05.689 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/meansToMe_en.bin' version 3
+2026-07-22 17:11:06.005 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/uncleIdeas_en.bin' version 3
+2026-07-22 17:11:06.387 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/tellLater_en.bin' version 3
+2026-07-22 17:11:06.752 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/notAwayYet_en.bin' version 3
+2026-07-22 17:11:07.168 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/talkSomeTime_en.bin' version 3
+2026-07-22 17:11:07.633 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/nicePeople_en.bin' version 3
+2026-07-22 17:11:08.450 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/quickTour_en.bin' version 3
+2026-07-22 17:11:09.382 Loaded 'dataS2/npc/grandpa/guidedTours/introUS/intro/yoursNow_en.bin' version 3
+2026-07-22 17:11:58.329 Game saved successfully (savegame2).
+2026-07-22 17:12:00.443 quit savegame
+2026-07-22 17:12:00.858 Application restart (soft restart)
+2026-07-22 17:12:00.859 executing soft reset
+2026-07-22 17:12:00.995  Used Start Parameters:
+2026-07-22 17:12:00.995     restart 
+2026-07-22 17:12:00.995     name FarmingSimulator2025
+2026-07-22 17:12:00.995     exe FarmingSimulator2025Game
+2026-07-22 17:12:00.996 Platform: loading defaults
+2026-07-22 17:12:00.996 Platform: loading Steam
+2026-07-22 17:12:01.118   Setting 'Master Volume': 1.000
+2026-07-22 17:12:01.119   Setting 'Is Train Tabbable': true
+2026-07-22 17:12:01.119   Setting 'Radio Vehicle Only': true
+2026-07-22 17:12:01.119   Setting 'Radio Active': false
+2026-07-22 17:12:01.119   Setting 'Use Colorblind Mode': false
+2026-07-22 17:12:01.119   Setting 'Easy Arm Control': true
+2026-07-22 17:12:01.119   Setting 'Show Trigger Marker': true
+2026-07-22 17:12:01.119   Setting 'Show Help Trigger': true
+2026-07-22 17:12:01.119   Setting 'Show Field-Info': true
+2026-07-22 17:12:01.119   Setting 'Invert Y-Look': false
+2026-07-22 17:12:01.119   Setting 'Show Help Icons': true
+2026-07-22 17:12:01.119   Setting 'Radio Volume': 0.600
+2026-07-22 17:12:01.119   Setting 'Vehicle Volume': 1.000
+2026-07-22 17:12:01.119   Setting 'Environment Volume': 0.700
+2026-07-22 17:12:01.119   Setting 'Character Volume': 0.700
+2026-07-22 17:12:01.119   Setting 'GUI Volume': 0.500
+2026-07-22 17:12:01.119   Setting 'Game Volume While Not In Focus': 0.000
+2026-07-22 17:12:01.119   Setting 'Master Volume': 1.000
+2026-07-22 17:12:01.119   Setting 'Music Volume': 0.450
+2026-07-22 17:12:01.119 Farming Simulator 25 (Steam)
+2026-07-22 17:12:01.119   Version: 1.16.0.3 b37986
+2026-07-22 17:12:01.119   Available Languages: en de jp pl cz fr es ru it pt hu nl cs ct br tr ro kr ea da fi no sv fc uk vi id
+2026-07-22 17:12:01.119   Language: en
+2026-07-22 17:12:01.119   Time: 2026-07-22 17:12:01
+2026-07-22 17:12:01.119   ModDesc Version: 106
+2026-07-22 17:12:01.119   Mod Directory: /Users/REDACTED_USER/Library/Application Support/FarmingSimulator2025/mods/
+2026-07-22 17:12:01.150 Available mod: (Hash: 98e7e08a7f9175c321ab783abf123603) (Version: 1.0.0.4) FS25_DodgeChallengerHellcat
+2026-07-22 17:12:01.150 Error: Unsupported mod description version in mod FS25_DodgeChallengerHellcat
+2026-07-22 17:12:01.252 dataS/character/playerAnimations/animations.i3d (112.79 ms)
+2026-07-22 17:12:01.253 dataS/character/playerAnimations/animationsVehicleCharacter.i3d (0.90 ms)
+2026-07-22 17:12:01.275 dataS/character/playerAnimations/animationsPedestrians.i3d (21.49 ms)
+2026-07-22 17:12:04.241 quit savegame
+2026-07-22 17:12:04.292 Application quit

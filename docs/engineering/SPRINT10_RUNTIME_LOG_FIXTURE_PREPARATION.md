@@ -7,7 +7,7 @@
 | **Purpose** | Design and prepare the permanent repository structure for Runtime Log engineering fixtures, satisfying `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11's strengthened precondition, before Architectural Resolution begins |
 | **Prepared by** | Lead Engineer (Sonnet 5), on `feature/runtime-implementation` |
 | **Repository baseline** | `feature/runtime-implementation`, HEAD `b7cb4a6` |
-| **Status** | **Fixture-preparation and integration record. No implementation, no Collector, no Rule, no Architectural Resolution.** Repository structure and documentation created; two of three real fixtures now captured and integrated (`clean-base-game`, Section 10; `single-compatible-mod`, Section 11) — no other log content, real or synthetic, added; no mod archive stored. Revised four times: during Repository Stabilization (acquisition order corrected, Section 4; terminology reviewed); following a real acquisition finding (installation state vs. savegame state, Section 8; `clean-base-game` reclassified); following `clean-base-game`'s successful capture (Section 10); and following `single-compatible-mod`'s capture, which also formalized Warning Categorization (Section 11). Awaiting Chief Architect approval before Architectural Resolution. |
+| **Status** | **Fixture-preparation and integration record. No implementation, no Collector, no Rule, no Architectural Resolution.** Repository structure and documentation created; all three initial fixtures now captured and integrated (`clean-base-game`, Section 10; `single-compatible-mod`, Section 11; `single-incompatible-mod`, Section 12) — no other log content, real or synthetic, added; no mod archive stored. Revised five times: during Repository Stabilization (acquisition order corrected, Section 4; terminology reviewed); following a real acquisition finding (installation state vs. savegame state, Section 8; `clean-base-game` reclassified); following `clean-base-game`'s successful capture (Section 10); following `single-compatible-mod`'s capture, which also formalized Warning Categorization (Section 11); and following `single-incompatible-mod`'s capture, completing the initial corpus (Section 12). Awaiting Chief Architect approval before Architectural Resolution. |
 
 ---
 
@@ -111,7 +111,7 @@ Reviewed during Repository Stabilization against the same four pillars named at 
 - `fixtures/runtime-logs/TEMPLATE.md` — the canonical, blank per-fixture metadata schema.
 - `fixtures/runtime-logs/clean-base-game/README.md` — fully documented; originally `Status: Awaiting capture`, no log file. **Now superseded — see Section 10: this fixture has since been captured.**
 - `fixtures/runtime-logs/single-compatible-mod/README.md` — fully documented; originally `Status: Awaiting capture`, no log file. **Now superseded — see Section 11: this fixture has since been captured.**
-- `fixtures/runtime-logs/single-incompatible-mod/README.md` — fully documented, `Status: Awaiting capture`, no log file.
+- `fixtures/runtime-logs/single-incompatible-mod/README.md` — fully documented; originally `Status: Awaiting capture`, no log file. **Now superseded — see Section 12: this fixture has since been captured, completing the initial three-fixture corpus.**
 - `fixtures/README.md` (added during Repository Stabilization) — the top-level corpus directory's own README, explaining why `fixtures/` exists as distinct from `apps/sandbox/src-tauri/fixtures/`, and how future engineering corpora beyond `runtime-logs/` should be organized.
 
 **No log content — real, synthetic, or placeholder — was added anywhere.** No directory was created for `modded-map-only`, `installed-mods-unused-in-savegame`, or `real-world-mod-profile`. No repository code, Collector, Rule, or Architectural Resolution was performed at any point across any session.
@@ -149,7 +149,7 @@ See Section 8 for the finding itself.
 
 # 9. Recommendation
 
-**Ready for Chief Architect approval as the repository's prepared state for Runtime Log Interpretation.** The next engineering activity — per `SPRINT10_CAPABILITY_DEFINITION.md`, Section 11's own requirement — is acquiring and validating a real Farming Simulator runtime log against the one remaining `Awaiting capture` fixture, `single-incompatible-mod`. No fixture should be captured without first directly verifying the global mods directory's actual contents, per Section 8's finding. Architectural Resolution should not proceed on any assumption about log structure, wording, stability, or formatting until that final fixture is real (see Sections 10–11 for the first two).
+**All three initial fixtures are now real, captured, and integrated** (Sections 10–12). The repository's prepared state for Runtime Log Interpretation is complete for this Sprint's own minimum-viable scope: a clean baseline, a successful-mod baseline, and a real, evidenced failure signature (a declared-`descVersion` mismatch, rejected at modDesc validation). Architectural Resolution may now proceed grounded in all three, rather than on any assumption about log structure, wording, stability, or formatting.
 
 ---
 
@@ -167,7 +167,17 @@ This is the first real evidence this corpus has ever held.
 
 **A real documentation gap was found and closed before this fixture was integrated, per this session's own explicit instruction to stop rather than classify warnings against an undocumented standard.** This fixture's log contains two `Warning` lines directly attributable to the mod's own large geometry file (a console-platform size advisory), alongside the same five base-game warnings already documented for `clean-base-game` — the corpus's first case of a genuinely mod-attributable warning. No taxonomy existed to classify it consistently. **Warning Categorization** was formalized in `fixtures/runtime-logs/README.md`: every warning a fixture's log contains is now classified as a **Base-game warning** (verified by direct cross-reference against `clean-base-game`'s own content), a **Fixture warning** (attributable to the fixture's own mod, but not a failure), or a **Fixture-affecting warning** (calls the fixture's own validity into question) — attribution-based categories, deliberately, not a severity scale, consistent with this project's evidence-first discipline. Both fixtures captured to date have been reviewed against this taxonomy; neither contains a Fixture-affecting warning.
 
-Two of three initial fixtures are now real. `single-incompatible-mod` remains `Awaiting capture` — the corpus's own most critical remaining acquisition, per Section 4's own reasoning.
+Two of three initial fixtures are now real.
+
+---
+
+# 12. Third Fixture Captured: `single-incompatible-mod` — Corpus Complete
+
+`single-incompatible-mod` was captured and integrated using the same verification discipline as the prior two: the global mods directory was configured to contain exactly one third-party mod (`FS25_DodgeChallengerHellcat.zip`) before capture — direct action as the primary basis, the log's own single `Available mod:` entry serving only as corroboration.
+
+**The failure signature is unambiguous and fully evidenced.** The mod's own `modDesc.xml` declares `descVersion="107"`; the runtime's own recognized `ModDesc Version` is `106`. Immediately after the mod's `Available mod:` enumeration, the log records `Error: Unsupported mod description version in mod FS25_DodgeChallengerHellcat` — no `Load mod:` line for this mod appears anywhere in the file, confirming rejection at **modDesc validation**, before registration or asset loading ever began. Direct ZIP inspection confirmed no dependency was declared, ruling out a competing explanation. This directly corroborates the acquisition team's own pre-log observation that the mod did not appear in the Start Game → Mods selection list: exclusion from a loadable-mods list is exactly consistent with rejection this early. No documentation gap was found reviewing this capture against the existing corpus policies (Normalization, Installation State vs. Savegame State, Warning Categorization, `TEMPLATE.md`'s schema) — all five warnings present are Base-game warnings, byte-identical to those already documented in both prior fixtures; no new category or field was needed.
+
+**The initial three-fixture corpus is now complete:** `clean-base-game` (no signal), `single-compatible-mod` (successful load, negative control), `single-incompatible-mod` (a real, evidenced failure signature — a declared-`descVersion` mismatch). Sprint 10's own strengthened precondition (`SPRINT10_CAPABILITY_DEFINITION.md`, Section 11: no architectural decision may assume log structure without real evidence) is satisfied for this minimum-viable scope.
 
 ---
 
