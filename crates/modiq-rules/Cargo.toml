@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 modiq-runtime = { path = "../modiq-runtime" }
 modiq-versioning = { path = "../modiq-versioning" }
+modiq-knowledge = { path = "../modiq-knowledge" }

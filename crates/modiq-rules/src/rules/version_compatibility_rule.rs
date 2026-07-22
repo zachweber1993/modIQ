@@ -1,5 +1,7 @@
+use modiq_knowledge::knowledge::RepairRecipe;
 use modiq_runtime::assessment::{
-    Evidence, EvidenceCategory, Finding, FindingSeverity, Recommendation, RuleReference,
+    Evidence, EvidenceCategory, Finding, FindingSeverity, Recommendation, RepairRecipeReference,
+    RuleReference,
 };
 use modiq_versioning::versioning::VersionProfile;
 
@@ -83,11 +85,11 @@ impl VersionCompatibilityRule {
         )
         .expect("severity, description, and rule reference are valid");
 
+        let recipe = RepairRecipe::version_compatibility_declared_version_mismatch();
         let recommendation = Recommendation::new(
-            "Verify the mod's declared descVersion against a supported Farming Simulator \
-             release before relying on it, or confirm compatibility manually.",
+            recipe.guidance(),
             vec![finding.id()],
-            None,
+            Some(RepairRecipeReference::new(recipe.identifier())),
         )
         .expect("action is valid");
 
@@ -168,7 +170,12 @@ mod tests {
             outcome.recommendation.finding_ids(),
             &[outcome.finding.id()]
         );
-        assert_eq!(outcome.recommendation.repair_recipe_reference(), None);
+        assert_eq!(
+            outcome.recommendation.repair_recipe_reference(),
+            Some(&RepairRecipeReference::new(
+                "version-compatibility-declared-version-mismatch"
+            ))
+        );
     }
 
     #[test]
@@ -209,6 +216,10 @@ mod tests {
         assert_eq!(
             first.recommendation.action(),
             second.recommendation.action()
+        );
+        assert_eq!(
+            first.recommendation.repair_recipe_reference(),
+            second.recommendation.repair_recipe_reference()
         );
     }
 

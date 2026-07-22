@@ -374,6 +374,7 @@ dependencies = [
 name = "modiq-rules"
 version = "0.1.0"
 dependencies = [
+ "modiq-knowledge",
  "modiq-runtime",
  "modiq-versioning",
 ]

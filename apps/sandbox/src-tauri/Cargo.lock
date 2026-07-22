@@ -2166,6 +2166,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "modiq-knowledge"
+version = "0.1.0"
+
+[[package]]
 name = "modiq-report"
 version = "0.1.0"
 dependencies = [
@@ -2176,6 +2180,7 @@ dependencies = [
 name = "modiq-rules"
 version = "0.1.0"
 dependencies = [
+ "modiq-knowledge",
  "modiq-runtime",
  "modiq-versioning",
 ]

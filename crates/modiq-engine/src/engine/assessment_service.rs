@@ -629,6 +629,16 @@ mod tests {
         assert_eq!(version_finding.severity(), FindingSeverity::Warning);
         assert!(version_finding.description().contains("42"));
         assert!(version_finding.description().contains("FS25"));
+
+        // Sprint 9: Repair Guidance — the Recommendation traceable to this
+        // Finding now carries a real RepairRecipeReference, exercised
+        // through the full real pipeline.
+        let version_recommendation = report
+            .recommendations()
+            .iter()
+            .find(|recommendation| recommendation.finding_ids().contains(&version_finding.id()))
+            .expect("VersionCompatibilityRule produced a Recommendation");
+        assert!(version_recommendation.repair_recipe_reference().is_some());
     }
 
     #[test]
