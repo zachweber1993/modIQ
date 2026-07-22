@@ -958,3 +958,36 @@ No `ENGINEERING_RELEASE_0.6.md` was produced this session — outstanding, named
 `cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass cleanly, unchanged at 172/172 — no production code or test was touched this session. `apps/sandbox/src-tauri` unchanged at 6/6.
 
 No architectural change was made or proposed: no new capability, no new abstraction, no scope expansion, no governance wording changed, no Sprint 7 work begun. **Sprint 6 is now administratively complete**, pending Chief Architect review of this Closeout.
+
+---
+
+### Sprint 7 Closeout: Repository Validation, Commit, Push, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection (XmlCollector)
+- modiq-engine (AssessmentService composition)
+- modiq-cli, apps/sandbox (test updates only)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/engineering/REPOSITORY_CLOSEOUT_REPORT.md (new)
+
+Notes:
+Formal Sprint 7 closeout, per Chief Architect authorization following review of Sprint 7 implementation, Sprint 7 post-implementation refinement, the Engineering Workflow Consolidation Study, and its implementation. Repository Validation performed before any git operation: `cargo check --workspace`, `cargo test --workspace` (187/187, up from 172), `cargo fmt --all --check`, and the same four checks independently against `apps/sandbox/src-tauri` (7/7, up from 6) — all clean, zero warnings, before proceeding. Documentation consistency, single-canonical-workflow-location, archived-document marking, reference validity, absence of TODOs, and absence of accidental files were each checked directly, not assumed; no blocking issue was found.
+
+**Commit:** Sprint 7 implementation (Multi-Source Evidence Collection / `XmlCollector`), Sprint 7 post-implementation refinement, and the Engineering Workflow Consolidation were committed together as a single commit (`277aefd`), per explicit instruction, on `feature/runtime-implementation` directly.
+
+**Push:** `277aefd` pushed to `origin/feature/runtime-implementation`; fetch-verified 0 ahead / 0 behind after push.
+
+**Merge:** not applicable this cycle. Unlike Sprint 6 (`feature/sprint6-cli`, merged as `29657df`), no separate Sprint 7 feature branch was ever created — all Sprint 7 work happened directly on `feature/runtime-implementation`. Recorded here as a factual finding, not worked around or silently omitted from the record.
+
+**Repository Closeout:** `PROJECT_STATUS.md` header fields updated (Current Milestone, Current Phase, new Engineering Methodology Version field) and a new `## Sprint 7 — Complete` section added; `CHANGELOG.md`'s new `# [Sprint 7]` entry added, including its own Engineering Workflow Consolidation subsection; Governance Status note updated to carry the baseline into Sprint 8 and record the Version 1.0 designation.
+
+**Project Milestone recorded:** Engineering Methodology Version 1.0 — the engineering workflow has been exercised across multiple completed Sprints (5 through 7), consolidated into a single canonical process (`PROJECT_HANDOFF_v1.0.md`, Section 5), and is now treated as a stable architectural artifact expected to evolve only through implementation evidence, not routine amendment. Recorded as project history, not as a Governance Register item — no GOV item was opened for it, consistent with explicit direction that this is history rather than governance.
+
+No architectural change, no new Governance Register item, and no ADR were introduced this session. **Sprint 7 is now formally closed.**

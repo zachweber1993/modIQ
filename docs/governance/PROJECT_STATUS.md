@@ -3,11 +3,12 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.5 (Sprint 6 implemented, reviewed, and merged; a formal Engineering Release 0.6 record has not yet been produced) |
+| **Current Release** | Engineering Release 0.5 (Sprints 6 and 7 both implemented, reviewed, committed, and pushed; formal Engineering Release 0.6/0.7 records have not yet been produced) |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 6 — Complete (CLI wiring, `modiq-report` scaffold retirement); Repository Closeout in progress |
+| **Current Milestone** | Sprint 7 — Complete (Multi-Source Evidence Collection: XML inspection); Repository Closeout complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Sprint 6 Repository Closeout — documentation reconciliation; Sprint 7 not yet scoped |
+| **Current Phase** | Post-Sprint 7 Repository Closeout complete; Sprint 8 not yet scoped |
+| **Engineering Methodology Version** | 1.0 — declared following Sprint 7 and the Engineering Workflow Consolidation (`PROJECT_HANDOFF_v1.0.md`, Section 5) |
 | **Last Updated** | 2026-07-21 |
 
 ---
@@ -46,7 +47,15 @@ Sprint 5 deliberately did not add a third Evidence Collector; per Technical Dire
 
 Sprint 6 closed two of the three roadmap candidates named at Sprint 5 Closeout. `modiq-cli` was wired to `modiq-engine` for the first time since Sprint 0: `Application` dispatches `assess`/`help`/`version` by one direct match (no command trait or registry); `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a real, user-supplied path — the same entry point the Sandbox already calls, reused rather than reinvented — mapping the result to a three-tier exit-code convention (0 success, 1 execution failure, 2 invalid usage). `modiq-report`'s four scaffold types recommended for retirement at Sprint 5 Phase 4 (`FindingSummary`, `RecommendationSummary`, `TraceabilityReport`, `ReportFormatter`) were deleted under this Sprint's explicit Chief Architect authorization; `AssessmentReport`, the crate's real, tested content, is unchanged. No change to `AssessmentService`'s public entry points, `AssessmentInput`, or the public error model. `modiq-cli` advanced from L1 to L2. The workspace grew from 162 to 172 root tests (`modiq-cli` 0 → 10; `modiq-report` unchanged at 3, confirming the deletion had zero test-coverage impact); Sandbox reverified unchanged at 6/6. Implementation was committed (`397707f`) on `feature/sprint6-cli`, reviewed, and merged into `feature/runtime-implementation` (`29657df`) with a full post-merge revalidation. Full record: `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record) and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`. A formal `ENGINEERING_RELEASE_0.6.md` record, matching every prior Sprint's own convention, has not yet been produced — noted here as outstanding, not silently assumed complete.
 
-**Next implementation milestone:** not yet scoped. Sprint 7 has not begun as of this record. The sole remaining candidate from the original three-item Sprint 6 roadmap is XML inspection (the next Evidence Collector), its precondition (Rule Engine maturity) satisfied since Sprint 5.
+## Sprint 7 — Complete (Multi-Source Evidence Collection: XML Inspection)
+
+Sprint 7 closed the sole remaining candidate from the original three-item Sprint 6 roadmap. Rather than beginning with implementation, Sprint 7 began with a capability question — "what new capability should XML inspection provide?" — and, when that surfaced the platform's first need for more than one Collector to run per Assessment, was preceded by a dedicated Architecture Evaluation (`COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`) before any code was written. The approved architecture: Collection is a phase of an Assessment, not a standalone component; Collectors remain fully independent and never consume one another's output; composition is direct and inline inside `AssessmentService`, with no `CollectionCoordinator` introduced. `XmlCollector` now runs alongside the existing structural Collector for every Assessment, producing `XmlInspection` Evidence — manifest presence, well-formedness, and declared dependencies — with a missing manifest itself recorded as Evidence rather than silently treated as Empty Collection. No Rule Engine change; `modiq-rules` is untouched. New dependency: `roxmltree`. The workspace grew from 172 to 187 root tests (Sandbox 6 → 7). Implementation committed and pushed directly to `feature/runtime-implementation` (`277aefd`) — no separate Sprint branch was created this cycle, unlike Sprint 6.
+
+Sprint 7 also consolidated the repository's engineering workflow: nine independent, drifted workflow descriptions (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`) reduced to one canonical source (`PROJECT_HANDOFF_v1.0.md`, Section 5), terminology unified project-wide, `ImplementationWorkflow.md` archived as non-normative history, and the Implementation Report template reconciled with demonstrated Sprint 6/7 practice (`ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`). The engineering methodology is now designated **Version 1.0** — exercised across multiple completed Sprints, consolidated into one canonical process, and expected to evolve only through the same evidence-based process used throughout this repository, not routine amendment.
+
+Full record: `SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `SPRINT7_IMPLEMENTATION_REPORT.md`, `ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, `ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`. Formal `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` records, matching every earlier Sprint's own convention, remain outstanding — noted here as outstanding, not silently assumed complete.
+
+**Next implementation milestone:** not yet scoped. Sprint 8 has not begun as of this record.
 
 ---
 
@@ -137,7 +146,7 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6 (Sprint 6 complete); baseline carries forward unchanged into Sprint 7
+Status: Frozen for Sprint 6, carried into Sprint 7 (both complete); baseline carries forward unchanged into Sprint 8. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline.
 
 The project's governance baseline is established.
 

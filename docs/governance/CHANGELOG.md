@@ -419,3 +419,33 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/SPRINT6_IMPLEMENTATION_PLAN.md` (including its Authorization Record) and `docs/engineering/POST_SPRINT6_REPOSITORY_ASSESSMENT.md`. Implementation committed as `397707f` on `feature/sprint6-cli`, merged into `feature/runtime-implementation` as `29657df`.
+
+---
+
+# [Sprint 7]
+
+**Status:** Complete (implementation, review, and Repository Closeout on `feature/runtime-implementation` — no separate Sprint branch this cycle)
+
+## Added
+
+- **Multi-Source Evidence Collection: XML inspection** — `XmlCollector` runs independently alongside the existing structural Collector (`EvidenceCollector`/`ArchiveCollector`) for every Assessment, composed inline in `AssessmentService::execute_from_assessment_input`. Locates `modDesc.xml` at an Assessment Input's root (directory, bare file, or archive root) and produces `XmlInspection` Evidence: well-formedness, declared `<dependency>` element extraction, or absence — a missing manifest is itself recorded as Evidence, never silently Empty Collection. No Rule Engine change; `modiq-rules` untouched. New dependency: `roxmltree` (read-only, no DTD/entity support — a deliberate safety property for untrusted, community-submitted content).
+- Preceded by a dedicated Architecture Evaluation (`COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`) once Sprint 7's own capability-first planning surfaced the platform's first need for more than one Collector per Assessment. Approved architecture: Collectors remain fully independent, never consume each other's output; composition is direct and inline; no `CollectionCoordinator` introduced, with a five-condition threshold recorded for when that should be revisited.
+- The root workspace test suite grew from 172 to 187 tests (`modiq-collection` +13, `modiq-engine` +2); the Sandbox's own separate suite grew from 6 to 7.
+
+## Engineering Workflow Consolidation
+
+- Nine independent, drifted workflow descriptions found across the repository (`ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`) reduced to one canonical source: `PROJECT_HANDOFF_v1.0.md`, Section 5. Terminology unified project-wide (Capability Definition, Architecture Evaluation, Architectural Resolution, Implementation Authorization, Implementation, Validation, Implementation Report, Architectural Conformance Review, Commit, Merge, Repository Closeout) — resolving, among other drift, an ambiguous pair ("Chief Architect Review"/"Architecture Review") previously used for two different stages.
+- `docs/implementation/ImplementationWorkflow.md` archived as non-normative history rather than deleted. Implementation Report template reconciled with practice actually demonstrated in Sprints 6 and 7, six sections added, none removed.
+- **The engineering methodology is now designated Version 1.0** — exercised across multiple completed Sprints, consolidated into one canonical process, expected to evolve only through implementation evidence going forward, not routine amendment.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint.
+- Dependency extraction (`XmlCollector`'s `<dependency>` element interpretation) is implemented per a documented interpretation of `modDesc.xml` convention, not yet validated against a real Farming Simulator mod manifest — no such sample exists in this repository.
+- The Collector Composition Governance item remains deferred, per explicit Chief Architect direction: Sprint 7 is the first implementation evidence for the approved architecture, not the final governance evidence: it should wait for at least one more independent content Collector.
+- Two smaller items from the workflow consolidation remain open: whether `ImplementationWorkflow.md` should be deleted outright rather than archived, and whether `EngineeringGuide.md`'s remaining "Technical Director" reference and non-workflow content should be reconciled or relocated.
+- Formal `ENGINEERING_RELEASE_0.6.md` and `_0.7.md` records, matching every earlier Sprint's own convention, have not yet been produced.
+
+## Released
+
+- Documented in `docs/engineering/SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT7_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_STUDY.md`, and `docs/engineering/ENGINEERING_WORKFLOW_CONSOLIDATION_REPORT.md`. Implementation, refinement, and consolidation committed together as `277aefd` directly on `feature/runtime-implementation` and pushed — no separate Sprint branch existed this cycle, unlike Sprint 6.
