@@ -1036,6 +1036,46 @@ No architectural change, no new Governance Register item, and no ADR were introd
 
 ---
 
+### Sprint 9 Closeout: Repository Validation, Documentation Synchronization, Commit, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-knowledge (RepairRecipe)
+- modiq-rules (VersionCompatibilityRule, new dependency edge)
+- modiq-engine (test coverage only)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/implementation/CrateRoadmap.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_0.9.md (new)
+- docs/engineering/REPOSITORY_CLOSEOUT_REPORT.md (superseded — Sprint 9 record)
+
+Notes:
+Formal Sprint 9 closeout, per Chief Architect authorization following Repository Review's own "Approve for Commit" recommendation and the subsequent Commit Authorization (six implementation files, dependency updates, associated tests, plus — by explicit Chief Architect choice — this Sprint's own planning/decision record folded into the same commit). Repository Validation re-performed before any further documentation change: `cargo fmt --all --check`, `cargo check --workspace`, `cargo clippy --workspace --all-targets`, and `cargo test --workspace` (210/210, up from 205) on the root workspace; the same checks independently against `apps/sandbox/src-tauri` (7/7, unchanged — zero source modification required there). `git status`/`git log` confirmed one commit (`21eb7eb`) ahead of `origin/feature/runtime-implementation`, working tree clean.
+
+**Documentation Synchronization:** `PROJECT_STATUS.md` header fields updated (Current Release, Current Milestone, Current Phase) and a new `## Sprint 9 — Complete` section added; Current Focus and Governance Status notes both updated to reflect Sprint 9 and carry the baseline into Sprint 10. `CHANGELOG.md`'s new `# [Sprint 9]` entry added, mirroring the established Added/Deferred/Released structure. `CrateRoadmap.md`'s Implementation Status table (`modiq-knowledge` L1 → L2), dependency-hierarchy notes for the new `modiq-rules` → `modiq-knowledge` edge, a Sprint 9 narrative section, and a new Revision History entry (1.21.0). `docs/README.md`'s Engineering Release cross-reference updated to 0.9.
+
+**Engineering Release:** `ENGINEERING_RELEASE_0.9.md` produced **at this Sprint's own Closeout**, continuing the Sprint-8-established practice of producing it at close rather than retroactively.
+
+**Repository Closeout Report:** `REPOSITORY_CLOSEOUT_REPORT.md` — a living, Sprint-specific record (filename unversioned, content superseded each Sprint, per the pattern already established at Sprint 7 and Sprint 8's own closeouts) — rewritten for Sprint 9.
+
+**Process finding, specific to this Sprint:** during Architectural Resolution review (prior to implementation), the Chief Architect identified that the initial draft's Question 2 conflated two distinct questions — where a `RepairRecipe` is *retrieved* (correctly resolved: a direct call, no new `RuleEngine::evaluate` parameter) and where its content is *authored* (initially resolved incorrectly: inline literals inside the consuming Rule, making `modiq-rules` the author of engineering knowledge rather than its consumer). The Architectural Resolution document was revised in place — not merely appended with a caveat — before implementation began, so that `modiq-knowledge` authors the named, specific `RepairRecipe` value (`version_compatibility_declared_version_mismatch()`, mirroring `VersionProfile::fs25()`'s own precedent) and `modiq-rules` only calls it. Implementation, Repository Review, and this Closeout all confirm the corrected design, not the original draft, is what the repository contains — no drift between the corrected resolution and what was built.
+
+**Commit:** Sprint 9 documentation synchronization staged and committed as a second commit, separate from the implementation commit (`21eb7eb`), on `feature/runtime-implementation` directly — mirroring Sprint 7's and Sprint 8's own two-commit precedent (implementation, then Closeout).
+
+**Push:** not performed this session — awaiting Chief Architect approval before repository history is pushed.
+
+**Merge:** not applicable this cycle, mirroring Sprint 7's and Sprint 8's own precedent — no separate Sprint 9 feature branch was ever created; all Sprint 9 work happened directly on `feature/runtime-implementation`.
+
+No architectural change, no new Governance Register item, and no ADR were introduced this session — the Knowledge Domain boundary section in `GOVERNANCE.md` already named Repair Recipes explicitly before this Sprint began, so no amendment was needed (unlike Sprint 8's `modiq-versioning` Crate Boundary Rule gap, which remains open, unaffected by Sprint 9). **Sprint 9 is now formally closed, pending push.**
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
@@ -1045,5 +1085,11 @@ A running record of process observations surfaced during Sprint execution — di
 Sprint 8's implementation session ran seven distinct phases (`modiq-versioning` domain content → `modiq-runtime` construction evolution → `modiq-collection` extraction → `modiq-rules` Rule and `RuleEngine` signature → `modiq-engine` wiring → `modiq-report` call-site updates → full-workspace and Sandbox validation), each validated independently (`cargo fmt`/`check`/`test` at the crate level) before the next began, rather than writing all seven phases' code first and validating once at the end.
 
 **Observation:** this per-phase validation gate caught what would otherwise have been a late-discovered, larger-surface-area problem. Because `modiq-collection`'s `descVersion` extraction was implemented and validated (crate-level `cargo test -p modiq-collection`) before `modiq-rules`' `VersionCompatibilityRule` was written, the exact evidence-description format `XmlCollector` actually produces was already confirmed, real, and test-covered by the time the Rule needed to parse it — rather than the Rule being written against an assumed format and a mismatch surfacing only once the full pipeline was assembled and tested together at the very end. The same held moving from `modiq-rules` to `modiq-engine`: `RuleEngine::evaluate`'s new signature was already fixed and tested before `AssessmentService`'s call site was touched, so the engine-level integration required no rework.
+
+### Sprint 9: Architectural Resolution Review Caught a Design Error Before Implementation
+
+Sprint 9's initial Architectural Resolution draft conflated two distinct questions under one heading — where a `RepairRecipe` is *retrieved* at evaluation time, and where its content is *authored*. Both were resolved together as "inside the Rule," which correctly answered the first question but incorrectly answered the second: it would have made `modiq-rules` the author of engineering knowledge, directly contrary to `modiq-knowledge`'s own README boundary ("knowledge is authored here... [Rules] never own or modify the knowledge itself").
+
+**Observation:** the Chief Architect's own review of the Architectural Resolution document — a distinct step this project's workflow already reserves for exactly this purpose — caught the conflation before any implementation code was written. The correction was made by revising the resolution document itself (decision, rationale, alternatives, and every downstream section it touched), not by appending a caveat alongside the original error, so that implementation proceeded against a single, internally consistent record rather than a draft plus a patch. This is the same category of finding Sprint 8's own Lessons Learned recorded for `VersionProfileReference` (a validation pass surfacing a real design question a single careful pass did not) — recorded here as a second, independent data point for the same observation: dedicated review stages between architectural decision and implementation continue to find real errors, not merely formalities to pass through.
 
 **Why this is being recorded, not adopted:** Sprint 8 is one data point. This project's own governance discipline (`CHIEF_ARCHITECT_HANDOFF_v1.0.md`, Section 4: "prefer convergent evidence over a single implementation attempt") holds that a single favorable Sprint does not, by itself, justify writing a new mandatory stage into the canonical workflow (`PROJECT_HANDOFF_v1.0.md`, Section 5's eleven-stage Implementation → Validation sequence already exists; this observation is about *sub-phase* granularity within that single stage, not a new stage). Whether this should become an explicit expectation of every future multi-crate implementation, or remains ordinary good practice not worth codifying, is left for a future Chief Architect session to evaluate — ideally once a second Sprint's own evidence exists to compare against, mirroring exactly how GOV-004's three-subsystem convergence, not a single favorable case, is this project's own standing bar for treating a pattern as settled.

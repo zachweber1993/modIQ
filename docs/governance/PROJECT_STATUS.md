@@ -3,11 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 0.8 — `docs/engineering/ENGINEERING_RELEASE_0.8.md`, produced at Sprint 8's own Repository Closeout (not retroactively — correcting the pattern named at Sprint 7's own Closeout as a risk not to repeat) |
+| **Current Release** | Engineering Release 0.9 — `docs/engineering/ENGINEERING_RELEASE_0.9.md`, produced at Sprint 9's own Repository Closeout |
 | **Repository Status** | Implementation Ready |
-| **Current Milestone** | Sprint 8 — Complete (Version Profile-aware compatibility checking); Repository Closeout complete |
+| **Current Milestone** | Sprint 9 — Complete (Repair Guidance: minimum viable `modiq-knowledge` activation); Repository Closeout complete |
 | **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 8 Repository Closeout complete; Sprint 9 not yet scoped |
+| **Current Phase** | Post-Sprint 9 Repository Closeout complete; Sprint 10 not yet scoped (frozen roadmap names Runtime Log Interpretation as the Sprint 10 candidate — `SPRINT_ROADMAP_UPDATE_v1.md` — not yet re-confirmed against fresh repository evidence) |
 | **Engineering Methodology Version** | 1.0 — unchanged this Sprint |
 | **Last Updated** | 2026-07-22 |
 
@@ -65,7 +65,15 @@ Sprint 8 activated the Version Profile architectural dimension — specified sin
 
 The workspace grew from 187 to 205 root tests (`modiq-versioning` 0 → 4, its first tests ever; `modiq-rules` 15 → 25; `modiq-runtime` 82 → 84; `modiq-collection` 56 → 57; `modiq-engine` 18 → 19 unit); Sandbox unchanged at 7/7, requiring zero source modification. Two new internal dependency edges only (`modiq-engine`/`modiq-rules` → `modiq-versioning`), no new external dependency, no breaking public API change. Full record: `SPRINT8_IMPLEMENTATION_REPORT.md`, `SPRINT8_IMPLEMENTATION_DEVIATIONS.md`, and `ENGINEERING_RELEASE_0.8.md`.
 
-**Next implementation milestone:** not yet scoped. Sprint 9 has not begun as of this record.
+## Sprint 9 — Complete (Repair Guidance: Minimum Viable `modiq-knowledge` Activation)
+
+Sprint 9 activated `modiq-knowledge` — real content since Sprint 0 — through the platform's first Repair Guidance capability, directly answering `Vision.md`'s own least-served founding Assessment question, "what can I do next?" Preceded by the full Capability Definition → Architectural Resolution → Implementation → Repository Review sequence, each producing its own reviewed document: `SPRINT9_CAPABILITY_DEFINITION.md`, `SPRINT9_ARCHITECTURAL_RESOLUTION.md`, `SPRINT9_REPOSITORY_REVIEW.md`. During Architectural Resolution review, the Chief Architect identified and corrected a conflation in the initial draft's Question 2 (where a `RepairRecipe` is retrieved versus where its content is authored) before implementation began — the resolution was revised so that `modiq-knowledge`, not the consuming Rule, authors engineering knowledge, consistent with the crate's own README boundary.
+
+`RepairRecipe` gained real content: `identifier`/`guidance` fields, an infallible constructor, and one named, authored recipe, `RepairRecipe::version_compatibility_declared_version_mismatch()`, mirroring `VersionProfile::fs25()`'s exact precedent (a specific minimum-viable value authored inside the domain crate itself). `VersionCompatibilityRule` now calls this recipe rather than authoring guidance text inline, wiring a real `Some(RepairRecipeReference)` into its `Recommendation` in place of `None`. `RepairRecipeReference` — real, tested, and unused since Sprint 2 — required no modification, its third proven instance of ADR-0007's Opaque Runtime References pattern. `RuleEngine::evaluate` and `AssessmentService`'s two public entry points required **zero signature change**: the capability's entire footprint is one new dependency edge, `modiq-rules` → `modiq-knowledge`, mirroring Sprint 8's own `modiq-rules` → `modiq-versioning` edge.
+
+The workspace grew from 205 to 210 root tests (`modiq-knowledge` 0 → 5, its first tests ever; `modiq-rules` and `modiq-engine` unchanged in count, both extended in place); Sandbox unchanged at 7/7. No new Governance Register item, no ADR, no `GOVERNANCE.md` amendment — the Knowledge Domain boundary already named Repair Recipes explicitly; no gap was found, unlike Sprint 8's `modiq-versioning` boundary gap. Full record: `SPRINT9_CAPABILITY_DEFINITION.md`, `SPRINT9_ARCHITECTURAL_RESOLUTION.md`, `SPRINT9_REPOSITORY_REVIEW.md`, and `ENGINEERING_RELEASE_0.9.md`.
+
+**Next implementation milestone:** not yet scoped for implementation. The frozen roadmap (`SPRINT_ROADMAP_UPDATE_v1.md`) names Runtime Log Interpretation as the Sprint 10 candidate, contingent on Sprint 9's own successful closeout (now complete) — Sprint 10 Capability Definition should still confirm this against fresh repository evidence rather than assume it, per this project's own standing discipline.
 
 ---
 
@@ -140,7 +148,7 @@ Governance documentation (EngineeringGuide.md, CHANGELOG.md, ROADMAP.md, PROJECT
 
 Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Release 2.1 (Evidence Collection subsystem boundary) is the current one, amended three times since its own freeze to record GOV-011's resolution and its Sprint 4 Phase 3C/3D implementation (`EvidenceCollection.md` v1.2.0 → v1.4.0). `DataModel.md` was separately amended to v1.1.0 during Sprint 5 to add Finding Severity definitions (GOV-012/GOV-013). Engineering Release 0.4 froze Sprint 4 (Phases 1–3D, plus Closeout); Engineering Release 0.5 froze Sprint 5 (Phases 1–5, plus Closeout). Platform Validation Phase 1 closed before Sprint 4 began, confirming the engine architecture (GOV-004) and deferring GOV-008 pending future evidence — GOV-008 remains open, untouched by Sprints 4, 5, and 6 (Sprint 6 reused `AssessmentService`'s existing entry points exactly as designed and generated no new evidence toward it). Sprint 6 is complete: `modiq-cli` is wired to `modiq-engine`, and `modiq-report`'s four scaffold types are retired. XML inspection is the sole remaining candidate from the original three-item Sprint 6 roadmap, not yet scoped for Sprint 7.
 
-Sprint 7 (Multi-Source Evidence Collection: XML inspection) and Sprint 8 (Version Profile-aware compatibility checking) are both complete since this paragraph was last current. Neither required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, now unaffected by Sprint 8 as well — `AssessmentService`'s two public entry points required no signature change this Sprint either, generating no new evidence toward resolving it, the same non-outcome Sprint 6 and 7 each already produced.
+Sprint 7 (Multi-Source Evidence Collection: XML inspection), Sprint 8 (Version Profile-aware compatibility checking), and Sprint 9 (Repair Guidance) are all complete since this paragraph was last current. None required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, now unaffected by Sprint 9 as well — `AssessmentService`'s two public entry points required no signature change this Sprint either, generating no new evidence toward resolving it, the same non-outcome every Sprint since Sprint 6 has already produced. Sprint 9 gave `modiq-knowledge` its first real content since Sprint 0, the platform's first Repair Guidance capability, and its own Sprint-9-specific process finding: the Chief Architect's Architectural Resolution review caught and corrected a knowledge-ownership conflation before implementation began (see Sprint 9's own record).
 
 Implementation should remain consistent with the frozen engineering specification.
 
@@ -158,7 +166,7 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6, carried into Sprints 7 and 8 (all three complete); baseline carries forward unchanged into Sprint 9. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 8 introduced no Governance Register item, no ADR, and no Crate Boundary Rule update, by explicit Chief Architect decision (mirroring Sprint 7's own treatment of the Collector Composition Model): the `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, deliberately, pending future evidence.
+Status: Frozen for Sprint 6, carried into Sprints 7, 8, and 9 (all four complete); baseline carries forward unchanged into Sprint 10. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 9 introduced no Governance Register item, no ADR, and no Crate Boundary Rule update — the Knowledge Domain boundary section in `GOVERNANCE.md` already named Repair Recipes explicitly before this Sprint began, so (unlike Sprint 8's `modiq-versioning` gap) no amendment was needed. The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 9.
 
 The project's governance baseline is established.
 
@@ -171,6 +179,6 @@ Authoritative governance documents:
 Future governance changes must be justified by implementation evidence,
 architectural evolution, or approved governance decisions.
 
-Sprint 9 begins under this governance baseline.
+Sprint 10 begins under this governance baseline.
 
 ---

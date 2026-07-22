@@ -473,3 +473,27 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/SPRINT8_INITIALIZATION_REPORT.md`, `docs/engineering/SPRINT8_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, `docs/engineering/SPRINT8_ARCHITECTURAL_RESOLUTION.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_REPORT.md`, `docs/engineering/SPRINT8_IMPLEMENTATION_DEVIATIONS.md`, and `docs/engineering/ENGINEERING_RELEASE_0.8.md` (produced at this Sprint's own Closeout, not retroactively — correcting the two-Sprint-running pattern Engineering Release 0.7 itself named as a risk not to repeat a third time).
+
+---
+
+# [Sprint 9]
+
+**Status:** Complete (Capability Definition, Architectural Resolution, Implementation, Repository Review, Closeout, on `feature/runtime-implementation` — no separate Sprint branch this cycle, matching Sprint 7's and Sprint 8's own precedent)
+
+## Added
+
+- **Repair Guidance (minimum viable `modiq-knowledge` activation)** — `RepairRecipe` gained real content for the first time since Sprint 0: `identifier`/`guidance` fields, an infallible constructor, and one named, authored recipe, `RepairRecipe::version_compatibility_declared_version_mismatch()`, mirroring `VersionProfile::fs25()`'s exact precedent (a specific minimum-viable value authored inside the domain crate itself, not inlined by its caller). `VersionCompatibilityRule` now calls this recipe rather than authoring guidance text inline, wiring a real `Some(RepairRecipeReference)` into its `Recommendation` in place of `None`. `RepairRecipeReference` (real and tested since Sprint 2, always `None` in practice until now) required no modification — its third proven instance of ADR-0007's Opaque Runtime References pattern. `RuleEngine::evaluate` and `AssessmentService`'s two public entry points required zero signature change; the capability's entire footprint is one new dependency edge, `modiq-rules` → `modiq-knowledge`, mirroring Sprint 8's own `modiq-rules` → `modiq-versioning` edge.
+- Preceded by the full Capability Definition → Architectural Resolution → Implementation → Repository Review sequence, each producing its own reviewed document: `SPRINT9_CAPABILITY_DEFINITION.md`, `SPRINT9_ARCHITECTURAL_RESOLUTION.md`, `SPRINT9_REPOSITORY_REVIEW.md`. During Architectural Resolution review, the Chief Architect identified a conflation in the initial draft's Question 2 — where a `RepairRecipe` is retrieved (correctly resolved: no new `RuleEngine::evaluate` parameter) versus where its content is authored (initially resolved incorrectly: inline inside the consuming Rule). The resolution was revised before implementation began so that `modiq-knowledge`, not `modiq-rules`, authors engineering knowledge, consistent with `modiq-knowledge`'s own README boundary.
+- The root workspace test suite grew from 205 to 210 tests (`modiq-knowledge` 0 → 5, its first tests ever; `modiq-rules` and `modiq-engine` unchanged in count, both extended in place — a stale `None` assertion updated to the real `Some(...)`, and an end-to-end pipeline assertion added); the Sandbox's own separate suite was unaffected (unchanged at 7/7, requiring zero source modification).
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint. GOV-008 specifically was not advanced: `AssessmentService`'s two public entry points required no signature change this Sprint either, generating no new evidence toward it.
+- No new Governance Register item or ADR was opened — the Knowledge Domain boundary section in `GOVERNANCE.md` already named Repair Recipes explicitly before this Sprint began, so (unlike Sprint 8's `modiq-versioning` gap) no amendment was needed.
+- `modiq-knowledge`'s remaining six Knowledge Model categories (`Rule`, `Engine Behavior`, `Compatibility Pattern`, `Best Practice`, `Known Issue`, `Knowledge Reference`) remain unimplemented, as originally scoped — this Sprint's charter was one minimum-viable `RepairRecipe`, not the full Knowledge Model.
+- `StructuralDuplicationRule` remains without its own Repair Recipe — `VersionCompatibilityRule` was the sole Sprint 9 consumer, by explicit scope.
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 9.
+
+## Released
+
+- Documented in `docs/engineering/SPRINT9_CAPABILITY_DEFINITION.md`, `docs/engineering/SPRINT9_ARCHITECTURAL_RESOLUTION.md`, `docs/engineering/SPRINT9_REPOSITORY_REVIEW.md`, and `docs/engineering/ENGINEERING_RELEASE_0.9.md` (produced at this Sprint's own Closeout, not retroactively).
