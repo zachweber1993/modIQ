@@ -1,0 +1,13 @@
+[package]
+name = "modiq-storage"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+modiq-report = { path = "../modiq-report" }
+modiq-runtime = { path = "../modiq-runtime" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
