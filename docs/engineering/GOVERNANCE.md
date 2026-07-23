@@ -331,6 +331,24 @@ Must never contain business logic.
 
 ---
 
+## Storage
+
+Owns:
+
+- durability of an already-generated `AssessmentReport`, beyond the lifetime of the process that produced it
+- Storage's own persisted representation of a report's content, populated only from `AssessmentReport`'s already-public API
+
+Must never:
+
+- participate in Evidence Collection, Rule Evaluation, or Report generation, or be consulted during any of them
+- mutate a stored report once written
+- persist `Assessment`, `Evidence`, `Finding`, or `Recommendation` as individually addressable entities — only the already-bundled `AssessmentReport` snapshot
+- require any change to `AssessmentService`'s public entry points
+
+Storage sits strictly downstream of Reporting in the platform's one-directional information flow (Evidence → Rule Evaluation → Findings → Recommendations → Report → Storage) and never feeds back upstream. Activated Sprint 13 (`modiq-storage`, its first real content since the crate's own creation) as an instance of Architectural Activation (`SPRINT8_ARCHITECTURAL_RESOLUTION.md` §8), per the governance reconciliation recorded in `PROJECT_HANDOFF_v1.1.md` §5 and `GOVERNANCE_OBSERVATION_SUBSYSTEM_ACTIVATION.md` — not through the Capability Identity procedure, which does not classify a subsystem-level candidate (`INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md` §3). See `STORAGE_ARCHITECTURE_EVALUATION.md`, `STORAGE_IMPLEMENTATION_AUTHORIZATION.md`, and `STORAGE_PERSISTENCE_REPRESENTATION_DESIGN_NOTE.md` for the full evaluation, authorization, and representation rationale.
+
+---
+
 # Governance Register
 
 Governance Items track architectural questions discovered during engineering.

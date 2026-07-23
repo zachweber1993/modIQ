@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-22 |
+| **Last Updated** | 2026-07-23 |
 
 ---
 
@@ -588,3 +588,42 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/implementation/SPRINT12.md` (v1.1.0), `docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md`, and `docs/engineering/ENGINEERING_RELEASE_1.2.md` (produced at this Sprint's own Closeout, not retroactively).
+
+---
+
+# [Sprint 13]
+
+**Status:** Complete (Investigation, Governance Reconciliation, Architecture Evaluation, Architectural Resolution, Implementation Authorization, Sprint Planning, three-phase Implementation, Repository Closeout, on `feature/runtime-implementation` — no separate Sprint branch this cycle, matching Sprints 7–12's own precedent)
+
+## Added
+
+- **`modiq-storage`** — a new workspace crate, giving the Storage subsystem (named in `Architecture.md`'s System Overview since the document's own baseline) its first real content. `PersistedAssessmentReport` and its nested `Persisted*` types are Storage's own representation of a report's content, built from `AssessmentReport`'s already-public getters only — never a reconstructed `AssessmentReport`, and never any Runtime entity's own process-local identity, which cannot be reconstructed to a specific value and is not meaningful across a process boundary in the first place (`AssessmentId`'s own generator restarts at 1 on every process invocation). Finding→Evidence and Recommendation→Finding cross-references are preserved as positions within the persisted report itself. `ReportKey` is an opaque identifier Storage mints itself at write time. `ReportStore` provides real, filesystem-backed write and read, using only `std` and the already-declared workspace `serde`/`serde_json` — no new external dependency.
+- **`modiq-cli` integration** — `AssessCommand` hands a successful assessment's report to `ReportStore::store`, reporting the resulting key (`Stored as: <key>`); a storage failure is reported as a warning, never as a change to the assessment's own exit code. A new `retrieve <key>` command reads a previously-stored report back, independent of running a new Assessment.
+- **`apps/sandbox` integration** — `create_assessment` gains a `stored_report_key` field on its existing IPC summary DTO; a new `retrieve_report` Tauri command mirrors `modiq-cli`'s own `retrieve`, returning a new `PersistedReportSummary` IPC DTO built from `PersistedAssessmentReport`.
+- Both integration phases were verified with a genuine cross-process round trip against the real, built `modiq-cli` binary (run as two separate process invocations), not only in-test coverage.
+- The root workspace test suite grew from 238 to 253 tests (`modiq-storage` 0 → 10, its first tests ever; `modiq-cli` 10 → 15); Sandbox grew from 7 to 9.
+- `modiq-runtime`, `modiq-report`, `modiq-engine`, `modiq-rules`, `modiq-versioning`, and `modiq-knowledge` are unmodified. `AssessmentService`'s two public entry points required zero signature change.
+- `.gitignore` gained `.modiq-storage/`, since both `modiq-cli`'s and the Sandbox's own default storage locations can now write real files into the working tree during normal use.
+
+## Investigation and Governance Reconciliation
+
+- **`INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md`** established Storage as a valid, well-evidenced capability candidate, then found the Sprint 12 Capability Identity procedure could not classify it — its three axes and Introduction test are scoped to Collector/Rule-shaped candidates, and a subsystem-level candidate is a different shape of question entirely.
+- **`GOVERNANCE_OBSERVATION_SUBSYSTEM_ACTIVATION.md`** generalized this finding, then — on Chief Architect review surfacing that `SPRINT8_ARCHITECTURAL_RESOLUTION.md` §8 had already named and applied "Architectural Activation" to Version Profiles' own first real content — was revised to record that the repository already contained an answer Sprint 12's own historical derivation never checked itself against, rather than an absence of any governing concept.
+- **`PROJECT_HANDOFF_v1.1.md` §5** was amended with a two-sentence scope clarification (commit `fd2db36`): the Capability Identity gate applies to Collector/Rule-shaped candidates specifically; an already-specified-but-dormant subsystem receiving its first real content follows Architectural Activation directly to Architecture Evaluation instead. This introduces no new procedure, taxonomy, or architectural decision — it reconnects two already-existing ones, and preserves both Sprint 8's and Sprint 12's own documents unchanged.
+
+## Design Resolution
+
+- Preparing implementation surfaced that `AssessmentReport` and its nested Runtime types have no `Serialize`/`Deserialize` derive, and that their identifier types (`AssessmentId`, `EvidenceId`, `FindingId`) expose no accessor and cannot be reconstructed to a specific value — a real conflict with the Sprint Plan's own "`modiq-runtime`/`modiq-report` unmodified" constraint, reported rather than resolved unilaterally.
+- **`STORAGE_PERSISTENCE_REPRESENTATION_DESIGN_NOTE.md`** resolved it within `modiq-storage`'s own boundary: Storage defines and owns its own persisted representation — the fourth instance of ADR-0007's Opaque Runtime References pattern — populated from `AssessmentReport`'s already-public API, with faithfulness judged by content and order, never by Runtime identity, consistent with this platform's own pre-existing determinism convention. No modification to `modiq-runtime` or `modiq-report` was required.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint.
+- No new Governance Register item or ADR was opened — this Sprint's own governance work clarified an existing standing rule's scope rather than establishing a new one.
+- Two product-forcing-functions `INV-002` left explicitly undecided — cross-mod collection validation, and MKB accumulation from real Assessments — remain unresolved; Storage's own minimum-viable slice (single-report write/read) does not presuppose either.
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprint 13. `modiq-storage` gained its own Crate Boundary Rule pair this Sprint, recorded directly.
+- Extension Layer — the platform's other dormant System Overview subsystem — remains untouched and unscoped.
+
+## Released
+
+- Documented in `docs/engineering/INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md`, `docs/engineering/GOVERNANCE_OBSERVATION_SUBSYSTEM_ACTIVATION.md`, `docs/engineering/STORAGE_ARCHITECTURE_EVALUATION.md`, `docs/engineering/STORAGE_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/STORAGE_PERSISTENCE_REPRESENTATION_DESIGN_NOTE.md`, `docs/engineering/STORAGE_SPRINT_PLAN.md`, and `docs/engineering/ENGINEERING_RELEASE_1.3.md` (produced at this Sprint's own Closeout, not retroactively).
