@@ -9,3 +9,4 @@ license.workspace = true
 modiq-runtime = { path = "../modiq-runtime" }
 modiq-engine = { path = "../modiq-engine" }
 modiq-report = { path = "../modiq-report" }
+modiq-storage = { path = "../modiq-storage" }

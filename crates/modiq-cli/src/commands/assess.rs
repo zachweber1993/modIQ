@@ -1,27 +1,40 @@
 use modiq_engine::engine::{AssessmentExecutionError, AssessmentService};
 use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject};
+use modiq_storage::storage::{ReportKey, ReportStore};
 
 use crate::app::ExitCode;
 
 /// Executes an assessment against a user-supplied path.
 ///
-/// Owns only: constructing the call into `AssessmentService` and
-/// formatting its result for display. It never evaluates Evidence,
-/// generates Findings or Recommendations, or reimplements any part of
-/// the pipeline `AssessmentService::execute_from_assessment_input`
-/// already owns (`GOVERNANCE.md`, CLI: "must never contain business
-/// logic"). Reuses the same entry point the Sandbox already calls
+/// Owns only: constructing the call into `AssessmentService`,
+/// formatting its result for display, and — once an Assessment
+/// succeeds — handing the resulting `AssessmentReport` to Storage.
+/// It never evaluates Evidence, generates Findings or
+/// Recommendations, or reimplements any part of the pipeline
+/// `AssessmentService::execute_from_assessment_input` already owns
+/// (`GOVERNANCE.md`, CLI: "must never contain business logic").
+/// Reuses the same entry point the Sandbox already calls
 /// (`apps/sandbox/src-tauri/src/lib.rs`), against a real, user-supplied
-/// path rather than a fixed fixture.
+/// path rather than a fixed fixture. Storage sits strictly downstream
+/// of Reporting: a storage failure is reported alongside a successful
+/// assessment's own output, never in place of it — the assessment
+/// itself already completed by the time Storage is ever consulted.
 pub struct AssessCommand;
 
 impl AssessCommand {
-    pub fn run(path: &str) -> (String, ExitCode) {
+    pub fn run(path: &str, storage_root: &str) -> (String, ExitCode) {
         let service = AssessmentService;
 
         match service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, path) {
-            Ok(report) => (Self::format_report(&report), ExitCode::Success),
+            Ok(report) => {
+                let store = ReportStore::new(storage_root);
+                let stored = store.store(&report);
+                (
+                    Self::format_report(&report, stored.as_ref()),
+                    ExitCode::Success,
+                )
+            }
             // AssessmentInputError: the AssessmentInput itself was
             // malformed (currently only an empty value) — collection
             // never began, so this is invalid input, not an execution
@@ -38,12 +51,22 @@ impl AssessCommand {
         }
     }
 
-    fn format_report(report: &AssessmentReport) -> String {
+    fn format_report(
+        report: &AssessmentReport,
+        stored: Result<&ReportKey, &modiq_storage::storage::ReportStoreError>,
+    ) -> String {
         let mut output = format!(
             "Assessment {:?} — status: {:?}\n",
             report.assessment_id(),
             report.status()
         );
+
+        match stored {
+            Ok(key) => output.push_str(&format!("Stored as: {}\n", key.value())),
+            Err(error) => {
+                output.push_str(&format!("Warning: this report was not stored: {error}\n"))
+            }
+        }
 
         output.push_str(&format!("\nEvidence ({}):\n", report.evidence().len()));
         for item in report.evidence() {
@@ -119,8 +142,12 @@ mod tests {
     fn run_against_a_real_directory_succeeds_and_reports_evidence() {
         let dir = TempDir::new("assess-success");
         fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
+        let storage = TempDir::new("assess-success-storage");
 
-        let (message, exit_code) = AssessCommand::run(&dir.path().display().to_string());
+        let (message, exit_code) = AssessCommand::run(
+            &dir.path().display().to_string(),
+            &storage.path().display().to_string(),
+        );
 
         assert_eq!(exit_code, ExitCode::Success);
         // One FileStructureAnalysis item (sample.txt) plus one
@@ -133,8 +160,38 @@ mod tests {
     }
 
     #[test]
+    fn run_against_a_real_directory_stores_the_report() {
+        let dir = TempDir::new("assess-stores");
+        fs::write(dir.path().join("sample.txt"), "sample content").unwrap();
+        let storage = TempDir::new("assess-stores-storage");
+
+        let (message, _) = AssessCommand::run(
+            &dir.path().display().to_string(),
+            &storage.path().display().to_string(),
+        );
+
+        assert!(message.contains("Stored as:"));
+        assert!(!message.contains("Warning: this report was not stored"));
+
+        // The stored report is genuinely retrievable afterward — not
+        // merely reported as stored.
+        let key_line = message
+            .lines()
+            .find(|line| line.starts_with("Stored as:"))
+            .expect("success output names the storage key");
+        let key_value = key_line.trim_start_matches("Stored as:").trim();
+
+        let store = ReportStore::new(storage.path());
+        let retrieved = store.retrieve(&ReportKey::from_raw(key_value));
+
+        assert!(retrieved.is_ok());
+    }
+
+    #[test]
     fn run_against_an_empty_path_is_invalid_usage() {
-        let (message, exit_code) = AssessCommand::run("");
+        let storage = TempDir::new("assess-empty-storage");
+
+        let (message, exit_code) = AssessCommand::run("", &storage.path().display().to_string());
 
         assert_eq!(exit_code, ExitCode::InvalidUsage);
         assert!(message.contains("must not be empty"));
@@ -144,8 +201,12 @@ mod tests {
     fn run_against_a_nonexistent_path_is_an_execution_failure() {
         let dir = TempDir::new("assess-inaccessible");
         let missing = dir.path().join("does-not-exist");
+        let storage = TempDir::new("assess-inaccessible-storage");
 
-        let (message, exit_code) = AssessCommand::run(&missing.display().to_string());
+        let (message, exit_code) = AssessCommand::run(
+            &missing.display().to_string(),
+            &storage.path().display().to_string(),
+        );
 
         assert_eq!(exit_code, ExitCode::ExecutionFailure);
         assert!(message.contains("not accessible"));

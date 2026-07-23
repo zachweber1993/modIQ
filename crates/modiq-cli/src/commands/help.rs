@@ -11,9 +11,10 @@ impl HelpCommand {
                 "modIQ CLI {}\n",
                 "\n",
                 "Usage:\n",
-                "  modiq-cli assess <path>   Run an assessment against a filesystem path or .zip archive\n",
-                "  modiq-cli help            Show this message\n",
-                "  modiq-cli version         Show the CLI version",
+                "  modiq-cli assess <path>     Run an assessment against a filesystem path or .zip archive\n",
+                "  modiq-cli retrieve <key>    Retrieve a previously-stored assessment report\n",
+                "  modiq-cli help              Show this message\n",
+                "  modiq-cli version           Show the CLI version",
             ),
             env!("CARGO_PKG_VERSION")
         )
@@ -25,10 +26,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn run_mentions_all_three_commands() {
+    fn run_mentions_all_four_commands() {
         let output = HelpCommand::run();
 
         assert!(output.contains("assess"));
+        assert!(output.contains("retrieve"));
         assert!(output.contains("help"));
         assert!(output.contains("version"));
     }

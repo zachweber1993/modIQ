@@ -336,6 +336,7 @@ dependencies = [
  "modiq-engine",
  "modiq-report",
  "modiq-runtime",
+ "modiq-storage",
 ]
 
 [[package]]
