@@ -375,15 +375,15 @@ Engineering Release v0.1.0-alpha
 
 Description
 
-Assessment reports are currently generated before Assessment completion.
+Assessment reports are currently generated before Assessment completion — confirmed, post-Sprint 13, to match `DataModel.md`'s own canonical Runtime Lifecycle diagram exactly, which documents "Assessment Report Produced" as the step immediately preceding "Assessment Completed." `AssessmentService::execute`/`execute_from_assessment_input` both call `AssessmentReport::generate` once, before `Assessment::complete()` — enforced directly by an existing test, `execute_reflects_state_at_report_generation_prior_to_completion`. `Assessment::complete()` itself changes only the `status` field, confirmed directly against its own implementation and against `modiq-report`'s own `generate_after_completion_matches_generate_before_completion` test — Evidence, Findings, and Recommendations are identical before and after completion.
 
 Question
 
-Should reports represent the Assessment immediately before completion or after completion?
+The item's original framing — "before or after completion?" — is already answered by the documented specification, and the implementation conforms to it exactly; no inconsistency exists. The real, narrower question: because both public entry points generate exactly once, always before completion, and never again afterward, `AssessmentStatus::Completed` is a value no report produced by either entry point can ever hold in practice. Is that an intended consequence of the documented lifecycle ordering, or an unexamined gap? Ephemeral reports gave this low practical stakes; `modiq-storage`'s own Sprint 13 activation durably persists whatever status a report holds, for the first time giving the question real, if still unforced, weight.
 
 Resolution
 
-Pending Documentation Release 1.1
+Not resolved. Architecture Evaluation performed post-Sprint 13 (no Architectural Resolution) found no inconsistency between specification and implementation — this item's original framing is satisfied as documented. Returned to Open under the narrower question above, deliberately, per this project's own evidence-based resolution discipline (the same restraint already applied to GOV-008 and GOV-013): no implementation currently depends on a report ever reflecting `Completed` status, so no concrete forcing function yet requires deciding the status field's own semantics. Full investigation record: `docs/engineering/ENGINEERING_LOG.md` (post-Sprint-13 entry). Revisit once a real forcing function exists — most plausibly a future Storage capability or consumer that reasons about a persisted report's own completion state directly.
 
 ---
 

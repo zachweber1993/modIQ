@@ -1290,6 +1290,31 @@ No new Governance Register item and no ADR were introduced this session — this
 
 ---
 
+### GOV-001 Architecture Evaluation — Post-Sprint 13, Not Resolved
+
+Status:
+Completed (Architecture Evaluation only — no Architectural Resolution performed)
+
+Affected Crates:
+- (none — no Rust source was modified; `modiq-engine` and `modiq-runtime` source was read directly to verify behavior, not touched)
+
+Affected Documents:
+- docs/engineering/GOVERNANCE.md (GOV-001: Description, Question, and Resolution updated)
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+`SPRINT_14_PROPOSAL.md` (Candidate A) recommended resolving GOV-001 on the strength of a forcing function `modiq-storage`'s own Sprint 13 activation created: a manually smoke-tested, durably persisted report was observed showing `status: EvaluatingRules`, not `Completed`. Before any Architectural Resolution, the Chief Architect directed a determination of `AssessmentReport`'s own semantic contract, and whether its current generation point satisfies it.
+
+**Semantic contract, determined directly from the authoritative specification:** `DataModel.md`'s own "Assessment Report" section defines it as a passive reflection of Assessment state, performing no analysis — consistent with `GOVERNANCE.md`'s Reporting Crate Boundary Rule ("Reports are reflections of Assessment state. They never create new state."). Critically, `DataModel.md`'s own canonical "Runtime Lifecycle" diagram documents "Assessment Report Produced" as the step immediately preceding "Assessment Completed" — the specification does not merely permit pre-completion generation, it specifies it as the intended sequence.
+
+**Conformance, checked directly against source:** `AssessmentService::execute` and `execute_from_assessment_input` (`crates/modiq-engine/src/engine/assessment_service.rs`) both call `AssessmentReport::generate` exactly once, immediately before `Assessment::complete()`, exactly matching the documented sequence — enforced by an existing, explicitly named test, `execute_reflects_state_at_report_generation_prior_to_completion`. **No inconsistency was found between specification and implementation.**
+
+**A narrower finding, surfaced during this check, not present in the original GOV-001 framing:** `Assessment::complete()` (`crates/modiq-runtime/src/assessment/assessment.rs`) was confirmed to be a pure status-field transition, changing nothing else — `modiq-report`'s own existing test, `generate_after_completion_matches_generate_before_completion`, already proves Evidence, Findings, and Recommendations are byte-identical before and after completion. Because both public entry points generate exactly once, always before completion, and never again afterward, `AssessmentStatus::Completed` is a value the type system allows a report to hold, but which no report produced by either real entry point, ever, actually holds. GOV-001's own original question ("before or after completion?") is already answered by the specification and satisfied by the implementation; the real, narrower, still-open question is whether leaving `Completed` permanently unreachable by any real report was an intended consequence of that documented ordering, or simply never consequential enough to examine while reports were ephemeral.
+
+**Disposition:** per explicit Chief Architect direction, no Architectural Resolution was performed. GOV-001's `Description`, `Question`, and `Resolution` fields in `GOVERNANCE.md` were updated to record this finding and the narrower question precisely, and the item was returned to Open — a decision to wait, recorded as one, not an absence of one, mirroring GOV-008's and GOV-013's own standing treatment. No forcing function currently requires deciding the status field's own semantics; none is manufactured here. Revisit once one exists.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
