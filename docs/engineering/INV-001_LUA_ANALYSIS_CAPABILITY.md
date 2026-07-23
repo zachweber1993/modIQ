@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Evidence-acquisition investigation into whether a real, bounded, deterministic Lua Analysis capability exists for modIQ to recognize — the mandatory precondition to any future Architecture Evaluation, per this project's own evidence-before-architecture discipline |
 | **Origin** | Follows CAP-001 (Lua Analysis Capability Proposal), whose recommendation — evidence insufficient for Architecture Evaluation, further investigation required — was accepted by the Chief Architect. CAP-001 itself was conversational scoping only and is not a separate repository artifact; its accepted conclusion is what authorized this investigation. |
-| **Status** | **Complete. Recommendation A selected (evidence remains insufficient; further investigation required). Architecture Evaluation has NOT been authorized. Sprint Planning has NOT begun.** See "Investigation Status," below, for the complete, explicit statement. |
+| **Status** | **Complete. Recommendation A selected (evidence remains insufficient; further investigation required). Architecture Evaluation has NOT been authorized. Sprint Planning has NOT begun. Capability Identity Classification recorded (Section 11 addendum) — classified as Capability Expansion; does not alter Recommendation A or authorization status.** See "Investigation Status," below, for the complete, explicit statement. |
 | **Governing Follow-up** | GOV-014 (Lua Fixture Acquisition Governance) — opened as a direct consequence of this investigation's own findings; see `GOVERNANCE.md`. |
 
 ---
@@ -20,6 +20,7 @@ Recorded explicitly, not left implicit, per this project's own standing discipli
 - ⛔ **Architecture Evaluation has NOT been authorized.**
 - ⛔ **Sprint Planning has NOT begun.**
 - ⏳ **Additional evidence is required before Architecture Evaluation may proceed** — specifically, human-performed acquisition of real Farming Simulator mod Lua scripts, gated on GOV-014's own resolution (provenance, licensing, storage, and acquisition governance for this new kind of fixture) before any such acquisition may begin.
+- ✅ **Capability Identity Classification completed** (Section 11 addendum, recorded 2026-07-23) — classified as Capability Expansion, mapping this investigation's own Sections 4–6 onto `SPRINT12_ARCHITECTURAL_RESOLUTION.md`'s canonical three-axis model and Capability Introduction test. This classification is descriptive only; it does not alter Recommendation A, does not authorize Architecture Evaluation, and does not affect GOV-014's standing as a blocking precondition.
 
 This investigation produced no Rust source, no test, no fixture, no ADR, and (directly) no Governance Register item — the one Governance Register item it did lead to (GOV-014) is a distinct, explicit governance action, recorded separately and reasoned about on its own terms, not silently bundled into this document's own scope.
 
@@ -118,8 +119,26 @@ This is Recommendation A, not B. No Architecture Evaluation or Sprint Planning f
 
 ---
 
+## 11. Capability Identity Classification (Addendum)
+
+**Recorded as an explicit addendum, 2026-07-23, applying `SPRINT12_ARCHITECTURAL_RESOLUTION.md`'s canonical three-axis model and Capability Introduction test to this investigation's existing findings (Sections 4–6). No new evidence, sample, or fixture was consulted to produce this addendum — it restates reasoning already committed to this document under its own vocabulary, mapped explicitly onto Sprint 12's named criteria, per the Chief Architect's governance review of Capability Identity's own scope (see `SPRINT12_ARCHITECTURAL_RESOLUTION.md`, Section 5, "Classification Is Descriptive, Not an Approval Gate").**
+
+**Collection Axis.** Producing syntax-validity Evidence requires a Lua-aware parsing mechanism (Section 7: `full_moon`) that no existing Collector uses, with at least one Collector already in place to compare against (`EvidenceCollector`, `ArchiveCollector`, `XmlCollector`, `RuntimeLogCollector`). → **Expansion.**
+
+**Evidence Axis.** No existing `EvidenceCategory` covers Lua syntax validity — every current category describes filesystem structure, archive structure, XML content, or runtime log events, none of which is this fact. → **New instance.**
+
+**Interpretation Axis.** Section 5 already draws the operative distinction directly: "this file does or does not parse as valid Lua [version], per parser X" is a pure fact a Collector may state, structurally identical to `XmlCollector`'s own well-formedness check — not a judgment any existing Rule makes. Interpreting it would require a new Rule asking a question no existing Rule asks. → **Expansion.**
+
+**Capability Introduction test.** Section 6 already states the operative finding directly: the target is "architecturally the closest analog to `XmlCollector`'s own well-formedness check... not to a general static-analysis engine." A syntax-validity Collector would compose with the existing Collectors using the additive-composition pattern Sprint 7 established and Sprint 11 reused (`XmlCollector` alongside the structural Collector; `RuntimeLogCollector` alongside `XmlCollector`) — inventing no composition or dispatch relationship the platform has not already exercised. → **No new machinery required; not Introduction.**
+
+**Overall classification: Capability Expansion** — novel at all three axes (Collection, Evidence, Interpretation), consistent with `SPRINT12_ARCHITECTURAL_RESOLUTION.md` Section 5's own finding that novelty at all three axes does not, by itself, imply Introduction (Sprint 11 is the confirmed precedent for exactly this pattern).
+
+**Scope of this addendum, stated explicitly:** this is the first prospective application of Capability Identity Classification to a candidate that has not been implemented — every classification in `SPRINT12_ARCHITECTURAL_RESOLUTION.md` Section 6 is retrospective, applied to already-shipped capabilities. This classification changes nothing else in this document. **Recommendation A stands unchanged.** Evidence remains insufficient for Architecture Evaluation. GOV-014 remains the blocking precondition on any Lua fixture acquisition and on Lua Analysis's own Architecture Evaluation. Architecture Evaluation and Sprint Planning both remain unauthorized. A candidate's architectural shape being classified is not a judgment that it is ready to proceed — classification and evidentiary sufficiency are independent questions.
+
+---
+
 # Document Status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.1.0 (amended 2026-07-23 — added Section 11, a Capability Identity Classification addendum; no change to Recommendation A, evidence status, or authorization)
 
-**Status:** Complete. Recommendation A. Committed to the repository as the permanent record of this investigation, superseding its own prior conversational-only existence. Architecture Evaluation and Sprint Planning both remain unauthorized pending the evidence named in Sections 2, 9, and 10, and pending GOV-014's own resolution.
+**Status:** Complete. Recommendation A. Committed to the repository as the permanent record of this investigation, superseding its own prior conversational-only existence. Architecture Evaluation and Sprint Planning both remain unauthorized pending the evidence named in Sections 2, 9, and 10, and pending GOV-014's own resolution. Section 11 (added 2026-07-23) records this investigation's Capability Identity Classification as an addendum; it does not alter this status.

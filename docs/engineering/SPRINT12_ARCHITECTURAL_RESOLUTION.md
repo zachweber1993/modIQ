@@ -77,6 +77,10 @@ A capability is **Introduction** only when realizing it requires inventing a com
 
 This reframing is itself the corrected model's central finding, beyond fixing the Sprint 4 Phase 3C contradiction: **novelty at the Collection/Evidence/Interpretation axes does not, by itself, imply Introduction.** A capability can be novel at all three axes and still be Expansion, if it reuses proven machinery to realize that novelty (Sprint 11, Section 9). Introduction is reserved for the rarer case where the *machinery itself* — not merely its content — has no precedent.
 
+### Classification Is Descriptive, Not an Approval Gate
+
+**Recorded as an explicit amendment, 2026-07-23, following a Chief Architect governance review of Capability Identity's own scope (`INV-001_LUA_ANALYSIS_CAPABILITY.md`; Governance Register GOV-014).** Applying the three axes and the Introduction test answers a structural question — what kind of architectural participant, if any, a candidate would require — independent of whether sufficient evidence yet exists to authorize Capability Definition or Architecture Evaluation for that candidate. A candidate may be fully classified and still be deferred or rejected for insufficient evidence; classification is not itself a judgment that a candidate is ready to proceed. This is consistent with the procedure's own placement in the Decision Framework at the Observation/Evidence stage (`CHIEF_ARCHITECT_HANDOFF_v1.1.md`, Section 6), which precedes Investigation's own evidentiary-sufficiency judgment and Governance's own accept/reject/defer decision — and with this document's own Section 6, which classifies seven capabilities' architectural shape without expressing any judgment about their approval to proceed (all seven were already shipped when classified). No prior classification in this document is altered by this clarification; Sprint 11's reclassification (Section 9) and every Historical Validation entry (Section 6) stand unchanged.
+
 ---
 
 ## 6. Historical Validation
