@@ -32,4 +32,5 @@ serde_json = "1"
 modiq-runtime = { path = "../../../crates/modiq-runtime" }
 modiq-engine = { path = "../../../crates/modiq-engine" }
 modiq-report = { path = "../../../crates/modiq-report" }
+modiq-storage = { path = "../../../crates/modiq-storage" }
 

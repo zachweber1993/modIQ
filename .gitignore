@@ -18,3 +18,6 @@ __pycache__/
 *.sqlite
 
 /target/
+
+# modIQ Storage (modiq-cli / apps/sandbox default persistence location)
+.modiq-storage/

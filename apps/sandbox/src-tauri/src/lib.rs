@@ -3,6 +3,10 @@ use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{
     AssessmentContext, AssessmentSubject, Evidence, Finding, Recommendation,
 };
+use modiq_storage::storage::{
+    PersistedAssessmentReport, PersistedEvidence, PersistedFinding, PersistedRecommendation,
+    ReportKey, ReportStore,
+};
 
 /// IPC-safe snapshot of a single Evidence item's existing public data.
 #[derive(Debug, Clone, serde::Serialize)]
@@ -76,6 +80,10 @@ struct AssessmentSummary {
     evidence: Vec<EvidenceEntry>,
     findings: Vec<FindingEntry>,
     recommendations: Vec<RecommendationEntry>,
+    /// `None` only if Storage failed to persist this report — the
+    /// Assessment itself has already completed by that point, so a
+    /// storage failure is reflected here, not by failing the command.
+    stored_report_key: Option<String>,
 }
 
 impl From<&AssessmentReport> for AssessmentSummary {
@@ -91,6 +99,96 @@ impl From<&AssessmentReport> for AssessmentSummary {
                 .recommendations()
                 .iter()
                 .map(RecommendationEntry::from)
+                .collect(),
+            stored_report_key: None,
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single persisted Evidence entry.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistedEvidenceEntry {
+    category: String,
+    description: String,
+    location: Option<String>,
+}
+
+impl From<&PersistedEvidence> for PersistedEvidenceEntry {
+    fn from(evidence: &PersistedEvidence) -> Self {
+        Self {
+            category: format!("{:?}", evidence.category()),
+            description: evidence.description().to_string(),
+            location: evidence.location().map(str::to_string),
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single persisted Finding entry.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistedFindingEntry {
+    severity: String,
+    description: String,
+}
+
+impl From<&PersistedFinding> for PersistedFindingEntry {
+    fn from(finding: &PersistedFinding) -> Self {
+        Self {
+            severity: format!("{:?}", finding.severity()),
+            description: finding.description().to_string(),
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single persisted Recommendation entry.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistedRecommendationEntry {
+    action: String,
+}
+
+impl From<&PersistedRecommendation> for PersistedRecommendationEntry {
+    fn from(recommendation: &PersistedRecommendation) -> Self {
+        Self {
+            action: recommendation.action().to_string(),
+        }
+    }
+}
+
+/// A structured, IPC-safe snapshot of a previously-stored report,
+/// retrieved independently of running a new Assessment.
+///
+/// Built from `PersistedAssessmentReport` — Storage's own
+/// representation — never a reconstructed `AssessmentReport`; see
+/// `docs/engineering/STORAGE_PERSISTENCE_REPRESENTATION_DESIGN_NOTE.md`.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistedReportSummary {
+    status: String,
+    evidence: Vec<PersistedEvidenceEntry>,
+    findings: Vec<PersistedFindingEntry>,
+    recommendations: Vec<PersistedRecommendationEntry>,
+}
+
+impl From<&PersistedAssessmentReport> for PersistedReportSummary {
+    fn from(report: &PersistedAssessmentReport) -> Self {
+        Self {
+            status: format!("{:?}", report.status()),
+            evidence: report
+                .evidence()
+                .iter()
+                .map(PersistedEvidenceEntry::from)
+                .collect(),
+            findings: report
+                .findings()
+                .iter()
+                .map(PersistedFindingEntry::from)
+                .collect(),
+            recommendations: report
+                .recommendations()
+                .iter()
+                .map(PersistedRecommendationEntry::from)
                 .collect(),
         }
     }
@@ -110,6 +208,14 @@ const FIXTURE_ASSESSMENT_INPUT: &str = concat!(
     "/fixtures/sample-assessment-input"
 );
 
+/// Default root directory Storage persists reports under. Resolved
+/// relative to the crate's own manifest directory, mirroring
+/// `FIXTURE_ASSESSMENT_INPUT`'s own convention, so it resolves to the
+/// same absolute location regardless of how the Sandbox is launched.
+/// Not configurable yet — the smallest slice Phase 3 authorizes; a
+/// configurable location is a separate, later capability.
+const STORAGE_ROOT: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/.modiq-storage");
+
 /// Executes the Assessment pipeline through `AssessmentService`'s
 /// `execute_from_assessment_input` entry point — the same
 /// orchestration `execute` performs, now including real Evidence
@@ -124,6 +230,14 @@ const FIXTURE_ASSESSMENT_INPUT: &str = concat!(
 /// directory; it is not a claim about any real Assessment Subject.
 #[tauri::command]
 fn create_assessment() -> AssessmentSummary {
+    create_assessment_with_storage(STORAGE_ROOT)
+}
+
+/// The storage-root-parameterized core of `create_assessment`, kept
+/// separate so tests can exercise it against a real, hermetic
+/// temporary directory rather than `STORAGE_ROOT`'s own fixed
+/// location.
+fn create_assessment_with_storage(storage_root: &str) -> AssessmentSummary {
     let service = AssessmentService;
     let report = service
         .execute_from_assessment_input(
@@ -133,14 +247,38 @@ fn create_assessment() -> AssessmentSummary {
         )
         .expect("the fixture assessment input exists and is accessible");
 
-    AssessmentSummary::from(&report)
+    let mut summary = AssessmentSummary::from(&report);
+    let store = ReportStore::new(storage_root);
+    summary.stored_report_key = store.store(&report).ok().map(|key| key.value().to_string());
+    summary
+}
+
+/// Retrieves a previously-stored report, independent of running a new
+/// Assessment — the Sandbox-side proof that a report survives beyond
+/// the process that produced it, mirroring `modiq-cli`'s own
+/// `retrieve` command.
+#[tauri::command]
+fn retrieve_report(key: String) -> Result<PersistedReportSummary, String> {
+    retrieve_report_with_storage(&key, STORAGE_ROOT)
+}
+
+/// The storage-root-parameterized core of `retrieve_report`.
+fn retrieve_report_with_storage(
+    key: &str,
+    storage_root: &str,
+) -> Result<PersistedReportSummary, String> {
+    let store = ReportStore::new(storage_root);
+    store
+        .retrieve(&ReportKey::from_raw(key))
+        .map(|report| PersistedReportSummary::from(&report))
+        .map_err(|error| error.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![create_assessment])
+        .invoke_handler(tauri::generate_handler![create_assessment, retrieve_report])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -148,6 +286,40 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::{Path, PathBuf};
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    /// A real, unique, temporary directory, mirroring `modiq-cli`'s
+    /// own test helper of the same shape. Removed when dropped. Used
+    /// so these tests exercise Storage against a hermetic location,
+    /// never `STORAGE_ROOT`'s own fixed, manifest-relative directory.
+    struct TempDir {
+        path: PathBuf,
+    }
+
+    impl TempDir {
+        fn new(label: &str) -> Self {
+            static COUNTER: AtomicU64 = AtomicU64::new(0);
+            let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+            let path = std::env::temp_dir().join(format!(
+                "modiq-sandbox-test-{}-{}-{}",
+                std::process::id(),
+                label,
+                unique
+            ));
+            Self { path }
+        }
+
+        fn path(&self) -> &Path {
+            &self.path
+        }
+    }
+
+    impl Drop for TempDir {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.path);
+        }
+    }
 
     /// A fixed, checked-in ZIP archive fixture, used only by this test
     /// module to exercise `AssessmentService::execute_from_assessment_input`'s
@@ -167,7 +339,8 @@ mod tests {
 
     #[test]
     fn create_assessment_discovers_the_fixture_directory_contents_via_the_real_collector() {
-        let summary = create_assessment();
+        let storage = TempDir::new("discovers-fixture");
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
 
         // fixtures/sample-assessment-input contains one top-level file
         // (notes.txt), one subdirectory (nested), and one file within
@@ -187,15 +360,17 @@ mod tests {
 
     #[test]
     fn each_invocation_produces_a_distinct_assessment_id() {
-        let first = create_assessment();
-        let second = create_assessment();
+        let storage = TempDir::new("distinct-assessment-id");
+        let first = create_assessment_with_storage(&storage.path().display().to_string());
+        let second = create_assessment_with_storage(&storage.path().display().to_string());
 
         assert_ne!(first.assessment_id, second.assessment_id);
     }
 
     #[test]
     fn evidence_entries_reflect_the_fixture_directory_in_deterministic_order() {
-        let summary = create_assessment();
+        let storage = TempDir::new("deterministic-order");
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
 
         // Filtered to the structural Collector's own output — Sprint
         // 7's XmlCollector also contributes an XmlInspection item to
@@ -232,7 +407,8 @@ mod tests {
         // absence — the same "always produces Evidence, never Empty
         // Collection" guarantee `XmlCollector`'s own tests verify
         // directly, exercised here through the real Sandbox pipeline.
-        let summary = create_assessment();
+        let storage = TempDir::new("xml-inspection-output");
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
 
         let xml_entries: Vec<_> = summary
             .evidence
@@ -304,7 +480,8 @@ mod tests {
         // routes to the filesystem EvidenceCollector, unaffected by
         // the archive-routing addition, and still describes its
         // Evidence as filesystem — not archive — collection output.
-        let summary = create_assessment();
+        let storage = TempDir::new("still-filesystem-collection");
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
 
         assert_eq!(summary.evidence_count, 4);
         for entry in summary
@@ -314,5 +491,37 @@ mod tests {
         {
             assert!(entry.description.contains("filesystem collection"));
         }
+    }
+
+    #[test]
+    fn create_assessment_with_storage_stores_a_retrievable_report() {
+        let storage = TempDir::new("stores-retrievable-report");
+
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
+
+        let key = summary
+            .stored_report_key
+            .clone()
+            .expect("storage succeeds against a real, writable directory");
+
+        let retrieved = retrieve_report_with_storage(&key, &storage.path().display().to_string())
+            .expect("the just-stored report is retrievable");
+
+        assert_eq!(retrieved.evidence.len(), summary.evidence.len());
+        assert_eq!(retrieved.findings.len(), summary.findings.len());
+        assert_eq!(
+            retrieved.recommendations.len(),
+            summary.recommendations.len()
+        );
+    }
+
+    #[test]
+    fn retrieve_report_against_an_unrecognized_key_is_an_error() {
+        let storage = TempDir::new("retrieve-not-found");
+
+        let result =
+            retrieve_report_with_storage("no-such-key", &storage.path().display().to_string());
+
+        assert!(result.is_err());
     }
 }
