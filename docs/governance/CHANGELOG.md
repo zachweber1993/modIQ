@@ -555,3 +555,36 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/implementation/SPRINT11.md`, `docs/engineering/RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` (v1.2.0), and `docs/engineering/ENGINEERING_RELEASE_1.1.md` (produced at this Sprint's own Closeout, not retroactively).
+
+---
+
+# [Sprint 12]
+
+**Status:** Complete (Architectural Resolution, Adversarial Verification, Reconciliation, Repository Closeout, on `feature/runtime-implementation` — no separate Sprint branch this cycle, matching Sprints 7–11's own precedent; architecture-only, no Rust source touched at any point)
+
+## Added
+
+- **Capability Identity procedure** — an explicit architectural decision procedure, derived from seven completed engineering decisions (Sprint 3, Sprint 4, Sprint 4 Phase 3C, Sprint 7, Sprint 8, Sprint 9, Sprint 11), distinguishing Capability Enrichment, Capability Expansion, and Capability Introduction across three independent axes: the **Collection Axis** (does producing the fact need a new inspection mechanism), the **Evidence Axis** (does it represent a kind of observation no existing `EvidenceCategory` covers), and the **Interpretation Axis** (does interpreting it need a judgment no existing Rule already makes) — plus one orthogonal check reserving "Capability Introduction" for capabilities requiring genuinely new composition or dispatch machinery, independent of how novel any single axis is.
+- **Collector Guidance** — mutually-exclusive routing versus additive composition, discriminated by whether two Collectors' own applicability conditions can co-occur on the same Assessment Input, recorded as guidance independent of, and not a replacement for, the Collector Composition Architecture's own extraction threshold (unchanged).
+- **Rule Guidance** — the Interpretation Axis's judgment test, now confirmed by four independent historical instances (Sprint 4 Phase 3C, Sprint 8, Sprint 9, Sprint 11), with an explicit, unchanged disclosure that no historical instance yet tests two Rules sharing one already-interpreted `EvidenceCategory`.
+- Neither `AssessmentService`'s two public entry points, `RuleEngine::evaluate`'s parameter shape, any Collector, any Rule, any `EvidenceCategory` variant, nor any test was touched — this Sprint produced documentation only.
+
+## Architectural Contradiction and Reconciliation
+
+- This Sprint's own first draft of the Capability Identity procedure (`SPRINT12.md` v1.0.0) was found, during its own adversarial verification pass, to contain a genuine contradiction: it conflated `EvidenceCategory` novelty with Collector novelty into a single cascading test, implicitly assuming a new kind of fact always implies a new Collector.
+- **Sprint 4 Phase 3C** (`EvidenceCategory::StructuralDuplication`, GOV-011) falsifies this directly: a genuinely new category, produced by *extending* the already-existing `ArchiveCollector`, not by adding a new one.
+- Per this project's standing discipline, the contradiction was reported rather than resolved unilaterally. On Chief Architect confirmation, the procedure was corrected to three independent axes (above), and `SPRINT12.md` was amended to v1.1.0 — the original model preserved in a Reconciliation Record, not deleted, with the full evidence and reasoning recorded in the new `docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md`.
+- **Direct consequence: Sprint 11 is reclassified from Capability Introduction to Capability Expansion**, because it reused Sprint 7's own additive-composition machinery and GOV-012's own fixed-order dispatch model, rather than inventing new machinery. This reclassification is architectural only — Sprint 11 remains the platform's first event-based Evidence source and first use of `FindingSeverity::Error`, and this document records both facts side by side rather than letting one imply the other has diminished.
+- **No Rust source, test, fixture, ADR, or Governance Register item was touched in this reconciliation** — only the planning document's own wording, and a new Resolution document recording the full history.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-002, GOV-003, GOV-008, and GOV-013 remain open; none were addressed this Sprint.
+- No new Governance Register item or ADR was opened — this Sprint's own conclusions apply and extend already-approved architecture (the Collector Composition Architecture, GOV-012) rather than establishing a new durable principle requiring one.
+- The untested "second Rule, same already-interpreted category" case remains unresolved by direct precedent, disclosed explicitly, left for whichever future capability first encounters it.
+- The Introduction test's own single confirmed non-degenerate instance (Sprint 7) remains a real but thin evidentiary base — named explicitly as a limitation, not overstated.
+- Any second runtime-log signature, Lua analysis, asset validation, dependency resolution, or performance observations all remain unscoped, each awaiting its own future Capability Proposal informed by this Sprint's procedure.
+
+## Released
+
+- Documented in `docs/implementation/SPRINT12.md` (v1.1.0), `docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md`, and `docs/engineering/ENGINEERING_RELEASE_1.2.md` (produced at this Sprint's own Closeout, not retroactively).

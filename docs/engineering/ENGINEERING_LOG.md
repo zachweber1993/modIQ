@@ -1162,6 +1162,45 @@ No new Governance Register item and no ADR were introduced this session; GOV-013
 
 ---
 
+### Sprint 12 Closeout: Capability Scaling Architecture, Reconciliation, Repository Closeout
+
+Status:
+Completed
+
+Affected Crates:
+- (none — this Sprint was architecture-only; no Rust source, test, or fixture was modified at any point)
+
+Affected Documents:
+- docs/implementation/SPRINT12.md (new, v1.0.0 → v1.1.0 across this Sprint)
+- docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md (new)
+- docs/governance/PROJECT_STATUS.md
+- docs/governance/CHANGELOG.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/implementation/CrateRoadmap.md
+- docs/README.md
+- docs/engineering/ENGINEERING_RELEASE_1.2.md (new)
+
+Notes:
+Formal Sprint 12 closeout. `cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` confirm the final state directly, unchanged from Engineering Release 1.1: root workspace test suite remains 238/238, Sandbox unchanged at 7/7, zero warnings — expected, since this Sprint touched no source at any point.
+
+**Capability Identity Derivation:** `SPRINT12.md` (v1.0.0) derived an explicit Capability Identity procedure from six named historical decisions, a single cascading test (Kind → Mechanism → Judgment), together with Collector Composition and Rule Composition evaluated as its consequences.
+
+**Adversarial Verification and Reconciliation:** this Sprint's own verification pass — checking the draft procedure against every historical decision rather than only the headline ones — found that Sprint 4 actually contains two separable decisions, and the second (Phase 3C, GOV-011's `StructuralDuplication` category) falsifies the original model's central assumption (new category always implies new Collector). Per this project's standing discipline, the contradiction was reported rather than resolved unilaterally; on Chief Architect confirmation, `SPRINT12.md` was amended to v1.1.0 (three independent axes — Collection, Evidence, Interpretation — plus an orthogonal Introduction check), and `SPRINT12_ARCHITECTURAL_RESOLUTION.md` was produced recording the complete contradiction, evidence, and corrected model, including the direct consequence that Sprint 11 is reclassified from Capability Introduction to Capability Expansion — recorded with explicit, repeated care to distinguish architectural classification from product significance, detailed in full in this Sprint's own Engineering Methodology Observations entry below.
+
+**Documentation Synchronization:** `PROJECT_STATUS.md` header fields updated (Current Release, Current Milestone, Current Phase) and a new `## Sprint 12 — Complete` section added; Current Focus and Governance Status notes both updated to reflect Sprint 12 and carry the baseline into Sprint 13. `CHANGELOG.md`'s new `# [Sprint 12]` entry added, including its own Architectural Contradiction and Reconciliation subsection. `CrateRoadmap.md` gained a Sprint 12 narrative note (no crate maturity changed — this Sprint touched no code) and a new Revision History entry. `docs/README.md`'s Engineering Release cross-reference updated to 1.2.
+
+**Engineering Release:** `ENGINEERING_RELEASE_1.2.md` produced at this Sprint's own Closeout, describing both the original architectural proposal and the subsequent reconciliation explicitly, so the record shows strengthening through correction rather than silent revision.
+
+**Commit:** Sprint 12's own architecture, adversarial verification, and reconciliation work, and this Closeout's documentation synchronization, are recommended as two separate commits, mirroring the two-commit precedent every Sprint since Sprint 7 has followed.
+
+**Push:** not performed this session — awaiting Chief Architect approval before repository history is pushed.
+
+**Merge:** not applicable this cycle — no separate Sprint 12 feature branch was created; all Sprint 12 work happened directly on `feature/runtime-implementation`.
+
+No new Governance Register item and no ADR were introduced this session — this Sprint's own conclusions apply and extend already-approved architecture rather than establishing a new durable principle requiring one. **Sprint 12 is now formally closed, pending push.**
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
@@ -1193,5 +1232,15 @@ Every prior instance of "a review stage caught a real error before it compounded
 **Observation:** this adversarial-verification framing found something the four individual milestone reviews, each conducted in good faith against the architecture document as it stood at the time, did not: the Architectural Invariants section (added to the architecture document *during* the implementation milestones, as a Chief Architect-requested refinement) asserted a general platform-wide recognition model — every unrecognized observation remains Evidence — that quietly contradicted the Collector-level recognition contract an earlier section of the same document, and the already-completed Milestone 1 implementation, both already used. No single milestone review re-checked the *whole* document for internal consistency against the *whole* implementation; each checked its own slice. The inconsistency was only visible from a vantage point deliberately looking for contradiction across the complete, finished picture.
 
 **Why this is being recorded, not adopted:** this is the first data point for a *different* class of review than Sprints 8–9 recorded (verify finished implementation against documentation, adversarially, as its own distinct step) rather than the class already observed twice (review a not-yet-implemented resolution before coding begins). Per this project's own standing bar, one instance does not justify writing a new mandatory stage into the canonical workflow. It is recorded here as a candidate: a documentation section added mid-implementation (as this Sprint's Architectural Invariants section was) may need to be explicitly re-checked against sections written earlier and against work already in progress, not merely reviewed for its own internal quality — a future Chief Architect session should decide whether this warrants its own named stage once a second instance exists to compare against.
+
+### Sprint 12: Adversarial Verification Applied to a Planning Document With Zero Implementation Involved
+
+Sprint 11's own observation (above) recorded adversarial verification checking *finished implementation* against documentation. Sprint 12 is a further, distinct instance of the same discipline applied one level further back: no implementation existed at all — the artifact under adversarial review was a freshly-derived architectural *procedure itself*, checked against the platform's own historical decisions rather than against code.
+
+**Observation:** applying the same "attempt to disprove rather than confirm" discipline to a purely retrospective, evidence-derived document — not a document describing not-yet-built work, and not a document describing already-built work — found a real flaw a good-faith derivation session had missed: the original Capability Identity procedure was validated against six decisions *by their own headline labels* ("Sprint 4: ArchiveCollector") rather than against every separable decision each label actually contains. Re-examining "Sprint 4" one level deeper exposed a second, distinct decision (Phase 3C's `StructuralDuplication` category) that the headline-level validation had not separately tested, and that decision falsified the procedure's own central assumption.
+
+**Why this matters as its own data point, not a restatement of Sprint 11's:** Sprint 9's finding (architectural review, before code) and Sprint 11's finding (adversarial verification, after code) both involved a *forward-looking or already-built* artifact with real implementation stakes. Sprint 12's finding involved neither — it is evidence that this project's adversarial-verification discipline finds real value even when applied to a document whose only "implementation" is the historical record itself, and specifically that **validating a derived procedure only against summary labels, rather than against every decision a label may compress, is a real failure mode**, independent of whether code is involved at all.
+
+**Why this is being recorded, not adopted as a new mandatory stage:** three related but distinct instances now exist (Sprint 9: pre-implementation architectural review; Sprint 11: post-implementation adversarial verification; Sprint 12: adversarial verification of a purely retrospective derivation) — convergent evidence that dedicated adversarial review finds real errors across every stage this project's workflow has, not proof that any one specific procedural step should be made permanently mandatory beyond what already exists. Whether "do not validate against headline Sprint labels alone; check separable sub-decisions" should become an explicit checklist item in future historical-evidence derivations is left for a future Chief Architect session to decide, ideally once a fourth instance exists.
 
 **Why this is being recorded, not adopted as a new mandatory stage:** one Sprint is one data point, the same standard already applied to Sprint 8's and Sprint 9's own observations above. Whether "evidence acquisition as its own complete, dedicated Sprint" should become the standing expectation whenever a future capability depends on a real-world artifact this repository does not yet possess, or whether Sprint 10's own shape was specific to Runtime Log Interpretation's own unusual precondition, is left for a future Chief Architect session to evaluate against a second instance, not decided here.
