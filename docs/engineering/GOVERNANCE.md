@@ -765,6 +765,34 @@ Full definition recorded in `DataModel.md`, Finding Severity section, and `SPRIN
 
 ---
 
+## GOV-014
+
+Title
+
+Lua Fixture Acquisition Governance
+
+Status
+
+Open
+
+Raised
+
+Following `INV-001_LUA_ANALYSIS_CAPABILITY.md` (Lua Analysis Capability Investigation)
+
+Description
+
+INV-001 found that no real Farming Simulator mod Lua script has ever been examined by this project, and that acquiring one requires the same real, human-performed, provenance-tracked acquisition discipline Sprint 10 established for runtime log fixtures (`fixtures/runtime-logs/README.md`: Runtime Log Normalization, Warning Categorization, Installation State versus Savegame State). That policy set was written specifically for captured runtime session logs. A Lua script is a structurally different kind of artifact — real, potentially copyrighted third-party source code, not a captured session transcript — and Sprint 10's own policies do not automatically extend to it without their own review.
+
+Question
+
+Before any future Lua fixture may be acquired, what provenance requirements, licensing/consent expectations, storage policy (most concretely: whether real third-party Lua source code is ever committed to this repository at all, given that mod archives themselves are never stored, per Sprint 10's own explicit policy), and acquisition-governance discipline must be established — mirroring, but not assumed identical to, `fixtures/runtime-logs/README.md`'s own standing policies?
+
+Resolution
+
+Pending. Must be resolved before any Lua fixture acquisition begins, and before Lua Analysis's own Architecture Evaluation may be authorized, per `INV-001_LUA_ANALYSIS_CAPABILITY.md`'s own Recommendation A. This is architectural governance work, not implementation, and not Sprint work — consistent with how Sprint 10's own fixture-corpus policies (Normalization, Warning Categorization, Installation State vs. Savegame State) were each resolved as governance/documentation decisions before the fixture that needed them was accepted, never worked around informally.
+
+---
+
 # Documentation Release Process
 
 Architecture evolves through Documentation Releases.

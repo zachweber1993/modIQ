@@ -1201,6 +1201,33 @@ No new Governance Register item and no ADR were introduced this session — this
 
 ---
 
+### INV-001: Lua Analysis Capability Investigation — Complete, Recommendation A
+
+Status:
+Completed
+
+Affected Crates:
+- (none — this was an evidence-acquisition investigation; no Rust source, test, or fixture was touched)
+
+Affected Documents:
+- docs/engineering/INV-001_LUA_ANALYSIS_CAPABILITY.md (new)
+- docs/engineering/GOVERNANCE.md (GOV-014 opened)
+- docs/governance/PROJECT_STATUS.md
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+Not Sprint 13. Not architecture. Not implementation. Following an earlier capability proposal's own accepted conclusion (evidence insufficient for Architecture Evaluation), this investigation asked one question: what specific Lua problem can modIQ objectively recognize with deterministic evidence?
+
+**Findings:** no real Farming Simulator mod Lua script has ever been examined by this project, and none can be obtained without a human performing the same real, licensed acquisition Sprint 10 required for runtime log fixtures — this remains the investigation's own single largest, unresolved gap. Of the candidate defect classes considered, only Lua syntax validity passes every determinism and Collector-boundary test; Lua's own dynamic scoping defeats naive "undefined global" detection, and every broader target risks the Collector/Rule observational boundary this platform has never breached. A safe, mature, parse-only Lua dependency (`full_moon`) was identified via real research (crates.io, docs.rs); execution-capable alternatives (`mlua`/`rlua`) were correctly ruled out as architecturally inappropriate for static inspection of untrusted content, independent of any sample acquisition.
+
+**Recommendation A: evidence remains insufficient; further investigation required.** Architecture Evaluation was not authorized. Sprint Planning did not begin.
+
+**Governance follow-up:** GOV-014 (Lua Fixture Acquisition Governance) opened in `GOVERNANCE.md`, Open, as an explicit, separate governance action distinct from this investigation's own scope — provenance, licensing, storage, and acquisition-governance questions specific to real third-party Lua source code (a materially different artifact from a captured runtime log) must be resolved before any future Lua fixture may be acquired, and before Architecture Evaluation may be authorized. The Governance Register now totals 14 items, 8 Resolved, 6 Open.
+
+**Repository state after this investigation:** Sprint 12 remains complete and frozen. No Sprint 13 work has started. The repository awaits (a) GOV-014's own resolution and (b) real, human-acquired Lua fixture evidence before any further architectural evaluation of this capability.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

@@ -4,12 +4,12 @@
 |----------|-------|
 | **Project** | modIQ |
 | **Current Release** | Engineering Release 1.2 — `docs/engineering/ENGINEERING_RELEASE_1.2.md`, produced at Sprint 12's own Repository Closeout |
-| **Repository Status** | Implementation Ready — architecture only advanced this Sprint; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and wired end to end, unchanged since Sprint 11 |
-| **Current Milestone** | Sprint 12 — Complete (Capability Scaling Architecture: Capability Identity procedure derived, adversarially reconciled, and validated); Repository Closeout complete |
-| **Overall Status** | Active Implementation |
-| **Current Phase** | Post-Sprint 12 Repository Closeout complete; Sprint 13 not yet scoped |
-| **Engineering Methodology Version** | 1.0 — unchanged this Sprint |
-| **Last Updated** | 2026-07-22 |
+| **Repository Status** | Implementation Ready — no Sprint 13 work has started; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and wired end to end, unchanged since Sprint 11 |
+| **Current Milestone** | Sprint 12 — Complete (Capability Scaling Architecture); Repository Closeout complete. **INV-001 (Lua Analysis Capability Investigation) — Complete, Recommendation A; see below.** |
+| **Overall Status** | Active Implementation — awaiting additional evidence before further architectural evaluation |
+| **Current Phase** | Post-Sprint 12 Repository Closeout complete; INV-001 complete; GOV-014 (Lua Fixture Acquisition Governance) open; Sprint 13 not yet scoped and not yet started |
+| **Engineering Methodology Version** | 1.0 — unchanged |
+| **Last Updated** | 2026-07-23 |
 
 ---
 
@@ -111,6 +111,16 @@ All seven historical decisions evaluated (Sprint 3, 4, 4 Phase 3C, 7, 8, 9, 11) 
 
 **Next milestone:** not yet scoped. The Capability Proposal template (Observation, Evidence Source, Evidence Sufficiency, Expected User Value, Capability Identity Assessment, Architectural Consequence) is now the standing entry point for whichever future capability is proposed next — a second runtime-log signature, Lua analysis, asset validation, dependency resolution, and performance observations all remain named, unscoped candidates.
 
+## Post-Sprint 12: INV-001 (Lua Analysis Capability Investigation) — Complete
+
+**Not Sprint 13. Not architecture. Not implementation.** An evidence-acquisition investigation into whether a real, bounded, deterministic Lua Analysis capability exists for modIQ to recognize, following the accepted conclusion of an earlier capability proposal that evidence was insufficient for Architecture Evaluation. Full record: `docs/engineering/INV-001_LUA_ANALYSIS_CAPABILITY.md`.
+
+**Findings:** no real Farming Simulator mod Lua script has ever been examined by this project, and none can be obtained without a human performing the same real, licensed acquisition Sprint 10 required for runtime log fixtures. Of the candidate defect classes named at the investigation's outset, only Lua syntax validity passes every determinism and Collector-boundary test — every broader target either fails determinism outright (Lua's own dynamic scoping defeats naive "undefined global" detection) or risks the Collector/Rule observational boundary. A safe, mature, parse-only Lua dependency (`full_moon`) was identified and execution-capable alternatives (`mlua`/`rlua`) were correctly ruled out, independent of any sample acquisition.
+
+**Recommendation A selected: evidence remains insufficient; further investigation required.** Architecture Evaluation has **not** been authorized. Sprint Planning has **not** begun. The concrete next step — human-performed acquisition of real, licensed Lua scripts, mirroring Sprint 10's own precedent — is itself gated on **GOV-014 (Lua Fixture Acquisition Governance)**, opened as a direct consequence of this investigation (`GOVERNANCE.md`): provenance, licensing, storage, and acquisition-governance questions specific to real third-party source code have not yet been resolved, and Sprint 10's own runtime-log fixture policies do not automatically transfer to a structurally different kind of artifact.
+
+**No Rust source, test, fixture, or ADR was touched.** One Governance Register item (GOV-014) was opened as an explicit, separate governance action — the Register now totals 14 items, 8 Resolved, 6 Open.
+
 ---
 
 # Documentation Progress
@@ -186,6 +196,8 @@ Documentation Releases 1.0, 2.0, and 2.1 have all concluded; Documentation Relea
 
 Sprint 7 (Multi-Source Evidence Collection: XML inspection), Sprint 8 (Version Profile-aware compatibility checking), Sprint 9 (Repair Guidance), Sprint 10 (Runtime Fixture Corpus Acquisition), Sprint 11 (Runtime Evidence Processing Architecture and Implementation), and Sprint 12 (Capability Scaling Architecture) are all complete since this paragraph was last current. None required a Documentation Release amendment; Documentation Release 2.1 remains the current release. GOV-008 remains open, unaffected by Sprints 9 through 12 — none changed `AssessmentService`'s two public entry points. Sprint 9 gave `modiq-knowledge` its first real content since Sprint 0; Sprint 10 gave the repository its first real, external, provenance-tracked evidence corpus (`fixtures/runtime-logs/`); Sprint 11 activated that corpus's use; Sprint 12 gave the repository its first explicit, historically-validated Capability Identity procedure, found — through the same adversarial verification discipline Sprint 11 itself established — to require one correction before it could be trusted, and reclassified Sprint 11 from Capability Introduction to Capability Expansion as a direct consequence.
 
+**Following Sprint 12's own closeout, INV-001 (Lua Analysis Capability Investigation) completed as a non-Sprint evidence-acquisition activity** — no architecture, no implementation, no Sprint 13 work. It found that a Lua Analysis capability's only currently-deterministic recognition target (syntax validity) cannot be evaluated further without real, human-acquired Lua script samples, and opened GOV-014 (Lua Fixture Acquisition Governance) to resolve the provenance, licensing, storage, and acquisition-governance questions that acquisition would raise, before any such acquisition begins. Full record: `docs/engineering/INV-001_LUA_ANALYSIS_CAPABILITY.md`.
+
 Implementation should remain consistent with the frozen engineering specification.
 
 ---
@@ -202,14 +214,14 @@ Architectural changes should be introduced through Architecture Decision Records
 
 ## Governance Status
 
-Status: Frozen for Sprint 6, carried into Sprints 7 through 12 (all seven complete); baseline carries forward unchanged into Sprint 13. Engineering Methodology Version 1.0 declared following Sprint 7 (`PROJECT_HANDOFF_v1.0.md`, Section 5) — a versioning of the workflow itself, distinct from this governance baseline. Sprint 10 introduced no Governance Register item and no ADR. Sprint 11 likewise introduced none: Rule dispatch extension is already covered by GOV-012's own general resolution, and Collector composition extension is already covered by the Sprint 7 Collector Composition Architecture's own extraction threshold, not crossed by a second content-Collector. GOV-013 (FindingSeverity Severity/Kind Conflation) remains Open, deliberately not reopened by Sprint 11's own `FindingSeverity::Error` assignment. **Sprint 12 also introduced no new Governance Register item and no ADR** — its own Capability Identity procedure applies and extends already-approved architecture (the Collector Composition Architecture, GOV-012) rather than establishing a new durable principle requiring one, the same standard GOV-012/GOV-013 themselves were held to. The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprints 9 through 12.
+Status: Frozen for Sprint 6, carried into Sprints 7 through 12 (all seven complete); baseline carries forward unchanged into Sprint 13, which has not begun. Engineering Methodology Version 1.0 declared following Sprint 7 — a versioning of the workflow itself, distinct from this governance baseline. Sprint 10 introduced no Governance Register item and no ADR. Sprint 11 likewise introduced none. GOV-013 (FindingSeverity Severity/Kind Conflation) remains Open, deliberately not reopened by Sprint 11's own `FindingSeverity::Error` assignment. Sprint 12 also introduced no new Governance Register item and no ADR — its own Capability Identity procedure applies and extends already-approved architecture rather than establishing a new durable principle requiring one. **Following Sprint 12's own closeout, INV-001 (Lua Analysis Capability Investigation) opened one new Governance Register item — GOV-014 (Lua Fixture Acquisition Governance), Open — as an explicit, separate governance action, not Sprint work.** The Governance Register now totals **14 items, 8 Resolved, 6 Open.** The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by Sprints 9 through 12 or by INV-001.
 
 The project's governance baseline is established.
 
 Authoritative governance documents:
 
-- PROJECT_HANDOFF_v1.0.md
-- CHIEF_ARCHITECT_HANDOFF_v1.0.md
+- PROJECT_HANDOFF_v1.1.md
+- CHIEF_ARCHITECT_HANDOFF_v1.1.md
 - LEAD_ENGINEER_HANDOFF_v3.0.md
 
 Future governance changes must be justified by implementation evidence,
