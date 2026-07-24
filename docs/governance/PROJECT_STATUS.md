@@ -3,7 +3,7 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 1.3 — `docs/engineering/ENGINEERING_RELEASE_1.3.md`, produced at Sprint 13's own Repository Closeout. Sprint 14 (GOV-003: `modiq-common` retired) is complete but does not yet have its own published Engineering Release (1.4 pending) — the first gap in this project's own one-Sprint-one-release discipline since it was established at Sprint 8. |
+| **Current Release** | Engineering Release 1.4 — `docs/engineering/ENGINEERING_RELEASE_1.4.md`, covering Sprint 14 (GOV-003: `modiq-common` retired), published after a brief gap following Sprint 14's own implementation — the first such gap in this project's own one-Sprint-one-release discipline since it was established at Sprint 8, now closed. |
 | **Repository Status** | Implementation Ready — Sprint 13 (Storage Architectural Activation) complete; `modiq-storage` implemented, tested, and wired end to end through `modiq-cli` and `apps/sandbox`; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and unchanged since Sprint 11 |
 | **Current Milestone** | Sprint 13 — Complete (Storage Architectural Activation); Repository Closeout complete. INV-001 (Lua Analysis Capability Investigation) remains Complete, Recommendation A, unaffected; see below. **Sprint 14 — Complete (GOV-003: `modiq-common` retired).** |
 | **Overall Status** | Active Implementation — Sprint 13's Storage subsystem real; Sprint 14 retired `modiq-common` (GOV-003), root workspace and Sandbox both reverified clean; Lua Analysis still awaiting additional evidence before further architectural evaluation |

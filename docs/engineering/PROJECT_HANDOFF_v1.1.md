@@ -11,7 +11,7 @@
 | **Purpose** | Canonical project handoff — describes the platform, its architecture, its governance, and its history independently of any individual role |
 | **Audience** | Anyone onboarding to modIQ — engineering, architecture, or product — before reading a role-specific handoff |
 | **Supersedes** | `PROJECT_HANDOFF_v1.0.md` (Sprint 6-era). `LEAD_ENGINEER_HANDOFF_v3.0.md` and `CHIEF_ARCHITECT_HANDOFF_v1.0.md`/`v1.1.md` (the current role-specific supplements) remain role-specific companions; both assume the reader has already read this document and do not repeat what it covers. |
-| **As of** | 2026-07-23, following Sprint 14 (GOV-003: `modiq-common` retired); Sprint 13 (Storage Architectural Activation) and the post-Sprint-13 GOV-001 Architecture Evaluation are also both complete. Engineering Release 1.3 remains the last published release; Sprint 14's own release (1.4) is pending. |
+| **As of** | 2026-07-23, following Sprint 14 (GOV-003: `modiq-common` retired); Sprint 13 (Storage Architectural Activation) and the post-Sprint-13 GOV-001 Architecture Evaluation are also both complete. Engineering Release 1.4 is the last published release, covering Sprint 14. |
 | **Branch** | `feature/runtime-implementation` |
 | **HEAD** | `f1c6073` — "feat: retire modiq-common (GOV-003)" |
 
@@ -342,7 +342,7 @@ These are not restated from the specifications — they are patterns this projec
 | *(Post-Sprint-13)* | GOV-001 Architecture Evaluation — not a Sprint, no Architectural Resolution. Found no inconsistency between specification and implementation; GOV-001 narrowed and returned to Open. | 253 (unchanged) |
 | **Sprint 14** | GOV-003 (Role of `modiq-common`) resolved and implemented: retired. Zero consumers and zero real content confirmed across 13 Sprints; the crate removed from the workspace entirely. | 253 (unchanged — `modiq-common` had zero tests) |
 
-Full detail for each Sprint lives in its own Engineering Release. Every Sprint since Sprint 8 has produced its own release at Sprint close (`ENGINEERING_RELEASE_0.8.md` through `_1.3.md`); Engineering Releases 0.6 and 0.7 were produced retroactively, after a two-Sprint gap, and that gap has not recurred since (Section 6, Principle 9). **Sprint 14 is the one exception since that discipline was established: its own Engineering Release (1.4) was pending as of this revision** — recorded here for transparency rather than silently assumed complete.
+Full detail for each Sprint lives in its own Engineering Release. Every Sprint since Sprint 8 has produced its own release at Sprint close (`ENGINEERING_RELEASE_0.8.md` through `_1.4.md`); Engineering Releases 0.6 and 0.7 were produced retroactively, after a two-Sprint gap, and that gap has not recurred since (Section 6, Principle 9). **Sprint 14's own Engineering Release (1.4) has now been published**, after a brief gap following Sprint 14's own implementation — recorded here for transparency rather than silently assumed to have been produced exactly at Sprint close.
 
 **Git tags now exist for Sprints 10, 11, and 12** (`sprint10-complete`, `sprint11-complete`, `sprint12-complete`), pushed to the primary remote — the first Sprints in this project's history to be tagged at all. `v0.1.0`, `v0.1.0-alpha`, `v0.2.0`, `v0.2.0-alpha`, `v0.3.0` remain as pre-existing tags that predate and collide oddly with Engineering Release numbering — a known, still-unresolved git tag hygiene issue, unaffected by the new `sprintN-complete` convention.
 
@@ -370,7 +370,7 @@ Full detail for each Sprint lives in its own Engineering Release. Every Sprint s
 - **Referential integrity for Finding/Recommendation references** (the GOV-005/GOV-006 cardinality-only follow-up) — remains unassigned to its own Governance Register item, unaffected by Sprints 7 through 14.
 - **The Rule Composition question for a second recognized fact within an already-interpreted `EvidenceCategory`** (Sprint 12's own named limitation) — no historical instance yet exists; the Interpretation Axis's own judgment test is a disciplined extrapolation for this case, not a confirmed data point.
 - **A documentation citation drift, found and worth correcting:** `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, and `POST_SPRINT8_CAPABILITY_PRIORITIZATION_STUDY.md` all attribute the phrase "the platform's highest-risk future collector" to `EvidenceCollection.md`, where it does not currently appear. The phrase actually originates in `PROPOSAL_FILESYSTEM_COLLECTION.md`. Recorded here for transparency (Section 11); harmless, not yet corrected.
-- **Engineering Release 1.4 (Sprint 14) was pending as of this revision** — every Sprint since Sprint 8 has produced its own release at close; Sprint 14 is the first gap in that discipline since it was established.
+- **Engineering Release 1.4 (Sprint 14) has been published** — after a brief gap following Sprint 14's own implementation, the first such gap since this discipline was established at Sprint 8, now closed.
 
 ---
 
