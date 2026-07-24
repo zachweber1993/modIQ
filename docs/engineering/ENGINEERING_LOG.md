@@ -1335,6 +1335,31 @@ Sprint Planning has **not** begun. Per this project's own Decision Framework, an
 
 ---
 
+### GOV-003 Architectural Resolution, Implementation Authorization, and Sprint Plan
+
+Status:
+Completed (governance and planning only — no Rust source, `Cargo.toml`, or crate directory modified)
+
+Affected Crates:
+- (none — see Notes)
+
+Affected Documents:
+- docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md (§6 Architectural Resolution recorded)
+- docs/engineering/GOVERNANCE.md (GOV-003: Status, Description, Resolution updated to Resolved)
+- docs/governance/PROJECT_STATUS.md (Current Phase, Current Milestone, Governance Status updated; Register now 14 items, 9 Resolved, 5 Open)
+- docs/engineering/GOV003_IMPLEMENTATION_AUTHORIZATION.md (new)
+- docs/engineering/GOV003_SPRINT_PLAN.md (new)
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+The Chief Architect reviewed `GOV003_ARCHITECTURE_EVALUATION.md`'s three alternatives (retire; retain as-is; retain, resolved as already-satisfied by design) and accepted **Option A — retire `modiq-common`**. `GOVERNANCE.md`'s GOV-003 entry was updated to Resolved, recording the crate's own promotion criterion was never satisfied in 13 Sprints and that the platform has twice already demonstrated (`modiq-collection` Sprint 3, `modiq-storage` Sprint 13) that a crate can be created on demand without cost, undercutting the case for pre-provisioning an empty one.
+
+`GOV003_IMPLEMENTATION_AUTHORIZATION.md` translated the Resolution into an authorized envelope: remove the crate from the workspace, delete its directory, reconcile the living documents that describe it (`README.md`, `CrateRoadmap.md`, `DependencyMap.md`, `CHANGELOG.md`) — explicitly excluding any historical Sprint/Release document, any other crate's source, and any new Crate Boundary Rule pair for a crate being removed. `GOV003_SPRINT_PLAN.md` sequenced this into a single phase (no partial retirement is possible) with an explicit Completion Checklist and named verification steps (root workspace and `apps/sandbox/src-tauri` both independently reverified; a residual-reference grep).
+
+**Implementation has not begun.** Per this project's own Decision Framework, beginning Phase 1 is the Chief Architect's own explicit go/no-go, not implied by a Sprint Plan's own existence.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
