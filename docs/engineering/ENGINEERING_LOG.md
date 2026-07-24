@@ -1315,6 +1315,26 @@ Notes:
 
 ---
 
+### Sprint 14 — Objective Selected: GOV-003 (Role of `modiq-common`)
+
+Status:
+Selected (Sprint scope authorization only — Architecture Evaluation follows as a separate, subsequent step)
+
+Affected Crates:
+- (none — a selection is a governance action, not an implementation one)
+
+Affected Documents:
+- docs/governance/PROJECT_STATUS.md (Current Phase, Current Milestone updated)
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+- docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md (new — Architecture Evaluation opened as a separate document)
+
+Notes:
+With GOV-001 returned to Open under a narrower question and no Sprint-level action currently required (previous entry), the Chief Architect formally selected **GOV-003 (Role of `modiq-common`)** as Sprint 14's architectural objective, per `SPRINT_14_PROPOSAL.md`'s own Candidate C and Section 3's observation that GOV-003 is "cheap enough to consider bundling," now standing on its own as the most immediately resolvable open item: zero consumers confirmed directly against every crate's `Cargo.toml` (this session), fully self-contained, no external dependency — unlike GOV-014, whose payoff still depends on an ungoverned human fixture-acquisition step outside engineering's control.
+
+Sprint Planning has **not** begun. Per this project's own Decision Framework, an Architecture Evaluation of GOV-003 follows next, recorded separately in `GOV003_ARCHITECTURE_EVALUATION.md`.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

@@ -5,9 +5,9 @@
 | **Project** | modIQ |
 | **Current Release** | Engineering Release 1.3 — `docs/engineering/ENGINEERING_RELEASE_1.3.md`, produced at Sprint 13's own Repository Closeout |
 | **Repository Status** | Implementation Ready — Sprint 13 (Storage Architectural Activation) complete; `modiq-storage` implemented, tested, and wired end to end through `modiq-cli` and `apps/sandbox`; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and unchanged since Sprint 11 |
-| **Current Milestone** | Sprint 13 — Complete (Storage Architectural Activation); Repository Closeout complete. INV-001 (Lua Analysis Capability Investigation) remains Complete, Recommendation A, unaffected; see below. |
-| **Overall Status** | Active Implementation — Storage subsystem real for the first time; Lua Analysis still awaiting additional evidence before further architectural evaluation |
-| **Current Phase** | Post-Sprint 13 Repository Closeout complete; GOV-001 (Assessment Report Generation Timing) Architecture Evaluation complete — no Architectural Resolution performed, returned to Open under a narrower question, pending a future forcing function; GOV-014 (Lua Fixture Acquisition Governance) open, unaffected by Sprint 13; Sprint 14 not yet scoped and not yet started |
+| **Current Milestone** | Sprint 13 — Complete (Storage Architectural Activation); Repository Closeout complete. INV-001 (Lua Analysis Capability Investigation) remains Complete, Recommendation A, unaffected; see below. Sprint 14 — Objective selected (GOV-003), Architecture Evaluation open, not yet resolved. |
+| **Overall Status** | Active Investigation — Sprint 13 implementation complete; Sprint 14's own GOV-003 Architecture Evaluation open, no Architectural Resolution yet; Lua Analysis still awaiting additional evidence before further architectural evaluation |
+| **Current Phase** | Post-Sprint 13 Repository Closeout complete; GOV-001 (Assessment Report Generation Timing) Architecture Evaluation complete — no Architectural Resolution performed, returned to Open under a narrower question, pending a future forcing function; GOV-014 (Lua Fixture Acquisition Governance) open, unaffected by Sprint 13; **Sprint 14's objective formally selected: GOV-003 (Role of `modiq-common`) — Architecture Evaluation open (`docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md`), Architectural Resolution not yet performed, Sprint Planning not yet begun** |
 | **Engineering Methodology Version** | 1.0 — unchanged |
 | **Last Updated** | 2026-07-23 |
 
