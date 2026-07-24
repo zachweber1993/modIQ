@@ -21,7 +21,6 @@ modIQ/
 
 | Crate | Responsibility |
 |--------|----------------|
-| modiq-common | Shared platform types and utilities |
 | modiq-runtime | Runtime assessment domain |
 | modiq-knowledge | Engineering knowledge domain |
 | modiq-versioning | Version Profile management |

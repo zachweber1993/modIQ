@@ -1360,6 +1360,40 @@ The Chief Architect reviewed `GOV003_ARCHITECTURE_EVALUATION.md`'s three alterna
 
 ---
 
+### GOV-003 Implementation: `modiq-common` Retired
+
+Status:
+Completed
+
+Affected Crates:
+- `modiq-common` (deleted)
+- (no other crate required any change — zero consumers existed to update)
+
+Affected Documents:
+- Cargo.toml (root) — `modiq-common` removed from `[workspace] members`
+- README.md — crate table row removed
+- docs/implementation/CrateRoadmap.md — crate table row removed, dependency diagram simplified, retirement note added, revision history entry 1.26.0 added
+- docs/implementation/DependencyMap.md — dependency diagram simplified
+- docs/governance/CHANGELOG.md — new `[Sprint 14]` entry recorded
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+Executed `GOV003_SPRINT_PLAN.md`'s single authorized phase, per Chief Architect go-ahead. `"crates/modiq-common"` removed from the root `Cargo.toml`'s `members` list; `crates/modiq-common/` deleted in its entirety (`Cargo.toml`, `README.md`, `src/lib.rs`, `src/error.rs`, `src/id.rs`, `src/prelude.rs`). No other crate's source or `Cargo.toml` required any change, consistent with the zero-consumer finding both the Evaluation and Authorization recorded.
+
+**Verification, run fresh this session, not carried forward:**
+- Root workspace: `cargo fmt --check` clean; `cargo check --workspace` clean, zero warnings; `cargo test --workspace` — **253 passed, 0 failed** (`modiq-cli` 15, `modiq-collection` 70, `modiq-engine` 23 unit + 3 integration, `modiq-knowledge` 5, `modiq-report` 3, `modiq-rules` 36, `modiq-runtime` 84, `modiq-storage` 10, `modiq-versioning` 4) — identical in count to the pre-retirement baseline, confirming zero behavioral footprint.
+- `apps/sandbox/src-tauri` (its own, separate workspace): `cargo fmt --check` clean; `cargo check` clean, zero warnings; `cargo test` — **9 passed, 0 failed** — unchanged from the pre-retirement baseline.
+- `Cargo.lock` confirmed to no longer reference `modiq-common` (grepped directly, no residual entry).
+- A residual-reference grep (`modiq-common`/`modiq_common`, case-sensitive, across the entire repository outside `.git` and `target`) was run after all edits. It returns matches only in: historical Sprint/Release documents explicitly out of this Authorization's scope (`ENGINEERING_RELEASE_*.md`, `SPRINT*_*.md`, `HANDOFF_SPRINT1.md`, superseded `TECHNICAL_DIRECTOR_HANDOFF_*`/`LEAD_ENGINEER_HANDOFF_v1.0`/`v2.0`/`CHIEF_ARCHITECT_HANDOFF_v1.0` — all frozen records of what was true when written); this Sprint's own governance record (`GOVERNANCE.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `ENGINEERING_LOG.md`, `GOV003_ARCHITECTURE_EVALUATION.md`, `GOV003_IMPLEMENTATION_AUTHORIZATION.md`, `GOV003_SPRINT_PLAN.md`, `SPRINT_14_PROPOSAL.md`), which correctly describe the retirement in past tense; and `.claude/settings.local.json` (a local tool-permission path entry, not a repository document, left untouched as outside this Authorization's scope entirely).
+
+**Confirmed: `docs/architecture/` and `docs/adrs/` — this project's own Normative Authority for architectural intent — contain zero references to `modiq-common`, before or after this change.** `modiq-common` never had a Crate Boundary Rule pair in `GOVERNANCE.md` to remove (confirmed at Evaluation time and reconfirmed here).
+
+**One finding surfaced by this check, not corrected here, reported rather than silently fixed:** `docs/engineering/PROJECT_HANDOFF_v1.1.md` and `docs/engineering/CHIEF_ARCHITECT_HANDOFF_v1.1.md` — the repository's current, living handoff documents, not frozen historical Sprint records — still describe `modiq-common` as an existing (if deliberately deferred) crate in present tense: `PROJECT_HANDOFF_v1.1.md`'s crate maturity table (a `modiq-common` row, L1) and its Governance Register table (GOV-003 listed as "Open"), and `CHIEF_ARCHITECT_HANDOFF_v1.1.md` §12's "Only `modiq-common` remains deliberately deferred scaffolding" line. Both documents were already stale before this session in an unrelated respect (test counts of 238/7, the Sprint 12 baseline, superseded by Sprint 13's 253/9) — reconciling only the `modiq-common` reference would be a partial patch to documents that need a fuller reconciliation pass. This is outside `GOV003_IMPLEMENTATION_AUTHORIZATION.md`'s explicitly authorized document list (`README.md`, `CrateRoadmap.md`, `DependencyMap.md`, `CHANGELOG.md` only) and is not corrected by this implementation; named here so it is not later rediscovered as a surprise.
+
+No ADR, no new Governance Register item. `GOV-003` closes this Sprint's authorized work; GOV-001, GOV-002, GOV-008, GOV-013, and GOV-014 remain open, unaffected.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

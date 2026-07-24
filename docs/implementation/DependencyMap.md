@@ -6,10 +6,6 @@ modiq-engine
     ├──────────┬──────────┬──────────┬──────────┐
     ▼          ▼          ▼          ▼          ▼
 modiq-runtime modiq-knowledge modiq-rules modiq-versioning modiq-report
-    │                                     │
-    └──────────────────┬──────────────────┘
-                        ▼
-                  modiq-common
 
 Additional direct dependencies:
 

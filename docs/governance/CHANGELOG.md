@@ -627,3 +627,35 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md`, `docs/engineering/GOVERNANCE_OBSERVATION_SUBSYSTEM_ACTIVATION.md`, `docs/engineering/STORAGE_ARCHITECTURE_EVALUATION.md`, `docs/engineering/STORAGE_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/STORAGE_PERSISTENCE_REPRESENTATION_DESIGN_NOTE.md`, `docs/engineering/STORAGE_SPRINT_PLAN.md`, and `docs/engineering/ENGINEERING_RELEASE_1.3.md` (produced at this Sprint's own Closeout, not retroactively).
+
+---
+
+# [Sprint 14]
+
+**Status:** In Progress (GOV-001 Architecture Evaluation complete; GOV-003 Architecture Evaluation, Architectural Resolution, Implementation Authorization, Sprint Planning, and Implementation complete)
+
+## Investigated (No Action Taken)
+
+- **GOV-001 (Assessment Report Generation Timing):** Architecture Evaluation, directed by the Chief Architect following the forcing function `modiq-storage`'s Sprint 13 activation created (a durably persisted report observed holding `status: EvaluatingRules`, not `Completed`). Found no inconsistency between `DataModel.md`'s specified Runtime Lifecycle and the implementation. No Architectural Resolution performed; GOV-001 narrowed and returned to Open. See `docs/engineering/ENGINEERING_LOG.md`.
+
+## Removed
+
+- **`modiq-common`** — retired in its entirety (GOV-003). The crate produced zero real content and zero consumers across all 14 Sprints, confirmed directly (every crate's `Cargo.toml` grepped workspace-wide; `crates/modiq-common/src/` inspected directly — four files, each a single doc comment). Architecture Evaluation (`docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md`) recommended retirement over retaining the crate as-is, citing the platform's own demonstrated pattern of creating a crate on demand (`modiq-collection` at Sprint 3, `modiq-storage` at Sprint 13) rather than pre-provisioning an empty one. The Chief Architect accepted this recommendation. Removed from the root `Cargo.toml` workspace `members` list; `crates/modiq-common/` deleted entirely. No other crate required any change — zero consumers existed to update.
+- `README.md`'s crate table, `docs/implementation/CrateRoadmap.md`'s crate table and dependency diagram, and `docs/implementation/DependencyMap.md`'s dependency diagram all had their `modiq-common` entries removed.
+
+## Verified
+
+- Root workspace: `cargo fmt --check`, `cargo check --workspace` clean, zero warnings; `cargo test --workspace` — **253 passed, 0 failed**, identical in count to the pre-retirement baseline (`modiq-cli` 15, `modiq-collection` 70, `modiq-engine` 23 unit + 3 integration, `modiq-knowledge` 5, `modiq-report` 3, `modiq-rules` 36, `modiq-runtime` 84, `modiq-storage` 10, `modiq-versioning` 4), confirming zero behavioral footprint from the removal.
+- `apps/sandbox/src-tauri` (its own, separate workspace): `cargo fmt --check`, `cargo check` clean, zero warnings; `cargo test` — **9 passed, 0 failed**, unchanged from the pre-retirement baseline.
+- A residual-reference grep (`modiq-common`/`modiq_common`) across the entire repository, outside historical Sprint/Release documents and this Sprint's own governance record, confirmed no remaining reference. `docs/architecture/` and `docs/adrs/` — this project's own architecture and ADR authorities — contain zero references, confirmed directly; `modiq-common` never had a Crate Boundary Rule pair in `GOVERNANCE.md` to remove.
+
+## Deferred (Governance-Pending)
+
+- GOV-002, GOV-008, GOV-013, and GOV-014 remain open; none were addressed this Sprint.
+- GOV-001 remains open under a narrower question (see Investigated, above); no forcing function currently requires deciding it.
+- The Governance Register moved from 14 items, 8 Resolved, 6 Open (post-Sprint-13) to **14 items, 9 Resolved, 5 Open** (GOV-003 resolved).
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by this Sprint.
+
+## Released
+
+- Documented in `docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md`, `docs/engineering/GOV003_IMPLEMENTATION_AUTHORIZATION.md`, `docs/engineering/GOV003_SPRINT_PLAN.md`, and `docs/engineering/ENGINEERING_LOG.md`.
