@@ -395,7 +395,7 @@ Runtime Invariant Reconciliation
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -403,11 +403,13 @@ Engineering Release v0.1.0-alpha
 
 Description
 
-Implementation enforces lifecycle behaviors that are not yet fully represented within RuntimeInvariants.md.
+Implementation enforces lifecycle behaviors that are not yet fully represented within RuntimeInvariants.md — confirmed, Sprint 15, by a direct Architecture Evaluation checking all fourteen invariants against `modiq-runtime`'s implementation and test suite, and against the broader Runtime documentation set (`DataModel.md`, `Architecture.md`, ADR-0002/0003/0007), not `RuntimeInvariants.md` in isolation.
 
 Resolution
 
-Pending. No dedicated Documentation Release has been scoped for this item — the current Documentation Release is 2.1, and no Documentation Release 1.1 was ever produced under that number (superseded by 2.0, then 2.1). The original "Pending Documentation Release 1.1" citation was a stale reference to a release name the repository's own history shows never occurred; corrected here to remove the false precondition, without resolving the underlying question itself.
+**Resolved.** Architecture Evaluation (`docs/engineering/GOV002_ARCHITECTURE_EVALUATION.md`) found `RuntimeInvariants.md` conforms to the Runtime implementation: all fourteen invariants are enforced and valid, none violated, each with a direct passing test. INV-002's wording ("Evidence MAY only be added before rule evaluation begins") is looser than the actual precondition (`add_evidence` succeeds only in the specific `CollectingEvidence` state, not merely "any time before evaluation") — noted as a documentation clarification, addressed as routine maintenance, not a condition of this resolution and not evidence of a conflict with implementation.
+
+Two findings surfaced during the evaluation fall outside this item's own question and are not resolved by it: ADR-0003's claim that `AssessmentReport` is an Assessment-owned entity, which conflicts with the platform's own later-established Reporting Crate Boundary Rule; and the repository's three unreconciled lifecycle vocabularies (`RuntimeInvariants.md`, `DataModel.md`, `Architecture.md`), which reflect legitimately different abstraction levels rather than a contradiction. Per this project's standing discipline that a new architectural question discovered during an evaluation is not automatically absorbed into the item that surfaced it, these are recommended as separate governance and maintenance work, not incorporated here. `AssessmentSubject`/`AssessmentContext`'s minimal content, and ADR-0007's own non-duplicated documentation of constructor validation and identity-based equality, were both evaluated and require no action.
 
 ---
 
