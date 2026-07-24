@@ -419,7 +419,7 @@ Role of modiq-common
 
 Status
 
-Open
+Resolved
 
 Raised
 
@@ -427,7 +427,7 @@ Engineering Release v0.1.0-alpha
 
 Description
 
-The shared crate currently contains no implemented shared types.
+The shared crate contained no implemented shared types across 13 Sprints — confirmed directly, post-Sprint-13, by grepping every crate's `Cargo.toml` in the workspace (zero consumers) and inspecting `crates/modiq-common/src/` directly (four files, each a single doc comment, no types).
 
 Question
 
@@ -435,7 +435,7 @@ Should modiq-common become the repository for shared platform types, or should i
 
 Resolution
 
-Pending
+**Retired.** Architecture Evaluation (`docs/engineering/GOV003_ARCHITECTURE_EVALUATION.md`) found the crate's own stated promotion criterion — a type "demonstrably shared across multiple domains and has no single owner" — was never satisfied in 13 Sprints, and that the platform has independently demonstrated (`modiq-collection` at Sprint 3, `modiq-storage` at Sprint 13) that a crate can be created on demand when a real need arrives, without cost or friction. The Chief Architect accepted retirement (Option A) over retaining the crate as-is or resolving the question as already-satisfied by design. Removal is authorized separately by `docs/engineering/GOV003_IMPLEMENTATION_AUTHORIZATION.md` and `docs/engineering/GOV003_SPRINT_PLAN.md`.
 
 ---
 

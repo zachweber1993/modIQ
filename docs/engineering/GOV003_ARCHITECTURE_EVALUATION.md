@@ -7,7 +7,7 @@
 | **Governance item addressed** | GOV-003 (`docs/engineering/GOVERNANCE.md`) — "Role of `modiq-common`," Open since Engineering Release v0.1.0-alpha (Sprint 1), 13 Sprints unresolved |
 | **Purpose** | Architecture Evaluation of whether `modiq-common` should remain the repository for shared platform types, be retired, or be reconsidered on some other basis — following `SPRINT_14_PROPOSAL.md` Candidate C and Sprint 14's own formal objective selection (`docs/engineering/ENGINEERING_LOG.md`, "Sprint 14 — Objective Selected: GOV-003") |
 | **Origin** | Chief Architect authorization, following Sprint 14 objective selection |
-| **Status** | **Architecture Evaluation only. Architectural Resolution has NOT been performed — Section 6 below is pending Chief Architect decision. No ADR, no `Cargo.toml` change, no crate removal, no implementation of any kind has occurred.** |
+| **Status** | **Architecture Evaluation complete; Architectural Resolution complete — Option A (retire) Accepted by the Chief Architect (Section 6). Implementation Authorization and Sprint Planning follow as separate documents. No `Cargo.toml` change, no crate removal, no implementation of any kind has occurred as of this document.** |
 
 ---
 
@@ -68,10 +68,10 @@ This recommendation is offered as **Engineering's own recommendation, not a deci
 
 ## 6. Chief Architect Decision Summary — Architectural Resolution
 
-**Pending.** Per `PROJECT_HANDOFF_v1.1.md` §5, Architectural Resolution "marks every open architectural question Accepted, Rejected, or Deferred; nothing may carry forward silently into implementation." This section is intentionally left for the Chief Architect's own decision and is not pre-filled by this document.
+Per `PROJECT_HANDOFF_v1.1.md` §5, Architectural Resolution "marks every open architectural question Accepted, Rejected, or Deferred; nothing may carry forward silently into implementation." The Chief Architect has reviewed Section 3's three alternatives and resolved the question.
 
 | Decision | Recommendation | Resolution |
 |---|---|---|
-| Role of `modiq-common` | Option A — retire the crate | **Pending Chief Architect decision** |
+| Role of `modiq-common` | Option A — retire the crate | **Accepted** |
 
-**No Implementation Authorization may be granted, and no Sprint Planning may proceed, until this section is completed.**
+**Disposition:** `modiq-common` is retired. Removal is authorized as a subsequent, separately-recorded Implementation Authorization and Sprint Plan (`GOV003_IMPLEMENTATION_AUTHORIZATION.md`, `GOV003_SPRINT_PLAN.md`) — this Resolution decides *that* the crate is retired, not the mechanics of *how* its removal is sequenced or verified, consistent with this document's own Section 1 scope boundary and this project's standing Governance-Decisions-vs-Implementation-Work separation.
