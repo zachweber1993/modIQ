@@ -1426,6 +1426,30 @@ Following Sprint 14's own closeout, the Chief Architect selected GOV-002 (Runtim
 
 ---
 
+### GOV-015 Governance Initiation — Sprint 16
+
+Status:
+Completed (Governance Initiation only — no Architecture Evaluation, Architectural Resolution, or Implementation Authorization performed; no Rust source, ADR, or Architecture.md touched)
+
+Affected Crates:
+- (none — a Governance Initiation is a governance action, not an implementation one)
+
+Affected Documents:
+- docs/engineering/PROPOSAL_GOV-015.md (new, prepared prior session, Chief Architect approved this session)
+- docs/engineering/GOVERNANCE.md (GOV-015 added to the Register as Open)
+- docs/governance/PROJECT_STATUS.md (Governance Register counts updated)
+- docs/governance/CHANGELOG.md (Sprint 16 governance initiation recorded)
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+Following the prior session's baseline review (Chief Architect Startup) and Governance Review, the Chief Architect selected the ADR-0003/`AssessmentReport` finding — surfaced but not resolved during Sprint 15's own GOV-002 Architecture Evaluation — as the next architectural objective, scoped to Governance Initiation only. `PROPOSAL_GOV-015.md` was prepared using exclusively the evidence already established during GOV-002's own evaluation (no new investigation performed), defining the architectural question — whether ADR-0003's `AssessmentReport` ownership claim still holds, and if not, whether reconciliation should be an in-place ADR amendment or a new superseding ADR — without answering it.
+
+The Chief Architect approved the proposal. **GOV-015 (Role of ADR-0003 in Describing `AssessmentReport` Ownership)** was added to `GOVERNANCE.md` as Open, using the approved proposal's Title, Description, and Question verbatim in substance. ADR-0003's still-valid core decision (`Assessment` as the Runtime domain's sole aggregate root) is explicitly out of this item's scope — only the `AssessmentReport` ownership example is in question.
+
+**No Architecture Evaluation was performed, no Architectural Resolution was drafted, `ADR-0003` and `Architecture.md` were not touched, and no implementation was authorized.** The Governance Register moves from 14 items, 10 Resolved, 4 Open (post-Sprint-15) to **15 items, 10 Resolved, 5 Open**. Per explicit Chief Architect instruction, this session's changes are not committed — a single governance-initiation commit will follow, before Architecture Evaluation begins.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
