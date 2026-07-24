@@ -11,7 +11,7 @@
 | **Purpose** | Role-specific operating manual for the Chief Architect — assumes `PROJECT_HANDOFF_v1.1.md` has already been read |
 | **Prerequisite** | `docs/engineering/PROJECT_HANDOFF_v1.1.md` — **read that first.** This document does not repeat product vision, architecture description, governance register contents, sprint history, or repository organization; all of that lives there. |
 | **Supersedes** | `CHIEF_ARCHITECT_HANDOFF_v1.0.md` — retained in git history, not rewritten in place. This revision is a targeted amendment, not a rewrite: the role charter, mission statement, architectural responsibilities, governance philosophy, review philosophy, and decision framework are unchanged from v1.0, reconfirmed rather than revised by Sprints 7 through 12. Only sections where those six Sprints genuinely added a new tool, a new confirming data point, or made a project-state fact stale have been amended. |
-| **As of** | 2026-07-23, following Sprint 12 (Capability Scaling Architecture), Repository Closeout complete, tagged, pushed |
+| **As of** | 2026-07-23, following Sprint 14 (GOV-003: `modiq-common` retired); Sprint 13 (Storage Architectural Activation) and the post-Sprint-13 GOV-001 Architecture Evaluation also both complete |
 | **Companion Document** | `LEAD_ENGINEER_HANDOFF_v3.0.md` — the same handoff architecture, for the other role |
 
 ---
@@ -108,7 +108,7 @@ You are responsible for protecting six things, specifically:
 
 **Documentation architecture.** Frozen specifications may be amended, but only with the amendment recorded explicitly in the document itself, never as a silent rewrite. You are the approval gate for every such amendment — `EvidenceCollection.md`'s four amendments, `DataModel.md`'s Sprint 5 amendment, and `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md`'s two Sprint-11 amendments all went through you first.
 
-**Architecture evolves deliberately, never opportunistically.** The clearest test of "deliberately": did a proposal, a governance item, or an ADR precede the implementation, or did the implementation happen and get rationalized afterward? This project's history has zero instances of the latter, across twelve Sprints now. Keep it that way.
+**Architecture evolves deliberately, never opportunistically.** The clearest test of "deliberately": did a proposal, a governance item, or an ADR precede the implementation, or did the implementation happen and get rationalized afterward? This project's history has zero instances of the latter, across fourteen Sprints now. Keep it that way.
 
 ---
 
@@ -186,7 +186,7 @@ Closeout
 
 **For a brand-new capability specifically, Sprint 12 gave "Observation → Evidence → Investigation" a named, repeatable form, ahead of everything else in this diagram: the Capability Identity procedure.** Before a new Collector or Rule is even proposed, classify the underlying observation through the three axes (Collection, Evidence, Interpretation) plus the Capability Introduction test (`SPRINT12_ARCHITECTURAL_RESOLUTION.md`). This is not a new stage competing with the diagram above — it is what "Observation" and "Evidence," specifically applied to a new-capability question, now look like in practice, the same way a design proposal has always been the concrete form "Investigation" takes for a governance-relevant question.
 
-**The discouraged pattern is the mirror image of this: implement first, document later.** This project's history contains zero instances of it, across twelve Sprints.
+**The discouraged pattern is the mirror image of this: implement first, document later.** This project's history contains zero instances of it, across fourteen Sprints.
 
 ---
 
@@ -224,7 +224,7 @@ Each of these has either occurred and been caught, or represents a risk this pro
 
 **Hidden coupling.** Symptom: a consumer coming to depend on an internal detail of a subsystem rather than its stable public contract.
 
-**Implementation-led architecture.** Symptom: code gets written, and the architecture is described afterward to match what was built. This project's history has no instances of it, across twelve Sprints — protecting that record is worth resisting real schedule pressure for.
+**Implementation-led architecture.** Symptom: code gets written, and the architecture is described afterward to match what was built. This project's history has no instances of it, across fourteen Sprints — protecting that record is worth resisting real schedule pressure for.
 
 ---
 
@@ -306,7 +306,7 @@ Divergence between implementation and governance is **architectural drift to be 
 
 Full detail lives in `PROJECT_HANDOFF_v1.1.md` — this section only orients you to what matters right now, without repeating it.
 
-- **Repository maturity:** nine crates, stable dependency direction, zero architectural boundary violations across twelve Sprints. `modiq-collection` and `modiq-rules` each carry four real participants; `modiq-knowledge` and `modiq-versioning` carry real, minimum-viable content since Sprints 9 and 8 respectively; `modiq-cli` is wired and real. Only `modiq-common` remains deliberately deferred scaffolding, still correctly lacking a forcing function after twelve Sprints.
-- **Open governance investigations:** GOV-013 (open by design, now with Sprint 11's own `FindingSeverity::Error` use recorded as relevant evidence, not acted on prematurely); GOV-008 (open across nine Sprints); GOV-001/002/003 (long-open, low-pressure). See `PROJECT_HANDOFF_v1.1.md`, Section 9, for the full list.
-- **Sprint 13 readiness:** the repository is ready in every mechanical sense — clean working tree, both workspaces green (238/238, 7/7), zero unresolved implementation work from Sprint 12. **Sprint 13 itself does not exist yet, by explicit design.** Sprint 12 established that a new capability must be classified through the Capability Identity procedure and committed to the repository as such before Sprint planning begins for it — no such proposal has yet reached that state. The most useful next act of architectural leadership is reviewing whichever capability proposal is brought to you against that procedure, not assuming which one it will be.
+- **Repository maturity:** nine crates, stable dependency direction, zero architectural boundary violations across fourteen Sprints. `modiq-collection` and `modiq-rules` each carry four real participants; `modiq-knowledge` and `modiq-versioning` carry real, minimum-viable content since Sprints 9 and 8 respectively; `modiq-cli` is wired and real; `modiq-storage` carries real, minimum-viable content since Sprint 13 (single-report write/read, wired through `modiq-cli` and `apps/sandbox`). `modiq-common` no longer exists — retired at Sprint 14 (GOV-003) after 13 Sprints with zero consumers and zero forcing function.
+- **Open governance investigations:** GOV-013 (open by design, now with Sprint 11's own `FindingSeverity::Error` use recorded as relevant evidence, not acted on prematurely — still unexercised even with four Rules dispatched, since none has ever assigned `BestPractice`); GOV-008 (open across eleven Sprints); GOV-001 (narrowed following a post-Sprint-13 Architecture Evaluation — no inconsistency found, no forcing function yet); GOV-002 (open since v0.1.0-alpha, never yet directly evaluated); GOV-014 (open, opened following Sprint 12's closeout via INV-001, gates Lua Analysis). GOV-003 is Resolved (retired, Sprint 14) and no longer appears in this list. See `PROJECT_HANDOFF_v1.1.md`, Section 9, for the full detail.
+- **Sprint 15 readiness:** the repository is ready in every mechanical sense — clean working tree, both workspaces green (253/253, 9/9), zero unresolved implementation work from Sprint 14. Sprint 13 (Storage Architectural Activation) and Sprint 14 (GOV-003 retirement) are both complete. **Sprint 15 itself does not exist yet.** No capability proposal has yet been classified through the Capability Identity procedure and committed to the repository as such — the most useful next act of architectural leadership is reviewing whichever capability proposal or governance item is brought to you next, not assuming which one it will be.
 - **Immediate architectural priorities:** none blocking. A minor, harmless documentation citation drift was found and recorded (`PROJECT_HANDOFF_v1.1.md`, Section 11) — worth correcting at the citing documents' own next revision, not urgent enough to warrant its own session.

@@ -11,9 +11,9 @@
 | **Purpose** | Canonical project handoff — describes the platform, its architecture, its governance, and its history independently of any individual role |
 | **Audience** | Anyone onboarding to modIQ — engineering, architecture, or product — before reading a role-specific handoff |
 | **Supersedes** | `PROJECT_HANDOFF_v1.0.md` (Sprint 6-era). `LEAD_ENGINEER_HANDOFF_v3.0.md` and `CHIEF_ARCHITECT_HANDOFF_v1.0.md`/`v1.1.md` (the current role-specific supplements) remain role-specific companions; both assume the reader has already read this document and do not repeat what it covers. |
-| **As of** | 2026-07-23, following Sprint 12 (Capability Scaling Architecture: Capability Identity procedure derived, adversarially reconciled, validated); Repository Closeout complete, tagged, pushed |
+| **As of** | 2026-07-23, following Sprint 14 (GOV-003: `modiq-common` retired); Sprint 13 (Storage Architectural Activation) and the post-Sprint-13 GOV-001 Architecture Evaluation are also both complete. Engineering Release 1.3 remains the last published release; Sprint 14's own release (1.4) is pending. |
 | **Branch** | `feature/runtime-implementation` |
-| **HEAD** | `681dd2e` — "Sprint 12: engineering release and closeout" |
+| **HEAD** | `f1c6073` — "feat: retire modiq-common (GOV-003)" |
 
 ---
 
@@ -73,12 +73,14 @@ apps/sandbox/             Tauri desktop application — the only real end-to-end
 | `modiq-engine` | Engine — `AssessmentService`, the sole orchestration boundary | L3, 23 unit + 3 integration tests | `modiq-runtime`, `modiq-rules`, `modiq-report`, `modiq-collection`, `modiq-versioning` |
 | `modiq-knowledge` | Knowledge Domain — reusable engineering knowledge | L2, 5 tests — first real content since Sprint 0 (Sprint 9): `RepairRecipe` with real fields, an infallible constructor, one named, authored recipe. Six remaining Knowledge Model categories (`Rule`, `Engine Behavior`, `Compatibility Pattern`, `Best Practice`, `Known Issue`, `Knowledge Reference`) remain unimplemented, deliberately | `modiq-runtime` |
 | `modiq-versioning` | Version Profiles — game-version compatibility context | L2, 4 tests — first real content since Sprint 0 (Sprint 8): `GameVersion`/`VersionProfile`, a single hardcoded `VersionProfile::fs25()`. `Capability`/`Compatibility` remain unimplemented, deliberately | `modiq-runtime` |
-| `modiq-cli` | CLI entry point | L2, 10 tests — wired to `modiq-engine` (Sprint 6): `Application` dispatches `assess`/`help`/`version`, `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a user-supplied path | `modiq-runtime`, `modiq-engine`, `modiq-report` |
-| `modiq-common` | Shared platform types | L1, empty stub files, zero evidence it's needed after twelve Sprints | (none) |
+| `modiq-cli` | CLI entry point | L2, 15 tests — wired to `modiq-engine` (Sprint 6): `Application` dispatches `assess`/`help`/`version`, `AssessCommand` calls `AssessmentService::execute_from_assessment_input` against a user-supplied path; gained `retrieve` (Sprint 13) against `modiq-storage` | `modiq-runtime`, `modiq-engine`, `modiq-report`, `modiq-storage` |
+| `modiq-storage` | Storage — durable, cross-process write/read of an already-generated `AssessmentReport`'s content | L2, 10 tests — first real content since crate creation (Sprint 13): `PersistedAssessmentReport`, `ReportKey`, `ReportStore` (real filesystem I/O) | `modiq-runtime`, `modiq-report` |
 
-Dependency direction is strictly downward; `modiq-runtime` is the leaf every other crate ultimately depends on. No circular dependency has ever existed. `apps/sandbox` and `modiq-cli` both depend on `modiq-engine` (and, transitively, everything below it) for orchestration, preserving `AssessmentService` as the sole orchestration entry point — but both also depend on `modiq-report` directly, since `modiq-engine` does not re-export `AssessmentReport` (Section 9). Neither crate depends on `modiq-collection` or `modiq-rules` directly.
+`modiq-common` (Shared platform types, L1, empty stub files, zero consumers) existed through Sprint 13 and was **retired in its entirety at Sprint 14** (GOV-003) — no crate ever depended on it, confirmed directly before removal. It no longer exists in the workspace.
 
-**Root workspace: 238 tests, zero ignored, zero flaky.** **Sandbox: 7 tests**, its own separate workspace, independently verified. (`modiq-cli` 10, `modiq-collection` 70, `modiq-common` 0, `modiq-engine` 23 unit + 3 integration, `modiq-knowledge` 5, `modiq-report` 3, `modiq-rules` 36, `modiq-runtime` 84, `modiq-versioning` 4.)
+Dependency direction is strictly downward; `modiq-runtime` is the leaf every other crate ultimately depends on. No circular dependency has ever existed. `apps/sandbox` and `modiq-cli` both depend on `modiq-engine` (and, transitively, everything below it) for orchestration, preserving `AssessmentService` as the sole orchestration entry point — but both also depend on `modiq-report` directly, since `modiq-engine` does not re-export `AssessmentReport` (Section 9). Both also depend on `modiq-storage` directly, the same way (Sprint 13). Neither crate depends on `modiq-collection` or `modiq-rules` directly.
+
+**Root workspace: 253 tests, zero ignored, zero flaky.** **Sandbox: 9 tests**, its own separate workspace, independently verified. (`modiq-cli` 15, `modiq-collection` 70, `modiq-engine` 23 unit + 3 integration, `modiq-knowledge` 5, `modiq-report` 3, `modiq-rules` 36, `modiq-runtime` 84, `modiq-storage` 10, `modiq-versioning` 4.)
 
 ---
 
@@ -100,7 +102,7 @@ modIQ is organized as cooperating platform subsystems centered on the **Assessme
  Collection               Profiles    Base
 ```
 
-**Evidence Collection, Rule Engine, Reporting, Version Profiles, and Knowledge are all real and implemented today** — the last two only since Sprint 8 and Sprint 9 respectively, each with deliberately minimum-viable content (one hardcoded `VersionProfile`, one authored `RepairRecipe`), not the full conceptual model either specification describes. **Storage does not exist as a crate at all** — no persistence layer has ever been built; every Assessment is process-local and ephemeral today.
+**Evidence Collection, Rule Engine, Reporting, Version Profiles, Knowledge, and Storage are all real and implemented today.** Version Profiles and Knowledge have been real since Sprint 8 and Sprint 9 respectively, each with deliberately minimum-viable content (one hardcoded `VersionProfile`, one authored `RepairRecipe`), not the full conceptual model either specification describes. **Storage is real since Sprint 13** (`modiq-storage`) — a durable, cross-process-verified write/read capability for a single `AssessmentReport`'s content, wired through both `modiq-cli` and `apps/sandbox`. It is likewise deliberately minimum-viable: single-report write/read only, no querying, filtering, or cross-Assessment operation, and no feed into the Knowledge Domain.
 
 ## The Two Domains
 
@@ -166,13 +168,13 @@ The Project Owner sets priorities, approves the roadmap, and selects sprint obje
 
 ## The Governance Register (`GOVERNANCE.md`, docs/engineering/)
 
-Every architectural question discovered during engineering receives a permanent identifier and stays open until resolved by a Documentation Release. **13 items exist today; 8 Resolved, 5 Open — unchanged in count since Engineering Release 0.8, across six further Sprints (7 through 12):**
+Every architectural question discovered during engineering receives a permanent identifier and stays open until resolved by a Documentation Release. **14 items exist today; 9 Resolved, 5 Open.** The count held at 13 (8 Resolved, 5 Open) from Engineering Release 0.8 through Sprint 12; GOV-014 was opened following Sprint 12's own closeout (INV-001), and GOV-003 was resolved at Sprint 14:
 
 | Item | Title | Status |
 |---|---|---|
-| GOV-001 | Assessment Report Generation Timing | Open |
+| GOV-001 | Assessment Report Generation Timing | Open — narrowed post-Sprint-13 (see below) |
 | GOV-002 | Runtime Invariant Reconciliation | Open |
-| GOV-003 | Role of `modiq-common` | Open |
+| GOV-003 | Role of `modiq-common` | **Resolved** — retired (Sprint 14) |
 | GOV-004 | Engine Service Granularity | Resolved |
 | GOV-005 | Finding minimum Evidence reference | Resolved (cardinality only) |
 | GOV-006 | Recommendation minimum Finding reference | Resolved (cardinality only) |
@@ -183,10 +185,15 @@ Every architectural question discovered during engineering receives a permanent 
 | GOV-011 | Archive Collection Model | Resolved |
 | GOV-012 | Rule Evaluation Model | Resolved |
 | GOV-013 | FindingSeverity Severity/Kind Conflation | **Open, deliberately** |
+| GOV-014 | Lua Fixture Acquisition Governance | Open |
 
-**GOV-013 is worth understanding as a category, not just an entry:** it was opened not because implementation broke something, but because *writing a precise specification* (Sprint 5's `FindingSeverity` definitions) surfaced that `BestPractice` classifies Finding *kind*, not *severity*. Sprint 11's own `FindingSeverity::Error` assignment (the platform's first real use of that variant) was recorded as new evidence relevant to a future GOV-013 review — deliberately not treated as grounds to reopen it now (Section 7).
+**GOV-013 is worth understanding as a category, not just an entry:** it was opened not because implementation broke something, but because *writing a precise specification* (Sprint 5's `FindingSeverity` definitions) surfaced that `BestPractice` classifies Finding *kind*, not *severity*. Sprint 11's own `FindingSeverity::Error` assignment (the platform's first real use of that variant) was recorded as new evidence relevant to a future GOV-013 review — deliberately not treated as grounds to reopen it now (Section 7). Even with four concrete Rules now dispatched, no Rule has ever assigned `FindingSeverity::BestPractice`, so the specific tension GOV-013 raises remains unexercised.
 
-**No new Governance Register item and no new ADR were opened across Sprints 7 through 12** — every capability shipped in that span (XML inspection, Version Profile activation, Repair Guidance, Runtime Fixture acquisition, Runtime Evidence Processing, Capability Scaling Architecture) either applied and extended already-approved architecture, or — where a genuine new question existed (Collector Composition, Sprint 7) — resolved it as its own dedicated Architecture Evaluation without requiring a permanent Register entry, following the same "implementation evidence, not routine amendment" discipline GOV-012/013 themselves were held to.
+**GOV-001 was given a dedicated Architecture Evaluation following Sprint 13's own closeout** — `modiq-storage`'s durable persistence gave the item's original "before or after completion?" framing real, if still unforced, stakes for the first time. The evaluation found no inconsistency between `DataModel.md`'s specified Runtime Lifecycle and the implementation; no Architectural Resolution was performed or required. The item was narrowed and returned to Open — the live question is now only whether `AssessmentStatus::Completed` being permanently unreachable by any real persisted report is an intended consequence or an unexamined gap. No forcing function currently requires deciding it.
+
+**GOV-003 was resolved and implemented at Sprint 14.** `modiq-common` had zero consumers and zero real content across 13 Sprints, confirmed directly; the Chief Architect accepted retirement over retaining the crate as-is. It no longer exists.
+
+**No new Governance Register item and no new ADR were opened across Sprints 7 through 13** — every capability shipped in that span either applied and extended already-approved architecture, or — where a genuine new question existed (Collector Composition, Sprint 7; Storage's own governance reconciliation, Sprint 13) — resolved it as its own dedicated Architecture Evaluation without requiring a permanent Register entry. GOV-014 (opened following Sprint 12's closeout, via INV-001, not during a Sprint itself) and Sprint 14's resolution of GOV-003 are the two exceptions to that count holding steady.
 
 ## Change Categories (`GOVERNANCE.md`)
 
@@ -200,7 +207,7 @@ Every crate has an explicit "Owns" / "Must never" pair. The two most load-bearin
 
 ## ADRs (`docs/adrs/`)
 
-Ten, Accepted, never reused, never rewritten. Created only for decisions that change architecture, alter ownership boundaries, or establish a new principle — not for routine implementation. No ADR has been added since ADR-0010 (Sprint 6-era); Sprints 7 through 12 each applied existing ADRs rather than requiring new ones.
+Ten, Accepted, never reused, never rewritten. Created only for decisions that change architecture, alter ownership boundaries, or establish a new principle — not for routine implementation. No ADR has been added since ADR-0010 (Sprint 6-era); Sprints 7 through 14 each applied existing ADRs rather than requiring new ones — Storage's own persisted representation (Sprint 13) is the fourth instance of ADR-0007's Opaque Runtime References pattern, not a new principle.
 
 ## Documentation Releases
 
@@ -330,8 +337,12 @@ These are not restated from the specifications — they are patterns this projec
 | **Sprint 10** | Runtime Fixture Corpus Acquisition — no Rust source touched. Three real, captured, normalized Farming Simulator runtime log fixtures (`fixtures/runtime-logs/`), grounding all subsequent Runtime Log Interpretation work. | 210 (unchanged) |
 | **Sprint 11** | Runtime Evidence Processing Architecture and Implementation. Fourth Collector (`RuntimeLogCollector`) and fourth Rule (`RuntimeLoadFailureRule`) — the platform's first event-based Evidence source, first real use of `FindingSeverity::Error`. A mid-Sprint architectural reconciliation (adversarial verification found and corrected a genuine documentation inconsistency, touching no code). | 210 → 238 |
 | **Sprint 12** | Capability Scaling Architecture — architecture-only, no Rust source touched. An explicit Capability Identity procedure derived from seven historical decisions, itself found to contain a contradiction during its own adversarial verification, reconciled to a corrected three-axis model. Direct consequence: Sprint 11 reclassified from Capability Introduction to Capability Expansion (architectural classification only — Sprint 11's own product significance is unchanged). | 238 (unchanged) |
+| *(Post-Sprint-12 INV-001)* | Lua Analysis Capability Investigation — evidence-acquisition only, not a Sprint. Found no real Lua script has ever been examined and none can be obtained without human-performed licensed acquisition. Opened GOV-014. | 238 (unchanged) |
+| **Sprint 13** | Storage Architectural Activation. `modiq-storage` (new crate) gained its first real content — `PersistedAssessmentReport`, `ReportKey`, `ReportStore` — wired through `modiq-cli` (`retrieve`) and `apps/sandbox`, each verified with a genuine cross-process round trip. Followed Sprint 8's "Architectural Activation" precedent, not the Sprint 12 Capability Identity procedure (which does not classify subsystem-level candidates). | 238 → 253 |
+| *(Post-Sprint-13)* | GOV-001 Architecture Evaluation — not a Sprint, no Architectural Resolution. Found no inconsistency between specification and implementation; GOV-001 narrowed and returned to Open. | 253 (unchanged) |
+| **Sprint 14** | GOV-003 (Role of `modiq-common`) resolved and implemented: retired. Zero consumers and zero real content confirmed across 13 Sprints; the crate removed from the workspace entirely. | 253 (unchanged — `modiq-common` had zero tests) |
 
-Full detail for each Sprint lives in its own Engineering Release. Every Sprint since Sprint 8 has produced its own release at Sprint close (`ENGINEERING_RELEASE_0.8.md` through `_1.2.md`); Engineering Releases 0.6 and 0.7 were produced retroactively, after a two-Sprint gap, and that gap has not recurred since (Section 6, Principle 9).
+Full detail for each Sprint lives in its own Engineering Release. Every Sprint since Sprint 8 has produced its own release at Sprint close (`ENGINEERING_RELEASE_0.8.md` through `_1.3.md`); Engineering Releases 0.6 and 0.7 were produced retroactively, after a two-Sprint gap, and that gap has not recurred since (Section 6, Principle 9). **Sprint 14 is the one exception since that discipline was established: its own Engineering Release (1.4) was pending as of this revision** — recorded here for transparency rather than silently assumed complete.
 
 **Git tags now exist for Sprints 10, 11, and 12** (`sprint10-complete`, `sprint11-complete`, `sprint12-complete`), pushed to the primary remote — the first Sprints in this project's history to be tagged at all. `v0.1.0`, `v0.1.0-alpha`, `v0.2.0`, `v0.2.0-alpha`, `v0.3.0` remain as pre-existing tags that predate and collide oddly with Engineering Release numbering — a known, still-unresolved git tag hygiene issue, unaffected by the new `sprintN-complete` convention.
 
@@ -339,30 +350,33 @@ Full detail for each Sprint lives in its own Engineering Release. Every Sprint s
 
 # 8. Current Repository State
 
-- **Branch:** `feature/runtime-implementation`, tracking `origin/feature/runtime-implementation`, in sync (no ahead/behind).
-- **HEAD:** `681dd2e` — "Sprint 12: engineering release and closeout."
+- **Branch:** `feature/runtime-implementation`.
+- **HEAD:** `f1c6073` — "feat: retire modiq-common (GOV-003)."
 - **Working tree:** clean.
-- **Tests:** 238/238 root workspace, 7/7 Sandbox, zero warnings in either, verified directly while preparing this document.
-- **Crate maturity:** see Section 2's table. `modiq-collection` and `modiq-rules` (four real participants each), `modiq-knowledge` and `modiq-versioning` (L2, minimum-viable real content since Sprints 8–9), and `modiq-cli` (L2) all carry real, tested capability. `modiq-common` remains L1, correctly deferred, zero forcing function across twelve Sprints.
+- **Tests:** 253/253 root workspace, 9/9 Sandbox, zero warnings in either, verified directly while preparing this revision.
+- **Crate maturity:** see Section 2's table. `modiq-collection` and `modiq-rules` (four real participants each), `modiq-knowledge` and `modiq-versioning` (L2, minimum-viable real content since Sprints 8–9), `modiq-cli` (L2), and `modiq-storage` (L2, real since Sprint 13) all carry real, tested capability. `modiq-common` no longer exists — retired Sprint 14 (GOV-003), zero forcing function ever having arrived across its own 13 Sprints of existence.
 
 ---
 
 # 9. Current Investigations (Open, Unresolved, or Recommended-but-Not-Acted-On)
 
-- **GOV-013 (FindingSeverity Severity/Kind Conflation)** — Open by design. Sprint 11's own `FindingSeverity::Error` assignment is recorded as new, relevant evidence — deliberately not treated as grounds to resolve this now. Will only move when a genuine, demonstrated need arises to express Finding *kind* independent of *severity*.
-- **GOV-008 (AssessmentService Public API Evolution)** — Open across nine Sprints. Six further capabilities (Sprints 7 through 12) each reused the existing two-entry-point pattern without generating new pressure toward resolving it.
-- **GOV-001, GOV-002, GOV-003** — all Open since Engineering Release v0.1.0-alpha, still pending, none blocking current work.
-- **`modiq-engine` does not re-export `AssessmentReport`** — named at Sprint 6 with two data points (Sandbox, `modiq-cli`); no third consumer has been introduced since, so this remains below this project's own usual three-point convergent-evidence bar and remains un-actioned, not neglected.
-- **Referential integrity for Finding/Recommendation references** (the GOV-005/GOV-006 cardinality-only follow-up) — remains unassigned to its own Governance Register item, unaffected by Sprints 7 through 12.
+- **GOV-013 (FindingSeverity Severity/Kind Conflation)** — Open by design. Sprint 11's own `FindingSeverity::Error` assignment is recorded as new, relevant evidence — deliberately not treated as grounds to resolve this now. Even with four concrete Rules now dispatched, no Rule has ever assigned `FindingSeverity::BestPractice`, confirmed directly — the specific tension this item raises remains unexercised. Will only move when a genuine, demonstrated need arises to express Finding *kind* independent of *severity*.
+- **GOV-008 (AssessmentService Public API Evolution)** — Open across eleven Sprints. Neither Sprint 13 (Storage) nor Sprint 14 (`modiq-common` retirement) touched `AssessmentService`'s two entry points, generating no new pressure toward resolving it.
+- **GOV-001 (Assessment Report Generation Timing)** — narrowed following a dedicated post-Sprint-13 Architecture Evaluation (Section 4). No inconsistency found between specification and implementation; no Architectural Resolution performed. The live question is now only whether a persisted report's `AssessmentStatus::Completed` being permanently unreachable is intended, pending a forcing function that does not yet exist.
+- **GOV-002 (Runtime Invariant Reconciliation)** — Open since Engineering Release v0.1.0-alpha, still pending. Unlike GOV-001, GOV-008, and GOV-013, it has never received a dedicated evaluation across any Sprint to date.
+- **GOV-003 (Role of `modiq-common`)** — **Resolved and implemented at Sprint 14.** Retired; no longer exists in the workspace.
+- **GOV-014 (Lua Fixture Acquisition Governance)** — Open, opened following Sprint 12's own closeout (INV-001). Blocks Lua Analysis's own Architecture Evaluation until resolved.
+- **`modiq-engine` does not re-export `AssessmentReport`** — named at Sprint 6 with two data points (Sandbox, `modiq-cli`); Sprint 13 added a third consumer relationship of the identical shape for `modiq-storage` (neither crate re-exported by `modiq-engine` either), still below this project's own usual three-point convergent-evidence bar for the original `AssessmentReport` question specifically, and remains un-actioned, not neglected.
+- **Referential integrity for Finding/Recommendation references** (the GOV-005/GOV-006 cardinality-only follow-up) — remains unassigned to its own Governance Register item, unaffected by Sprints 7 through 14.
 - **The Rule Composition question for a second recognized fact within an already-interpreted `EvidenceCategory`** (Sprint 12's own named limitation) — no historical instance yet exists; the Interpretation Axis's own judgment test is a disciplined extrapolation for this case, not a confirmed data point.
 - **A documentation citation drift, found and worth correcting:** `COLLECTOR_COMPOSITION_ARCHITECTURE_PROPOSAL.md`, `SPRINT7_CAPABILITY_AND_IMPLEMENTATION_PLAN.md`, and `POST_SPRINT8_CAPABILITY_PRIORITIZATION_STUDY.md` all attribute the phrase "the platform's highest-risk future collector" to `EvidenceCollection.md`, where it does not currently appear. The phrase actually originates in `PROPOSAL_FILESYSTEM_COLLECTION.md`. Recorded here for transparency (Section 11); harmless, not yet corrected.
-- **No new capability proposal has yet been evaluated and committed to the repository since Sprint 12's own Capability Identity procedure was established.** Per Sprint 12's own standing rule, Sprint 13 does not exist until one has (Section 10).
+- **Engineering Release 1.4 (Sprint 14) was pending as of this revision** — every Sprint since Sprint 8 has produced its own release at close; Sprint 14 is the first gap in that discipline since it was established.
 
 ---
 
 # 10. Roadmap
 
-**Not yet scoped for Sprint 13, by explicit design.** Sprint 12 established that a future Sprint does not begin until a specific capability proposal has been classified through the Capability Identity procedure (full procedure: `docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md`) and committed to the repository as such — no capability proposal has reached that state yet. This document deliberately does not name or assume one; doing so here would itself violate the discipline Sprint 12 exists to enforce.
+**Not yet scoped for Sprint 15.** Sprint 13 (Storage Architectural Activation) and Sprint 14 (GOV-003: `modiq-common` retirement) are both complete. Sprint 13 followed Sprint 8's "Architectural Activation" precedent rather than the Sprint 12 Capability Identity procedure, since a subsystem-level candidate is not the shape of question that procedure classifies (`INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md` §3; `PROJECT_HANDOFF_v1.1.md` §5's own scope clarification). Sprint 14 resolved a long-open Governance Register item rather than introducing a new capability. No capability proposal has yet been classified through the Capability Identity procedure and committed to the repository for a next Sprint — this document deliberately does not name or assume one.
 
 **Longer-term, per `Vision.md`:** cross-version compatibility analysis, community-validated knowledge, Repair Recipe libraries beyond the one that exists, intelligent pattern recognition — all depend on the Knowledge Domain and Version Profile support deepening beyond their current minimum-viable state, neither of which has a forcing function yet (Section 6, Principles 1–2).
 

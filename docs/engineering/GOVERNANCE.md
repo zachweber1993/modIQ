@@ -407,7 +407,7 @@ Implementation enforces lifecycle behaviors that are not yet fully represented w
 
 Resolution
 
-Pending Documentation Release 1.1
+Pending. No dedicated Documentation Release has been scoped for this item — the current Documentation Release is 2.1, and no Documentation Release 1.1 was ever produced under that number (superseded by 2.0, then 2.1). The original "Pending Documentation Release 1.1" citation was a stale reference to a release name the repository's own history shows never occurred; corrected here to remove the false precondition, without resolving the underlying question itself.
 
 ---
 
