@@ -1450,6 +1450,38 @@ The Chief Architect approved the proposal. **GOV-015 (Role of ADR-0003 in Descri
 
 ---
 
+### GOV-015 Architecture Evaluation and Architectural Resolution — Sprint 17
+
+Status:
+Completed (Architecture Evaluation and Architectural Resolution; no ADR created, no ADR proposal created, no implementation authorized; no Rust source, ADR, or Architecture.md touched)
+
+Affected Crates:
+- (none — no Rust source was modified; `crates/modiq-runtime` and `crates/modiq-engine` were re-read directly to verify ownership behavior, not touched)
+
+Affected Documents:
+- docs/engineering/GOV015_ARCHITECTURE_EVALUATION.md (new; Architecture Evaluation, then amended in the same document with its own Architectural Resolution as Section 6)
+- docs/engineering/GOVERNANCE.md (GOV-015: Status, Description, Resolution updated to Resolved)
+- docs/governance/PROJECT_STATUS.md (Governance Register counts updated)
+- docs/governance/CHANGELOG.md (Sprint 17 completion recorded)
+- docs/engineering/ENGINEERING_LOG.md (this entry)
+
+Notes:
+The Chief Architect authorized GOV-015's Architecture Evaluation. `GOV015_ARCHITECTURE_EVALUATION.md` reviewed `GOVERNANCE.md`, `PROPOSAL_GOV-015.md`, ADR-0003, `Architecture.md`, `DataModel.md`, `GOV002_ARCHITECTURE_EVALUATION.md`, `docs/adrs/README.md`, and `modiq-runtime`/`modiq-engine` source directly.
+
+**A significant self-correction, explicitly instructed and directly evidenced:** the evaluation checked, rather than restated, GOV-002's own prior characterization that ADR-0003 "reflected the platform's single-crate-era design" later superseded by the architecture. This was found to be incorrect: ADR-0003 is dated 2026-07-16, and `CrateRoadmap.md`'s own revision history records `modiq-report` already existing as its own crate that same day (Sprint 0's scaffold complete), with `CHANGELOG.md`'s own Sprint 1 entry independently confirming `modiq-report::AssessmentReport` at essentially the same time. **There was no single-crate era** — the crate separation was concurrent with ADR-0003's own writing, not a later development. The better-evidenced account: ADR-0007, accepted one ADR later, established a precise technical definition of Runtime-entity "ownership" that ADR-0003's own earlier, looser example list was never checked against.
+
+A second refinement: `PROJECT_HANDOFF_v1.1.md`'s current text was found to cite ADR-0003 only for "sole aggregate root," not for the `AssessmentReport` inclusion, which traces instead to `DataModel.md`'s own independent "generates" framing (a claim not found to conflict with the Reporting Crate Boundary Rule). This narrows the likely eventual correction to ADR-0003 alone.
+
+A third: `PROPOSAL_GOV-015.md`'s own claim that "in-place amendment" was precedented (citing `DataModel.md`'s and `EvidenceCollection.md`'s own amendments) was checked directly and found not to transfer — those precedents govern a different document tier. `docs/adrs/README.md`'s own Engineering Notes state Accepted ADRs should not be modified, already applied once (ADR-0002's own uncorrected numbering defect); a new superseding ADR is the documented mechanism.
+
+**Architectural Resolution (`GOV015_ARCHITECTURE_EVALUATION.md` §6): GOV-015 is Resolved.** Four determinations recorded: the discrepancy is an editorial imprecision, not an architectural inconsistency; ADR-0007 supersedes ADR-0003's terminology in substantive effect without formally superseding the document; repository ADR governance requires a superseding ADR rather than in-place modification; the remaining discrepancy is purely documentary. `GOVERNANCE.md`'s GOV-015 entry was updated accordingly.
+
+**Recommended follow-up, described only, not authorized:** prepare a proposal for a superseding ADR (`PROPOSAL_ADR-0011.md` or the next available number) — itself requiring its own explicit authorization before preparation begins, per this project's own stage-gated discipline (`GOV-015 Resolution → PROPOSAL_ADR-0011.md → Chief Architect Approval → ADR-0011 → Repository Reconciliation`); and a re-check of `PROJECT_HANDOFF_v1.1.md`'s own citation once that ADR's text exists.
+
+**No ADR was modified or created, no ADR proposal was created, `Architecture.md` and `PROJECT_HANDOFF_v1.1.md` were not touched, and no implementation was authorized.** The Governance Register moves from 15 items, 10 Resolved, 5 Open (post-Sprint-16) to **15 items, 11 Resolved, 4 Open**.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

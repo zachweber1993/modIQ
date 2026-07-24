@@ -705,3 +705,28 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/PROPOSAL_GOV-015.md` and `docs/engineering/ENGINEERING_LOG.md`.
+
+---
+
+# [Sprint 17]
+
+**Status:** Complete (Architecture Evaluation and Architectural Resolution only — no ADR created, no ADR proposal created, no implementation authorized; no Rust source, ADR, or Architecture.md touched)
+
+## Resolved
+
+- **GOV-015 (Role of ADR-0003 in Describing `AssessmentReport` Ownership)** — Architecture Evaluation (`docs/engineering/GOV015_ARCHITECTURE_EVALUATION.md`) corrected an assumption from Sprint 15's own GOV-002 evaluation: ADR-0003 did not "predate" the platform's crate architecture — `modiq-report` existed as its own crate concurrent with ADR-0003's own date (2026-07-16), confirmed against `CrateRoadmap.md`'s revision history and this Changelog's own Sprint 1 entry. The actual cause: ADR-0007, accepted one ADR later, established a precise technical definition of Runtime-entity "ownership" that ADR-0003's own earlier, looser example list was never checked against. **Resolved**: the discrepancy is an editorial imprecision, not an architectural inconsistency; `docs/adrs/README.md`'s own stated policy (already applied once, to ADR-0002's uncorrected numbering defect) requires a new superseding ADR rather than in-place amendment; the remaining discrepancy is purely documentary. `PROJECT_HANDOFF_v1.1.md`'s current text was found to trace to `DataModel.md`'s own independent framing, not a repetition of ADR-0003, and likely needs no substantive change. The Governance Register moves from 15 items, 10 Resolved, 5 Open (post-Sprint-16) to **15 items, 11 Resolved, 4 Open**.
+
+## Recommended Follow-up (Described Only, Not Authorized)
+
+- Prepare a proposal for a superseding ADR (`PROPOSAL_ADR-0011.md` or the next available number), addressing only ADR-0003's `AssessmentReport` inclusion and preserving its still-valid core decision. Per this project's governance discipline, the proposal is not itself authoritative — Chief Architect approval is required before it becomes the ADR, and each of proposal preparation, ADR creation, and reconciliation requires its own separate authorization.
+- Re-check `PROJECT_HANDOFF_v1.1.md`'s own citation once that ADR's text exists.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-008, GOV-013, and GOV-014 remain open; none were addressed this Sprint.
+- No ADR or ADR proposal was created this Sprint — both remain future, separately-authorized work.
+- The `modiq-versioning` Crate Boundary Rules gap named during Sprint 8 planning remains open, unaffected by this Sprint.
+
+## Released
+
+- Documented in `docs/engineering/GOV015_ARCHITECTURE_EVALUATION.md` and `docs/engineering/ENGINEERING_LOG.md`.
