@@ -730,3 +730,42 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/engineering/GOV015_ARCHITECTURE_EVALUATION.md` and `docs/engineering/ENGINEERING_LOG.md`.
+
+---
+
+# [Sprint 18]
+
+**Status:** Complete (Proposal preparation only — no ADR created, no ADR-0003 modification, no repository reconciliation; no Rust source touched)
+
+## Added
+
+- `docs/engineering/PROPOSAL_ADR-0011.md` — a proposal for a superseding ADR correcting ADR-0003's inclusion of `Assessment Report` among Assessment-owned entities, per GOV-015's own recommended follow-up. Stages the full proposed ADR-0011 text for Chief Architect review, per the project's two-step drafting discipline. Revised once, following review, to replace implementation-level detail with architecture-level language, condense the historical narrative (GOV-015 remains the authoritative evidence record), remove repository-relative framing from the draft ADR text, and remove forward-looking reconciliation guidance from the draft ADR's own Consequences section. No architectural conclusion changed by the revision.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-008, GOV-013, and GOV-014 remain open; none were addressed this Sprint.
+- ADR-0011 itself was not created this Sprint — only its proposal.
+
+## Released
+
+- Documented in `docs/engineering/PROPOSAL_ADR-0011.md` and `docs/engineering/ENGINEERING_LOG.md`.
+
+---
+
+# [Sprint 19]
+
+**Status:** Complete (ADR creation only — no repository reconciliation, no governance-tracking-document updates, no ADR-0003 modification; no Rust source touched)
+
+## Added
+
+- **ADR-0011 (`AssessmentReport` Ownership Correction)** — `docs/adrs/0011-assessmentreport-ownership-correction.md`, Accepted. Supersedes ADR-0003 solely with respect to its `Assessment Report` example: `Assessment Report` is not an Assessment-owned entity, produced instead by the platform's Reporting subsystem from Assessment's already-public state. ADR-0003's aggregate-root decision and its other five owned-entity examples are unaffected and unmodified.
+
+## Deferred (Governance-Pending)
+
+- Repository reconciliation (the ADR index, `GOVERNANCE.md`'s GOV-015/GOV-002 cross-references, and this Changelog's own entries) was explicitly left for a separately authorized Sprint.
+- The two living handoff documents (`PROJECT_HANDOFF_v1.1.md`, `CHIEF_ARCHITECT_HANDOFF_v1.1.md`) remain unaffected by this Sprint.
+- GOV-001, GOV-008, GOV-013, and GOV-014 remain open; none were addressed this Sprint.
+
+## Released
+
+- Documented in `docs/adrs/0011-assessmentreport-ownership-correction.md` and `docs/engineering/ENGINEERING_LOG.md`.

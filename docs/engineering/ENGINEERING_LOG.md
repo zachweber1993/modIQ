@@ -1482,6 +1482,68 @@ A third: `PROPOSAL_GOV-015.md`'s own claim that "in-place amendment" was precede
 
 ---
 
+## 2026-07-24
+
+### ADR-0011 Proposal Preparation — Sprint 18
+
+Status:
+Completed (Proposal only — no ADR created, no ADR-0003 modification, no repository reconciliation; no Rust source touched)
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- docs/engineering/PROPOSAL_ADR-0011.md (new)
+
+Notes:
+Following GOV-015's own recommended follow-up (Sprint 17), the Chief Architect authorized preparation of a proposal for the superseding ADR. `PROPOSAL_ADR-0011.md` was drafted per the project's two-step drafting discipline, staging the full proposed ADR-0011 text for review rather than creating the ADR file directly. Initial review, presented as an implementation-report summary of the proposal, was found insufficient for independent judgment — a description of a document does not let a reviewer evaluate its wording, fidelity to GOV-015, scope, historical accuracy, or architectural soundness. The proposal was instead presented verbatim and reviewed directly.
+
+**Revisions requested and applied:** replace implementation-level detail (concrete methods, fields, file paths) with architecture-level language in both the proposal's Background and the draft ADR text, on the basis that GOV-015 remains the authoritative evidence record and is not reproduced in the proposal; condense the historical narrative accordingly; remove repository-relative framing (e.g., claims about being "the first ADR... to supersede...") from the draft ADR text so it remains accurate regardless of future repository evolution; remove forward-looking repository-reconciliation guidance from the draft ADR's own Consequences section, leaving that guidance only in the proposal's own "Recommended Workflow" section, outside the draft ADR text itself.
+
+**Approved, with no further revision, following the above.** No architectural decision, scope, or conclusion was changed by the revision — only presentation and framing.
+
+---
+
+### ADR-0011 Creation — Sprint 19
+
+Status:
+Completed (ADR creation only — no repository reconciliation, no governance-tracking-document updates, no ADR-0003 modification; no Rust source touched)
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- docs/adrs/0011-assessmentreport-ownership-correction.md (new)
+
+Notes:
+Following Chief Architect approval of `PROPOSAL_ADR-0011.md`, **ADR-0011 (`AssessmentReport` Ownership Correction)** was created as an Accepted document, using the approved proposal's draft text, with Status changed from "Proposed" to "Accepted" and a Date field set (2026-07-24). ADR-0011 supersedes ADR-0003 solely with respect to its `Assessment Report` example; ADR-0003 itself was not modified, per `docs/adrs/README.md`'s policy against modifying Accepted ADRs.
+
+Per explicit Chief Architect scope, `docs/adrs/README.md`'s index, `GOVERNANCE.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, and the two living handoff documents were **not** touched this Sprint — repository reconciliation was left for a separately authorized Sprint.
+
+---
+
+### ADR-0011 Repository Reconciliation, Package A — Sprint 21
+
+Status:
+Completed (governance-record and tracking-document reconciliation only — no Accepted ADR modified beyond ADR-0011's addition to the ADR index; living handoff documents explicitly deferred; no Rust source touched)
+
+Affected Crates:
+- (none)
+
+Affected Documents:
+- docs/adrs/README.md (ADR-0011 added to the Current ADRs index)
+- docs/engineering/GOVERNANCE.md (GOV-015 entry: status note recording that ADR-0011 now exists; GOV-002 entry: cross-reference noting its `AssessmentReport` finding was subsequently addressed via GOV-015/ADR-0011)
+- docs/governance/CHANGELOG.md (Sprint 18 and Sprint 19 entries added)
+- docs/governance/PROJECT_STATUS.md (Governance Status narrative extended through Sprint 19)
+- docs/engineering/ENGINEERING_LOG.md (this entry, and the two preceding it)
+
+Notes:
+A Repository Reconciliation Plan (Sprint 20, planning only, no repository modification) identified every document implicated by ADR-0011's acceptance and classified each by the minimum change required. The Chief Architect split the plan into two independent work packages: **Package A** — changes directly caused by ADR-0011's acceptance (the ADR index, the two `GOVERNANCE.md` cross-references, and the historical tracking documents: `ENGINEERING_LOG.md`, `CHANGELOG.md`, `PROJECT_STATUS.md`) — and **Package B** — the two living handoff documents (`PROJECT_HANDOFF_v1.1.md`, `CHIEF_ARCHITECT_HANDOFF_v1.1.md`), deferred to their own future Documentation Synchronization Sprint, since their staleness predates ADR-0011 and extends well beyond it; folding their update into this Sprint would let ADR-0011 become the justification for a partial, incremental fix to a broader problem that deserves holistic review instead.
+
+**Only Package A was authorized and performed this Sprint.** No architectural decision was reopened or reinterpreted: GOV-015 was not reopened, and neither ADR-0003 nor ADR-0011 was modified beyond the index entry. `PROJECT_HANDOFF_v1.1.md` and `CHIEF_ARCHITECT_HANDOFF_v1.1.md` remain untouched, exactly as scoped.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
