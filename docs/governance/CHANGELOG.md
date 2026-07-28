@@ -892,3 +892,24 @@ The Documentation Release 1.0 Final Review concluded with:
 - No Product Design artifact was modified; no Product Design concept was changed or redefined.
 - Synchronization applied only the one authorized editorial change (heading rename) plus the removal of a conversational process note from the draft (an in-progress "not yet synchronized" status line that would have been inaccurate once the file existed in the repository) — no other wording was altered.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Interaction Design Phase — Session 3]
+
+**Status:** Complete (Finding Presentation; approved without revision; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/interaction-design/FINDING_PRESENTATION.md` — the behavioral semantics of the Finding as the product's primary interaction object: first encounter, understanding at a glance, progressive exploration (Recognition → Summary → Understanding → Recommendation → Evidence, deliberately preserving The Finding's already-resolved Recommendation-before-Evidence ordering rather than adopting this session's own differently-ordered example language), relationship to Evidence and Recommendations, attention bounded by declared Severity, trust, revisiting, and mental navigation across multiple Findings without introducing a navigation system. Approved exactly as drafted, with no substantive revision requested.
+
+## Changed
+
+- `docs/interaction-design/README.md` — added Session 3 to the Reading Order; updated the Version 1 Interaction Design Program table (Session 3 Approved, Session 4 Next); updated Status.
+- `docs/governance/PROJECT_STATUS.md` — updated the Product & Interaction Design Track section to reflect Session 3's approval and Session 4 as next.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- Synchronization removed the same kind of conversational process note this file's Session 2 entry already describes (a closing line confirming the document had not yet been synchronized) — an accuracy correction, not a content edit, consistent with prior sessions' synchronization notes.
+- Changes are prepared in the working tree only; no commit was made.
