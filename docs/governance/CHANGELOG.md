@@ -913,3 +913,25 @@ The Documentation Release 1.0 Final Review concluded with:
 - No Product Design artifact was modified; no Product Design concept was changed or redefined.
 - Synchronization removed the same kind of conversational process note this file's Session 2 entry already describes (a closing line confirming the document had not yet been synchronized) — an accuracy correction, not a content edit, consistent with prior sessions' synchronization notes.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Interaction Design Phase — Session 4]
+
+**Status:** Complete (Evidence Exploration; approved without revision; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/interaction-design/EVIDENCE_EXPLORATION.md` — the interaction experience of Evidence as a supporting, invited object: choosing to explore (motivation-agnostic, single existing expansion action), first encounter (oriented to the Finding throughout, nothing left behind), progressive understanding (Label → Source → Explanation → Content), relationship to the Finding (a distinct "showing its work" metaphor, deliberately not reusing Recommendation's "continuing to speak" framing), relationship to Recommendations (strengthens confidence, never a prerequisite to meaning), trust, attention/cognitive load, leaving (no designed exit, because no designed destination), and revisiting (Evidence inherits currency from its Finding rather than carrying its own "updated" marker). Approved exactly as drafted, with no substantive revision requested.
+
+## Changed
+
+- `docs/interaction-design/README.md` — added Session 4 to the Reading Order; updated the Version 1 Interaction Design Program table (Session 4 Approved, Session 5 Next); updated Status.
+- `docs/governance/PROJECT_STATUS.md` — updated the Product & Interaction Design Track section to reflect Session 4's approval and Session 5 as next.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No previously approved Interaction Design artifact (Sessions 1–3) was modified.
+- Synchronization removed the same kind of conversational process note prior sessions' entries already describe (a closing line confirming the document had not yet been synchronized) — an accuracy correction, not a content edit.
+- Changes are prepared in the working tree only; no commit was made.

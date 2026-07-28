@@ -15,6 +15,7 @@ Interaction Design is authorized by `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md
 1. `ASSESSMENT_INTAKE_AND_UPLOAD.md` — the empty workspace, upload interaction, transition into Assessing, immediate feedback, and error recovery. Approved.
 2. `ASSESSING_AND_PROGRESSIVE_DISCOVERY.md` — beginning assessment, progressive discovery, living assessment, user attention, trust during progress, interruption & recovery, and the transition into a completed Assessment. Approved.
 3. `FINDING_PRESENTATION.md` — the behavioral semantics of the Finding as the product's primary interaction object: first encounter, at-a-glance understanding, progressive exploration, relationship to Evidence and Recommendations, attention, trust, revisiting, and coexistence with other Findings. Approved.
+4. `EVIDENCE_EXPLORATION.md` — the interaction experience of Evidence as a supporting, invited object: choosing to explore, first encounter, progressive understanding, relationship to the Finding and to Recommendations, trust, attention, leaving, and revisiting. Approved.
 
 ---
 
@@ -27,8 +28,8 @@ Interaction Design proceeds as a coherent program of chapters answering "how is 
 | 1 | Assessment Intake & Upload | Approved |
 | 2 | Assessing & Progressive Discovery | Approved |
 | 3 | Finding Presentation | Approved |
-| 4 | Evidence Exploration | Next |
-| 5 | Assessment Report Experience | Planned |
+| 4 | Evidence Exploration | Approved |
+| 5 | Assessment Report Experience | Next |
 | 6 | Navigation & Workspace Behavior | Planned |
 | 7 | Interaction Design Closeout | Planned |
 
@@ -36,7 +37,7 @@ Interaction Design proceeds as a coherent program of chapters answering "how is 
 
 ## Status
 
-Sessions 1, 2, and 3 are approved. Session 4 (Evidence Exploration) is next; Sessions 5–7 are planned but not yet scoped in detail.
+Sessions 1–4 are approved. Session 5 (Assessment Report Experience) is next; Sessions 6–7 are planned but not yet scoped in detail.
 
 ---
 
