@@ -13,6 +13,18 @@
 
 ---
 
+# Product & Interaction Design Track
+
+Independent of the Sprint/Engineering Release lineage this document otherwise tracks, a product-track body of work has defined the Version 1 assessment experience conceptually and behaviorally, ahead of any implementation. This track carries no Documentation Authority ranking and does not affect Sprint numbering, the Governance Register, or any ADR.
+
+- **Product Definition** — closed. `docs/engineering/PRODUCT_DEFINITION_CLOSEOUT.md`.
+- **Product Design** — closed. Five artifacts approved in principle: Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report — `docs/product-design/`. Phase reflection and named conceptual gaps (Recommendation glossary definition, Multi-Subject Assessment, Knowledge Base integration, Community Contributions) recorded in `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md`.
+- **Interaction Design** — active, proceeding as a structured seven-session program (chapters of one coherent specification, mirroring the Product Design artifacts). Session 1 (Assessment Intake & Upload) and Session 2 (Assessing & Progressive Discovery) approved — `docs/interaction-design/`. Session 3 (Finding Presentation) is next; Sessions 4–7 (Evidence Exploration, Assessment Report Experience, Navigation & Workspace Behavior, Interaction Design Closeout) are planned. See `docs/interaction-design/README.md` for the full program table.
+
+This track and the Sprint-based engineering track below are independent: no Sprint has yet been scoped against these Product/Interaction Design artifacts, and no engineering decision recorded below has been made in reference to them.
+
+---
+
 # Current Milestone
 
 ## Sprint 1 — Complete

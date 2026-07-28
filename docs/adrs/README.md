@@ -108,3 +108,9 @@ If an architectural decision changes, a new ADR should be created that supersede
 When in doubt:
 
 > Architecture evolves through new decisions, not by rewriting history.
+
+---
+
+## See Also
+
+- `docs/DOCUMENTATION_MAP.md` — how ADRs relate to the rest of the repository's documentation.

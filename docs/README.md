@@ -2,6 +2,8 @@
 
 Welcome to the official design specification for modIQ.
 
+> For an architectural overview of how this Reading Order relates to the rest of the repository's documentation (engineering, governance, ADRs, and the Product/Interaction Design track), see [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md).
+
 ## Reading Order
 
 1. Vision.md
@@ -57,3 +59,12 @@ The review concluded with:
 - Transition from documentation to implementation
 
 Documentation Release 2.0 (governance and terminology reconciliation) and Documentation Release 2.1 (Evidence Collection subsystem boundary — new specification `EvidenceCollection.md`) have since been completed; Documentation Release 2.1 remains current — none of Sprints 8 through 13 required a Documentation Release amendment. The current Engineering Release is **1.3** (Sprint 13: Storage Architectural Activation — `modiq-storage` gave the Storage subsystem its first real content, following an evidence-acquisition investigation (INV-002), a governance reconciliation restoring Sprint 8's own "Architectural Activation" precedent alongside Sprint 12's Capability Identity procedure, Architecture Evaluation, Architectural Resolution, Implementation Authorization, and a three-phase Sprint Plan wiring Storage through `modiq-cli` and `apps/sandbox`), produced at its own Repository Closeout. Engineering Releases 0.6 (Sprint 6: CLI wiring, `modiq-report` scaffold retirement) and 0.7 (Sprint 7: Multi-Source Evidence Collection) were both produced retroactively, after a two-Sprint documentation gap (`docs/engineering/HISTORICAL_RELEASE_COMPLETION_REPORT.md`); every Sprint since Sprint 8 has produced its own release at Sprint close, not repeating that gap. See `docs/engineering/ENGINEERING_RELEASE_1.3.md` and `docs/governance/PROJECT_STATUS.md` for current status. The engineering methodology itself is designated Version 1.0, unchanged since Sprint 7 — see `docs/engineering/PROJECT_HANDOFF_v1.0.md`, Section 5.
+
+## Product & Interaction Design Track
+
+Separately from the engineering specification and Documentation Release lineage above, a product-track body of work defines the Version 1 assessment *experience*, following `docs/constitutional/ProductSpecification.md` but preceding any UI or implementation decision. This track is not part of the Reading Order above and carries no Documentation Authority ranking — it is product-track continuity material, not an engineering, architecture, or governance specification.
+
+- `docs/engineering/PRODUCT_DEFINITION_CLOSEOUT.md` — closes Product Definition, opens Product Design.
+- `docs/product-design/` — the five approved Version 1 Product Design artifacts (Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report).
+- `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md` — closes Product Design, reflects on the body of work as a whole, opens Interaction Design.
+- `docs/interaction-design/` — Interaction Design artifacts specifying user-facing behavior around the Product Design model. Currently: Assessment Intake & Upload (approved).

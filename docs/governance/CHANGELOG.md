@@ -769,3 +769,126 @@ The Documentation Release 1.0 Final Review concluded with:
 ## Released
 
 - Documented in `docs/adrs/0011-assessmentreport-ownership-correction.md` and `docs/engineering/ENGINEERING_LOG.md`.
+
+---
+
+# [Product Design Phase]
+
+**Status:** Complete (six sessions; independent of, and not sequenced against, the Sprint/Engineering Release lineage above)
+
+## Added
+
+- `docs/product-design/WORKSPACE_EVOLUTION.md` — the workspace state model (Intake, Assessing, Reviewing), progressive disclosure, the Provisional/Final Finding model, mid-assessment uploads, and the Assessment Overview. Approved in principle.
+- `docs/product-design/THE_FINDING.md` — the Finding as a product object: purpose, anatomy, information hierarchy, progressive disclosure, multi-Finding presentation, and its relationships to Recommendations and Evidence. Approved in principle.
+- `docs/product-design/THE_ASSESSMENT_EXPERIENCE.md` — the complete Version 1 Assessment journey connecting the Workspace and Finding product objects. Approved in principle.
+- `docs/product-design/EVIDENCE.md` — the Evidence experience: anatomy, disclosure, and its relationship to Findings and Recommendations. Approved in principle.
+- `docs/product-design/THE_ASSESSMENT_REPORT.md` — the Assessment Report as the Assessment itself, viewed in its Reviewing state, rather than a separately generated artifact. Approved in principle.
+- `docs/product-design/README.md` — reading order and authority pointer for the Product Design collection.
+- `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md` — closes the Product Design phase, reflects on the five artifacts as a coherent body of work (recurring product patterns, design language, interaction philosophy, information architecture, and trust model), and names four conceptual gaps carried forward ungoverned: Recommendation glossary definition, Multi-Subject Assessment, Knowledge Base integration, and Community Contributions.
+
+## Notes
+
+- This phase and its artifacts carry no Documentation Authority ranking and do not modify `Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, or `Architecture.md`.
+- No Rust source, crate, test, ADR, or Governance Register item was touched by this phase.
+
+---
+
+# [Interaction Design Phase — Session 1]
+
+**Status:** Complete (Assessment Intake & Upload; Chief Architect approved)
+
+## Added
+
+- `docs/interaction-design/ASSESSMENT_INTAKE_AND_UPLOAD.md` — behavior of the Intake workspace state: the empty workspace, upload interaction (selection, drag, multiple files, replacement, optional supporting material, unsupported files, duplicates), transition into Assessing, immediate feedback, error and recovery, progressive understanding, accessibility/interaction principles, and emotional experience. Names, without introducing new mechanics, a behavioral trust sequence (submission → recognition → Assessment → Finding → Evidence) distinct from and layered beneath the Product Design trust chain (Evidence → Finding → Recommendation). Approved.
+- `docs/interaction-design/README.md` — reading order and authority pointer for the Interaction Design collection.
+
+## Notes
+
+- This document treats every Product Design artifact as a frozen constraint and introduces no product concept, implementation detail, runtime behavior, or data model decision.
+- Further Interaction Design sessions (e.g., the Assessing/streaming experience, Finding/Evidence interaction, Recommendation interaction) are not yet scoped.
+
+---
+
+# [Repository Synchronization]
+
+**Status:** Complete (working tree only — not committed)
+
+## Added
+
+- `docs/product-design/` and `docs/interaction-design/` directories, each with a `README.md` index, created to hold the Product Design and Interaction Design tracks respectively — previously approved only in conversation history, not represented in the repository.
+
+## Changed
+
+- `docs/README.md` — added a "Product & Interaction Design Track" section pointing to the product-track continuity documents and the new `docs/product-design/`/`docs/interaction-design/` collections, without altering the existing Reading Order or Documentation Release status.
+- `docs/governance/PROJECT_STATUS.md` — added a "Product & Interaction Design Track" section recording the same state, explicitly noting this track is independent of, and not yet sequenced against, the Sprint/Engineering Release lineage.
+- `docs/governance/CHANGELOG.md` (this file) — added the two phase entries above.
+
+## Notes
+
+- No Rust source, crate, test, ADR, Governance Register item, or frozen constitutional/architecture specification was touched.
+- Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Documentation Architecture Refinement]
+
+**Status:** Complete (working tree only — not committed)
+
+## Added
+
+- `docs/DOCUMENTATION_MAP.md` — an architectural overview of the repository's documentation: the two lineages (Engineering Specification and Product Track), a documentation-groups table, a "governance means two things" naming note, a quick-orientation lookup table, and a named-but-deferred Known Navigation Gaps list (no index for `docs/engineering/`'s ~85 documents; Engineering Release records split across `docs/releases/` and `docs/engineering/`; `docs/governance/ROADMAP.md` stale since 2026-07-16).
+- `docs/governance/README.md` — a short index for the project-tracking/process folder, distinguishing it from `docs/engineering/GOVERNANCE.md`'s architectural governance.
+
+## Changed
+
+- `docs/README.md` — added a pointer to `DOCUMENTATION_MAP.md`.
+- `docs/product-design/README.md`, `docs/interaction-design/README.md`, `docs/adrs/README.md` — added "See Also" cross-references. No content rewritten.
+
+## Notes
+
+- No approved artifact was redesigned; no product concept, behavior, or specification content changed.
+- `docs/governance/ROADMAP.md` was found significantly stale and is named in `DOCUMENTATION_MAP.md` rather than corrected here, as reconciling 20 Sprints of drift is outside this review's conservative scope.
+- Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Governance Refinement — Repository Synchronization Policy]
+
+**Status:** Complete (working tree only — not committed)
+
+## Added
+
+- `docs/governance/RepositorySynchronizationPolicy.md` — formalizes the workflow established across the Product Design and Interaction Design sessions: conversation is a drafting environment; Product Owner approval establishes acceptance; approved artifacts are synchronized into the repository working tree promptly; the repository is the canonical source of truth; synchronization does not imply commit or push; synchronization is transcription, not design. Introduces the **Repository Synchronization** / **Repository Evolution** classification — the former requires no additional approval beyond the artifact's own; the latter (new directory hierarchies, documentation architecture changes, naming convention changes, major reorganization, new governance mechanisms) requires explicit Product Owner approval before implementation, not merely before commit. Includes an explicit relationship note distinguishing this classification from `GOVERNANCE.md`'s existing Level 1–4 Change Categories (a different axis: repository/documentation placement versus specification/architecture content) and from `DocumentationRelease.md`'s Documentation Release lifecycle (which this policy does not extend to the Product Track). Also includes a Retroactive Note: applying this classification to the immediately preceding two sessions, creating `docs/product-design/`, `docs/interaction-design/`, and `docs/DOCUMENTATION_MAP.md` would today register as Repository Evolution, satisfied retroactively by that session's own explicit "Repository Modification Responsibilities" grant rather than in violation of it.
+
+## Changed
+
+- `docs/governance/README.md` — added an index entry for the new policy.
+- `docs/DOCUMENTATION_MAP.md` — added the policy to the Governance (process) group description and the Quick Orientation table.
+
+## Notes
+
+- `docs/engineering/GOVERNANCE.md` and `docs/governance/DocumentationRelease.md` were deliberately left unmodified — this policy governs a distinct concern (repository entry, across both lineages) that neither document currently addresses, rather than a revision to either.
+- `docs/governance/PROJECT_STATUS.md` was deliberately not touched this session, to keep this a small, targeted governance addition rather than another full synchronization pass.
+- No approved specification, product design artifact, or architectural decision was modified.
+- Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Interaction Design Phase — Session 2]
+
+**Status:** Complete (Assessing & Progressive Discovery; Chief Architect approved; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/interaction-design/ASSESSING_AND_PROGRESSIVE_DISCOVERY.md` — behavior of the Assessing state: beginning assessment, progressive discovery (reconciling fixed Category/Severity presentation order against incremental Finding arrival), living assessment, user attention, trust during progress (continuing the behavioral trust sequence named in Session 1), interruption & recovery, and the transition into a completed Assessment. Names two deliberate non-decisions rather than inventing product behavior for them: cancellation of an in-progress Assessment, and Assessment Subject replacement mid-Assessing. Approved without revision; one editorial rename applied during synchronization (final section retitled "Chief Architect Reflection").
+
+## Changed
+
+- `docs/interaction-design/README.md` — added Session 2 to the Reading Order; added a "Version 1 Interaction Design Program" table (the full seven-session plan); updated Status.
+- `docs/governance/PROJECT_STATUS.md` — updated the Product & Interaction Design Track section to reflect the seven-session program and Session 2's approval.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- Synchronization applied only the one authorized editorial change (heading rename) plus the removal of a conversational process note from the draft (an in-progress "not yet synchronized" status line that would have been inaccurate once the file existed in the repository) — no other wording was altered.
+- Changes are prepared in the working tree only; no commit was made.
