@@ -1082,3 +1082,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation technology, API, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
 - The document was drafted, reviewed, and revised once before approval: Section 4 ("Consequences") was softened at explicit review request, from naming specific candidate governance artifacts (an ADR analogous to ADR-0009; a Governance Register item analogous to GOV-009/GOV-010) to a general acknowledgment that governance work may eventually be warranted, without characterizing its form — consistent with this Resolution's own purpose being to adopt architecture, not to recommend future governance work. No other section was altered by that revision.
 - Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 1 Architecture Evaluation: Progressive Execution Observability]
+
+**Status:** Complete (Architecture Evaluation only; drafted and revised across one round before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/engineering/INITIATIVE_1_ARCHITECTURE_EVALUATION.md` — the second Architecture Evaluation conducted under the Engineering Alignment Program, treating Initiative 5's adopted Architectural Resolution as fixed, unreopened precedent throughout. Finds: current architecture does not support exposing assessment progress before completion, with the barrier traced precisely to `AssessmentService::execute`'s single-synchronous-call control flow rather than to any Runtime invariant — INV-002/003/004/010–012 govern mutation only, never observation (Question 1). Repository evidence points toward exposing the growing, not-yet-final Finding set at Evidence-Collector and per-Rule-dispatch boundaries, not a percentage- or time-based signal, subject to preserving GOV-012's already-adopted fixed dispatch order (Question 2). At least one observable execution-phase signal is architecturally required, confirming rather than merely repeating Initiative 5's own Decision 4b working assumption, though its exact granularity remains an open question (Question 3). Findings today are immutable once added and produced in a single atomic batch, with no incremental or provisional concept expressed anywhere — narrowing the real architectural gap to observing an accumulating set rather than inventing per-Finding incremental finalization, since Interaction Design itself requires Findings to finalize "together, as a set" (Question 4). A genuine tension exists between the current one-shot Report generation model and Interaction Design's progressive-Overview requirement; the tension is identified and found to require future architectural resolution, without comparing or selecting among candidate resolution models (Question 5). Interaction Design's own requirements for observable engine progress are catalogued independent of any consumer implementation (Question 6). Questions belonging to Initiative 2 (reentrant lifecycle, post-completion Report modification), Initiative 3 (field-level state representation), and Initiative 4 (Confidence, unaffected throughout) are explicitly named and left unresolved. A closing Evaluation Boundaries section states which questions were answered, which are left to later initiatives, and which adopted Initiative 5 decisions were relied upon without reopening.
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 1's Architecture Evaluation outcome.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No Interaction Design artifact was modified.
+- No Initiative 5 document (`INITIATIVE_5_ARCHITECTURE_EVALUATION.md`, `INITIATIVE_5_ARCHITECTURAL_RESOLUTION.md`) was modified — both were consulted only as adopted precedent, per explicit instruction not to reopen or re-evaluate any question Initiative 5 already adopted.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified.
+- No crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation technology, API, transport, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
+- No Architectural Resolution was performed — this entry records an Architecture Evaluation only, per the document's own Status field.
+- The document was drafted, reviewed, and revised once before approval: Question 5 ("Report Evolution") was revised at explicit review request to identify the tension between the current one-shot generation model and Interaction Design's progressive-Overview requirement, and to conclude that the tension requires future resolution, with the prior draft's description and comparison of candidate report-evolution models (immutable/append-only/living/regenerated) removed. No other section was altered by that revision.
+- Changes are prepared in the working tree only; no commit was made, per explicit instruction.
