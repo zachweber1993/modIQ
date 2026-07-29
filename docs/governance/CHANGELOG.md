@@ -1220,3 +1220,27 @@ The Documentation Release 1.0 Final Review concluded with:
 - No governed Platform Architecture topic document (`IdentityAndAccess.md`, and the rest) was drafted.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified.
 - Changes are prepared in the working tree only; no commit was made.
+
+# [Engineering — Initiative 3 Architecture Evaluation: Domain Model Anatomy Extension]
+
+**Status:** Architecture Evaluation complete. Approved by Chief Architect disposition. No Architectural Resolution performed.
+
+**Affected Crates:** None. No source code was modified.
+
+**Affected Documents:**
+
+- Added: `docs/engineering/INITIATIVE_3_ARCHITECTURE_EVALUATION.md`.
+- Updated: `docs/governance/PROJECT_STATUS.md` — appended an Initiative 3 Architecture Evaluation summary paragraph to the Engineering Alignment Program section.
+
+**Notes:**
+
+- Executed under the execution structure (3A independent items, 3B Item 10 dependency determination, 3C deferred watch list) approved prior to this evaluation.
+- Evaluated all nine 3A field-shape items against direct repository evidence, including a first-time read of `Glossary.md`, `KnowledgeModel.md`, and `EvidenceCollection.md`'s Collector Contract for this specific scope.
+- Item 4 (Evidence anatomy) surfaced an **Architectural Observation** — Evidence's Explanation field conflates field anatomy, subsystem responsibility, construction timing, and entity ownership, the last two of which exceed ordinary field-shape evaluation and are not resolved here.
+- Item 6a (Report Identity) was found to connect to GOV-002's own prior "require no action" disposition on `AssessmentSubject`'s zero-field state; a concrete requirement for that content, absent when GOV-002 was evaluated, is named as a candidate for reconsideration, not reopened here.
+- 3B's own narrow determination finds Item 10 (Provisional/Final) Independent of Initiative 2's unresolved Question 1, grounded in ADR-0007's own scope boundary and the confirmed absence of any mutation method on `Finding`, without reasoning about either candidate lifecycle model.
+- 3C's two items (Report currency, the Updated marker) remain deferred pending Initiative 2's Governance Reconciliation; not evaluated here.
+- Initiative 2's Question 1 disposition (Requires Governance Reconciliation) is treated as fixed precedent and is not reopened.
+- `docs/platform/PlatformSpecification.md` (Platform Architecture lineage, committed separately as `1191a4b`) is noted in the Evaluation's own repository-state section as outside Initiative 3's scope, per its own stated Architectural Boundary; not treated as evidence.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No implementation, API, or field representation was adopted.
+- Changes are prepared in the working tree only; no commit was made.
