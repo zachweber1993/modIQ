@@ -17,6 +17,7 @@ Interaction Design is authorized by `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md
 3. `FINDING_PRESENTATION.md` — the behavioral semantics of the Finding as the product's primary interaction object: first encounter, at-a-glance understanding, progressive exploration, relationship to Evidence and Recommendations, attention, trust, revisiting, and coexistence with other Findings. Approved.
 4. `EVIDENCE_EXPLORATION.md` — the interaction experience of Evidence as a supporting, invited object: choosing to explore, first encounter, progressive understanding, relationship to the Finding and to Recommendations, trust, attention, leaving, and revisiting. Approved.
 5. `ASSESSMENT_REPORT_EXPERIENCE.md` — the interaction experience of a completed Assessment Report as a coherent whole: first encounter, recognition, orientation across time, experiencing the whole, relationships between parts, supporting decisions, returning, assessment-level trust, and completion. Approved.
+6. `NAVIGATION_AND_WORKSPACE_BEHAVIOR.md` — the behavioral semantics of movement throughout the workspace: continuity, orientation, scope (not identity), focus, returning, reversibility, stability, trust, and completion. Approved.
 
 ---
 
@@ -31,14 +32,14 @@ Interaction Design proceeds as a coherent program of chapters answering "how is 
 | 3 | Finding Presentation | Approved |
 | 4 | Evidence Exploration | Approved |
 | 5 | Assessment Report Experience | Approved |
-| 6 | Navigation & Workspace Behavior | Next |
-| 7 | Interaction Design Closeout | Planned |
+| 6 | Navigation & Workspace Behavior | Approved |
+| 7 | Interaction Design Closeout | Next |
 
 ---
 
 ## Status
 
-Sessions 1–5 are approved. Session 6 (Navigation & Workspace Behavior) is next; Session 7 is planned but not yet scoped in detail.
+Sessions 1–6 are approved. Session 7 (Interaction Design Closeout) is next.
 
 ---
 

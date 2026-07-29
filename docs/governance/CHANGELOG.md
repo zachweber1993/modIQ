@@ -957,3 +957,26 @@ The Documentation Release 1.0 Final Review concluded with:
 - No previously approved Interaction Design artifact (Sessions 1–4) was modified.
 - Synchronization removed the same kind of conversational process note prior sessions' entries already describe (a closing line confirming the document had not yet been synchronized) — an accuracy correction, not a content edit.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Interaction Design Phase — Session 6]
+
+**Status:** Complete (Navigation & Workspace Behavior; approved without revision; synchronized per `RepositorySynchronizationPolicy.md`; committed and pushed)
+
+## Added
+
+- `docs/interaction-design/NAVIGATION_AND_WORKSPACE_BEHAVIOR.md` — the behavioral semantics of movement throughout the workspace, synthesizing rather than introducing new mechanics: workspace continuity as one law applied uniformly across all three states and all four scopes (Overview/Finding/Recommendation/Evidence); orientation as cumulative, never re-derived; movement as changing scope rather than identity (extending The Assessment Report's "not a separate artifact" claim down through Recommendation and Evidence); focus as single-step, incremental depth change; returning as symmetric reversal of the same mechanism used to go deeper, not a separate behavior; reversibility as a direct consequence of orientation rather than an independent guarantee; stability of terminology/ordering/relationships/expectations as the actual mechanism underneath continuity; predictable movement itself as a trust mechanism; and completion recognized as the third instance of a cross-document pattern (no product-announced completion of Assessing, of reading a Report, or now of movement itself). Approved exactly as drafted, with no substantive revision requested.
+
+## Changed
+
+- `docs/interaction-design/README.md` — added Session 6 to the Reading Order; updated the Version 1 Interaction Design Program table (Session 6 Approved, Session 7 Next); updated Status.
+- `docs/governance/PROJECT_STATUS.md` — updated the Product & Interaction Design Track section to reflect Session 6's approval and Session 7 as next.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No previously approved Interaction Design artifact (Sessions 1–5) was modified.
+- No implementation, interface component, or navigation mechanism was introduced — this document is explicitly a behavioral synthesis of already-established rules, named as such in its own Chief Architect Reflection.
+- Synchronization removed the same kind of conversational process note prior sessions' entries already describe (a closing line confirming the document had not yet been synchronized) — an accuracy correction, not a content edit.
+- This session's changes were committed and pushed, per explicit Product Owner instruction — the first Interaction Design session to be committed and pushed within this conversation rather than left for separate action.
