@@ -1137,3 +1137,59 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation mechanism, API, transport, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
 - The document was drafted, reviewed, and revised once before approval: D-1 and D-2 were revised at explicit review request to state simply that each remains intentionally unresolved, removing references to future design work, Implementation Authorization, or any future governance artifact; Section 8 ("Readiness") was simplified to conclude Initiative 1 is architecturally resolved except for D-1 and D-2, without referring to future Implementation Authorization. No other section was altered by that revision.
 - Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 2 Architecture Evaluation: Reentrant Assessment Lifecycle]
+
+**Status:** Complete (Architecture Evaluation only; drafted and revised across one round before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/engineering/INITIATIVE_2_ARCHITECTURE_EVALUATION.md` — the third Architecture Evaluation conducted under the Engineering Alignment Program, treating both Initiative 5's and Initiative 1's adopted Architectural Resolutions as fixed, unreopened precedent throughout. Finds: `AssessmentStatus::Completed` is unconditionally terminal, checked first on every mutation path, with no supplementation exception anywhere in the implementation (Question 1). Two independent barriers block reentrancy — `INV-012` in-memory, and a separate, independently-evidenced cross-process barrier, since Storage's own read path never reconstructs a live `Assessment` or `AssessmentReport` from persisted data, by explicit design (Question 2). `DataModel.md`'s Immutability principle is genuinely ambiguous as applied to same-Assessment supplementation — its own illustrative scope (engine/rule drift) is narrower than its general wording, and neither reading has ever been checked against Workspace Evolution's own requirement (Question 3). The Updated-marker mechanism is confirmed as a field-level question for Initiative 3, dependent on Question 1's own resolution as a precondition (Question 4). A completed, historical Assessment Report cannot currently reflect new material at any layer the evidence covers — Runtime, Reporting, or Storage — as a direct, unavoidable consequence of Question 1's finding, completing the second half of the Report-evolution question Initiative 1 explicitly left to this initiative (Question 5). Initiative 2 is identified as a plausible candidate forcing function for GOV-001's own still-open question, without resolving GOV-001 itself (Question 6). Initiative Boundaries and a closing Evaluation Boundaries section explicitly distinguish this initiative's own central question (whether INV-012's terminality should itself evolve) from Initiative 1's AC-1 (which found no Runtime invariant needed to change for its own, different purpose), and name what remains for Initiative 3 (field-level representation) and Initiative 4 (unaffected).
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 2's Architecture Evaluation outcome.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No Interaction Design artifact was modified.
+- No Initiative 1 or Initiative 5 document (`INITIATIVE_1_ARCHITECTURE_EVALUATION.md`, `INITIATIVE_1_ARCHITECTURAL_RESOLUTION.md`, `INITIATIVE_5_ARCHITECTURE_EVALUATION.md`, `INITIATIVE_5_ARCHITECTURAL_RESOLUTION.md`) was modified — all four were consulted only as adopted precedent.
+- No Engineering Alignment Program document (`ENGINEERING_ALIGNMENT_PROGRAM.md`, `docs/engineering/README.md`) was modified.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified.
+- No crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation mechanism, API, transport, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
+- No Architectural Resolution was performed — this entry records an Architecture Evaluation only, per the document's own Status field.
+- The document was drafted, reviewed, and revised once before approval: Question 5's Conclusion and the closing Evaluation Boundaries summary were revised at explicit review request — "every layer it touches" narrowed to name the specific layers the evidence covers (Runtime, Reporting, and Storage), and "inventing a reading" replaced with the more neutral "adopting one interpretation over the other" in Question 3's Conclusion. No other section was altered by that revision.
+- Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 2 Architectural Resolution: Reentrant Assessment Lifecycle]
+
+**Status:** Complete (Architectural Resolution; drafted, stress-tested, and revised across four rounds before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/engineering/INITIATIVE_2_ARCHITECTURAL_RESOLUTION.md` — dispositions every question raised by `docs/engineering/INITIATIVE_2_ARCHITECTURE_EVALUATION.md`, and, uniquely among the Alignment Program's Resolutions so far, does not adopt a lifecycle direction for its own central question. Adopted: both barriers to reentrancy are real and independent (Question 2); GOV-001 is unaffected regardless of outcome (Question 6); the Updated-marker mechanism's precondition, without a directional grounding (Question 4); and, decisively, that Product Design's own stated justification for its position ("no new mechanism is needed" for long-absence returns) is not satisfiable under current Runtime and Storage architecture, independent of which direction is eventually chosen — a finding not in the original Evaluation. Question 1 (terminal completion vs. reentrancy) is dispositioned **Requires Governance Reconciliation**, a new disposition this Resolution introduces alongside the four already established by Initiatives 5 and 1, and explicitly distinguished from "Requires Additional Investigation": the evidence-gathering stage is complete — every relevant document has been identified and read — and what remains is an authority decision between two frozen documents making incompatible claims (`DataModel.md`'s Immutability principle versus `THE_ASSESSMENT_REPORT.md` §2's explicit "not a second Report or a new version of one... no new mechanism is needed"), not further reading. An earlier draft's "Assessment Sequence" architecture (preserving `INV-012`, resolving supplementation via a new, related Assessment) is explicitly **not adopted** — reached by reasoning that read `DataModel.md` as decisive and Product Design's language as merely experiential without first checking whether Product Design's own text supported that reading; it did not, once checked, and the finding is withdrawn rather than carried forward. GOV-015 was considered as precedent for this reconciliation and found not structurally equivalent — GOV-015 had a tiebreaker external to both conflicting documents (already-built architecture matching one of them); no equivalent tiebreaker exists here, since neither candidate direction is implemented anywhere in the current codebase. A standalone **Governance Observation** further finds that `GOVERNANCE.md`'s Documentation Authority hierarchy defines no precedence relationship covering the Product & Interaction Design track at all — Product Design and Interaction Design appear in none of its ten ranked tiers — which is part of why Question 1 cannot currently be reconciled by any existing repository mechanism, independent of this specific conflict's own substance.
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 2's Architectural Resolution outcome and its full disposition summary.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined. `THE_ASSESSMENT_REPORT.md` and `DataModel.md` were read and quoted, not altered.
+- No Interaction Design artifact was modified.
+- `docs/engineering/INITIATIVE_2_ARCHITECTURE_EVALUATION.md` was not modified — referenced only, as this Resolution's primary evidence source.
+- No Initiative 1 or Initiative 5 document was modified.
+- No Engineering Alignment Program document (`ENGINEERING_ALIGNMENT_PROGRAM.md`, `docs/engineering/README.md`) was modified.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified — including no amendment to its Documentation Authority section, despite the Governance Observation naming a gap in it; per that observation's own explicit non-scope, no fix is proposed or performed.
+- No crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation mechanism, API, transport, or persistence mechanism was designed. No implementation was begun; no Sprint was scoped.
+- This document went through four rounds of review before approval, more than any prior Alignment Program artifact, each substantively changing the document rather than only its wording: (1) an initial draft reached a decisive lifecycle-direction conclusion; (2) a requested stress-test found `THE_ASSESSMENT_REPORT.md` §2 directly contradicted that conclusion's central premise, and the draft was rewritten to withdraw the decision rather than defend it; (3) "Requires Additional Investigation" was replaced with the new "Requires Governance Reconciliation" disposition, and the GOV-015 comparison was checked for structural equivalence and removed as unsupported rather than kept as loose precedent; (4) a further review identified that the conflict exposes a distinct governance capability gap (Documentation Authority's silence on the Product & Interaction Design track), recorded as its own Governance Observation without proposing a fix; (5) a final editorial pass replaced correctness/blame language ("false," "incorrect," documents "built to accept" or "presupposing" intent) with compatibility and observable-behavior language throughout, changing no disposition, evidence, or conclusion.
+- Changes are prepared in the working tree only; commit and push follow immediately per explicit Product Owner-directed workflow for this cycle.
