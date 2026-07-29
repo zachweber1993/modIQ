@@ -1055,3 +1055,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - No Architectural Resolution was performed — this entry records an Architecture Evaluation only, per the document's own Status field.
 - The document was drafted, reviewed, and revised across two rounds before approval: the initial draft's Section 10 ("Cross-Cutting Classification") was restructured, at explicit review request, into the standalone Governance Observation described above — generalized from an initiative-specific finding into a standing repository-wide gap, given its own header block and internal Observation/Evidence/Not-Resolved-Here/Non-Scope structure, and removed from the Decision 1–6 numbering entirely. This did not alter any Decision's own conclusions, recommendations, or evidence.
 - Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 5 Architectural Resolution: Production Interaction Layer Definition]
+
+**Status:** Complete (Architectural Resolution; drafted and revised across one round before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/engineering/INITIATIVE_5_ARCHITECTURAL_RESOLUTION.md` — dispositions every recommendation from `docs/engineering/INITIATIVE_5_ARCHITECTURE_EVALUATION.md`, treated throughout as fixed, verified evidence rather than reopened. Adopted: the consumer classification (Decision 1); the engine/consumer responsibility split (Decision 2); confirmation that Assessment state ownership is already fixed by INV-006/INV-009 (Decision 3); consumer ownership of navigation, interaction, and presentation state (Decision 4a); consumer ownership of workspace state in principle (Decision 4b, ownership half); and the request/response mechanism baseline (Decision 5a). Deferred, pending Initiative 1's own resolution: workspace state's derivation mechanism (Decision 4b, remainder) and a supplementary notification/poll-trigger mechanism (Decision 5b). Adopted: the finding that `apps/sandbox`, as it exists today, cannot serve as the production interaction layer, with its request/response and getter-based DTO pattern noted as validated precedent, not a technology endorsement (Decision 6). No recommendation was Rejected; none required further investigation. The Governance Observation is addressed separately from the architectural decisions, per instruction: acknowledged as valid and standing, not itself dispositioned, and not made a Governance Register item by this Resolution. Section 4 (Consequences) acknowledges only that the adopted decisions may eventually warrant an ADR, a Governance Register item, or both, under the repository's existing governance process — without proposing, characterizing, or recommending either.
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 5's Architectural Resolution and its full disposition summary.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No Interaction Design artifact was modified.
+- No Engineering Alignment Program document (`ENGINEERING_ALIGNMENT_PROGRAM.md`, `docs/engineering/README.md`) was modified.
+- `docs/engineering/INITIATIVE_5_ARCHITECTURE_EVALUATION.md` was not modified — referenced only, as this Resolution's primary evidence source, per explicit instruction that the Evaluation not be reopened.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified.
+- No crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation technology, API, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
+- The document was drafted, reviewed, and revised once before approval: Section 4 ("Consequences") was softened at explicit review request, from naming specific candidate governance artifacts (an ADR analogous to ADR-0009; a Governance Register item analogous to GOV-009/GOV-010) to a general acknowledgment that governance work may eventually be warranted, without characterizing its form — consistent with this Resolution's own purpose being to adopt architecture, not to recommend future governance work. No other section was altered by that revision.
+- Changes are prepared in the working tree only; no commit was made, per explicit instruction.
