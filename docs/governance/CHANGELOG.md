@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-29 |
+| **Last Updated** | 2026-07-29 (IdentityAndAccess.md approval) |
 
 ---
 
@@ -1220,6 +1220,32 @@ The Documentation Release 1.0 Final Review concluded with:
 - No governed Platform Architecture topic document (`IdentityAndAccess.md`, and the rest) was drafted.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture — IdentityAndAccess.md]
+
+**Status:** Complete (`IdentityAndAccess.md` approved as the first governed specification of the Platform Architecture lineage; drafted and revised across two refinement passes before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/platform/IdentityAndAccess.md` — refines Organization, User, Membership, and API Client, all defined in `PlatformSpecification.md`, without introducing any first-class Platform Architecture concept. States Identity Principles (smallest sufficient concept set; Membership as the sole standing-granting relationship; Role as an attribute of Membership rather than a concept; additional complexity only through demonstrated need and governed amendment). Establishes Access Relationships as Organization-wide rather than Project-scoped. Defines Role as an attribute of Membership with two values (Owner, Member) — stated explicitly as the current minimum vocabulary, not a closed constitutional set; future values amend this document, not `PlatformSpecification.md`. Resolves two of `PlatformSpecification.md`'s four Architectural Decisions Deferred: every Project requires an Organization, with registration automatically establishing one and an Owner Membership for a solo User; and API Client access is Organization-wide, not Role- or Project-scoped, since Membership's mediating role exists specifically to handle a User's potential multi-Organization standing, which an API Client — already directly Organization-owned per `PlatformSpecification.md`'s own Ownership Model — has no analogous need for. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — updated the Platform Architecture Documentation Groups row and the Known Navigation Gap entry to record `IdentityAndAccess.md`'s approval; six governed topic documents remain undrafted.
+- `docs/README.md` — added `IdentityAndAccess.md` to the Platform Architecture Track section.
+- `docs/governance/PROJECT_STATUS.md` — added `IdentityAndAccess.md` to the Platform Architecture Track section, recording its two resolved Architectural Decisions Deferred.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, `PlatformSpecification.md`) was modified.
+- No Product Design, Interaction Design, or Runtime Architecture artifact was modified.
+- No first-class Platform Architecture concept was introduced — Role is refined strictly as an attribute of the already-established Membership concept.
+- No `docs/platform/README.md` was created — flagged as a reasonable next step once more governed topic documents exist, not created preemptively in this pass.
+- No implementation, persistence, credential, or API-contract detail was introduced; `IdentityAndAccess.md`'s own Boundaries section states these are explicitly out of scope.
+- No further governed Platform Architecture topic document (`ProjectsAndUploads.md`, and the rest) was drafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Workflow Standard established alongside this approval.
 
 # [Engineering — Initiative 3 Architecture Evaluation: Domain Model Anatomy Extension]
 

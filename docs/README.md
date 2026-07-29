@@ -74,4 +74,5 @@ Separately from the engineering specification and Documentation Release lineage 
 Separately again from the engineering specification lineage above and the Product & Interaction Design Track above, a third body of work defines the platform-level identity, tenancy, and containment model surrounding the Assessment. This track is not part of the Reading Order above and carries no Documentation Authority ranking.
 
 - `docs/platform/PlatformSpecification.md` — the constitutional foundation of the Platform Architecture lineage. Approved.
-- Governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) have not yet been drafted.
+- `docs/platform/IdentityAndAccess.md` — the first approved governed topic document. Refines Organization, User, Membership, and API Client; defines the Role attribute of Membership (Owner, Member); resolves the Project ownership root and API Client access scope items from `PlatformSpecification.md`'s Architectural Decisions Deferred. Approved.
+- Remaining governed topic documents (`ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) have not yet been drafted.
