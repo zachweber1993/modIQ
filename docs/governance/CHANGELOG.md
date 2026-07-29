@@ -1109,3 +1109,31 @@ The Documentation Release 1.0 Final Review concluded with:
 - No Architectural Resolution was performed — this entry records an Architecture Evaluation only, per the document's own Status field.
 - The document was drafted, reviewed, and revised once before approval: Question 5 ("Report Evolution") was revised at explicit review request to identify the tension between the current one-shot generation model and Interaction Design's progressive-Overview requirement, and to conclude that the tension requires future resolution, with the prior draft's description and comparison of candidate report-evolution models (immutable/append-only/living/regenerated) removed. No other section was altered by that revision.
 - Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 1 Architectural Resolution: Progressive Execution Observability]
+
+**Status:** Complete (Architectural Resolution; drafted and revised across one round before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/engineering/INITIATIVE_1_ARCHITECTURAL_RESOLUTION.md` — dispositions every recommendation from `docs/engineering/INITIATIVE_1_ARCHITECTURE_EVALUATION.md`, treated throughout as fixed, verified evidence rather than reopened. Adopts three confirmed facts: progressive visibility is not currently supported (F-1); the growing, not-yet-final Finding set is the correct conceptual target state (F-2); a genuine tension exists between the current one-shot Report generation model and Interaction Design's progressive-Overview requirement (F-3). Adopts five binding **Adopted Architectural Constraints**, a disposition category introduced in this Resolution for findings that express a durable "shall" statement rather than a settled classification: progressive visibility must be established within the Engine orchestration layer without weakening or reinterpreting any Runtime domain invariant (AC-1); observation shall occur only at architecturally coherent, already-deterministic dispatch boundaries — per-Evidence-Collector completion and GOV-012's own fixed per-Rule dispatch order — never an arbitrary, percentage-based, or time-based cadence (AC-2); at least one observable execution-phase signal shall exist (AC-3); any Finding-visibility mechanism shall preserve set-wide finalization, Findings becoming Final together rather than individually (AC-4); and observable progress shall support recognition by absence, never by explicit announcement (AC-5). Two items are dispositioned Deferred and left intentionally unresolved: execution-phase signal granularity (D-1) and the Report-evolution resolution model (D-2). Explicitly restates, without re-deciding, which questions belong to Initiative 2 (reentrant lifecycle, post-completion Report modification), Initiative 3 (concrete field-level representation of the state the adopted constraints require), and Initiative 4 (Confidence, unaffected). No item was Rejected; none required further investigation.
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 1's Architectural Resolution and its full disposition summary.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No Interaction Design artifact was modified.
+- `docs/engineering/INITIATIVE_1_ARCHITECTURE_EVALUATION.md` was not modified — referenced only, as this Resolution's primary evidence source, per explicit instruction that the Evaluation not be reopened.
+- No Initiative 5 document (`INITIATIVE_5_ARCHITECTURE_EVALUATION.md`, `INITIATIVE_5_ARCHITECTURAL_RESOLUTION.md`) was modified.
+- No Engineering Alignment Program document (`ENGINEERING_ALIGNMENT_PROGRAM.md`, `docs/engineering/README.md`) was modified.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified.
+- No crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation mechanism, API, transport, payload, or event was chosen, named, or implied as a choice. No implementation was begun; no Sprint was scoped.
+- The document was drafted, reviewed, and revised once before approval: D-1 and D-2 were revised at explicit review request to state simply that each remains intentionally unresolved, removing references to future design work, Implementation Authorization, or any future governance artifact; Section 8 ("Readiness") was simplified to conclude Initiative 1 is architecturally resolved except for D-1 and D-2, without referring to future Implementation Authorization. No other section was altered by that revision.
+- Changes are prepared in the working tree only; no commit was made, per explicit instruction.
