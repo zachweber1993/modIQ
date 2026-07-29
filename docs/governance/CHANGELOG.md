@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-29 (IdentityAndAccess.md approval) |
+| **Last Updated** | 2026-07-29 (ProjectsAndUploads.md approval) |
 
 ---
 
@@ -1293,3 +1293,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - 3C's two items (Report currency, the Updated marker) remain deferred pending Initiative 2's Governance Reconciliation.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No implementation was authorized.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture — ProjectsAndUploads.md]
+
+**Status:** Complete (`ProjectsAndUploads.md` approved as the second governed specification of the Platform Architecture lineage; drafted and revised across one refinement pass before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/platform/ProjectsAndUploads.md` — refines Project and Upload, both defined in `PlatformSpecification.md`, without introducing any first-class Platform Architecture concept. States Platform Principles consistent with `IdentityAndAccess.md`'s Identity Principles. Refines Project's relationships to Organization, Upload, and Assessment; states that archival requires Owner standing per `IdentityAndAccess.md`'s Role definition; confirms deletion is not a Platform Architecture concept, since the constitutional Lifecycle Model has no third state beyond Created and Active/Archived. Refines Upload as the platform-level record of a submission's provenance, distinct from the material's own nature; confirms Upload's one-to-one relationship to the Assessment it triggers is inherited directly from `PlatformSpecification.md`, not a new constraint imposed on Runtime Architecture; keeps the model neutral on whether a later Assessment continues or restarts for the same Assessment Subject, an open Runtime Architecture question. Resolves the one remaining Project-related item of `PlatformSpecification.md`'s Architectural Decisions Deferred: Project is auto-created, provisioned automatically when none has been designated to receive an Upload, rationale grounded in `IdentityAndAccess.md`'s own auto-provisioning precedent for Organization and in `ASSESSMENT_INTAKE_AND_UPLOAD.md`'s frozen "costs the user nothing to try" design principle. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — updated the Platform Architecture Documentation Groups row and the Known Navigation Gap entry to record `ProjectsAndUploads.md`'s approval; five governed topic documents remain undrafted.
+- `docs/README.md` — added `ProjectsAndUploads.md` to the Platform Architecture Track section.
+- `docs/governance/PROJECT_STATUS.md` — added `ProjectsAndUploads.md` to the Platform Architecture Track section, recording its resolved Architectural Decision Deferred.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, `PlatformSpecification.md`) was modified.
+- No Product Design, Interaction Design, or Runtime Architecture artifact was modified.
+- `docs/platform/IdentityAndAccess.md` was not modified — referenced only, as precedent for the auto-provisioning rationale.
+- No first-class Platform Architecture concept was introduced.
+- No `docs/platform/README.md` was created — same reasoning as `IdentityAndAccess.md`'s milestone: a reasonable next step once more governed topic documents exist, not created preemptively.
+- No implementation, persistence, or API-contract detail was introduced; `ProjectsAndUploads.md`'s own Boundaries section states these are explicitly out of scope.
+- No further governed Platform Architecture topic document (`DashboardAndConsole.md`, and the rest) was drafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.

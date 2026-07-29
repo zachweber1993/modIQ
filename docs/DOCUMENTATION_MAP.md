@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Architectural overview of the repository's documentation — orientation, not content. |
 | **Status** | Living. Reflects repository structure, not any single specification's content. |
-| **Last Updated** | 2026-07-29 (IdentityAndAccess.md approval) |
+| **Last Updated** | 2026-07-29 (ProjectsAndUploads.md approval) |
 
 ---
 
@@ -44,7 +44,7 @@ The repository's documentation is not one linear sequence. It is three related b
 | Releases | `docs/releases/` and `docs/engineering/ENGINEERING_RELEASE_*.md` | Per-Sprint/Documentation-Release engineering records. Split across two locations — see Known Navigation Gaps below. | `docs/governance/PROJECT_STATUS.md` |
 | Product Design | `docs/product-design/` | The Version 1 conceptual product model: Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report. | `docs/product-design/README.md` |
 | Interaction Design | `docs/interaction-design/` | Version 1 behavioral specification, built on the Product Design model. | `docs/interaction-design/README.md` |
-| Platform Architecture | `docs/platform/` | The platform-level identity, tenancy, and containment model surrounding the Assessment. Constitutional foundation plus one approved governed topic document (`IdentityAndAccess.md`); six remain undrafted. | `docs/platform/PlatformSpecification.md` |
+| Platform Architecture | `docs/platform/` | The platform-level identity, tenancy, and containment model surrounding the Assessment. Constitutional foundation plus two approved governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`); five remain undrafted. | `docs/platform/PlatformSpecification.md` |
 
 ---
 
@@ -83,7 +83,7 @@ Identified during the 2026-07-28 documentation architecture review. None of thes
 - **`docs/engineering/` has no index.** It holds roughly 85 documents (proposals, architecture evaluations, sprint reports, releases, handoffs) with no README grouping them by kind or Sprint. `docs/governance/PROJECT_STATUS.md`'s own Sprint-by-Sprint narrative is the practical way to navigate it today. Building a real index is a substantive undertaking, not a minor edit, and is recommended as its own future initiative.
 - **Engineering Release records are split across two locations.** `docs/releases/ENGINEERING_RELEASE_0.2.md` is the only release record in `docs/releases/`; every release from 0.3 onward lives in `docs/engineering/` instead. This is historical, not a defect to silently correct — moving `0.2` now would rewrite established file history for a cosmetic gain.
 - **`docs/governance/ROADMAP.md` is significantly stale** (last updated 2026-07-16; still describes Sprint 1 as "In Progress" against a repository now at Sprint 21, per `PROJECT_STATUS.md`). This predates and is unrelated to the Product/Interaction Design work this map was written alongside. Reconciling it is a separate, larger effort outside this review's conservative scope.
-- **`docs/platform/` has no `README.md` of its own yet**, unlike `docs/product-design/` and `docs/interaction-design/`. `PlatformSpecification.md` (constitutional) and `IdentityAndAccess.md` (the first approved governed topic document) are both synchronized; six governed topic documents (`ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted. Not a defect — the lineage is early — named here so a reader isn't surprised by the directory's current thinness.
+- **`docs/platform/` has no `README.md` of its own yet**, unlike `docs/product-design/` and `docs/interaction-design/`. `PlatformSpecification.md` (constitutional), `IdentityAndAccess.md`, and `ProjectsAndUploads.md` (the two approved governed topic documents) are all synchronized; five governed topic documents (`DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted. Not a defect — the lineage is early — named here so a reader isn't surprised by the directory's current thinness.
 
 ---
 
