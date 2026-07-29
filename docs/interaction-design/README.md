@@ -18,12 +18,13 @@ Interaction Design is authorized by `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md
 4. `EVIDENCE_EXPLORATION.md` — the interaction experience of Evidence as a supporting, invited object: choosing to explore, first encounter, progressive understanding, relationship to the Finding and to Recommendations, trust, attention, leaving, and revisiting. Approved.
 5. `ASSESSMENT_REPORT_EXPERIENCE.md` — the interaction experience of a completed Assessment Report as a coherent whole: first encounter, recognition, orientation across time, experiencing the whole, relationships between parts, supporting decisions, returning, assessment-level trust, and completion. Approved.
 6. `NAVIGATION_AND_WORKSPACE_BEHAVIOR.md` — the behavioral semantics of movement throughout the workspace: continuity, orientation, scope (not identity), focus, returning, reversibility, stability, trust, and completion. Approved.
+7. `INTERACTION_DESIGN_CLOSEOUT_AND_CERTIFICATION.md` — the formal architectural closeout and certification of the complete Version 1 Interaction Design corpus: completeness, consistency, architectural alignment, behavioral coverage, cross-document patterns, implementation readiness, and Version 1 Freeze approval. One Version 1 scope decision (Assessment cancellation) is dispositioned as open, tracked independently of certification. Approved.
 
 ---
 
 ## Version 1 Interaction Design Program
 
-Interaction Design proceeds as a coherent program of chapters answering "how is it experienced?" for each Product Design concept, rather than as isolated documents.
+Interaction Design proceeded as a coherent program of chapters answering "how is it experienced?" for each Product Design concept, rather than as isolated documents. **The program is complete — all seven sessions are approved, and Version 1 is certified and frozen as the implementation specification.**
 
 | Session | Artifact | Status |
 |---|---|---|
@@ -33,13 +34,13 @@ Interaction Design proceeds as a coherent program of chapters answering "how is 
 | 4 | Evidence Exploration | Approved |
 | 5 | Assessment Report Experience | Approved |
 | 6 | Navigation & Workspace Behavior | Approved |
-| 7 | Interaction Design Closeout | Next |
+| 7 | Interaction Design Closeout & Certification | Approved |
 
 ---
 
 ## Status
 
-Sessions 1–6 are approved. Session 7 (Interaction Design Closeout) is next.
+**Version 1 Interaction Design is complete and certified.** All seven sessions are approved; see `INTERACTION_DESIGN_CLOSEOUT_AND_CERTIFICATION.md` for the full certification, including one Version 1 scope decision (Assessment cancellation) left open for Product Owner disposition, tracked independently of certification.
 
 ---
 
