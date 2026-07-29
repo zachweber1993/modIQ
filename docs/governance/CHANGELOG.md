@@ -1270,3 +1270,26 @@ The Documentation Release 1.0 Final Review concluded with:
 - `docs/platform/PlatformSpecification.md` (Platform Architecture lineage, committed separately as `1191a4b`) is noted in the Evaluation's own repository-state section as outside Initiative 3's scope, per its own stated Architectural Boundary; not treated as evidence.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No implementation, API, or field representation was adopted.
 - Changes are prepared in the working tree only; no commit was made.
+
+# [Engineering — Initiative 3 Architectural Resolution: Domain Model Anatomy Extension]
+
+**Status:** Architectural Resolution complete. Approved by Chief Architect disposition.
+
+**Affected Crates:** None. No source code was modified.
+
+**Affected Documents:**
+
+- Added: `docs/engineering/INITIATIVE_3_ARCHITECTURAL_RESOLUTION.md`.
+- Updated: `docs/governance/PROJECT_STATUS.md` — appended an Initiative 3 Architectural Resolution summary paragraph to the Engineering Alignment Program section.
+
+**Notes:**
+
+- Dispositions every item from `INITIATIVE_3_ARCHITECTURE_EVALUATION.md` individually rather than as a single vote, following Initiative 2's precedent. No new disposition vocabulary introduced.
+- **Adopted:** Items 1 (Title/Summary), 3 (optional Recommendation cardinality), 4 (Evidence's Label/Source/Content), 5 (RepairRecipe structured steps), 6a (Report Identity field, as part of `AssessmentReport`'s domain model), and 10 (Provisional/Final, confirmed Independent of Initiative 2's Question 1). Item 2 (Category) adopted contingent on Item 9's naming constraint.
+- **Adopted Architectural Constraint (Item 9 — naming):** the Finding-level Mod Health concept shall not be named `Category`. No specific replacement identifier is adopted — the Evaluation confirmed the collision but did not evaluate candidate identifiers; selection is left to Implementation Authorization. This narrows an earlier draft that had adopted the specific identifier `HealthDimension`, which was found on review to exceed the Evaluation's own evidence.
+- **Adopted Architectural Constraint (Item 6a — implementation prerequisite):** the Subject-identity field shall not be implemented until `AssessmentSubject` carries sufficient content. Separated, on review, from the adopted field addition itself, to keep the domain-model decision and its implementation dependency distinct. Named as connected to GOV-002's prior "require no action" disposition; GOV-002 is not reopened by this Resolution.
+- Item 4's Explanation field remains **Requires Additional Investigation** — the Architectural Observation names the question without answering it; evidence-incomplete, not an authority conflict, so "Requires Governance Reconciliation" does not apply.
+- Items 7 (GOV-013) and 8 (Glossary's missing "Recommendation" entry) are named, not dispositioned — outside this Resolution's authority.
+- 3C's two items (Report currency, the Updated marker) remain deferred pending Initiative 2's Governance Reconciliation.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No implementation was authorized.
+- Changes are prepared in the working tree only; no commit was made.
