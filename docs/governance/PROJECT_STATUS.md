@@ -9,7 +9,7 @@
 | **Overall Status** | Active Implementation — Sprint 13's Storage subsystem real; Sprint 14 retired `modiq-common` (GOV-003), root workspace and Sandbox both reverified clean; Lua Analysis still awaiting additional evidence before further architectural evaluation |
 | **Current Phase** | Post-Sprint 13 Repository Closeout complete; GOV-001 (Assessment Report Generation Timing) Architecture Evaluation complete — no Architectural Resolution performed, returned to Open under a narrower question, pending a future forcing function; GOV-014 (Lua Fixture Acquisition Governance) open, unaffected by Sprint 13; **Sprint 14 complete: GOV-003 (Role of `modiq-common`) resolved (retire) and implemented — crate removed from the workspace, root workspace 253/253 and Sandbox 9/9 both reverified clean, zero behavioral footprint** |
 | **Engineering Methodology Version** | 1.0 — unchanged |
-| **Last Updated** | 2026-07-24 |
+| **Last Updated** | 2026-07-28 |
 
 ---
 
@@ -21,7 +21,15 @@ Independent of the Sprint/Engineering Release lineage this document otherwise tr
 - **Product Design** — closed. Five artifacts approved in principle: Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report — `docs/product-design/`. Phase reflection and named conceptual gaps (Recommendation glossary definition, Multi-Subject Assessment, Knowledge Base integration, Community Contributions) recorded in `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md`.
 - **Interaction Design** — closed. All seven sessions (Assessment Intake & Upload, Assessing & Progressive Discovery, Finding Presentation, Evidence Exploration, Assessment Report Experience, Navigation & Workspace Behavior, and Interaction Design Closeout & Certification) approved — `docs/interaction-design/`. Session 7's closeout certifies the corpus complete, internally consistent, architecturally aligned, and implementation-ready; **Version 1 Interaction Design is frozen as the implementation specification.** One Version 1 scope decision (cancellation of an in-progress Assessment) is dispositioned as open and tracked independently — engineering may proceed under either resolution without ambiguity.
 
-This track and the Sprint-based engineering track below are independent: no Sprint has yet been scoped against these Product/Interaction Design artifacts, and no engineering decision recorded below has been made in reference to them.
+This track and the Sprint-based engineering track below remain independent at the Sprint level: no Sprint has yet been scoped against these Product/Interaction Design artifacts. The Engineering Alignment Program, below, is the first engineering decision made in reference to them — a governing program for evaluating architectural evolution, not itself a Sprint or an implementation decision.
+
+---
+
+# Engineering Alignment Program
+
+An Engineering Reconciliation — checking the complete Product Design and Interaction Design corpus directly against the existing deterministic platform's real source, not against documentation describing it — identified five independent architectural evolution initiatives: **Progressive Execution Observability**, **Reentrant Assessment Lifecycle**, **Domain Model Anatomy Extension**, **Confidence as a First-Class Concept**, and **Production Interaction Layer Definition**. `docs/engineering/ENGINEERING_ALIGNMENT_PROGRAM.md` establishes the governing program for evaluating these five: an Architectural Philosophy (existing implementation and the frozen corpus each presumed correct until evidence says otherwise; smallest sufficient evolution; architectural integrity over implementation speed), Guiding Principles, per-initiative scope and dependencies, ADR and Sprint-planning expectations, and a recommended Architecture Evaluation order — **Production Interaction Layer Definition first** (the engine/presentation boundary decision, reasoned as prior to the producer-side questions it constrains), then **Progressive Execution Observability** and **Reentrant Assessment Lifecycle** concurrently, then **Domain Model Anatomy Extension**, then **Confidence as a First-Class Concept**.
+
+This program does not itself evaluate, resolve, or authorize implementation for any initiative. No Architecture Evaluation under this program has yet begun. GOV-008 and GOV-013 (both already Open) are identified as the existing Governance Register items most directly relevant to Initiatives 1 and 3 respectively; Initiatives 2, 4, and 5 are expected to open new items at the point their own Architecture Evaluations begin.
 
 ---
 
