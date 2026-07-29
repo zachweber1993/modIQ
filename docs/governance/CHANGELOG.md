@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-23 |
+| **Last Updated** | 2026-07-29 |
 
 ---
 
@@ -1193,3 +1193,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation mechanism, API, transport, or persistence mechanism was designed. No implementation was begun; no Sprint was scoped.
 - This document went through four rounds of review before approval, more than any prior Alignment Program artifact, each substantively changing the document rather than only its wording: (1) an initial draft reached a decisive lifecycle-direction conclusion; (2) a requested stress-test found `THE_ASSESSMENT_REPORT.md` §2 directly contradicted that conclusion's central premise, and the draft was rewritten to withdraw the decision rather than defend it; (3) "Requires Additional Investigation" was replaced with the new "Requires Governance Reconciliation" disposition, and the GOV-015 comparison was checked for structural equivalence and removed as unsupported rather than kept as loose precedent; (4) a further review identified that the conflict exposes a distinct governance capability gap (Documentation Authority's silence on the Product & Interaction Design track), recorded as its own Governance Observation without proposing a fix; (5) a final editorial pass replaced correctness/blame language ("false," "incorrect," documents "built to accept" or "presupposing" intent) with compatibility and observable-behavior language throughout, changing no disposition, evidence, or conclusion.
 - Changes are prepared in the working tree only; commit and push follow immediately per explicit Product Owner-directed workflow for this cycle.
+
+---
+
+# [Platform Architecture — Constitutional Foundation]
+
+**Status:** Complete (`PlatformSpecification.md` approved as the constitutional foundation of a new Platform Architecture lineage; drafted and revised across multiple constitutional review passes before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/platform/PlatformSpecification.md` — the constitutional foundation of a new Platform Architecture lineage, distinct from the Engineering Specification lineage and the Product & Interaction Design Track. Establishes the Platform Domain Model (Organization, User, Membership, Project, Upload, Notification, Subscription, API Client, Public Visitor, with Assessment referenced only as a fixed boundary); an Architectural Boundary dividing this lineage from Runtime Architecture exactly at the Assessment (Platform Architecture owns everything above it; Runtime Architecture owns Assessment Subject, Evidence, Finding, Recommendation, and Assessment Report, unmodified); an Architectural Responsibilities table naming what each of the five relevant lineages owns, including that Engineering Alignment owns a reconciliation process rather than a domain concept; terminology resolutions distinguishing Console from the existing Workspace and Wayfinding from the existing Navigation (both reserved, pending use by a governed document); a shared-vocabulary treatment of Upload across its Interaction Design experience aspect and its Platform Architecture record aspect, proposed for Glossary addition; a Platform Architecture Filter (five criteria every governed document must satisfy); four Architectural Decisions Deferred to future governed documents; and a Platform Architecture Governance rule making this specification the sole authority for first-class concepts in the lineage. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — added Platform Architecture as a third lineage alongside the Engineering Specification lineage and the Product Track; added a Documentation Groups row and a Quick Orientation row; added a Known Navigation Gap noting `docs/platform/` currently contains only `PlatformSpecification.md`, with no README and no governed topic document yet drafted.
+- `docs/README.md` — added a "Platform Architecture Track" section, mirroring the existing "Product & Interaction Design Track" section; updated the top pointer note to reference it.
+- `docs/governance/PROJECT_STATUS.md` — added a "Platform Architecture Track" section recording `PlatformSpecification.md`'s approval; renamed the unrelated "### Platform Architecture" subsection under Phase 1 — Foundation (which listed only `Architecture.md`'s Frozen status) to "### Runtime Architecture" to remove a naming collision with the new lineage. No status or content under that subsection changed — only its heading.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`) was modified.
+- No Product Design or Interaction Design artifact was modified.
+- No Runtime Architecture document (`Architecture.md`, `DataModel.md`, and the rest) was modified.
+- No Engineering Alignment Program document was modified.
+- The same "Platform Architecture" phrase, used with an unrelated meaning, was also found in three historical records — `docs/engineering/TECHNICAL_DIRECTOR_HANDOFF_v2.0.md`, `v2.1.md`, `v2.2.md`. These were left unmodified, as dated historical snapshots, distinct from `PROJECT_STATUS.md`'s live-dashboard status, which this pass keeps current.
+- No governed Platform Architecture topic document (`IdentityAndAccess.md`, and the rest) was drafted.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified.
+- Changes are prepared in the working tree only; no commit was made.

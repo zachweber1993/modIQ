@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Architectural overview of the repository's documentation — orientation, not content. |
 | **Status** | Living. Reflects repository structure, not any single specification's content. |
-| **Last Updated** | 2026-07-28 |
+| **Last Updated** | 2026-07-29 |
 
 ---
 
@@ -16,15 +16,17 @@ This document answers one question: *given a topic, which part of the repository
 
 ---
 
-## The Two Lineages
+## The Three Lineages
 
-The repository's documentation is not one linear sequence. It is two related but independently-paced lineages, sharing a common constitutional foundation:
+The repository's documentation is not one linear sequence. It is three related but independently-paced lineages, sharing a common constitutional foundation:
 
 **The Engineering Specification Lineage** — Constitutional → Architecture → Implementation/Engineering. Frozen, versioned by Documentation Release, tracked Sprint by Sprint in `docs/governance/PROJECT_STATUS.md`, governed by `docs/engineering/GOVERNANCE.md`'s Governance Register and the ADR process. This is the lineage `docs/README.md`'s Reading Order describes.
 
 **The Product Track** — Product Definition → Product Design → Interaction Design. Defines the Version 1 assessment *experience*, ahead of and independent from implementation. Carries no Documentation Authority ranking and is not governed by the Governance Register — its own convention is a lightweight closeout record at the end of each phase.
 
-**As of this writing, the two lineages are not yet reconciled**: no Sprint has been scoped against any Product Design or Interaction Design artifact, and no engineering decision has been made in reference to them. `docs/governance/PROJECT_STATUS.md`'s "Product & Interaction Design Track" section states this explicitly. A future Sprint bringing implementation into alignment with the Product Track is anticipated but not yet authorized or scheduled.
+**The Platform Architecture Lineage** — a single constitutional document, `docs/platform/PlatformSpecification.md`, approved as the foundation for a lineage of governed topic documents not yet drafted. Defines the platform-level identity, tenancy, and containment model surrounding the Assessment — Organization, User, Project, and the rest — distinct from the Assessment experience the Product Track defines and from the Runtime Architecture the Engineering Specification lineage defines. Carries no Documentation Authority ranking and is not governed by the Governance Register; its own governance is internal to `PlatformSpecification.md`, which is the sole authority for introducing new first-class concepts within it.
+
+**As of this writing, none of the three lineages are reconciled with one another**: no Sprint has been scoped against any Product Design or Interaction Design artifact, and the Engineering Alignment Program governing that reconciliation does not yet include the Platform Architecture lineage as one of the bodies of work it reconciles. `docs/governance/PROJECT_STATUS.md`'s "Product & Interaction Design Track" and "Platform Architecture Track" sections state this explicitly. Future work bringing all three into alignment is anticipated but not yet authorized or scheduled.
 
 ---
 
@@ -42,6 +44,7 @@ The repository's documentation is not one linear sequence. It is two related but
 | Releases | `docs/releases/` and `docs/engineering/ENGINEERING_RELEASE_*.md` | Per-Sprint/Documentation-Release engineering records. Split across two locations — see Known Navigation Gaps below. | `docs/governance/PROJECT_STATUS.md` |
 | Product Design | `docs/product-design/` | The Version 1 conceptual product model: Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report. | `docs/product-design/README.md` |
 | Interaction Design | `docs/interaction-design/` | Version 1 behavioral specification, built on the Product Design model. | `docs/interaction-design/README.md` |
+| Platform Architecture | `docs/platform/` | The platform-level identity, tenancy, and containment model surrounding the Assessment. Established by a single constitutional document; no governed topic document yet drafted. | `docs/platform/PlatformSpecification.md` |
 
 ---
 
@@ -69,6 +72,7 @@ Neither is misnamed; they simply answer different questions ("where do things st
 | The Version 1 product experience (behavior) | `docs/interaction-design/README.md` |
 | Whether the product/engineering lineages are reconciled yet | `docs/governance/PROJECT_STATUS.md`, "Product & Interaction Design Track" |
 | How an approved artifact gets into the repository | `docs/governance/RepositorySynchronizationPolicy.md` |
+| The platform-level identity, tenancy, and containment model surrounding the Assessment | `docs/platform/PlatformSpecification.md` |
 
 ---
 
@@ -79,6 +83,7 @@ Identified during the 2026-07-28 documentation architecture review. None of thes
 - **`docs/engineering/` has no index.** It holds roughly 85 documents (proposals, architecture evaluations, sprint reports, releases, handoffs) with no README grouping them by kind or Sprint. `docs/governance/PROJECT_STATUS.md`'s own Sprint-by-Sprint narrative is the practical way to navigate it today. Building a real index is a substantive undertaking, not a minor edit, and is recommended as its own future initiative.
 - **Engineering Release records are split across two locations.** `docs/releases/ENGINEERING_RELEASE_0.2.md` is the only release record in `docs/releases/`; every release from 0.3 onward lives in `docs/engineering/` instead. This is historical, not a defect to silently correct — moving `0.2` now would rewrite established file history for a cosmetic gain.
 - **`docs/governance/ROADMAP.md` is significantly stale** (last updated 2026-07-16; still describes Sprint 1 as "In Progress" against a repository now at Sprint 21, per `PROJECT_STATUS.md`). This predates and is unrelated to the Product/Interaction Design work this map was written alongside. Reconciling it is a separate, larger effort outside this review's conservative scope.
+- **`docs/platform/` currently contains a single document.** `PlatformSpecification.md` is approved and synchronized; none of its seven governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) have been drafted, and the directory has no `README.md` of its own yet, unlike `docs/product-design/` and `docs/interaction-design/`. Not a defect — the lineage was only just ratified — named here so a reader isn't surprised by the directory's current thinness.
 
 ---
 

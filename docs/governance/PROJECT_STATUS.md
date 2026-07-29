@@ -25,6 +25,15 @@ This track and the Sprint-based engineering track below remain independent at th
 
 ---
 
+# Platform Architecture Track
+
+Independent of the Sprint/Engineering Release lineage and of the Product & Interaction Design Track above, a third body of work defines the platform-level identity, tenancy, and containment model surrounding the Assessment. This track carries no Documentation Authority ranking, does not affect Sprint numbering or the Governance Register, and is not currently one of the bodies of work the Engineering Alignment Program below reconciles.
+
+- **PlatformSpecification.md** — approved. `docs/platform/PlatformSpecification.md`, the constitutional foundation of the Platform Architecture lineage. Establishes the Platform Domain Model (Organization, User, Membership, Project, Upload, Notification, Subscription, API Client, Public Visitor), an Architectural Boundary fixing the Assessment as the point where this lineage ends and Runtime Architecture begins, and a governance rule making this specification the sole authority for introducing new first-class concepts into the lineage.
+- Seven governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) are named in `PlatformSpecification.md`'s Specification Authority but not yet drafted.
+
+---
+
 # Engineering Alignment Program
 
 An Engineering Reconciliation — checking the complete Product Design and Interaction Design corpus directly against the existing deterministic platform's real source, not against documentation describing it — identified five independent architectural evolution initiatives: **Progressive Execution Observability**, **Reentrant Assessment Lifecycle**, **Domain Model Anatomy Extension**, **Confidence as a First-Class Concept**, and **Production Interaction Layer Definition**. `docs/engineering/ENGINEERING_ALIGNMENT_PROGRAM.md` establishes the governing program for evaluating these five: an Architectural Philosophy (existing implementation and the frozen corpus each presumed correct until evidence says otherwise; smallest sufficient evolution; architectural integrity over implementation speed), Guiding Principles, per-initiative scope and dependencies, ADR and Sprint-planning expectations, and a recommended Architecture Evaluation order — **Production Interaction Layer Definition first** (the engine/presentation boundary decision, reasoned as prior to the producer-side questions it constrains), then **Progressive Execution Observability** and **Reentrant Assessment Lifecycle** concurrently, then **Domain Model Anatomy Extension**, then **Confidence as a First-Class Concept**.
@@ -210,7 +219,7 @@ Sprint 14's own objective, formally selected following the GOV-001 evaluation ab
 | Glossary.md | ✅ Frozen |
 | ProductSpecification.md | ✅ Frozen |
 
-### Platform Architecture
+### Runtime Architecture
 
 | Document | Status |
 |----------|--------|

@@ -2,7 +2,7 @@
 
 Welcome to the official design specification for modIQ.
 
-> For an architectural overview of how this Reading Order relates to the rest of the repository's documentation (engineering, governance, ADRs, and the Product/Interaction Design track), see [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md).
+> For an architectural overview of how this Reading Order relates to the rest of the repository's documentation (engineering, governance, ADRs, the Product/Interaction Design track, and the Platform Architecture lineage), see [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md).
 
 ## Reading Order
 
@@ -68,3 +68,10 @@ Separately from the engineering specification and Documentation Release lineage 
 - `docs/product-design/` — the five approved Version 1 Product Design artifacts (Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report).
 - `docs/engineering/PRODUCT_DESIGN_CLOSEOUT.md` — closes Product Design, reflects on the body of work as a whole, opens Interaction Design.
 - `docs/interaction-design/` — Interaction Design artifacts specifying user-facing behavior around the Product Design model. Currently: Assessment Intake & Upload (approved).
+
+## Platform Architecture Track
+
+Separately again from the engineering specification lineage above and the Product & Interaction Design Track above, a third body of work defines the platform-level identity, tenancy, and containment model surrounding the Assessment. This track is not part of the Reading Order above and carries no Documentation Authority ranking.
+
+- `docs/platform/PlatformSpecification.md` — the constitutional foundation of the Platform Architecture lineage. Approved.
+- Governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`, `SettingsAndBilling.md`, `PlatformSurfaces.md`) have not yet been drafted.
