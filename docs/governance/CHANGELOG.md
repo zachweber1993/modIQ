@@ -1028,3 +1028,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - The document was drafted, reviewed, and revised across three rounds before approval: an Architectural Philosophy section was added; the evaluation order was reconsidered and reordered with full reasoning recorded rather than silently changed (Production Interaction Layer Definition moved first, after review found the original producer-first ordering underweighted the consumer boundary's total absence of real existence); a dedicated `docs/engineering/README.md` index was created (a gap identified during review — no such file previously existed); reconciliation-finding language was revised to avoid implying the pre-existing implementation was defective rather than architecturally superseded; and two final editorial refinements were applied — removing a specific, driftable document count from `docs/engineering/README.md` in favor of growth-agnostic language, and strengthening the Success Criteria's concluding statement to name governance and architectural readiness explicitly, not implementation readiness alone.
 - One item was initially identified but left uncorrected pending explicit authorization, per this repository's own standing practice of naming rather than silently fixing out-of-scope staleness: `ENGINEERING_ALIGNMENT_PROGRAM.md`'s own header property table still read "Status: Draft — pending review and explicit approval" after the two named editorial refinements were applied. On explicit, separate Product Owner instruction, a third, metadata-only update was then applied: `Status` changed to `Approved`, matching this repository's existing convention for accepted governance and design artifacts (e.g. Interaction Design sessions).
 - Changes are prepared in the working tree only; no commit was made, per explicit instruction.
+
+---
+
+# [Engineering — Initiative 5 Architecture Evaluation: Production Interaction Layer Definition]
+
+**Status:** Complete (Architecture Evaluation only; drafted, reviewed, and revised across two rounds before approval; synchronized per `RepositorySynchronizationPolicy.md`; not yet committed)
+
+## Added
+
+- `docs/engineering/INITIATIVE_5_ARCHITECTURE_EVALUATION.md` — the first Architecture Evaluation conducted under the Engineering Alignment Program, per its own recommended evaluation order. Determines: the production interaction layer is a consumer, structurally analogous to the already-governed `modiq-cli` Crate Boundary Rule, not an existing System Overview subsystem and not a candidate for the Sprint 8/13 Architectural Activation precedent (Decision 1); the engine/consumer responsibility split, extending the CLI entry's "owns user interaction, must never contain business logic" shape (Decision 2); that Assessment state ownership is already fixed by existing Runtime Invariants (INV-006, INV-009), not newly decided (Decision 3); that workspace, navigation, interaction, and presentation state are consumer-owned, with workspace state specifically derived from — not independent of — whatever execution-phase signal Initiative 1 eventually exposes (Decision 4); a request/response baseline for the boundary-crossing mechanism, with a supplementary-signal sub-question explicitly left open and dependent on Initiative 1's own resolution rather than guessed at here (Decision 5); and that `apps/sandbox`, as it exists today, cannot serve as the production interaction layer, though its request/response and getter-based DTO patterns are named as validated precedent (Decision 6). A standalone **Governance Observation** — modeled on `GOVERNANCE_OBSERVATION_SUBSYSTEM_ACTIVATION.md`'s own precedent, elevated out of the Decision sequence during review — records that the repository's existing governance vocabulary has no classification procedure for formalizing an external architectural boundary; neither Capability Identity (Sprint 12) nor Architectural Activation (Sprint 8/13) applies, and the gap is generalized beyond this initiative rather than treated as Initiative-5-specific. No Governance Register item was opened by that observation.
+
+## Changed
+
+- `docs/governance/PROJECT_STATUS.md` — added a paragraph to the Engineering Alignment Program section recording Initiative 5's Architecture Evaluation outcome and the Governance Observation; updated Last Updated to 2026-07-29.
+
+## Notes
+
+- No Product Design artifact was modified; no Product Design concept was changed or redefined.
+- No Interaction Design artifact was modified.
+- No ADR was created or modified.
+- No Governance Register entry (`docs/engineering/GOVERNANCE.md`) was modified — the Governance Observation records a vocabulary gap without opening a Governance Register item, per explicit instruction.
+- No Engineering Alignment Program document (`ENGINEERING_ALIGNMENT_PROGRAM.md`, `docs/engineering/README.md`) was modified — Initiative 5's evaluation was conducted entirely within its own new document.
+- No existing crate, Crate Boundary Rule, or dependency edge was modified.
+- No implementation technology, API, payload, or event was chosen, named, or implied as a choice.
+- No Architectural Resolution was performed — this entry records an Architecture Evaluation only, per the document's own Status field.
+- The document was drafted, reviewed, and revised across two rounds before approval: the initial draft's Section 10 ("Cross-Cutting Classification") was restructured, at explicit review request, into the standalone Governance Observation described above — generalized from an initiative-specific finding into a standing repository-wide gap, given its own header block and internal Observation/Evidence/Not-Resolved-Here/Non-Scope structure, and removed from the Decision 1–6 numbering entirely. This did not alter any Decision's own conclusions, recommendations, or evidence.
+- Changes are prepared in the working tree only; no commit was made, per explicit instruction.
