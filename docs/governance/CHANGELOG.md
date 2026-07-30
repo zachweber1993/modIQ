@@ -1340,3 +1340,28 @@ The Documentation Release 1.0 Final Review concluded with:
 - No Product Design, Interaction Design, or Runtime Architecture artifact was modified.
 - Navigation/index files (`DOCUMENTATION_MAP.md`, `README.md`, `PROJECT_STATUS.md`) were not updated — neither change alters what documents exist or their existing summaries there.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Engineering — Initiative 2 Governance Reconciliation: Question 1]
+
+**Status:** Governance Reconciliation complete. Approved by Chief Architect disposition. Initiative 2 closed.
+
+**Affected Crates:** None. No source code was modified.
+
+**Affected Documents:**
+
+- Added: `docs/engineering/INITIATIVE_2_GOVERNANCE_RECONCILIATION.md`.
+- Updated: `docs/governance/PROJECT_STATUS.md` — appended an Initiative 2 Governance Reconciliation summary paragraph to the Engineering Alignment Program section.
+
+**Notes:**
+
+- Completes the reconciliation `INITIATIVE_2_ARCHITECTURAL_RESOLUTION.md` deferred under the "Requires Governance Reconciliation" disposition. That Resolution is not amended — it accurately recorded what was known when written.
+- Resolved GQ-A1 from `GOVERNANCE.md`'s Documentation Authority text alone: omission of an entire corpus (Product Design, Interaction Design, Platform Architecture) from the ten-tier hierarchy means the hierarchy provides no rule for that comparison, not that the omitted corpus is subordinate.
+- Resolved GQ-B from `ProjectsAndUploads.md`'s adopted text alone: its explicit neutrality on "whether that new Assessment continues or restarts for the same Assessment Subject" excludes Platform Architecture's Upload→Assessment relationship from bearing on Question 1.
+- With both resolved and neither supplying a tiebreaker, `DataModel.md`'s Immutability principle and `THE_ASSESSMENT_REPORT.md` §2 remain in direct, unmediated conflict; no other adopted architecture (ADR-0007, GOV-015, GOV-001) independently resolves it.
+- **Determination: Question 1 cannot presently be reconciled under the repository's current governance model** — an evidenced negative finding, not a lack of effort or evidence.
+- A governance finding, not a new disposition, records that the existing six-value disposition vocabulary no longer accurately describes this state. No new disposition is defined or adopted.
+- Two governance recommendations are named for separate consideration, not acted on here: whether Documentation Authority should be amended to rank Product Design, Interaction Design, and Platform Architecture; and whether the disposition-vocabulary gap should be addressed, and how.
+- Initiative 2 is complete on this basis, having exhausted the repository's currently documented authority framework for Question 1.
+- The Engineering Alignment Program is **not** complete: Initiative 4 (Confidence as a First-Class Concept) remains unevaluated.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No Documentation Authority or other governance document was amended.
+- Changes are prepared in the working tree only; no commit was made.
