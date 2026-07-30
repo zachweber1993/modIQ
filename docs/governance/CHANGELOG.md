@@ -1393,3 +1393,25 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation, persistence, routing, or API-contract detail was introduced; this document's own Boundaries section states these are explicitly out of scope.
 - No further governed Platform Architecture topic document (`WayfindingAndSearch.md`, and the rest) was drafted.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Engineering — Initiative 4 Architecture Evaluation: Confidence as a First-Class Concept]
+
+**Status:** Architecture Evaluation complete. Approved by Chief Architect disposition. No Architectural Resolution performed.
+
+**Affected Crates:** None. No source code was modified.
+
+**Affected Documents:**
+
+- Added: `docs/engineering/INITIATIVE_4_ARCHITECTURE_EVALUATION.md`.
+- Updated: `docs/governance/PROJECT_STATUS.md` — appended an Initiative 4 Architecture Evaluation summary paragraph to the Engineering Alignment Program section.
+
+**Notes:**
+
+- Confirmed unblocked by Initiative 3 (`Recommendation`'s field shape unchanged by its adopted items) and independent of Initiative 2's Question 1 (Confidence attaches within a single Assessment's Recommendation, orthogonal to reentrancy).
+- Found Confidence's placement settled and convergent across the full Product Design and Interaction Design corpus, searched in full: scoped exclusively to a Recommendation, never shown on a Provisional Finding, measures evidence quality rather than correctness.
+- Found Confidence's concrete representation (scale, type, range) and its computation mechanism both entirely unspecified anywhere in the frozen corpus, confirmed against `RuleEngine.md`'s six responsibilities and all of Runtime Architecture (`DataModel.md`, `VersionProfile.md`, `KnowledgeModel.md`, `EvidenceCollection.md`).
+- Applied `SPRINT8_ARCHITECTURAL_RESOLUTION.md` §8's own Architectural Activation test directly: Confidence matches one distinguishing trait of that precedent (forces a previously-stable `Recommendation::new` signature change) but not the other (no Runtime-Architecture-tier dormant placeholder was found in `DataModel.md`, `RuleEngine.md`, or `Architecture.md`'s System Overview, unlike Version Profiles or Storage) — a genuine, unresolved classification tension, not decided here.
+- Checked GOV-013 (`FindingSeverity` Severity/Kind Conflation) directly for a mechanistic dependency with Confidence and found none — only shape-proximity, contrary to a coupling the Alignment Program's own scope note had flagged for checking.
+- Re-flagged, not newly found: the Glossary's missing "Recommendation" entry (Initiative 3's Item 8) remains directly relevant, since Confidence's placement rules depend throughout on that concept.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No data type, computation mechanism, or classification was adopted.
+- Changes are prepared in the working tree only; no commit was made.
