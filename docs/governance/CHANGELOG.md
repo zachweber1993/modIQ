@@ -1443,3 +1443,25 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation, indexing, ranking, or routing detail was introduced; this document's own Boundaries sections state these are explicitly out of scope.
 - No further governed Platform Architecture topic document (`Notifications.md`, and the rest) was drafted.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Engineering — Initiative 4 Architectural Resolution: Confidence as a First-Class Concept]
+
+**Status:** Architectural Resolution complete. Approved by Chief Architect disposition. Engineering Alignment Program architectural work concludes with this milestone.
+
+**Affected Crates:** None. No source code was modified.
+
+**Affected Documents:**
+
+- Added: `docs/engineering/INITIATIVE_4_ARCHITECTURAL_RESOLUTION.md`.
+- Updated: `docs/governance/PROJECT_STATUS.md` — appended an Initiative 4 Architectural Resolution summary paragraph to the Engineering Alignment Program section.
+
+**Notes:**
+
+- Dispositions every question from `INITIATIVE_4_ARCHITECTURE_EVALUATION.md` individually, following the same granular-disposition method as Initiatives 2 and 3. No new disposition vocabulary introduced.
+- **Adopted:** Q1a (Recommendation-exclusive scoping), Q1c (evidence quality, not correctness), Q5 (no demonstrated dependency between GOV-013 and Confidence).
+- **Adopted Architectural Constraint:** Q1b — Confidence shall never appear on a Provisional Finding, only once Final.
+- **Deferred:** Q2 (representation) and Q3 (computation mechanism), both genuinely undesigned rather than contested.
+- **Deferred, distinctly:** Q4 (Architectural Activation classification) — this Resolution explicitly declines to classify Confidence under any of the four existing taxonomies, on the reasoning that doing so would extend Sprint 8's own test beyond what its two actual instances (Version Profiles, Storage) establish. Checked against "Requires Additional Investigation" and "Requires Governance Reconciliation" before concluding neither fits: evidence-gathering is complete, and there is no second document in conflict, only one existing test producing a partial match against a new candidate. Recorded as this Resolution's own conclusion, not a decision awaiting further authority — no further architectural authority exists beyond this document.
+- Three governance recommendations are named for separate consideration, not acted on here: whether Sprint 8's Architectural Activation test should be extended or clarified for partial-match cases; GOV-013's own independent scheduling, now that no dependency was found; the Glossary's still-missing "Recommendation" entry (Initiative 3's Item 8).
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No data type, computation mechanism, or classification was adopted. No implementation was authorized.
+- Changes are prepared in the working tree only; no commit was made.
