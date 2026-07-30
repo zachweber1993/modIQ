@@ -1320,3 +1320,23 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation, persistence, or API-contract detail was introduced; `ProjectsAndUploads.md`'s own Boundaries section states these are explicitly out of scope.
 - No further governed Platform Architecture topic document (`DashboardAndConsole.md`, and the rest) was drafted.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+---
+
+# [Platform Architecture — Post-Verification Synchronization and Amendment]
+
+**Status:** Complete (documentation synchronization plus one small governed amendment, following an architectural verification pass across `PlatformSpecification.md`, `IdentityAndAccess.md`, and `ProjectsAndUploads.md`)
+
+## Changed
+
+- `docs/platform/PlatformSpecification.md` — synchronized the Architectural Decisions Deferred table to record that three of its four items have since been ratified in `IdentityAndAccess.md` and `ProjectsAndUploads.md`; the fourth (Notification addressing scope) remains open. Documentation synchronization only — no concept, boundary, or governance rule changed.
+- `docs/platform/IdentityAndAccess.md` — amended the Role section to clarify that the Owner-only restriction on Project creation governs deliberate, administrative creation only and does not extend to `ProjectsAndUploads.md`'s automatic Project provisioning, which follows from any Member's or API Client's existing standing to submit an Upload. No Role value was added or changed; no Platform Domain Model concept was introduced.
+
+## Notes
+
+- Both changes originated from an explicit architectural verification pass (chat-recorded, not a separate document) that checked all three Platform Architecture documents for internal consistency, boundary integrity, and cross-document gaps.
+- `docs/platform/ProjectsAndUploads.md` was not modified — its "Assessment Subject" wording, flagged during verification as a borderline but compliant boundary reference, was explicitly left unchanged.
+- No new first-class Platform Architecture concept was introduced by either change.
+- No Product Design, Interaction Design, or Runtime Architecture artifact was modified.
+- Navigation/index files (`DOCUMENTATION_MAP.md`, `README.md`, `PROJECT_STATUS.md`) were not updated — neither change alters what documents exist or their existing summaries there.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.

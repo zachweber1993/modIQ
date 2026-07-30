@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | **Document** | IdentityAndAccess.md |
-| **Status** | Approved |
+| **Status** | Approved, amended 2026-07-29 (automatic Project provisioning authorization clarified) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-29 |
@@ -62,6 +62,8 @@ Two Role values are defined:
 
 **Member.** Participating standing. May view and act within the Organization's Projects. May not grant or revoke Memberships, may not manage the Subscription.
 
+**Owner-only Project creation does not extend to automatic Project provisioning.** `ProjectsAndUploads.md` resolves that a Project is provisioned automatically when an Upload arrives with none designated to receive it. That provisioning is not the deliberate, administrative act the Owner-only restriction above governs — it is a consequence of submitting an Upload, which any Member may already do under their standing to "act within the Organization's Projects." Requiring Owner standing for automatic provisioning would gate a new Member's first submission behind a capability they may not hold, defeating the reason automatic provisioning exists. Any Member or API Client may trigger it; only deliberate, explicit Project creation remains Owner-only.
+
 These two values are the minimum Role vocabulary the platform currently requires — not a closed or complete constitutional set. Additional Role values require an approved amendment to this specification, not to `PlatformSpecification.md`.
 
 Every Organization always has at least one Membership whose Role is Owner — a direct consequence of Organization's own Lifecycle Model (`PlatformSpecification.md`): an Organization with no Membership carrying that Role would have no path back to Active management, which nothing in the constitutional Lifecycle Model provides for.
@@ -108,3 +110,5 @@ It defines no persistence, no credential mechanism, no session model, and no API
 ## Document Status
 
 **Approved** — the first governed specification of the Platform Architecture lineage. Ratified per `PlatformSpecification.md`'s Platform Architecture Governance section, which permits this document to refine and apply the concepts it delegates without expanding the Platform Domain Model.
+
+**Amended 2026-07-29:** added a clarification to the Role section stating that the Owner-only restriction on Project creation applies to deliberate, administrative creation and does not extend to automatic Project provisioning under `ProjectsAndUploads.md`'s resolution — that provisioning follows from any Member's or API Client's standing to submit an Upload. No Role value was added or changed; no Platform Domain Model concept was introduced.
