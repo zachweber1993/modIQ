@@ -1492,3 +1492,19 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation, transport, or delivery-mechanism detail was introduced; this document's own Runtime Boundary states these are explicitly out of scope.
 - With this milestone, all four items in `PlatformSpecification.md`'s Architectural Decisions Deferred table are resolved; two governed topic documents (`SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Engineering Alignment Program — Formal Closure]
+
+**Status:** Complete. Chief Architect closure declaration, 2026-07-30.
+
+## Changed
+
+- `docs/engineering/ENGINEERING_ALIGNMENT_PROGRAM.md` — Status updated from Approved to Complete; As of date updated; a Closure note added recording that all five initiatives reached a documented terminal state.
+
+## Notes
+
+- All five initiatives closed: Initiative 5 (Adopted), Initiative 1 (Adopted Architectural Constraints; D-1/D-2 intentionally unresolved), Initiative 2 (closed via Governance Reconciliation — Question 1 remains unreconcilable under current governance, a documented terminal state, not an open item), Initiative 3 (Adopted, with named-not-dispositioned items), Initiative 4 (Adopted/Deferred, concluding the Program's architectural work).
+- No architectural decision was reopened or altered by this closure. This entry records administrative closure of the Program's own charter, not a new architectural finding.
+- Future work does not reopen this Program by default; a new charter would need explicit authorization.
+- No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified.
+- Changes are prepared in the working tree only; no commit was made.
