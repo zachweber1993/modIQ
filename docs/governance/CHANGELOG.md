@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-30 (DashboardAndConsole.md approval) |
+| **Last Updated** | 2026-07-30 (WayfindingAndSearch.md approval) |
 
 ---
 
@@ -1415,3 +1415,31 @@ The Documentation Release 1.0 Final Review concluded with:
 - Re-flagged, not newly found: the Glossary's missing "Recommendation" entry (Initiative 3's Item 8) remains directly relevant, since Confidence's placement rules depend throughout on that concept.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No data type, computation mechanism, or classification was adopted.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture — WayfindingAndSearch.md]
+
+**Status:** Complete (`WayfindingAndSearch.md` approved as the fourth governed specification of the Platform Architecture lineage; drafted and revised across one editorial pass before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/platform/WayfindingAndSearch.md` — refines Wayfinding and Search, the two remaining unaddressed elements of `PlatformSpecification.md`'s platform experience layer, without introducing any first-class Platform Architecture concept. Establishes the Governing Principle "Wayfinding changes which Platform resource and interaction region are active. It does not alter the internal state of an interaction region, create Platform state, mutate Platform state, or participate in Platform lifecycle actions." Confirms the three navigable Platform resources (Organization, Project, Assessment up to the Workspace boundary) directly from `PlatformSpecification.md`'s own Wayfinding terminology entry. Establishes that Wayfinding operates only over what `IdentityAndAccess.md`'s Membership already makes visible, performing no independent authorization. Extends the Platform Vocabulary table with Wayfinding (moves) and Search (locates), keeping one verb per responsibility across nine elements. Explicitly excludes notification behavior, runtime search implementation, and all Workspace/Product Design/Interaction Design territory. Resolves no item from `PlatformSpecification.md`'s Architectural Decisions Deferred table. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — updated the Platform Architecture Documentation Groups row and the Known Navigation Gap entry to record `WayfindingAndSearch.md`'s approval; three governed topic documents remain undrafted.
+- `docs/README.md` — added `WayfindingAndSearch.md` to the Platform Architecture Track section.
+- `docs/governance/PROJECT_STATUS.md` — added `WayfindingAndSearch.md` to the Platform Architecture Track section.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, `PlatformSpecification.md`) was modified.
+- No Product Design or Interaction Design artifact was modified.
+- No Runtime Architecture artifact was modified.
+- No first-class Platform Architecture concept was introduced.
+- This document's own framing, developed across several prior chat turns before drafting, resolved three scope boundaries later confirmed unchanged during drafting: Dashboard vs. Wayfinding (presents vs. moves, including that a transition triggered from Dashboard's own content is still Wayfinding's), Identity & Access vs. Wayfinding (visibility vs. movement over what's visible), and Wayfinding vs. Search (moves vs. locates).
+- No `docs/platform/README.md` was created — same reasoning as the prior three milestones.
+- No implementation, indexing, ranking, or routing detail was introduced; this document's own Boundaries sections state these are explicitly out of scope.
+- No further governed Platform Architecture topic document (`Notifications.md`, and the rest) was drafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
