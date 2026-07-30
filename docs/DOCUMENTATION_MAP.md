@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Architectural overview of the repository's documentation — orientation, not content. |
 | **Status** | Living. Reflects repository structure, not any single specification's content. |
-| **Last Updated** | 2026-07-30 (Notifications.md approval) |
+| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 repository synchronization) |
 
 ---
 
@@ -24,7 +24,7 @@ The repository's documentation is not one linear sequence. It is three related b
 
 **The Product Track** — Product Definition → Product Design → Interaction Design. Defines the Version 1 assessment *experience*, ahead of and independent from implementation. Carries no Documentation Authority ranking and is not governed by the Governance Register — its own convention is a lightweight closeout record at the end of each phase.
 
-**The Platform Architecture Lineage** — a single constitutional document, `docs/platform/PlatformSpecification.md`, approved as the foundation for a lineage of governed topic documents not yet drafted. Defines the platform-level identity, tenancy, and containment model surrounding the Assessment — Organization, User, Project, and the rest — distinct from the Assessment experience the Product Track defines and from the Runtime Architecture the Engineering Specification lineage defines. Carries no Documentation Authority ranking and is not governed by the Governance Register; its own governance is internal to `PlatformSpecification.md`, which is the sole authority for introducing new first-class concepts within it.
+**The Platform Architecture Lineage** — a constitutional document, `docs/platform/PlatformSpecification.md`, and five approved governed topic documents built on it: `IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, and `Notifications.md`. Defines the platform-level identity, tenancy, and containment model surrounding the Assessment — Organization, User, Project, and the rest — distinct from the Assessment experience the Product Track defines and from the Runtime Architecture the Engineering Specification lineage defines. Carries no Documentation Authority ranking and is not governed by the Governance Register; its own governance is internal to `PlatformSpecification.md`, which is the sole authority for introducing new first-class concepts within it.
 
 **As of this writing, none of the three lineages are reconciled with one another**: no Sprint has been scoped against any Product Design or Interaction Design artifact, and the Engineering Alignment Program governing that reconciliation does not yet include the Platform Architecture lineage as one of the bodies of work it reconciles. `docs/governance/PROJECT_STATUS.md`'s "Product & Interaction Design Track" and "Platform Architecture Track" sections state this explicitly. Future work bringing all three into alignment is anticipated but not yet authorized or scheduled.
 

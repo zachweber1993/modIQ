@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | **Document** | WayfindingAndSearch.md |
-| **Status** | Approved |
+| **Status** | Approved, amended 2026-07-30 (Notifications.md forward reference synchronized) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-30 |
@@ -123,7 +123,7 @@ Search locates. Wayfinding moves. Search may expose a Platform resource as a nav
 
 ## Future Specification Boundaries
 
-`Notifications.md` owns notification behavior, delivery, and addressing.
+`Notifications.md` owns notification communication and Platform-level notification lifecycle — not runtime transport (email, push delivery, queues, polling, or infrastructure), which remains Runtime and implementation's concern.
 
 Runtime search implementation — indexing, ranking, query execution — is an implementation concern, outside Platform Architecture entirely, not delegated to any governed document.
 
@@ -140,3 +140,5 @@ Workspace behavior, product workflows, assessment workflows, and interaction ins
 ## Document Status
 
 **Approved** — the fourth governed specification of the Platform Architecture lineage. Ratified per `PlatformSpecification.md`'s Platform Architecture Governance section, which permits this document to refine and apply the concepts it delegates without expanding the Platform Domain Model.
+
+**Amended 2026-07-30:** revised the Future Specification Boundaries' forward reference to `Notifications.md` to distinguish Platform-level notification communication and lifecycle (owned) from runtime transport mechanisms (not owned). Wording synchronization only — no boundary, concept, or responsibility changed.

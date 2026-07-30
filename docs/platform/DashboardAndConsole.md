@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | **Document** | DashboardAndConsole.md |
-| **Status** | Approved |
+| **Status** | Approved, amended 2026-07-30 (Notifications.md forward reference synchronized) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-30 |
@@ -109,7 +109,7 @@ It does not redefine Organization, User, Membership, Project, Upload, Assessment
 
 `WayfindingAndSearch.md` owns navigation semantics, movement, search, transition behavior, and organization-switching behavior — the behavior itself, not the structural fact that Console contains a selector (see *Organization Switching*, above).
 
-`Notifications.md` owns notification behavior, delivery, addressing, and lifecycle.
+`Notifications.md` owns notification communication and Platform-level notification lifecycle — not runtime transport (email, push delivery, queues, polling, or infrastructure), which remains Runtime and implementation's concern.
 
 This document acknowledges that Console contains shell elements associated with a future capability only where one was established above (the Organization selector) — it does not anticipate or acknowledge any other.
 
@@ -126,3 +126,5 @@ Any interaction beyond the boundaries of a Console region — for example, movem
 ## Document Status
 
 **Approved** — the third governed specification of the Platform Architecture lineage. Ratified per `PlatformSpecification.md`'s Platform Architecture Governance section, which permits this document to refine and apply the concepts it delegates without expanding the Platform Domain Model.
+
+**Amended 2026-07-30:** revised the Future Specification Boundaries' forward reference to `Notifications.md` to distinguish Platform-level notification communication and lifecycle (owned) from runtime transport mechanisms (not owned, per `Notifications.md`'s own Architectural Boundaries once drafted). Wording synchronization only — no boundary, concept, or responsibility changed.

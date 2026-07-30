@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-30 (Notifications.md approval) |
+| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 repository synchronization) |
 
 ---
 
@@ -1508,3 +1508,24 @@ The Documentation Release 1.0 Final Review concluded with:
 - Future work does not reopen this Program by default; a new charter would need explicit authorization.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture 1.0 — Repository Synchronization]
+
+**Status:** Complete (documentation synchronization following the Platform Architecture Lineage Audit v1.0; resolves all three findings; no architectural content changed)
+
+## Changed
+
+- `docs/platform/PlatformSpecification.md` — synchronized the Architectural Decisions Deferred table: the Notification addressing item, previously shown as Open, now reads Resolved — User-only, confirmed, ratified in `Notifications.md`. All four items are now recorded as resolved.
+- `docs/DOCUMENTATION_MAP.md` — synchronized "The Three Lineages" section's Platform Architecture paragraph, which still described the lineage as one constitutional document with topic documents "not yet drafted," to instead name all five approved governed topic documents. The document is now internally consistent with its own Documentation Groups row.
+- `docs/platform/DashboardAndConsole.md` and `docs/platform/WayfindingAndSearch.md` — revised the identical forward-reference sentence in each ("`Notifications.md` owns notification behavior, delivery, addressing, and lifecycle" / "...delivery, and addressing") to distinguish Platform-level notification communication and lifecycle (owned) from runtime transport mechanisms — email, push delivery, queues, polling, infrastructure (not owned), matching what `Notifications.md` itself claims once drafted.
+
+## Notes
+
+- This milestone originated entirely from the Platform Architecture Lineage Audit v1.0 (chat-recorded, not a separate document) — a verify-only pass across all six Platform Architecture documents and all four navigation files.
+- No architectural concept, boundary, responsibility, or vocabulary was changed by any of the three fixes — each is a documentation-currency correction of already-approved architecture, not a new decision.
+- `docs/platform/Notifications.md` itself was not modified — it was the reference point the other documents were synchronized against.
+- `docs/README.md`, `docs/governance/PROJECT_STATUS.md`, and `docs/governance/CHANGELOG.md`'s own Platform Architecture entries were checked during the audit and found already accurate — not modified here.
+- No constitutional document above `PlatformSpecification.md` was touched.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.

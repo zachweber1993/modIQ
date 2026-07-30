@@ -5,7 +5,7 @@
 | Property | Value |
 |---|---|
 | **Document** | PlatformSpecification.md |
-| **Status** | Approved, amended 2026-07-29 (Architectural Decisions Deferred table synchronized) |
+| **Status** | Approved, amended 2026-07-29 and 2026-07-30 (Architectural Decisions Deferred table synchronized) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-29 |
@@ -223,13 +223,13 @@ Every document this specification governs, and this specification itself, satisf
 
 ## Architectural Decisions Deferred
 
-Each item is ratified in the topic document named, not adopted here. Three of the four have since been ratified; the fourth remains open.
+Each item is ratified in the topic document named, not adopted here. All four have since been ratified.
 
 | Decision | Status | Resolved by |
 |---|---|---|
 | Does every Project require an Organization, including a solo User's? | Resolved — yes, one ownership rule, not two. | `IdentityAndAccess.md` |
 | Is a Project mandatory, or auto-created implicitly? | Resolved — auto-created, provisioned automatically when none is designated. | `ProjectsAndUploads.md` |
-| Can a Notification target an entire Organization, or only a User? | Open — User-only remains the working assumption. | `Notifications.md` |
+| Can a Notification target an entire Organization, or only a User? | Resolved — User-only, confirmed. | `Notifications.md` |
 | Does an API Client's grant carry Role/Project scope, like a Membership, or is it always Organization-wide? | Resolved — Organization-wide. | `IdentityAndAccess.md` |
 
 ---
@@ -278,3 +278,5 @@ Product Design and Interaction Design define what an Assessment means and how it
 **Approved** — ratified 2026-07-29. The status values applicable to this document across its lifecycle are: **Draft** (not yet ratified), **Approved** (ratified, not yet frozen), **Frozen** (permanent; changes only through a governed amendment), **Superseded** (replaced by a later document). Approval authorizes governed Platform Architecture documents to be drafted against this specification; it does not freeze this specification against future amendment.
 
 **Amended 2026-07-29:** the Architectural Decisions Deferred table was updated to record that three of its four items have since been ratified in `IdentityAndAccess.md` and `ProjectsAndUploads.md`. This is a documentation synchronization, not a new architectural decision — no concept, boundary, or governance rule changed; the table previously showed each item's original working assumption and now shows its resolution instead.
+
+**Amended 2026-07-30:** the Architectural Decisions Deferred table was updated to record that the fourth and final item — Notification addressing scope — has been ratified in `Notifications.md` (User-only, confirmed). All four items are now resolved. This is a documentation synchronization, not a new architectural decision.
