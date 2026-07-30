@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-29 (ProjectsAndUploads.md approval) |
+| **Last Updated** | 2026-07-30 (DashboardAndConsole.md approval) |
 
 ---
 
@@ -1365,3 +1365,31 @@ The Documentation Release 1.0 Final Review concluded with:
 - The Engineering Alignment Program is **not** complete: Initiative 4 (Confidence as a First-Class Concept) remains unevaluated.
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No Documentation Authority or other governance document was amended.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture — DashboardAndConsole.md]
+
+**Status:** Complete (`DashboardAndConsole.md` approved as the third governed specification of the Platform Architecture lineage; drafted and revised across one editorial pass before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/platform/DashboardAndConsole.md` — refines Console and Dashboard, the two experience-layer elements `PlatformSpecification.md`'s Scope names but excludes from the Platform Domain Model, without introducing any first-class Platform Architecture concept. Establishes Console as the persistent interaction shell (reflects Platform state, contains interaction regions, owns no Platform concept, no independent lifecycle) and Dashboard as its default region (presents Platform state derived entirely from the Domain Model). References Workspace only to establish its containment relationship to Console, without redefining it — Workspace remains Product Design's and Interaction Design's. Establishes a Platform Vocabulary table giving each Platform element and each interaction-layer element exactly one verb. Explicitly excludes navigation, movement between Organizations/Projects/Assessments, search, and notification behavior/delivery, naming `WayfindingAndSearch.md` and `Notifications.md` as their respective owners; acknowledges only that Console may contain an Organization selector as shell chrome, without defining switching behavior. Resolves no item from `PlatformSpecification.md`'s Architectural Decisions Deferred table. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — updated the Platform Architecture Documentation Groups row and the Known Navigation Gap entry to record `DashboardAndConsole.md`'s approval; four governed topic documents remain undrafted.
+- `docs/README.md` — added `DashboardAndConsole.md` to the Platform Architecture Track section.
+- `docs/governance/PROJECT_STATUS.md` — added `DashboardAndConsole.md` to the Platform Architecture Track section.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, `PlatformSpecification.md`) was modified.
+- No Product Design or Interaction Design artifact was modified — `WORKSPACE_EVOLUTION.md` and `NAVIGATION_AND_WORKSPACE_BEHAVIOR.md` were referenced only, as the authority Workspace remains under.
+- No Runtime Architecture artifact was modified.
+- No first-class Platform Architecture concept was introduced.
+- This document's own drafting surfaced a scope question (whether Navigation, Search, Organization switching, and Notifications belonged here) that was resolved by deferring all four to `WayfindingAndSearch.md` and `Notifications.md`, consistent with `PlatformSpecification.md`'s existing Governs list and Terminology entries — not a new decision, a confirmation of existing delegation.
+- No `docs/platform/README.md` was created — same reasoning as the prior two milestones.
+- No implementation, persistence, routing, or API-contract detail was introduced; this document's own Boundaries section states these are explicitly out of scope.
+- No further governed Platform Architecture topic document (`WayfindingAndSearch.md`, and the rest) was drafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
