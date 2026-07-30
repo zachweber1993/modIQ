@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | **Document** | IdentityAndAccess.md |
-| **Status** | Approved, amended 2026-07-29 (automatic Project provisioning authorization clarified) |
+| **Status** | Frozen — Platform Architecture 1.0 (2026-07-30) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-29 |
@@ -112,3 +112,5 @@ It defines no persistence, no credential mechanism, no session model, and no API
 **Approved** — the first governed specification of the Platform Architecture lineage. Ratified per `PlatformSpecification.md`'s Platform Architecture Governance section, which permits this document to refine and apply the concepts it delegates without expanding the Platform Domain Model.
 
 **Amended 2026-07-29:** added a clarification to the Role section stating that the Owner-only restriction on Project creation applies to deliberate, administrative creation and does not extend to automatic Project provisioning under `ProjectsAndUploads.md`'s resolution — that provisioning follows from any Member's or API Client's standing to submit an Upload. No Role value was added or changed; no Platform Domain Model concept was introduced.
+
+**Frozen 2026-07-30**, as part of Platform Architecture 1.0, per `PlatformSpecification.md`'s Document Status. Any future change to this document is a governed amendment to Platform Architecture, not ordinary editing.

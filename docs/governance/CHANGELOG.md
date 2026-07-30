@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 repository synchronization) |
+| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 frozen) |
 
 ---
 
@@ -1528,4 +1528,22 @@ The Documentation Release 1.0 Final Review concluded with:
 - `docs/platform/Notifications.md` itself was not modified — it was the reference point the other documents were synchronized against.
 - `docs/README.md`, `docs/governance/PROJECT_STATUS.md`, and `docs/governance/CHANGELOG.md`'s own Platform Architecture entries were checked during the audit and found already accurate — not modified here.
 - No constitutional document above `PlatformSpecification.md` was touched.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+---
+
+# [Platform Architecture 1.0 — Frozen]
+
+**Status:** Complete (Status transition Approved → Frozen across all six Platform Architecture documents, per explicit Product Owner disposition; no architectural content changed)
+
+## Changed
+
+- `docs/platform/PlatformSpecification.md`, `IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md` — Status field changed from Approved to Frozen — Platform Architecture 1.0 (2026-07-30) in each; a Frozen declaration added to each Document Status section. `PlatformSpecification.md`'s own Document Status additionally states the amendment discipline now governing the lineage: any future change to any of the six is a governed amendment, stating its own rationale and impact, not ordinary editing.
+- `docs/DOCUMENTATION_MAP.md`, `docs/README.md`, `docs/governance/PROJECT_STATUS.md` — Platform Architecture Track / Documentation Groups entries updated to record the freeze; each of the six documents' per-item status label changed from Approved to Frozen.
+
+## Notes
+
+- This is a governance status transition, not an architectural change. No concept, boundary, responsibility, vocabulary, or decision was added, removed, or reinterpreted anywhere.
+- `SettingsAndBilling.md` and `PlatformSurfaces.md` remain undrafted and are explicitly unaffected by the freeze — future work on them inherits Platform Architecture 1.0 as a fixed baseline rather than revisiting it.
+- The Frozen status and its amendment-discipline consequence were already defined in `PlatformSpecification.md`'s own Document Status vocabulary at ratification (2026-07-29); this milestone exercises that existing mechanism rather than introducing a new one.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.

@@ -5,7 +5,7 @@
 | Property | Value |
 |---|---|
 | **Document** | PlatformSpecification.md |
-| **Status** | Approved, amended 2026-07-29 and 2026-07-30 (Architectural Decisions Deferred table synchronized) |
+| **Status** | Frozen — Platform Architecture 1.0 (2026-07-30) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-29 |
@@ -275,7 +275,9 @@ Product Design and Interaction Design define what an Assessment means and how it
 
 ## Document Status
 
-**Approved** — ratified 2026-07-29. The status values applicable to this document across its lifecycle are: **Draft** (not yet ratified), **Approved** (ratified, not yet frozen), **Frozen** (permanent; changes only through a governed amendment), **Superseded** (replaced by a later document). Approval authorizes governed Platform Architecture documents to be drafted against this specification; it does not freeze this specification against future amendment.
+**Frozen** — Platform Architecture 1.0, effective 2026-07-30. The status values applicable to this document across its lifecycle are: **Draft** (not yet ratified), **Approved** (ratified, not yet frozen), **Frozen** (permanent; changes only through a governed amendment), **Superseded** (replaced by a later document).
+
+Frozen means this specification, and the five governed specifications built on it (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`), are now permanent. Any future change to any of the six is a governed amendment to Platform Architecture, not ordinary editing — it must state its own rationale and impact, following the same pattern already used for the amendments recorded below. New architectural work (`SettingsAndBilling.md`, `PlatformSurfaces.md`, and beyond) inherits this baseline; it does not revisit it.
 
 **Amended 2026-07-29:** the Architectural Decisions Deferred table was updated to record that three of its four items have since been ratified in `IdentityAndAccess.md` and `ProjectsAndUploads.md`. This is a documentation synchronization, not a new architectural decision — no concept, boundary, or governance rule changed; the table previously showed each item's original working assumption and now shows its resolution instead.
 

@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Architectural overview of the repository's documentation — orientation, not content. |
 | **Status** | Living. Reflects repository structure, not any single specification's content. |
-| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 repository synchronization) |
+| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 frozen) |
 
 ---
 
@@ -24,7 +24,7 @@ The repository's documentation is not one linear sequence. It is three related b
 
 **The Product Track** — Product Definition → Product Design → Interaction Design. Defines the Version 1 assessment *experience*, ahead of and independent from implementation. Carries no Documentation Authority ranking and is not governed by the Governance Register — its own convention is a lightweight closeout record at the end of each phase.
 
-**The Platform Architecture Lineage** — a constitutional document, `docs/platform/PlatformSpecification.md`, and five approved governed topic documents built on it: `IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, and `Notifications.md`. Defines the platform-level identity, tenancy, and containment model surrounding the Assessment — Organization, User, Project, and the rest — distinct from the Assessment experience the Product Track defines and from the Runtime Architecture the Engineering Specification lineage defines. Carries no Documentation Authority ranking and is not governed by the Governance Register; its own governance is internal to `PlatformSpecification.md`, which is the sole authority for introducing new first-class concepts within it.
+**The Platform Architecture Lineage** — a constitutional document, `docs/platform/PlatformSpecification.md`, and five governed topic documents built on it: `IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, and `Notifications.md`. **Frozen as Platform Architecture 1.0, effective 2026-07-30** — permanent; any future change to any of the six is a governed amendment, not ordinary editing. Defines the platform-level identity, tenancy, and containment model surrounding the Assessment — Organization, User, Project, and the rest — distinct from the Assessment experience the Product Track defines and from the Runtime Architecture the Engineering Specification lineage defines. Carries no Documentation Authority ranking and is not governed by the Governance Register; its own governance is internal to `PlatformSpecification.md`, which is the sole authority for introducing new first-class concepts within it.
 
 **As of this writing, none of the three lineages are reconciled with one another**: no Sprint has been scoped against any Product Design or Interaction Design artifact, and the Engineering Alignment Program governing that reconciliation does not yet include the Platform Architecture lineage as one of the bodies of work it reconciles. `docs/governance/PROJECT_STATUS.md`'s "Product & Interaction Design Track" and "Platform Architecture Track" sections state this explicitly. Future work bringing all three into alignment is anticipated but not yet authorized or scheduled.
 
@@ -44,7 +44,7 @@ The repository's documentation is not one linear sequence. It is three related b
 | Releases | `docs/releases/` and `docs/engineering/ENGINEERING_RELEASE_*.md` | Per-Sprint/Documentation-Release engineering records. Split across two locations — see Known Navigation Gaps below. | `docs/governance/PROJECT_STATUS.md` |
 | Product Design | `docs/product-design/` | The Version 1 conceptual product model: Workspace Evolution, The Finding, The Assessment Experience, Evidence, The Assessment Report. | `docs/product-design/README.md` |
 | Interaction Design | `docs/interaction-design/` | Version 1 behavioral specification, built on the Product Design model. | `docs/interaction-design/README.md` |
-| Platform Architecture | `docs/platform/` | The platform-level identity, tenancy, and containment model surrounding the Assessment. Constitutional foundation plus five approved governed topic documents (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`); all four Architectural Decisions Deferred now resolved; two topic documents (`SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted. | `docs/platform/PlatformSpecification.md` |
+| Platform Architecture | `docs/platform/` | The platform-level identity, tenancy, and containment model surrounding the Assessment. **Frozen as Platform Architecture 1.0** (constitutional foundation plus five governed topic documents: `IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`); all four Architectural Decisions Deferred resolved; two topic documents (`SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted and unaffected by the freeze. | `docs/platform/PlatformSpecification.md` |
 
 ---
 

@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | **Document** | Notifications.md |
-| **Status** | Approved |
+| **Status** | Frozen — Platform Architecture 1.0 (2026-07-30) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-30 |
@@ -136,3 +136,5 @@ With this resolved, all four items in `PlatformSpecification.md`'s Architectural
 ## Document Status
 
 **Approved** — the fifth governed specification of the Platform Architecture lineage. Ratified per `PlatformSpecification.md`'s Platform Architecture Governance section, which permits this document to refine and apply the concepts it delegates without expanding the Platform Domain Model.
+
+**Frozen 2026-07-30**, as part of Platform Architecture 1.0, per `PlatformSpecification.md`'s Document Status. Any future change to this document is a governed amendment to Platform Architecture, not ordinary editing.
