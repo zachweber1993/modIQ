@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-30 (WayfindingAndSearch.md approval) |
+| **Last Updated** | 2026-07-30 (Notifications.md approval) |
 
 ---
 
@@ -1465,3 +1465,30 @@ The Documentation Release 1.0 Final Review concluded with:
 - Three governance recommendations are named for separate consideration, not acted on here: whether Sprint 8's Architectural Activation test should be extended or clarified for partial-match cases; GOV-013's own independent scheduling, now that no dependency was found; the Glossary's still-missing "Recommendation" entry (Initiative 3's Item 8).
 - No ADR was created. No Governance Register entry was opened or modified. No crate boundary was modified. No data type, computation mechanism, or classification was adopted. No implementation was authorized.
 - Changes are prepared in the working tree only; no commit was made.
+
+---
+
+# [Platform Architecture — Notifications.md]
+
+**Status:** Complete (`Notifications.md` approved as the fifth governed specification of the Platform Architecture lineage; drafted and revised across two passes — one full draft, one rationale refinement — before approval; synchronized per `RepositorySynchronizationPolicy.md`)
+
+## Added
+
+- `docs/platform/Notifications.md` — refines Notification as the Platform Architecture responsible for communicating already-existing Platform state, without introducing any first-class Platform Architecture concept. Establishes that Notifications never create, mutate, authorize, present, or navigate Platform state, and never participate in a Platform lifecycle action — a Notification is evidence that something happened, never the thing that happened. Clarifies that "Delivered" in the constitutional Lifecycle Model is a Platform Architecture fact (the Notification exists, associated with its recipient), not a transport claim, and explicitly does not design around the still-open engine observation-point dependency `PlatformSpecification.md`'s Architectural Dependencies section already named. Extends the Platform Vocabulary table with Notification (communicates), completing all ten elements. Resolves the final item of `PlatformSpecification.md`'s Architectural Decisions Deferred table: Notification addressing remains User-only, anchored in Notification's constitutional User-owned status rather than in generation behavior — an Organization-wide occurrence is represented by distinct, User-owned Notifications, one per Member `IdentityAndAccess.md` determines holds standing, not by a new Organization-addressed form. Approved by Product Owner disposition.
+
+## Changed
+
+- `docs/DOCUMENTATION_MAP.md` — updated the Platform Architecture Documentation Groups row and the Known Navigation Gap entry to record `Notifications.md`'s approval and that all four Architectural Decisions Deferred are now resolved; two governed topic documents remain undrafted.
+- `docs/README.md` — added `Notifications.md` to the Platform Architecture Track section.
+- `docs/governance/PROJECT_STATUS.md` — added `Notifications.md` to the Platform Architecture Track section; updated the undrafted-documents count to two.
+
+## Notes
+
+- No constitutional document (`Vision.md`, `Principles.md`, `Glossary.md`, `ProductSpecification.md`, `PlatformSpecification.md`) was modified.
+- No Product Design, Interaction Design, or Runtime Architecture artifact was modified.
+- No first-class Platform Architecture concept was introduced.
+- The Architectural Decisions Deferred rationale was revised once before approval, at explicit review request: reframed from an emphasis on Notification-generation behavior (one Notification per Member, as a practical consequence) to an emphasis on Notification's constitutional ownership (User-owned by `PlatformSpecification.md`'s own Ownership Model, foreclosing Organization-addressed Notification without an amendment) — the conclusion and decision were unchanged throughout.
+- No `docs/platform/README.md` was created — same reasoning as the prior four milestones.
+- No implementation, transport, or delivery-mechanism detail was introduced; this document's own Runtime Boundary states these are explicitly out of scope.
+- With this milestone, all four items in `PlatformSpecification.md`'s Architectural Decisions Deferred table are resolved; two governed topic documents (`SettingsAndBilling.md`, `PlatformSurfaces.md`) remain undrafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
