@@ -1547,3 +1547,25 @@ The Documentation Release 1.0 Final Review concluded with:
 - `SettingsAndBilling.md` and `PlatformSurfaces.md` remain undrafted and are explicitly unaffected by the freeze — future work on them inherits Platform Architecture 1.0 as a fixed baseline rather than revisiting it.
 - The Frozen status and its amendment-discipline consequence were already defined in `PlatformSpecification.md`'s own Document Status vocabulary at ratification (2026-07-29); this milestone exercises that existing mechanism rather than introducing a new one.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Platform Architecture — SettingsAndBilling.md]
+
+**Status:** Complete (`SettingsAndBilling.md` approved as the sixth specification of the Platform Architecture lineage — the first drafted after the Platform Architecture 1.0 freeze; drafted and revised across two review passes before approval; synchronized per the Repository Operating Charter)
+
+## Added
+
+- `docs/platform/SettingsAndBilling.md` — refines Settings, the platform experience-layer element `PlatformSpecification.md`'s Scope names but excludes from the Domain Model, without introducing any first-class Platform Architecture concept. Establishes Settings as a non-owning interaction region, following `DashboardAndConsole.md`'s own discipline: it presents and surfaces management action over Organization, User, Membership, Subscription, and API Client, never owning or redefining any of them. Defines two areas: Account Settings (a User's own Memberships and Role-gated actions over them) and Subscription & Billing (an Organization's Subscription — plan selection, invoice visibility — and Organization-owned API Client standing). Mutating actions surfaced through Settings invoke lifecycle transitions `PlatformSpecification.md`/`IdentityAndAccess.md` already own; Settings owns the surface, not the transition. Resolves no Architectural Decision Deferred — all four were already resolved before this document existed.
+
+## Changed
+
+- `docs/README.md` and `docs/DOCUMENTATION_MAP.md` — both updated to list `SettingsAndBilling.md` as the sixth governed Platform Architecture topic document, Approved and drafted after the freeze, distinct from the five Frozen documents. `PlatformSurfaces.md` remains the only undrafted topic document, its own scope explicitly not yet determined.
+- `docs/governance/PROJECT_STATUS.md` — Platform Architecture Track section updated with the same summary.
+
+## Notes
+
+- No first-class Platform Architecture concept was introduced.
+- Two review passes preceded approval: the first removed an ordinal self-reference and tightened the Architectural Decisions Deferred section to state plainly that no new deferred decision is introduced; the second confirmed "movement" (not "navigation") is the terminology `PlatformSpecification.md`'s own Terminology section reserves for Wayfinding, and removed Workspace from this document's own vocabulary table since — unlike `DashboardAndConsole.md` or `WayfindingAndSearch.md` — this document has no structural relationship to Workspace to justify repeating that row.
+- Status was set to Approved directly, consistent with this repository's demonstrated practice across all six prior Platform Architecture documents — none was ever synchronized at Draft.
+- No implementation, persistence, payment-provider, or billing-system detail was introduced; this document's own Boundaries section states these are explicitly out of scope.
+- `PlatformSurfaces.md` remains undrafted; a dedicated architectural scope determination for it is the next planned milestone, not automatic continuation.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
