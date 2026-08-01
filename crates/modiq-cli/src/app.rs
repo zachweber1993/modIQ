@@ -1,4 +1,6 @@
-use crate::commands::{AssessCommand, HelpCommand, RetrieveCommand, VersionCommand};
+use crate::commands::{
+    AssessCommand, HelpCommand, HistoryCommand, RetrieveCommand, VersionCommand,
+};
 
 /// Default root directory Storage persists reports under, relative to
 /// the current working directory. Not configurable yet — this is the
@@ -34,10 +36,10 @@ impl ExitCode {
 /// Owns command dispatch only (`GOVERNANCE.md`, CLI: "user interaction,
 /// command execution, platform entry point"); it must never itself
 /// evaluate an Assessment or reimplement anything `AssessmentService`
-/// already does. Four concrete commands exist today, dispatched by one
+/// already does. Five concrete commands exist today, dispatched by one
 /// direct match — no command trait, registry, or lookup table, per this
 /// platform's "capability before abstraction" discipline: two commands
-/// is not evidence a dispatch abstraction is justified, and four still
+/// is not evidence a dispatch abstraction is justified, and five still
 /// isn't.
 pub struct Application;
 
@@ -69,6 +71,7 @@ impl Application {
                     ExitCode::InvalidUsage,
                 ),
             },
+            Some("history") => HistoryCommand::run(STORAGE_ROOT),
             Some(other) => (
                 format!(
                     "{}\n\nerror: unrecognized command `{other}`",
@@ -132,6 +135,16 @@ mod tests {
 
         assert_eq!(exit_code, ExitCode::InvalidUsage);
         assert!(message.contains("no report is stored"));
+    }
+
+    #[test]
+    fn history_command_dispatches_and_succeeds() {
+        // Deep functional coverage (empty store, recurring patterns,
+        // sort order) lives in `HistoryCommand`'s own, isolated test
+        // module; this only confirms `Application` dispatches to it.
+        let (_, exit_code) = Application::run(&["history".to_string()]);
+
+        assert_eq!(exit_code, ExitCode::Success);
     }
 
     #[test]

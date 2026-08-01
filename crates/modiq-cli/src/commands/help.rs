@@ -13,6 +13,7 @@ impl HelpCommand {
                 "Usage:\n",
                 "  modiq-cli assess <path>     Run an assessment against a filesystem path or .zip archive\n",
                 "  modiq-cli retrieve <key>    Retrieve a previously-stored assessment report\n",
+                "  modiq-cli history           Show recurring Rule/Severity patterns across all stored reports\n",
                 "  modiq-cli help              Show this message\n",
                 "  modiq-cli version           Show the CLI version",
             ),
@@ -26,11 +27,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn run_mentions_all_four_commands() {
+    fn run_mentions_all_five_commands() {
         let output = HelpCommand::run();
 
         assert!(output.contains("assess"));
         assert!(output.contains("retrieve"));
+        assert!(output.contains("history"));
         assert!(output.contains("help"));
         assert!(output.contains("version"));
     }

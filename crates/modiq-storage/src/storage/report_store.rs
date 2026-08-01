@@ -51,6 +51,35 @@ impl ReportStore {
         serde_json::from_slice(&bytes).map_err(ReportStoreError::Deserialize)
     }
 
+    /// Returns every key currently persisted at this store's root,
+    /// sorted by value for deterministic ordering — directory
+    /// enumeration order is not guaranteed stable across platforms or
+    /// invocations. A root that does not exist yet (no report has
+    /// ever been stored here) returns an empty list, not an error,
+    /// consistent with an empty store being a real, valid state.
+    pub fn list_keys(&self) -> Result<Vec<ReportKey>, ReportStoreError> {
+        let entries = match fs::read_dir(&self.root) {
+            Ok(entries) => entries,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
+            Err(error) => return Err(ReportStoreError::Read(error)),
+        };
+
+        let mut keys = Vec::new();
+        for entry in entries {
+            let entry = entry.map_err(ReportStoreError::Read)?;
+            let path = entry.path();
+            if path.extension().and_then(|extension| extension.to_str()) != Some("json") {
+                continue;
+            }
+            if let Some(stem) = path.file_stem().and_then(|stem| stem.to_str()) {
+                keys.push(ReportKey::from_raw(stem));
+            }
+        }
+
+        keys.sort_by(|a, b| a.value().cmp(b.value()));
+        Ok(keys)
+    }
+
     fn path_for(&self, key: &ReportKey) -> PathBuf {
         self.root.join(format!("{}.json", key.value()))
     }
@@ -189,5 +218,56 @@ mod tests {
         let second = store.store(&report).unwrap();
 
         assert_ne!(first, second);
+    }
+
+    #[test]
+    fn list_keys_against_a_root_that_was_never_written_to_is_empty() {
+        let dir = TempDir::new("list-keys-never-written");
+        let store = ReportStore::new(dir.path());
+
+        let keys = store
+            .list_keys()
+            .expect("an unwritten root is a valid, empty store");
+
+        assert!(keys.is_empty());
+    }
+
+    #[test]
+    fn list_keys_returns_every_stored_key() {
+        let dir = TempDir::new("list-keys-multiple");
+        let store = ReportStore::new(dir.path());
+        let report = sample_report();
+
+        let first = store.store(&report).unwrap();
+        let second = store.store(&report).unwrap();
+        let third = store.store(&report).unwrap();
+
+        let mut keys = store.list_keys().unwrap();
+        keys.sort_by(|a, b| a.value().cmp(b.value()));
+
+        let mut expected = vec![first, second, third];
+        expected.sort_by(|a, b| a.value().cmp(b.value()));
+
+        assert_eq!(keys, expected);
+    }
+
+    #[test]
+    fn list_keys_is_sorted_regardless_of_store_order() {
+        let dir = TempDir::new("list-keys-sorted");
+        let store = ReportStore::new(dir.path());
+        let report = sample_report();
+
+        for _ in 0..5 {
+            store.store(&report).unwrap();
+        }
+
+        let keys = store.list_keys().unwrap();
+        let mut sorted = keys.clone();
+        sorted.sort_by(|a, b| a.value().cmp(b.value()));
+
+        assert_eq!(
+            keys, sorted,
+            "list_keys must already return a sorted result"
+        );
     }
 }
