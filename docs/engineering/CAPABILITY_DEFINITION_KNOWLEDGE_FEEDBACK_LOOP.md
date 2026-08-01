@@ -159,4 +159,4 @@ Per this project's standing Capability Success Criteria convention (`PROJECT_HAN
 
 ---
 
-Awaiting Chief Architect review. No implementation, documentation change, governance item, or ADR has been made this session.
+**Superseded by suspension, recorded in the header above.** This capability was reviewed and suspended, not withdrawn, by explicit Chief Architect direction in favor of the narrower Historical Assessment Analysis capability (`CAPABILITY_DEFINITION_HISTORICAL_ASSESSMENT_ANALYSIS.md`). This closing line originally read "Awaiting Chief Architect review" from this document's initial drafting; left uncorrected after suspension, it briefly stood in direct contradiction with the header's own Status field — corrected here, during Sprint 20's own retrospective, per `docs/engineering/GOVERNANCE_OBSERVATION_EBC10C5_AUTHORIZATION_EVIDENCE.md`'s finding. No implementation, Governance Register item, or ADR resulted from this capability; it remains suspended pending a future concrete need.

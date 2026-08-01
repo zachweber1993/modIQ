@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 frozen) |
+| **Last Updated** | 2026-08-01 (Sprint 20 — Historical Assessment Analysis) |
 
 ---
 
@@ -1587,3 +1587,34 @@ The Documentation Release 1.0 Final Review concluded with:
 - No new Platform Architecture concept was introduced. No existing concept, boundary, or responsibility was expanded, narrowed, or reassigned. No Runtime change, ADR, or Engineering Alignment activity occurred.
 - With this amendment, the Platform Architecture lineage consists of one constitutional document and six governed topic documents, with no document remaining undrafted.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Sprint 20]
+
+**Status:** Complete (Historical Assessment Analysis) — recognized as a Sprint during Repository Closeout, not originally scoped as one. First implementation Sprint since the Sprint 15–19 governance-reconciliation cycle.
+
+## Added
+
+- **Historical Assessment Analysis** — a minimum-viable, read-only capability giving `modiq-storage` its first capability built on top of Storage's own Sprint 13 activation, rather than a further first-time activation of a dormant subsystem. `ReportStore::list_keys` enumerates every persisted report, sorted for deterministic ordering; a new `history_analysis` module (`PatternFrequency`, `recurring_patterns`) deterministically aggregates recurring `(rule_reference, severity)` patterns across every stored report, reusing `PersistedFindingSeverity` and the existing `rule_reference` string directly — no new enum; a new, argument-free `modiq-cli history` command surfaces the result. Never participates in `AssessmentService::execute`; never touches `modiq-knowledge`.
+- Preceded by a Capability Definition for a broader "Knowledge Feedback Loop" capability that surfaced a genuine conflict among frozen specifications before implementation began, and a dedicated Architecture Evaluation (`docs/engineering/ARCHITECTURE_EVALUATION_KNOWLEDGE_MODEL_CONSISTENCY.md`) that found no actual conflict — `ProductSpecification.md`/`Glossary.md` and `KnowledgeModel.md` operate at different levels of abstraction — and recorded a binding Adopted Architectural Constraint: knowledge accumulation must occur entirely outside live Assessment execution. The broader capability was suspended, not withdrawn (`docs/engineering/CAPABILITY_DEFINITION_KNOWLEDGE_FEEDBACK_LOOP.md`), in favor of this narrower one (`docs/engineering/CAPABILITY_DEFINITION_HISTORICAL_ASSESSMENT_ANALYSIS.md`).
+- Capability Identity Classification found neither the three-axis procedure nor Architectural Activation cleanly classifies this candidate, mirroring `INV-002`'s own finding for Storage's original activation. A dedicated determination found no separate Architecture Evaluation necessary, verified directly against `GOVERNANCE.md`'s Storage Crate Boundary Rule and `STORAGE_ARCHITECTURE_EVALUATION.md`'s own explicit deferral of cross-report comparison to "its own, later, separately-evaluated capability."
+
+## Verified
+
+- Root workspace: `cargo fmt --check`, `cargo check --workspace` clean, zero warnings; `cargo test --workspace` — **264 passed, 0 failed** (253 → 264: `modiq-storage` 10 → 18, `modiq-cli` 15 → 18).
+- `apps/sandbox/src-tauri` (its own, separate workspace): unaffected, reverified at **9 passed, 0 failed**.
+
+## Sprint Recognition (Repository Reconciliation)
+
+- This work originated from a governance/architecture discussion, not a conventional Sprint-scoping session, and was implemented and committed (`ebc10c5`) before Sprint recognition itself was determined. An engineering retrospective found it had completed every stage of the repository's standard implementation lifecycle in full. Recognized as **Sprint 20**, not Sprint 15, because `CHANGELOG.md` already commits Sprint numbers 15 through 19 to the preceding governance-reconciliation cycle (GOV-002, GOV-015, ADR-0011) — this Sprint's own number preserves that existing record rather than rewriting it. Full determination: `docs/engineering/ENGINEERING_RELEASE_1.5.md` §2.
+- **A related inconsistency was found, not corrected here:** `docs/governance/PROJECT_STATUS.md`'s own Governance Status section describes the Sprint 15–19 cycle in prose without Sprint numbers (corrected during an earlier Repository Reconciliation Package B pass), directly contradicting this Changelog's own `[Sprint 15]`–`[Sprint 19]` headings. Recorded as a process observation, per explicit Chief Architect direction; a future, separately-authorized reconciliation should decide which document's convention governs.
+
+## Deferred (Governance-Pending)
+
+- GOV-001, GOV-008, GOV-013, and GOV-014 remain open; none were addressed this Sprint.
+- No new Governance Register item was opened by this Sprint; no ADR was created. The Register stood at 15 items, 11 Resolved, 4 Open at this Sprint's own implementation and commit (`ebc10c5`). A concurrent Sprint 22 Chief Architect session subsequently opened GOV-016 ("Evidentiary Standard for Establishing Governance Decisions as Repository Fact," Open) — an unrelated, separate governance investigation, by explicit Chief Architect direction, not part of this Sprint's own scope; current Register: 16 items, 11 Resolved, 5 Open.
+- The `CHANGELOG.md`/`PROJECT_STATUS.md` Sprint-numbering inconsistency (above) remains unresolved, by explicit direction.
+- The suspended Knowledge Feedback Loop capability remains suspended; no action taken on it this Sprint.
+
+## Released
+
+- Documented in `docs/engineering/CAPABILITY_DEFINITION_KNOWLEDGE_FEEDBACK_LOOP.md` (suspended), `docs/engineering/ARCHITECTURE_EVALUATION_KNOWLEDGE_MODEL_CONSISTENCY.md`, `docs/engineering/CAPABILITY_DEFINITION_HISTORICAL_ASSESSMENT_ANALYSIS.md`, `docs/engineering/IMPLEMENTATION_REPORT_HISTORICAL_ASSESSMENT_ANALYSIS.md`, and `docs/engineering/ENGINEERING_RELEASE_1.5.md`.

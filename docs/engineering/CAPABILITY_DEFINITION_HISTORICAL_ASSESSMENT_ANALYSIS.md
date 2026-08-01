@@ -8,7 +8,7 @@
 | **Origin** | Chief Architect Sprint Authorization, following review of `ARCHITECTURE_EVALUATION_KNOWLEDGE_MODEL_CONSISTENCY.md` |
 | **Prepared by** | Lead Engineer (Sonnet 5), on `feature/runtime-implementation` |
 | **Repository baseline** | `feature/runtime-implementation`, HEAD `73f7f72` |
-| **Status** | **Capability Definition and Capability Identity Classification complete. No separate Architecture Evaluation is found to be required (Section 4).** Implementation has **NOT** been authorized. No code changed, no documentation changed, no commits, no Governance Register item, no ADR. Awaiting Chief Architect review and explicit approval before implementation begins. |
+| **Status** | **Approved and implemented.** Capability Definition and Capability Identity Classification complete; no separate Architecture Evaluation was required (Section 4); Chief Architect approval and implementation authorization were given following review; implemented and committed (`ebc10c5`) — see `docs/engineering/IMPLEMENTATION_REPORT_HISTORICAL_ASSESSMENT_ANALYSIS.md` and `docs/engineering/ENGINEERING_RELEASE_1.5.md` (Sprint 20). No Governance Register item, no ADR. |
 
 ---
 
@@ -151,4 +151,4 @@ Each phase requires its own explicit Implementation Authorization per standing w
 
 ---
 
-Awaiting Chief Architect review and explicit approval. No implementation will begin until this Capability Definition is approved.
+**Approved and implemented, recorded in the header above.** This closing line originally read "Awaiting Chief Architect review" from this document's initial drafting; left uncorrected after approval and implementation, it briefly stood in direct contradiction with the header's own Status field — corrected here, during Sprint 20's own retrospective, per `docs/engineering/GOVERNANCE_OBSERVATION_EBC10C5_AUTHORIZATION_EVIDENCE.md`'s finding. See `docs/engineering/IMPLEMENTATION_REPORT_HISTORICAL_ASSESSMENT_ANALYSIS.md` for the implementation itself and `docs/engineering/ENGINEERING_RELEASE_1.5.md` for Sprint 20's own Repository Closeout.
