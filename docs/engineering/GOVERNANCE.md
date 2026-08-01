@@ -875,6 +875,34 @@ Pending. This item establishes the constitutional principle only. Application of
 
 ---
 
+## GOV-017
+
+Title
+
+Role of `AssessmentReport` Re-export from `modiq-engine`
+
+Status
+
+Resolved
+
+Raised
+
+Following the Sprint 21 Implementation Readiness Assessment, which named a claimed third convergent data point (`modiq-storage`) as crossing GOV-004's own three-point convergent-evidence standard for reconsidering `modiq-engine`'s non-re-export of `AssessmentReport`.
+
+Description
+
+`modiq-cli` and `apps/sandbox` have each depended on `modiq-report` directly, alongside `modiq-engine`, since Sprint 6/Sandbox Phase 2 — named repeatedly (`SPRINT8_INITIALIZATION_REPORT.md`, `SPRINT_14_PROPOSAL.md`) as two data points, below this project's own three-point convergence bar (GOV-004). The Sprint 21 assessment characterized `modiq-storage`'s own direct dependency on `modiq-report` (added Sprint 13) as a third, independent instance of the identical pattern, apparently crossing that bar.
+
+Question
+
+Does `modiq-storage`'s dependency on `modiq-report` genuinely constitute a third instance of the same redundant-dependency pattern `modiq-cli` and `apps/sandbox` exhibit, such that GOV-004's three-point standard is met and `modiq-engine` should re-export `AssessmentReport`?
+
+Resolution
+
+**Not adopted.** **Explicit determination, established here as precedent: the `modiq-storage` dependency is not evidence of the same implementation pattern as `modiq-cli`'s and `apps/sandbox`'s, because it arises from Storage's own public API (`ReportStore::store`, `PersistedAssessmentReport::from_report` each declare `AssessmentReport` as a parameter type) rather than from consumption of `modiq-engine` — `modiq-storage` does not depend on `modiq-engine` in any respect.** A shared dependency on a crate is not, by itself, convergent evidence; it must be checked whether it arises from consuming another crate's API (redundant, eliminable by a re-export) or from declaring the type in the dependent's own public API (structurally necessary, independent of any re-export). `modiq-cli` and `apps/sandbox` both already depend on `modiq-engine` for orchestration and separately name `AssessmentReport` only because `modiq-engine` does not re-export it — a re-export would let both obtain the type through a dependency they already have; that is the genuine pattern. The three-point standard is therefore not met; two points remain, the same count this project has repeatedly found insufficient since Sprint 6. Full evaluation: `docs/engineering/GOV017_ARCHITECTURE_EVALUATION.md`. No architectural change is authorized. `modiq-engine` does not re-export `AssessmentReport`. No implementation performed.
+
+---
+
 # Documentation Release Process
 
 Architecture evolves through Documentation Releases.
