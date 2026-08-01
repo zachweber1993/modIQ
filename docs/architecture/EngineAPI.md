@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | EngineAPI.md |
 | **Version** | 1.1.0 |
-| **Status** | Frozen, amended following GOV-004 resolution |
+| **Status** | Frozen, amended following GOV-004 resolution; amended 2026-08-01 for Engineering Alignment Reconciliation (Initiative 1) |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 (amended following GOV-004 resolution) |
 | **Owner** | Zach Weber |
@@ -167,6 +167,18 @@ The Assessment Service:
 
 ---
 
+# Progressive Execution Observability (Engineering Alignment, Initiative 1 — Adopted Architectural Constraints)
+
+The Assessment Service's orchestration responsibility (see Engine Responsibilities, above) is the sole layer at which progressive visibility into an in-progress Assessment may be established, should a future mechanism provide it. Three constraints bind that future mechanism, adopted from Engineering Alignment Initiative 1's Architectural Resolution:
+
+- **Orchestration-layer only, invariant-preserving (AC-1).** Progressive visibility must be established at this orchestration layer, never by weakening any Runtime invariant.
+- **At least one observable execution-phase signal (AC-3).** Whatever form it takes, at least one observable signal marking execution phase shall exist.
+- **Recognition by absence (AC-5).** Observable progress shall support recognition by absence, never explicit announcement.
+
+The granularity of any such signal — this specification's own existing four conceptual phases, or a coarser view — remains intentionally unresolved (Initiative 1, D-1). This section states the binding constraints already adopted; it does not design, and does not decide, the mechanism itself.
+
+---
+
 # Dependency Boundaries
 
 The Assessment Service depends downward on each subsystem it orchestrates. No subsystem depends on the Assessment Service. Nothing depends on the Assessment Service except applications built on the platform.
@@ -222,3 +234,5 @@ Implementation technology may evolve without changing the conceptual capabilitie
 **Status:** Frozen, amended following GOV-004 resolution
 
 This specification establishes the authoritative conceptual service contract for the modIQ assessment engine. It was amended following Technical Director approval of `PROPOSAL_GOV-004.md`, itself based on implementation evidence gathered in `PLATFORM_VALIDATION_GOV-004.md`: the four intra-engine services originally described alongside the Assessment Service (Knowledge Service, Rule Evaluation Service, Reporting Service, Version Profile Service) are retired, and the Assessment Service's direct-composition orchestration of each subsystem — validated by three independent subsystems across three Engineering Releases — is now documented as the approved architecture. See ADR-0010 and Governance Register item GOV-004 (Resolved). This amendment is recorded explicitly, as required by `docs/governance/DocumentationRelease.md`'s "accepted Architecture Decision Record requires modification" exception to Frozen-specification stability — it is not a silent rewrite.
+
+**Amended 2026-08-01 — Engineering Alignment Reconciliation.** Adds a Progressive Execution Observability section synchronizing already-adopted outcomes of Engineering Alignment Initiative 1 into this specification: AC-1 (orchestration-layer only, invariant-preserving), AC-3 (at least one observable execution-phase signal), and AC-5 (recognition by absence) — all Adopted Architectural Constraints from `INITIATIVE_1_ARCHITECTURAL_RESOLUTION.md`. D-1 (execution-phase signal granularity) is recorded as intentionally unresolved, not decided by this amendment. This amendment introduces no new architectural decision, no mechanism, and no capability — it states constraints already adopted. No existing capability, responsibility, or dependency boundary was added, removed, or changed.

@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | DataModel.md |
 | **Version** | 1.1.0 |
-| **Status** | Frozen, amended for Finding Severity definitions (GOV-012/GOV-013) |
+| **Status** | Frozen, amended for Finding Severity definitions (GOV-012/GOV-013); amended 2026-08-01 for Engineering Alignment Reconciliation (Initiatives 3, 4) |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
@@ -187,6 +187,12 @@ Every Finding should be traceable to supporting Evidence.
 
 Evidence never represents opinion.
 
+### Evidence Anatomy (Engineering Alignment, Initiative 3, Item 4 — Adopted in part)
+
+Evidence carries a Label (a short identifying name), a Source (where it came from), and Content (the raw material itself), in addition to its existing category, description, and location.
+
+A fourth anatomical element, Explanation — why the Evidence matters to the Finding it supports — is not part of this specification. It remains Requires Additional Investigation: which subsystem may author it, and when, raises a construction-timing and entity-ownership question this amendment does not resolve.
+
 ---
 
 ## Finding
@@ -196,6 +202,18 @@ A Finding represents a single conclusion derived from evaluated Evidence.
 Findings communicate observations generated during an Assessment.
 
 Multiple Findings contribute to the overall Assessment.
+
+### Finding Title and Summary (Engineering Alignment, Initiative 3, Item 1 — Adopted)
+
+A Finding's `title` is a short, scannable label for its conclusion; its `summary` is the fuller explanation. Both are authored by the Rule that produces the Finding, at construction, replacing the single flat description this specification previously defined for Finding.
+
+### Finding Mod Health Dimension (Engineering Alignment, Initiative 3, Items 2 and 9 — Adopted)
+
+A Finding is additionally classified along the Mod Health dimension it concerns (`Glossary.md`: Compatibility, Stability, Maintainability, Performance, Structure, Engineering Quality). This classification shall not be named `Category`, to avoid collision with Evidence's own `EvidenceCategory` — an Adopted Architectural Constraint. Its specific name is not yet decided; the Architecture Evaluation that identified the collision did not evaluate candidate identifiers, and none was adopted.
+
+### Finding Provisional/Final Status (Engineering Alignment, Initiative 3, Item 10 — Adopted)
+
+A Finding carries a Provisional or Final status, populated at construction like every other Finding field. This status was determined independent of the Assessment's own lifecycle-terminality question (Initiative 2, Question 1), which remains separately unreconciled and is not addressed by this amendment.
 
 ### Finding Severity
 
@@ -223,6 +241,12 @@ Recommendations exist to improve understanding and assist user decision making.
 
 Recommendations are informative rather than mandatory.
 
+### Confidence (Engineering Alignment, Initiative 4 — Adopted placement, no field defined)
+
+A Recommendation may, in the future, carry a Confidence value measuring the quality of the evidence behind it — never the correctness of its conclusion. Once defined, Confidence belongs exclusively to a Recommendation: never to Evidence, never to a Finding standing alone, never to the Assessment as a whole. It shall never appear against a Provisional Finding — an Adopted Architectural Constraint — only once a Recommendation's Finding is Final.
+
+Confidence's own representation and computation mechanism remain undefined; this specification does not add a field or type for it.
+
 ---
 
 ## Assessment Report
@@ -238,6 +262,10 @@ The Assessment Report organizes:
 - Supporting explanations
 
 The Assessment Report communicates Assessment results but performs no analysis.
+
+### Report Identity (Engineering Alignment, Initiative 3, Item 6a — Adopted, blocked)
+
+The Assessment Report shall, in the future, carry a Subject-identity field identifying the Assessment Subject it concerns. This field is adopted but cannot yet be added: Assessment Subject, as currently defined, carries no content for it to draw from — an Adopted Architectural Constraint. Whether that connects to GOV-002's prior disposition of Assessment Subject's minimal content is named, not decided, by this amendment.
 
 ---
 
@@ -356,3 +384,5 @@ Related specifications include:
 This specification establishes the authoritative conceptual runtime data model for the modIQ platform and serves as the foundation for the remaining technical specifications. Under Documentation Release 2.1 (Frozen, Technical Director approved), a cross-reference to the new EvidenceCollection.md was added above; no entity definition, relationship, or lifecycle ordering in this document changed — this document's Runtime Lifecycle already placed Evidence Collected before Findings Produced, which is the ordering ADR-0008 and the corresponding Architecture.md amendment now also reflect.
 
 Further amended (Sprint 5 Phase 1) to add a Finding Severity subsection under Finding: the first specification-level definition of what `Error`, `Warning`, `Informational`, and `BestPractice` each mean, and the criteria a Rule uses to choose among them. Approved by Technical Director as the platform's provisional interpretation, per `GOV-012_AND_FINDINGSEVERITY_PREPARATION.md`. Recorded explicitly as provisional, not permanently settled — the tension these definitions surfaced (whether `BestPractice` is actually a severity, or an orthogonal classification of Finding kind) is tracked as GOV-013 (`GOVERNANCE.md`, Open), to be revisited once more concrete Rules exist to evaluate it against, not resolved by this amendment.
+
+**Amended 2026-08-01 — Engineering Alignment Reconciliation.** Synchronizes already-adopted outcomes of Engineering Alignment Initiatives 3 and 4 into this specification: Finding Title/Summary decomposition, Finding Mod Health dimension classification (name not yet decided, must not be `Category`), Finding Provisional/Final status, Evidence Label/Source/Content (Explanation excluded, remains Requires Additional Investigation), Recommendation Confidence placement rules (no field or type defined), and Assessment Report Subject-identity (adopted, blocked pending Assessment Subject content). This amendment introduces no new architectural decision — every addition traces directly to an Adopted fact or Adopted Architectural Constraint already recorded in `INITIATIVE_3_ARCHITECTURAL_RESOLUTION.md` and `INITIATIVE_4_ARCHITECTURAL_RESOLUTION.md`. No entity was removed, no relationship or lifecycle ordering changed, and no deferred question (Initiative 3 Item 4's Explanation field; Initiative 4's representation and computation) was resolved.

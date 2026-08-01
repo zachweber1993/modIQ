@@ -8,7 +8,7 @@
 |----------|-------|
 | **Document** | RuleEngine.md |
 | **Version** | 1.0.1 |
-| **Status** | Frozen, with a Documentation Release 2.1 cross-reference addition |
+| **Status** | Frozen, with a Documentation Release 2.1 cross-reference addition; amended 2026-08-01 for Engineering Alignment Reconciliation (Initiatives 1, 3) |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
@@ -154,6 +154,8 @@ Produce Findings supported by evaluated Evidence.
 
 Every Finding should be directly traceable to both the evaluated Rule and the supporting Evidence.
 
+Any future mechanism exposing Findings before an Assessment completes shall preserve set-wide finalization — an Adopted Architectural Constraint from Engineering Alignment, Initiative 1 (AC-4). The Finding set Rules produce remains a single atomic batch; this responsibility is not altered by that constraint, only bound by it going forward.
+
 ---
 
 ## Recommendation Generation
@@ -161,6 +163,8 @@ Every Finding should be directly traceable to both the evaluated Rule and the su
 Generate Recommendations from Findings. Associated Repair Recipes inform Recommendation content but do not independently trigger a Recommendation.
 
 Recommendations should assist user understanding without automatically modifying content.
+
+A Finding may stand without a paired Recommendation — Engineering Alignment, Initiative 3, Item 3 (Adopted). Pairing a Recommendation with a Finding is no longer mandatory; this responsibility generates a Recommendation only when one is warranted, not unconditionally alongside every Finding.
 
 ---
 
@@ -223,6 +227,8 @@ Assessment Completed
 This lifecycle defines conceptual execution only.
 
 Implementation details are intentionally excluded.
+
+**Dispatch boundaries (Engineering Alignment, Initiative 1, AC-2 — Adopted Architectural Constraint).** Evidence Evaluated, Findings Produced, and Recommendations Generated are the architecturally coherent, already-deterministic dispatch boundaries within this lifecycle. Any future progressive-observation mechanism may observe only at boundaries already named here — never at an arbitrary, time-based, or percentage-based cadence. This confirms boundaries this lifecycle already established; it adds no new boundary and reorders nothing.
 
 ---
 
@@ -299,5 +305,7 @@ The execution model should remain deterministic, explainable, and evidence-based
 **Current Version:** 1.0.1
 
 **Status:** Frozen, with a Documentation Release 2.1 cross-reference addition
+
+**Amended 2026-08-01 — Engineering Alignment Reconciliation.** Synchronizes already-adopted outcomes of Engineering Alignment Initiatives 1 and 3 into this specification: Finding Generation's set-wide-finalization constraint (Initiative 1, AC-4), the Conceptual Execution Lifecycle's confirmed dispatch boundaries for future progressive observation (Initiative 1, AC-2), and Recommendation Generation's now-optional Finding/Recommendation pairing (Initiative 3, Item 3). This amendment introduces no new architectural decision — every addition traces directly to an Adopted fact or Adopted Architectural Constraint already recorded in `INITIATIVE_1_ARCHITECTURAL_RESOLUTION.md` and `INITIATIVE_3_ARCHITECTURAL_RESOLUTION.md`. No responsibility, boundary, or lifecycle ordering was added, removed, or reordered — Initiative 1's own still-open questions (execution-phase signal granularity, D-1; the Report-evolution model, D-2) remain unresolved and are not addressed here.
 
 This specification establishes the authoritative conceptual execution model for the modIQ assessment engine. Under Documentation Release 2.1 (Frozen, Technical Director approved), a cross-reference to EvidenceCollection.md was added to the Relationship to the Runtime Domain section, reinforcing (not altering) this document's existing Evidence-consumer boundary.
