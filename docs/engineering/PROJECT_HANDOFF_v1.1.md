@@ -11,9 +11,9 @@
 | **Purpose** | Canonical project handoff — describes the platform, its architecture, its governance, and its history independently of any individual role |
 | **Audience** | Anyone onboarding to modIQ — engineering, architecture, or product — before reading a role-specific handoff |
 | **Supersedes** | `PROJECT_HANDOFF_v1.0.md` (Sprint 6-era). `LEAD_ENGINEER_HANDOFF_v3.0.md` and `CHIEF_ARCHITECT_HANDOFF_v1.0.md`/`v1.1.md` (the current role-specific supplements) remain role-specific companions; both assume the reader has already read this document and do not repeat what it covers. |
-| **As of** | 2026-07-23, following Sprint 14 (GOV-003: `modiq-common` retired); Sprint 13 (Storage Architectural Activation) and the post-Sprint-13 GOV-001 Architecture Evaluation are also both complete. Engineering Release 1.4 is the last published release, covering Sprint 14. |
+| **As of** | 2026-08-01. Sprint 14 (GOV-003: `modiq-common` retired) remains the last Sprint to touch Rust source. Since then, a Governance Reconciliation cycle (2026-07-24) resolved GOV-002 and GOV-015 and accepted ADR-0011, entirely by documentation-level Architecture Evaluation and Resolution — no implementation. Separately, and independently of the Sprint/Governance Register lineage entirely, a Platform Architecture Track and a Product & Interaction Design Track (2026-07-28 through 2026-08-01) defined the platform-level identity/tenancy model and the Version 1 assessment experience — see Section 2's Repository Organization and `docs/DOCUMENTATION_MAP.md` for how these three lineages relate. Engineering Release 1.4 remains the last published Engineering Release, still covering Sprint 14 — none of the above is Sprint work. |
 | **Branch** | `feature/runtime-implementation` |
-| **HEAD** | `f1c6073` — "feat: retire modiq-common (GOV-003)" |
+| **HEAD** | `e45d91c` — "Retire PlatformSurfaces.md from the Platform Architecture lineage" |
 
 ---
 
@@ -47,18 +47,23 @@ The initial implementation targets Farming Simulator 25, with the architecture d
 
 ```
 docs/
-├── constitutional/     Vision, Principles, Glossary, ProductSpecification — Frozen, Documentation Release 1.0
-├── architecture/       Architecture, DataModel, KnowledgeModel, RuleEngine, EvidenceCollection, EngineAPI, VersionProfile
-├── adrs/                Architecture Decision Records, 0001–0010, sequentially numbered, never reused
-├── governance/          GOVERNANCE.md's home is actually docs/engineering/ (see note below); PROJECT_STATUS.md, CHANGELOG.md, ROADMAP.md, EngineeringGuide.md, DocumentationRelease.md
-├── engineering/         GOVERNANCE.md, ENGINEERING_LOG.md, Sprint plans, Architectural Resolutions, Engineering Release records, Proposals, Platform Validation and Capability Prioritization records
-├── implementation/      RuntimeInvariants.md, CrateRoadmap.md, AssessmentCreation.md, SPRINT0.md–SPRINT12.md
-└── releases/            ENGINEERING_RELEASE_0.2.md only — a pre-existing, minor location inconsistency; every later Engineering Release lives in docs/engineering/
+├── constitutional/      Vision, Principles, Glossary, ProductSpecification — Frozen, Documentation Release 1.0
+├── architecture/        Architecture, DataModel, KnowledgeModel, RuleEngine, EvidenceCollection, EngineAPI, VersionProfile — Frozen Runtime Architecture
+├── adrs/                 Architecture Decision Records, 0001–0011, sequentially numbered, never reused
+├── governance/           GOVERNANCE.md's home is actually docs/engineering/ (see note below); PROJECT_STATUS.md, CHANGELOG.md, ROADMAP.md, EngineeringGuide.md, DocumentationRelease.md
+├── engineering/          GOVERNANCE.md, ENGINEERING_LOG.md, Sprint plans, Architectural Resolutions, Engineering Release records, Proposals, Platform Validation and Capability Prioritization records
+├── implementation/       RuntimeInvariants.md, CrateRoadmap.md, AssessmentCreation.md, SPRINT0.md–SPRINT12.md
+├── releases/             ENGINEERING_RELEASE_0.2.md only — a pre-existing, minor location inconsistency; every later Engineering Release lives in docs/engineering/
+├── platform/             PlatformSpecification and six governed topic documents — the Platform Architecture Lineage, Frozen as Platform Architecture 1.0 (2026-07-30). Defines platform-level identity, tenancy, and containment (Organization, User, Project, Upload...) surrounding the Assessment. Independent of, and not yet reconciled with, the Sprint/Governance Register lineage above.
+├── product-design/       The Version 1 conceptual product model — the Product Track. Independent of the Sprint lineage; carries no Documentation Authority ranking.
+└── interaction-design/   The Version 1 behavioral specification, built on Product Design — closes out the Product Track.
 
 fixtures/                New since Sprint 10: fixtures/runtime-logs/ — a permanent, top-level, provenance-tracked corpus of real, captured Farming Simulator runtime logs, deliberately separate from apps/sandbox/src-tauri/fixtures/'s own unrelated synthetic-fixture convention. Governed entirely by its own README.md and TEMPLATE.md, not by any workspace crate.
 crates/                  Cargo workspace, 9 crates (below)
 apps/sandbox/             Tauri desktop application — the only real end-to-end consumer of the platform, its own separate Cargo workspace and `Cargo.lock`
 ```
+
+**Three independent documentation lineages, not one.** This document, the Governance Register, the ADRs, and the Sprint history above all describe one of three — the Engineering Specification lineage. The Platform Architecture lineage (`docs/platform/`) and the Product Track (`docs/product-design/`, `docs/interaction-design/`) are separately paced, carry no Documentation Authority ranking, and are not governed by the Governance Register. As of this writing none of the three is reconciled with either of the others — no Sprint has been scoped against any Product/Interaction Design or Platform Architecture artifact. `docs/DOCUMENTATION_MAP.md` is the authoritative map of how the three relate; this document does not repeat it.
 
 **A genuine location quirk, not a defect:** `GOVERNANCE.md` — despite being one of the most-referenced documents in this repository — lives at `docs/engineering/GOVERNANCE.md`, not under `docs/governance/`. `docs/governance/` instead holds the living status documents (`PROJECT_STATUS.md`, `CHANGELOG.md`, `ROADMAP.md`, `EngineeringGuide.md`, `DocumentationRelease.md`). This has been true since early in the project and every cross-reference in the repository already accounts for it; noted here only so a new reader isn't surprised.
 
@@ -168,12 +173,12 @@ The Project Owner sets priorities, approves the roadmap, and selects sprint obje
 
 ## The Governance Register (`GOVERNANCE.md`, docs/engineering/)
 
-Every architectural question discovered during engineering receives a permanent identifier and stays open until resolved by a Documentation Release. **14 items exist today; 9 Resolved, 5 Open.** The count held at 13 (8 Resolved, 5 Open) from Engineering Release 0.8 through Sprint 12; GOV-014 was opened following Sprint 12's own closeout (INV-001), and GOV-003 was resolved at Sprint 14:
+Every architectural question discovered during engineering receives a permanent identifier and stays open until resolved. **15 items exist today; 11 Resolved, 4 Open.** The count held at 14 (9 Resolved, 5 Open) through Sprint 14; a Governance Reconciliation cycle on 2026-07-24 — not a Sprint — then resolved GOV-002 and opened-then-resolved GOV-015 (via ADR-0011):
 
 | Item | Title | Status |
 |---|---|---|
 | GOV-001 | Assessment Report Generation Timing | Open — narrowed post-Sprint-13 (see below) |
-| GOV-002 | Runtime Invariant Reconciliation | Open |
+| GOV-002 | Runtime Invariant Reconciliation | **Resolved** — all fourteen Runtime Invariants confirmed to conform to the implementation; no implementation authorized or performed |
 | GOV-003 | Role of `modiq-common` | **Resolved** — retired (Sprint 14) |
 | GOV-004 | Engine Service Granularity | Resolved |
 | GOV-005 | Finding minimum Evidence reference | Resolved (cardinality only) |
@@ -186,12 +191,15 @@ Every architectural question discovered during engineering receives a permanent 
 | GOV-012 | Rule Evaluation Model | Resolved |
 | GOV-013 | FindingSeverity Severity/Kind Conflation | **Open, deliberately** |
 | GOV-014 | Lua Fixture Acquisition Governance | Open |
+| GOV-015 | Role of ADR-0003 in Describing `AssessmentReport` Ownership | **Resolved** — the discrepancy was determined to be an editorial imprecision, not an architectural inconsistency; resolved via a superseding ADR (ADR-0011) rather than an in-place amendment |
 
 **GOV-013 is worth understanding as a category, not just an entry:** it was opened not because implementation broke something, but because *writing a precise specification* (Sprint 5's `FindingSeverity` definitions) surfaced that `BestPractice` classifies Finding *kind*, not *severity*. Sprint 11's own `FindingSeverity::Error` assignment (the platform's first real use of that variant) was recorded as new evidence relevant to a future GOV-013 review — deliberately not treated as grounds to reopen it now (Section 7). Even with four concrete Rules now dispatched, no Rule has ever assigned `FindingSeverity::BestPractice`, so the specific tension GOV-013 raises remains unexercised.
 
 **GOV-001 was given a dedicated Architecture Evaluation following Sprint 13's own closeout** — `modiq-storage`'s durable persistence gave the item's original "before or after completion?" framing real, if still unforced, stakes for the first time. The evaluation found no inconsistency between `DataModel.md`'s specified Runtime Lifecycle and the implementation; no Architectural Resolution was performed or required. The item was narrowed and returned to Open — the live question is now only whether `AssessmentStatus::Completed` being permanently unreachable by any real persisted report is an intended consequence or an unexamined gap. No forcing function currently requires deciding it.
 
 **GOV-003 was resolved and implemented at Sprint 14.** `modiq-common` had zero consumers and zero real content across 13 Sprints, confirmed directly; the Chief Architect accepted retirement over retaining the crate as-is. It no longer exists.
+
+**A Governance Reconciliation cycle, not a Sprint, resolved GOV-002 and GOV-015 on 2026-07-24, entirely at the documentation level.** GOV-002 (Runtime Invariant Reconciliation, open since Engineering Release v0.1.0-alpha) received its first-ever dedicated Architecture Evaluation, confirming all fourteen Runtime Invariants conform to the implementation — no Architectural Resolution beyond that confirmation, no implementation. GOV-002's own evaluation surfaced a finding outside its scope — a discrepancy in how ADR-0003 describes `AssessmentReport` ownership — recorded as GOV-015, then resolved: the discrepancy is an editorial imprecision, not an architectural inconsistency, requiring a superseding ADR rather than an in-place amendment (`docs/adrs/README.md`'s own stated policy). **ADR-0011** (`AssessmentReport` Ownership Correction) was created and Accepted on this basis, superseding ADR-0003 solely with respect to its own `Assessment Report` example — ADR-0003 itself is unmodified. A Repository Reconciliation Plan followed, split into two packages: **Package A** (performed, 2026-07-24) synchronized `GOVERNANCE.md`, `CHANGELOG.md`, `PROJECT_STATUS.md`, the ADR index, and `ENGINEERING_LOG.md` to record ADR-0011's existence; **Package B** — reconciling this document and its two role-specific companions, whose own staleness predated and extended beyond ADR-0011 — is what this revision completes. No Rust source, crate boundary, or architectural decision was touched by any of this.
 
 **No new Governance Register item and no new ADR were opened across Sprints 7 through 13** — every capability shipped in that span either applied and extended already-approved architecture, or — where a genuine new question existed (Collector Composition, Sprint 7; Storage's own governance reconciliation, Sprint 13) — resolved it as its own dedicated Architecture Evaluation without requiring a permanent Register entry. GOV-014 (opened following Sprint 12's closeout, via INV-001, not during a Sprint itself) and Sprint 14's resolution of GOV-003 are the two exceptions to that count holding steady.
 
@@ -207,7 +215,7 @@ Every crate has an explicit "Owns" / "Must never" pair. The two most load-bearin
 
 ## ADRs (`docs/adrs/`)
 
-Ten, Accepted, never reused, never rewritten. Created only for decisions that change architecture, alter ownership boundaries, or establish a new principle — not for routine implementation. No ADR has been added since ADR-0010 (Sprint 6-era); Sprints 7 through 14 each applied existing ADRs rather than requiring new ones — Storage's own persisted representation (Sprint 13) is the fourth instance of ADR-0007's Opaque Runtime References pattern, not a new principle.
+Eleven, Accepted, never reused, never rewritten. Created only for decisions that change architecture, alter ownership boundaries, or establish a new principle — not for routine implementation. No ADR was added between ADR-0010 (Sprint 6-era) and ADR-0011; Sprints 7 through 14 each applied existing ADRs rather than requiring new ones — Storage's own persisted representation (Sprint 13) is the fourth instance of ADR-0007's Opaque Runtime References pattern, not a new principle. **ADR-0011** (`AssessmentReport` Ownership Correction), accepted 2026-07-24 outside any Sprint via the Governance Reconciliation cycle above, supersedes ADR-0003 solely with respect to one illustrative example — not a change to Assessment's status as sole aggregate root, which ADR-0003 otherwise still governs unmodified.
 
 ## Documentation Releases
 
@@ -341,6 +349,9 @@ These are not restated from the specifications — they are patterns this projec
 | **Sprint 13** | Storage Architectural Activation. `modiq-storage` (new crate) gained its first real content — `PersistedAssessmentReport`, `ReportKey`, `ReportStore` — wired through `modiq-cli` (`retrieve`) and `apps/sandbox`, each verified with a genuine cross-process round trip. Followed Sprint 8's "Architectural Activation" precedent, not the Sprint 12 Capability Identity procedure (which does not classify subsystem-level candidates). | 238 → 253 |
 | *(Post-Sprint-13)* | GOV-001 Architecture Evaluation — not a Sprint, no Architectural Resolution. Found no inconsistency between specification and implementation; GOV-001 narrowed and returned to Open. | 253 (unchanged) |
 | **Sprint 14** | GOV-003 (Role of `modiq-common`) resolved and implemented: retired. Zero consumers and zero real content confirmed across 13 Sprints; the crate removed from the workspace entirely. | 253 (unchanged — `modiq-common` had zero tests) |
+| *(Post-Sprint-14 Governance Reconciliation)* | Not a Sprint. GOV-002 (Runtime Invariant Reconciliation) resolved; GOV-015 opened and resolved; ADR-0011 created, superseding ADR-0003's own `AssessmentReport` example only; Repository Reconciliation Package A performed. Entirely documentation-level. | 253 (unchanged) |
+
+**Not part of this Sprint lineage at all, and not reconciled with it:** a Platform Architecture Track (`docs/platform/`, Frozen as Platform Architecture 1.0 on 2026-07-30) and a Product & Interaction Design Track (`docs/product-design/`, `docs/interaction-design/`) were each separately completed between 2026-07-28 and 2026-08-01. Neither affects Sprint numbering, the Governance Register, crate structure, or any test count above — see Section 2 and `docs/DOCUMENTATION_MAP.md`.
 
 Full detail for each Sprint lives in its own Engineering Release. Every Sprint since Sprint 8 has produced its own release at Sprint close (`ENGINEERING_RELEASE_0.8.md` through `_1.4.md`); Engineering Releases 0.6 and 0.7 were produced retroactively, after a two-Sprint gap, and that gap has not recurred since (Section 6, Principle 9). **Sprint 14's own Engineering Release (1.4) has now been published**, after a brief gap following Sprint 14's own implementation — recorded here for transparency rather than silently assumed to have been produced exactly at Sprint close.
 
@@ -351,9 +362,9 @@ Full detail for each Sprint lives in its own Engineering Release. Every Sprint s
 # 8. Current Repository State
 
 - **Branch:** `feature/runtime-implementation`.
-- **HEAD:** `f1c6073` — "feat: retire modiq-common (GOV-003)."
+- **HEAD:** `e45d91c` — "Retire PlatformSurfaces.md from the Platform Architecture lineage" (a Platform Architecture Track commit — see Section 2 — not a Sprint or code commit).
 - **Working tree:** clean.
-- **Tests:** 253/253 root workspace, 9/9 Sandbox, zero warnings in either, verified directly while preparing this revision.
+- **Tests:** 253/253 root workspace, 9/9 Sandbox, zero warnings in either, independently reverified during this revision. Unchanged since Sprint 14 — nothing since has touched Rust source.
 - **Crate maturity:** see Section 2's table. `modiq-collection` and `modiq-rules` (four real participants each), `modiq-knowledge` and `modiq-versioning` (L2, minimum-viable real content since Sprints 8–9), `modiq-cli` (L2), and `modiq-storage` (L2, real since Sprint 13) all carry real, tested capability. `modiq-common` no longer exists — retired Sprint 14 (GOV-003), zero forcing function ever having arrived across its own 13 Sprints of existence.
 
 ---
@@ -363,9 +374,10 @@ Full detail for each Sprint lives in its own Engineering Release. Every Sprint s
 - **GOV-013 (FindingSeverity Severity/Kind Conflation)** — Open by design. Sprint 11's own `FindingSeverity::Error` assignment is recorded as new, relevant evidence — deliberately not treated as grounds to resolve this now. Even with four concrete Rules now dispatched, no Rule has ever assigned `FindingSeverity::BestPractice`, confirmed directly — the specific tension this item raises remains unexercised. Will only move when a genuine, demonstrated need arises to express Finding *kind* independent of *severity*.
 - **GOV-008 (AssessmentService Public API Evolution)** — Open across eleven Sprints. Neither Sprint 13 (Storage) nor Sprint 14 (`modiq-common` retirement) touched `AssessmentService`'s two entry points, generating no new pressure toward resolving it.
 - **GOV-001 (Assessment Report Generation Timing)** — narrowed following a dedicated post-Sprint-13 Architecture Evaluation (Section 4). No inconsistency found between specification and implementation; no Architectural Resolution performed. The live question is now only whether a persisted report's `AssessmentStatus::Completed` being permanently unreachable is intended, pending a forcing function that does not yet exist.
-- **GOV-002 (Runtime Invariant Reconciliation)** — Open since Engineering Release v0.1.0-alpha, still pending. Unlike GOV-001, GOV-008, and GOV-013, it has never received a dedicated evaluation across any Sprint to date.
+- **GOV-002 (Runtime Invariant Reconciliation)** — **Resolved**, 2026-07-24, outside any Sprint. Its own Architecture Evaluation — its first ever, after being open since Engineering Release v0.1.0-alpha — confirmed all fourteen Runtime Invariants conform to the implementation; no implementation authorized or performed.
 - **GOV-003 (Role of `modiq-common`)** — **Resolved and implemented at Sprint 14.** Retired; no longer exists in the workspace.
 - **GOV-014 (Lua Fixture Acquisition Governance)** — Open, opened following Sprint 12's own closeout (INV-001). Blocks Lua Analysis's own Architecture Evaluation until resolved.
+- **GOV-015 (Role of ADR-0003 in Describing `AssessmentReport` Ownership)** — **Resolved**, 2026-07-24, a finding GOV-002's own evaluation surfaced outside its scope. Determined to be an editorial imprecision, not an architectural inconsistency; resolved via a new superseding ADR (ADR-0011) rather than an in-place amendment. ADR-0003 itself is unmodified.
 - **`modiq-engine` does not re-export `AssessmentReport`** — named at Sprint 6 with two data points (Sandbox, `modiq-cli`); Sprint 13 added a third consumer relationship of the identical shape for `modiq-storage` (neither crate re-exported by `modiq-engine` either), still below this project's own usual three-point convergent-evidence bar for the original `AssessmentReport` question specifically, and remains un-actioned, not neglected.
 - **Referential integrity for Finding/Recommendation references** (the GOV-005/GOV-006 cardinality-only follow-up) — remains unassigned to its own Governance Register item, unaffected by Sprints 7 through 14.
 - **The Rule Composition question for a second recognized fact within an already-interpreted `EvidenceCategory`** (Sprint 12's own named limitation) — no historical instance yet exists; the Interpretation Axis's own judgment test is a disciplined extrapolation for this case, not a confirmed data point.
@@ -376,7 +388,9 @@ Full detail for each Sprint lives in its own Engineering Release. Every Sprint s
 
 # 10. Roadmap
 
-**Not yet scoped for Sprint 15.** Sprint 13 (Storage Architectural Activation) and Sprint 14 (GOV-003: `modiq-common` retirement) are both complete. Sprint 13 followed Sprint 8's "Architectural Activation" precedent rather than the Sprint 12 Capability Identity procedure, since a subsystem-level candidate is not the shape of question that procedure classifies (`INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md` §3; `PROJECT_HANDOFF_v1.1.md` §5's own scope clarification). Sprint 14 resolved a long-open Governance Register item rather than introducing a new capability. No capability proposal has yet been classified through the Capability Identity procedure and committed to the repository for a next Sprint — this document deliberately does not name or assume one.
+**Not yet scoped for Sprint 15.** Sprint 13 (Storage Architectural Activation) and Sprint 14 (GOV-003: `modiq-common` retirement) are both complete. Sprint 13 followed Sprint 8's "Architectural Activation" precedent rather than the Sprint 12 Capability Identity procedure, since a subsystem-level candidate is not the shape of question that procedure classifies (`INV-002_PLATFORM_PERSISTENCE_CAPABILITY.md` §3; `PROJECT_HANDOFF_v1.1.md` §5's own scope clarification). Sprint 14 resolved a long-open Governance Register item rather than introducing a new capability. The post-Sprint-14 Governance Reconciliation cycle (GOV-002, GOV-015, ADR-0011, Repository Reconciliation Package A/B) closed out remaining documentation debt but is not itself Sprint work either. No capability proposal has yet been classified through the Capability Identity procedure and committed to the repository for a next Sprint — this document deliberately does not name or assume one.
+
+**Separately, and unaffected by any of the above:** the Platform Architecture Track and the Product & Interaction Design Track (Section 2) are both complete as of 2026-08-01 within their own lineages. Neither has been reconciled with this Sprint lineage — no Sprint has been scoped against either — and `docs/DOCUMENTATION_MAP.md` names that reconciliation as anticipated future work, not yet authorized or scheduled.
 
 **Longer-term, per `Vision.md`:** cross-version compatibility analysis, community-validated knowledge, Repair Recipe libraries beyond the one that exists, intelligent pattern recognition — all depend on the Knowledge Domain and Version Profile support deepening beyond their current minimum-viable state, neither of which has a forcing function yet (Section 6, Principles 1–2).
 
@@ -398,6 +412,7 @@ Recorded for transparency, not urgency — none affects architecture or implemen
 # 12. Where to Go Next
 
 - **New to the project entirely?** Read `Vision.md` → `Principles.md` → `Glossary.md` → `ProductSpecification.md` → `Architecture.md`, in that order.
+- **Trying to understand how the repository's documentation is organized as a whole, across all three lineages?** Read `docs/DOCUMENTATION_MAP.md`.
 - **Picking up implementation work?** Read `LEAD_ENGINEER_HANDOFF_v3.0.md` next.
 - **Reviewing architecture or governance?** Read `GOVERNANCE.md` (`docs/engineering/`) in full, then the ADRs in numeric order, then `docs/engineering/RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` and `docs/engineering/SPRINT12_ARCHITECTURAL_RESOLUTION.md` for the two most recent architectural decisions.
 - **Acting as Chief Architect?** Read the current `CHIEF_ARCHITECT_HANDOFF_v1.*.md` next — it assumes this document and does not repeat it.
