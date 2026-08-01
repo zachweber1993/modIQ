@@ -847,6 +847,34 @@ Resolution
 
 ---
 
+## GOV-016
+
+Title
+
+Evidentiary Standard for Establishing Governance Decisions as Repository Fact
+
+Status
+
+Open
+
+Raised
+
+Following `docs/engineering/GOVERNANCE_OBSERVATION_EBC10C5_AUTHORIZATION_EVIDENCE.md` (forensic reconciliation finding that commit `ebc10c5`'s claims of Chief Architect authorization are not independently corroborated by repository history) and a subsequent Governance Determination reviewing this repository's existing corpus for a governing precedent.
+
+Description
+
+The Decision Framework (`CHIEF_ARCHITECT_HANDOFF_v1.1.md` §6) and this document's own Governance Principles (10: "Governance decisions are repository artifacts") state plainly that implementation must follow, never precede, a governance decision, and that such decisions are recorded as repository artifacts. Neither this document, `PROJECT_HANDOFF_v1.1.md` §5, nor any ADR states what evidentiary standard a claim that a governance decision occurred must meet to be treated as established repository fact, or what is required when a committed record's own claim cannot be independently corroborated. The Governance Determination reviewing this gap found no repository evidence limiting the question to Chief Architect authorization specifically — `GOVERNANCE.md`'s own Documentation Authority clause and Governance Principle 10 both address "governance decisions" as a general class (Architecture Evaluations, Architectural Resolutions, Capability Definition approvals, Implementation Authorizations, and ADR acceptances alike), with no narrower category ever distinguished among them. This item is scoped accordingly, at the general level.
+
+Question
+
+What evidentiary standard must a claim that a governance decision has occurred meet before it is treated as established repository fact, rather than an unverified assertion? What is the required response when a committed record's claim of a governance decision does not meet that standard?
+
+Resolution
+
+Pending. This item establishes the constitutional principle only. Application of any adopted principle to historical cases, including commit `ebc10c5` and the capability documents and implementation it concerns, is explicitly out of scope for this item and is deferred to a separate, subsequent milestone. Must proceed through Architecture Evaluation and Architectural Resolution per the Decision Framework before any principle is adopted.
+
+---
+
 # Documentation Release Process
 
 Architecture evolves through Documentation Releases.
