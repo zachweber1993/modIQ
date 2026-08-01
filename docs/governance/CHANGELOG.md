@@ -1569,3 +1569,21 @@ The Documentation Release 1.0 Final Review concluded with:
 - No implementation, persistence, payment-provider, or billing-system detail was introduced; this document's own Boundaries section states these are explicitly out of scope.
 - `PlatformSurfaces.md` remains undrafted; a dedicated architectural scope determination for it is the next planned milestone, not automatic continuation.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+# [Platform Architecture — PlatformSurfaces.md Retired]
+
+**Status:** Complete. Governed amendment to `PlatformSpecification.md`, per Chief Architect authorization following an independent Scope Determination and Historical Determination.
+
+## Changed
+
+- `docs/platform/PlatformSpecification.md` — `docs/platform/PlatformSurfaces.md` removed from the Governs list. A new Document Status amendment note (2026-08-01) states the rationale in full. No other content changed: the Scope section, Domain Model, Architectural Boundary, and all six remaining governed documents are untouched.
+- `docs/README.md`, `docs/DOCUMENTATION_MAP.md`, `docs/governance/PROJECT_STATUS.md` — updated to remove `PlatformSurfaces.md` from every lineage listing and record the Platform Architecture lineage as having no undrafted document remaining.
+
+## Notes
+
+- **Rationale, evidence-based only:** `PlatformSurfaces.md` was never assigned an architectural responsibility. It appeared in `PlatformSpecification.md`'s original commit (`1191a4b`) as the last of seven names in the Governs list, with no accompanying scope, responsibility, or explanatory text — and received none in any of the four commits that have touched `PlatformSpecification.md` since. The only textually plausible reading of its name is the platform experience layer, which `PlatformSpecification.md` enumerates exhaustively and identically in two places as exactly five elements (Console, Wayfinding, Search, Dashboard, Settings) — an enumeration that has never been edited. All five are now completely governed: Console/Dashboard by `DashboardAndConsole.md`, Wayfinding/Search by `WayfindingAndSearch.md`, Settings by `SettingsAndBilling.md`. No architectural gap corresponds to `PlatformSurfaces.md` under any reading the repository supports.
+- **Historical determination:** checked directly via `git show` on every commit touching `PlatformSpecification.md` — the experience-layer enumeration and Governs list were never edited outside the original commit and this one. No responsibility was absorbed into later documents over time; the absence of scope is original, not evolved.
+- **Not part of this amendment's rationale:** a separate, independent observation — that Public Visitor remains the only Platform Domain Model concept without its own refinement document — is recorded elsewhere (Scope Determination, chat record) but authorizes no action here and is not cited as grounds for this retirement.
+- No new Platform Architecture concept was introduced. No existing concept, boundary, or responsibility was expanded, narrowed, or reassigned. No Runtime change, ADR, or Engineering Alignment activity occurred.
+- With this amendment, the Platform Architecture lineage consists of one constitutional document and six governed topic documents, with no document remaining undrafted.
+- Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.

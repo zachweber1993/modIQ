@@ -5,7 +5,7 @@
 | Property | Value |
 |---|---|
 | **Document** | PlatformSpecification.md |
-| **Status** | Frozen — Platform Architecture 1.0 (2026-07-30) |
+| **Status** | Frozen — Platform Architecture 1.0 (2026-07-30), amended 2026-08-01 (`PlatformSurfaces.md` retired from the Governs list) |
 | **Project** | modIQ |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-29 |
@@ -32,7 +32,6 @@ Authority runs outward from the frozen constitutional tier, never back into it. 
 - `docs/platform/WayfindingAndSearch.md`
 - `docs/platform/Notifications.md`
 - `docs/platform/SettingsAndBilling.md`
-- `docs/platform/PlatformSurfaces.md`
 
 If a conflict exists between this document and a higher-level specification, the higher-level specification takes precedence.
 
@@ -277,8 +276,10 @@ Product Design and Interaction Design define what an Assessment means and how it
 
 **Frozen** — Platform Architecture 1.0, effective 2026-07-30. The status values applicable to this document across its lifecycle are: **Draft** (not yet ratified), **Approved** (ratified, not yet frozen), **Frozen** (permanent; changes only through a governed amendment), **Superseded** (replaced by a later document).
 
-Frozen means this specification, and the five governed specifications built on it (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`), are now permanent. Any future change to any of the six is a governed amendment to Platform Architecture, not ordinary editing — it must state its own rationale and impact, following the same pattern already used for the amendments recorded below. New architectural work (`SettingsAndBilling.md`, `PlatformSurfaces.md`, and beyond) inherits this baseline; it does not revisit it.
+Frozen means this specification, and the five governed specifications built on it (`IdentityAndAccess.md`, `ProjectsAndUploads.md`, `DashboardAndConsole.md`, `WayfindingAndSearch.md`, `Notifications.md`), are now permanent. Any future change to any of the six is a governed amendment to Platform Architecture, not ordinary editing — it must state its own rationale and impact, following the same pattern already used for the amendments recorded below. New architectural work (`SettingsAndBilling.md` and beyond) inherits this baseline; it does not revisit it.
 
 **Amended 2026-07-29:** the Architectural Decisions Deferred table was updated to record that three of its four items have since been ratified in `IdentityAndAccess.md` and `ProjectsAndUploads.md`. This is a documentation synchronization, not a new architectural decision — no concept, boundary, or governance rule changed; the table previously showed each item's original working assumption and now shows its resolution instead.
 
 **Amended 2026-07-30:** the Architectural Decisions Deferred table was updated to record that the fourth and final item — Notification addressing scope — has been ratified in `Notifications.md` (User-only, confirmed). All four items are now resolved. This is a documentation synchronization, not a new architectural decision.
+
+**Amended 2026-08-01:** `PlatformSurfaces.md` is retired from the Governs list. A dedicated Scope Determination and Historical Determination found, from repository evidence alone, that it was never assigned an architectural responsibility — it appeared in this document's original commit with no accompanying scope, responsibility, or explanatory text, and received none in any commit since; the platform experience layer's own enumeration (Console, Wayfinding, Search, Dashboard, Settings), the only textually plausible reading of its name, has never changed and is now completely governed by `DashboardAndConsole.md`, `WayfindingAndSearch.md`, and `SettingsAndBilling.md`. No architectural responsibility, documented scope, or architectural gap corresponds to it. This retirement is not based on any assumption about original authorial intent. It removes an unexplained placeholder; it does not remove, narrow, or reassign any existing responsibility, and introduces no new concept. A separate, independent observation from the same Scope Determination — that Public Visitor remains the only Platform Domain Model concept without its own refinement document — is explicitly not part of this amendment's rationale and authorizes no action here.
