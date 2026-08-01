@@ -72,6 +72,14 @@ GOV-008 and GOV-013 (both already Open) are identified as the existing Governanc
 
 ---
 
+# Frontend Architecture Track
+
+A new, independent track — distinct from the Product & Interaction Design Track, the Platform Architecture Track, and the (now-concluded) Engineering Alignment Program above. Opened this session by a Frontend Architecture Readiness Assessment (evaluation only, no repository artifact), which found that no existing lineage — Platform Architecture, Product Design, Interaction Design, or Initiative 5's adopted boundary Resolution — defines a frontend architecture, and that `apps/sandbox` remains formally disqualified (Initiative 5, Decision 6) from serving as one.
+
+**Necessity/Justification Evaluation complete.** `docs/engineering/FRONTEND_ARCHITECTURE_NECESSITY_JUSTIFICATION_EVALUATION.md` tests eight candidate frontend responsibilities against a three-part standard (required by the frozen corpus; discharged by an existing frozen document; consequential if left unarchitected). Its primary argument: Initiative 5's Decision 2 already adopts a binding rule that the production interaction layer must never contain business logic, evaluate Evidence, or mutate Assessment state directly — and no existing frozen document supplies, or claims to supply, any structural mechanism to enforce it, the frontend-side analogue of what Cargo workspace boundaries and this repository's Crate Boundary Rules already enforce on every Rust crate. Four further responsibilities (application shell/composition structure, consumer-side state architecture, navigation/routing implementation, client-side identity/session handling) converge on the same conclusion independently, without being required to reach it. **Necessity is demonstrated. No Frontend Architecture lineage is authorized by this evaluation. No Documentation Authority decision is made. No Governance Register entry was opened. No ADR was proposed.** Two scope constraints are carried forward for whatever decision follows: the boundary-crossing contract shape is a claimed but not-yet-ripe responsibility (downstream of Initiatives 1–4), and client-side identity/session handling is a claimed responsibility whose lineage ownership (Frontend versus Platform Architecture) is itself undecided.
+
+---
+
 # Current Milestone
 
 ## Sprint 1 — Complete
