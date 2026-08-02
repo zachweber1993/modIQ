@@ -6,11 +6,11 @@ This is not `apps/sandbox`. `apps/sandbox` remains an independent developer vali
 
 ## Status
 
-Sprint 21, Phase 1 (`docs/engineering/SPRINT21_PLAN.md`): Application Shell, Console/Dashboard/Workspace region composition, and the minimum Identity/Session mechanism required to gate the shell. No Assessment submission, no `AssessmentService` integration, no Reviewing UI — that is Phase 2 and Phase 3.
+Sprint 21, Phase 2 (`docs/engineering/SPRINT21_PLAN.md`): real Assessment Input acquisition (one Assessment Subject type — a mod folder), the Request/Response Mechanism, and Engine Transport Failure Handling. No Reviewing UI, no Navigation Realization, no presentation of Evidence, Finding, or Recommendation content — that is Phase 3.
 
 ## Boundary Enforcement
 
-`src-tauri/Cargo.toml` depends on no `modiq-*` crate. This is deliberate, not an oversight: `FrontendArchitecture.md`'s Boundary Enforcement requires a structural separation between presentation code and anything capable of reaching into assessment logic, and the strongest form of that separation available at this phase is a compile-time one — there is nothing in this crate's dependency graph capable of evaluating Evidence or producing a Finding. Phase 2 introduces the Request/Response Mechanism and, with it, the first real dependency on the engine.
+`src-tauri/src/assessment.rs` is the only module in this crate permitted to depend on a `modiq-*` crate; `src/engine/index.ts` is the only file permitted to call Tauri's `invoke`. Everywhere else, in both languages, the dependency graph contains nothing capable of evaluating Evidence or producing a Finding. The Request/Response Mechanism reports only whether a submission succeeded — no Evidence, Finding, or Recommendation content crosses the boundary in either direction, since `FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` §4 holds the concrete payload shape open pending GOV-008, and a bare success/failure signal commits to nothing that decision has not yet settled.
 
 ## Platform Architecture Representation
 

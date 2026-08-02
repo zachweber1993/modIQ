@@ -1,0 +1,5 @@
+A minimal, real fixture directory used only to prove apps/console's
+Request/Response Mechanism exercises the real filesystem Evidence
+Collector end to end. Mirrors apps/sandbox's own fixture convention
+(fixtures/sample-assessment-input) at a smaller scale, since Phase 2
+transports only a success/failure signal, not Evidence content.

@@ -1,17 +1,22 @@
 //! modIQ Console — the production interaction layer `FrontendArchitecture.md`
-//! authorizes. This crate owns Tauri application bootstrap only.
+//! authorizes. This crate owns Tauri application bootstrap and the
+//! Request/Response Mechanism connecting it to the engine.
 //!
-//! Phase 1 (Sprint 21) intentionally has no dependency on any
-//! `modiq-*` crate: nothing in this file can evaluate Evidence,
-//! generate a Finding, or reach into Assessment state, because
-//! nothing here has ever been given the means to. The Request/Response
-//! Mechanism connecting this application to the engine is Phase 2's
-//! own, separate work — see this crate's own `Cargo.toml`.
+//! `assessment` is the only module permitted to depend on a
+//! `modiq-*` crate (see its own doc comment and this crate's
+//! `Cargo.toml`). Nothing in this file can evaluate Evidence,
+//! generate a Finding, or reach into Assessment state — it only
+//! wires the one command `assessment` exposes into Tauri's own
+//! dispatch.
+
+mod assessment;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .invoke_handler(tauri::generate_handler![assessment::submit_assessment])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
