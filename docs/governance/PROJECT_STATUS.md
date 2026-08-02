@@ -9,7 +9,7 @@
 | **Overall Status** | Active Implementation — Sprint 20 gave `modiq-storage` its first capability built on top of Storage's own Sprint 13 activation (read-only, cross-report history analysis), root workspace and Sandbox both reverified clean; Lua Analysis still awaiting additional evidence before further architectural evaluation |
 | **Current Phase** | Sprint 20 complete: Historical Assessment Analysis implemented per its own Capability Definition, following an Architecture Evaluation (`ARCHITECTURE_EVALUATION_KNOWLEDGE_MODEL_CONSISTENCY.md`) that found no conflict between `ProductSpecification.md`/`Glossary.md` and `KnowledgeModel.md` and recorded an Adopted Architectural Constraint (knowledge accumulation must occur entirely outside live Assessment execution); root workspace 264/264 and Sandbox 9/9 both reverified clean. The originally-proposed broader Knowledge Feedback Loop capability remains suspended, not withdrawn. |
 | **Engineering Methodology Version** | 1.0 — unchanged |
-| **Last Updated** | 2026-08-01 |
+| **Last Updated** | 2026-08-02 |
 
 ---
 
@@ -85,6 +85,8 @@ Opened this session by a Frontend Architecture Readiness Assessment (evaluation 
 **Frontend Architecture Architectural Resolution complete.** Structural enforcement of the Engine/Consumer Boundary (Initiative 5 Decision 2) adopted as the constitutional foundation; application shell/composition, consumer-owned state (presentation/interaction/navigation adopted outright, workspace adopted in principle), navigation and workspace realization, the request/response mechanism, identity/session mechanism, and error/latency/transport-failure handling all adopted, several with binding constraints; workspace-state derivation, progressive Overview realization, post-completion supplementation, and the concrete request/response contract reserved pending Initiative 1, Initiative 2, and GOV-008 respectively; business logic, Assessment mutation, and every other lineage's domain concepts explicitly excluded. **No ADR was created. No Governance Register entry was opened. No implementation was authorized.**
 
 **`docs/architecture/FrontendArchitecture.md` synchronized.** The governing specification (Version 1.0, Approved) has been added to the repository as a Governed Specification of `Architecture.md`. `Architecture.md`'s Current Version was advanced by one increment following its established amendment practice. `docs/README.md` and `docs/DOCUMENTATION_MAP.md` were updated to reflect its place in the Engineering Specification lineage. The document remains Approved and not yet Frozen.
+
+**`docs/engineering/FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` synchronized.** The approved Implementation Authorization is now part of the repository, authorizing Sprint 21 Planning within the engineering envelope defined by its own Sections 3–6. The authorization records the implementation boundary, required implementation work, and explicit exclusions for Sprint 21. Sprint 21 Planning itself remains outside the synchronized repository state.
 
 ---
 
