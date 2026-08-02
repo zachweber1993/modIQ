@@ -2,27 +2,25 @@ import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
 import { submitAssessment } from "@/engine";
+import type { ReportSummary } from "@/engine";
+import { Reviewing } from "@/workspace/Reviewing";
 
 /**
- * Workspace — Intake (Phase 2, Sprint 21). Reviewing arrives once a
- * submission completes, but this phase renders only a bare
- * success/failure acknowledgment, never Overview or Finding content —
- * that presentation is Phase 3's Navigation Realization and Workspace
- * Realization work, not this phase's.
- *
- * `status` is not a fourth workspace state alongside Intake/Assessing/
- * Reviewing. It is transient UI state *within* Intake: the user has
- * not left Intake by choosing a folder, only by receiving a result.
- * No Assessing-state view exists here — the pending condition carries
- * no phase information, no percentage, no Finding content, only "a
- * request is in flight."
+ * Workspace — Intake and Reviewing only (Phase 3, Sprint 21). Which
+ * of the two is active is not a separately tracked value: it is
+ * derived from whether `report` holds a result. `status` and `error`
+ * are transient UI state *within* Intake — not a third or fourth
+ * workspace state — the pending condition carries no phase
+ * information, no percentage, no Finding content, only "a request is
+ * in flight."
  */
-type IntakeStatus = "idle" | "submitting" | "completed" | "failed";
+type IntakeStatus = "idle" | "submitting" | "failed";
 
 export function Workspace() {
   const [status, setStatus] = useState<IntakeStatus>("idle");
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [report, setReport] = useState<ReportSummary | null>(null);
 
   const chooseFolder = async () => {
     const path = await open({ directory: true, multiple: false });
@@ -35,20 +33,17 @@ export function Workspace() {
     setStatus("submitting");
 
     try {
-      await submitAssessment(path);
-      setStatus("completed");
+      const result = await submitAssessment(path);
+      setReport(result);
+      setStatus("idle");
     } catch (err) {
       setError(String(err));
       setStatus("failed");
     }
   };
 
-  if (status === "completed") {
-    return (
-      <div className="flex h-full items-center justify-center text-foreground">
-        <p>Assessment complete.</p>
-      </div>
-    );
+  if (report && selectedPath) {
+    return <Reviewing findings={report.findings} subjectLabel={selectedPath} />;
   }
 
   return (

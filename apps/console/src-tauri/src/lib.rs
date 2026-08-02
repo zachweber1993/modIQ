@@ -7,7 +7,8 @@
 //! `Cargo.toml`). Nothing in this file can evaluate Evidence,
 //! generate a Finding, or reach into Assessment state — it only
 //! wires the one command `assessment` exposes into Tauri's own
-//! dispatch.
+//! dispatch. That command's return type is a provisional
+//! summary, not final or stable — see `assessment.rs`.
 
 mod assessment;
 
