@@ -86,7 +86,7 @@ Opened this session by a Frontend Architecture Readiness Assessment (evaluation 
 
 **`docs/architecture/FrontendArchitecture.md` synchronized.** The governing specification (Version 1.0, Approved) has been added to the repository as a Governed Specification of `Architecture.md`. `Architecture.md`'s Current Version was advanced by one increment following its established amendment practice. `docs/README.md` and `docs/DOCUMENTATION_MAP.md` were updated to reflect its place in the Engineering Specification lineage. The document remains Approved and not yet Frozen.
 
-**`docs/engineering/FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` synchronized.** The approved Implementation Authorization is now part of the repository, authorizing Sprint 21 Planning within the engineering envelope defined by its own Sections 3–6. The authorization records the implementation boundary, required implementation work, and explicit exclusions for Sprint 21. Sprint 21 Planning itself remains outside the synchronized repository state.
+**`docs/engineering/FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` synchronized.** The approved Implementation Authorization is now part of the repository, authorizing Sprint 21 Planning within the engineering envelope defined by its own Sections 3–6. The authorization records the implementation boundary, required implementation work, and explicit exclusions for Sprint 21. `docs/engineering/SPRINT21_PLAN.md` is now committed, per this repository's standing precedent that Sprint Plans exist as real, working documents — their own approval and completion record belongs to the Sprint's eventual closeout entry, not to a separate synchronization milestone.
 
 ---
 
