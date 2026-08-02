@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Architectural overview of the repository's documentation — orientation, not content. |
 | **Status** | Living. Reflects repository structure, not any single specification's content. |
-| **Last Updated** | 2026-07-30 (Platform Architecture 1.0 frozen) |
+| **Last Updated** | 2026-08-01 (FrontendArchitecture.md added as a Governed Specification of Architecture.md) |
 
 ---
 
@@ -20,7 +20,7 @@ This document answers one question: *given a topic, which part of the repository
 
 The repository's documentation is not one linear sequence. It is three related but independently-paced lineages, sharing a common constitutional foundation:
 
-**The Engineering Specification Lineage** — Constitutional → Architecture → Implementation/Engineering. Frozen, versioned by Documentation Release, tracked Sprint by Sprint in `docs/governance/PROJECT_STATUS.md`, governed by `docs/engineering/GOVERNANCE.md`'s Governance Register and the ADR process. This is the lineage `docs/README.md`'s Reading Order describes.
+**The Engineering Specification Lineage** — Constitutional → Architecture → Implementation/Engineering. Frozen, versioned by Documentation Release, tracked Sprint by Sprint in `docs/governance/PROJECT_STATUS.md`, governed by `docs/engineering/GOVERNANCE.md`'s Governance Register and the ADR process. This is the lineage `docs/README.md`'s Reading Order describes. As of 2026-08-01, this lineage additionally includes `docs/architecture/FrontendArchitecture.md` — a Governed Specification of `Architecture.md` defining the production interaction layer's architecture, elaborating the "User interfaces" boundary `Architecture.md` already names rather than originating a new one.
 
 **The Product Track** — Product Definition → Product Design → Interaction Design. Defines the Version 1 assessment *experience*, ahead of and independent from implementation. Carries no Documentation Authority ranking and is not governed by the Governance Register — its own convention is a lightweight closeout record at the end of each phase.
 
@@ -35,7 +35,7 @@ The repository's documentation is not one linear sequence. It is three related b
 | Group | Location | Purpose | Entry Point |
 |---|---|---|---|
 | Constitutional | `docs/constitutional/` | Frozen product philosophy and vocabulary: Vision, Principles, Glossary, Product Specification. | `docs/README.md` Reading Order |
-| Architecture | `docs/architecture/` | Frozen technical specifications: platform architecture, data model, rule engine, evidence collection, engine API, version profiles. | `docs/README.md` Reading Order |
+| Architecture | `docs/architecture/` | Frozen technical specifications: platform architecture, data model, rule engine, evidence collection, engine API, version profiles, frontend architecture. | `docs/README.md` Reading Order |
 | Implementation | `docs/implementation/` | Sprint-level implementation plans, crate roadmap, dependency map, runtime invariants. | `docs/README.md` Reading Order (partial) |
 | Engineering | `docs/engineering/` | The working engineering record: capability proposals, architecture evaluations, sprint reports, engineering releases, handoff documents, and the product-track closeout records. The largest and least indexed group in the repository — see Known Navigation Gaps below. | `docs/governance/PROJECT_STATUS.md` (narrates and links the relevant documents chronologically) |
 | Governance (process) | `docs/governance/` | Project tracking and process documents: current status, changelog, roadmap, engineering workflow guide, code review checklist, and the Repository Synchronization Policy governing how approved artifacts enter the repository. Distinct from architectural governance — see the naming note below. | `docs/governance/README.md` |
@@ -73,6 +73,7 @@ Neither is misnamed; they simply answer different questions ("where do things st
 | Whether the product/engineering lineages are reconciled yet | `docs/governance/PROJECT_STATUS.md`, "Product & Interaction Design Track" |
 | How an approved artifact gets into the repository | `docs/governance/RepositorySynchronizationPolicy.md` |
 | The platform-level identity, tenancy, and containment model surrounding the Assessment | `docs/platform/PlatformSpecification.md` |
+| The frontend/consumer application's architecture | `docs/architecture/FrontendArchitecture.md` |
 
 ---
 

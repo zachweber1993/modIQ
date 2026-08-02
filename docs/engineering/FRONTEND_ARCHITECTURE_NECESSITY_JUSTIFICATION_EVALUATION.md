@@ -92,3 +92,11 @@ This evaluation demonstrates necessity. It does not authorize a Frontend Archite
 - No Frontend Architecture lineage authorized.
 - No Governance Register item opened.
 - No ADR proposed.
+
+---
+
+## Subsequent History
+
+This evaluation is preserved exactly as it represented the repository's understanding on 2026-08-01, at the time it was written. Its original Status and Precedes fields, above, are not revised to reflect what followed.
+
+Following this evaluation, in sequence: a Documentation Authority Decision determined Frontend Architecture to be a Governed Specification of `Architecture.md`; a Frontend Architecture Evaluation dispositioned every candidate responsibility as Architecturally Ready, Blocked, or Excluded; a Frontend Architecture Architectural Resolution converted that Evaluation into binding determinations; and `docs/architecture/FrontendArchitecture.md` was synchronized into the repository as the resulting governing specification. This evaluation's own necessity finding was the fixed evidentiary basis for all four, and was not reopened by any of them.

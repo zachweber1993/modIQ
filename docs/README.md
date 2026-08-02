@@ -17,8 +17,9 @@ Welcome to the official design specification for modIQ.
 9. RuleEngine.md
 10. EvidenceCollection.md
 11. EngineAPI.md
-12. Sprint0.md
-13. Sprint1.md
+12. FrontendArchitecture.md
+13. Sprint0.md
+14. Sprint1.md
 
 ## Purpose
 

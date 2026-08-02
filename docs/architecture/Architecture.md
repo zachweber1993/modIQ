@@ -8,12 +8,12 @@
 |----------|-------|
 | **Document** | Architecture.md |
 | **Version** | 1.1.1 |
-| **Status** | Frozen, with a Documentation Release 2.1 amendment |
+| **Status** | Frozen, with a Documentation Release 2.1 amendment; amended 2026-08-01 (FrontendArchitecture.md added to Governed Specifications) |
 | **Project** | modIQ |
 | **Documentation Release** | 1.0 (amended under 2.1) |
 | **Owner** | Zach Weber |
 | **Created** | 2026-07-15 |
-| **Last Updated** | 2026-07-19 |
+| **Last Updated** | 2026-08-01 |
 
 ---
 
@@ -43,6 +43,7 @@ This document intentionally avoids implementation details. It defines *how the p
 - RuleEngine.md
 - EvidenceCollection.md
 - EngineAPI.md
+- FrontendArchitecture.md
 - Sprint0.md
 - Sprint1.md
 
@@ -483,16 +484,19 @@ Subsequent specifications refine this architecture.
 - RuleEngine.md defines assessment execution.
 - EvidenceCollection.md defines the Evidence Collection subsystem boundary.
 - EngineAPI.md defines subsystem interfaces.
+- FrontendArchitecture.md defines the production interaction layer's architecture.
 - Sprint planning documents define implementation sequencing.
 
 ---
 
 # Document Status
 
-**Current Version:** 1.1.2
+**Current Version:** 1.1.3 — advanced by one increment, consistent with this document's own established amendment practice (the same pattern that produced 1.1.1 → 1.1.2 for the Evidence Collection amendment). This synchronization introduces no new versioning policy.
 
 **Status:** Frozen, with a Documentation Release 2.1 amendment
 
 This document is a foundational technical specification, originally frozen for Documentation Release 1.0 per ADR-0001 (Foundation Freeze). It was amended under Documentation Release 2.1 (Frozen, Technical Director approved) to name Evidence Collection as a Core Platform Component and to correct the Assessment Lifecycle diagram's ordering, per ADR-0008. This amendment is recorded explicitly, as required by `docs/governance/DocumentationRelease.md`'s "documented contradiction" exception to Frozen-specification stability — it is not a silent rewrite. A minor terminology correction (Evidence Collection's component description now says "Assessment Input," matching `EvidenceCollection.md`'s GOV-009 resolution) was made following GOV-009/GOV-010's resolution; no structural or diagram change accompanied it. A further cross-reference to ADR-0010 was added to the Assessment Service component description following GOV-004's resolution; this document's own System Overview diagram and Core Platform Components section were the higher-authority description that decision confirmed, so no structural or diagram change was required here.
+
+**Amended 2026-08-01:** `FrontendArchitecture.md` is added to Governed Specifications and to Relationship to Other Specifications, following the Frontend Architecture Necessity Justification Evaluation (`docs/engineering/FRONTEND_ARCHITECTURE_NECESSITY_JUSTIFICATION_EVALUATION.md`) and a sequence of approved architectural determinations reached during this engineering session — a Documentation Authority Decision, a Frontend Architecture Evaluation, and a Frontend Architecture Architectural Resolution. Together these establish Frontend Architecture as a Governed Specification of this document, elaborating the "User interfaces" boundary this document's own Platform Boundaries section already names. No existing architectural decision, subsystem responsibility, System Overview component, or diagram is modified by this amendment.
 
 Changes should preserve consistency with higher-level specifications and maintain stable subsystem boundaries.
