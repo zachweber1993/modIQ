@@ -331,6 +331,18 @@ Must never contain business logic.
 
 ---
 
+## Console
+
+Owns:
+
+- application shell and region composition
+- session
+- presentation of Assessment results
+
+Must never contain business logic.
+
+---
+
 ## Storage
 
 Owns:

@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-02 (Frontend Implementation Authorization Synchronized) |
+| **Last Updated** | 2026-08-02 (Sprint 21 — Frontend Implementation Complete) |
 
 ---
 
@@ -1683,3 +1683,32 @@ The Documentation Release 1.0 Final Review concluded with:
 - **The Frontend Implementation Readiness Assessment, Sprint 21 Planning, the Sprint 21 Implementation Readiness Review, and its Disposition remain chat-record determinations**, not independently committed as their own documents — the same gap already recorded once for the Documentation Authority Decision, the Frontend Architecture Evaluation, and the Architectural Resolution. This synchronization commits only the Implementation Authorization itself.
 - No ADR created. No Governance Register entry opened. No implementation begun. No Sprint 21 Plan file created or modified. No architecture reopened.
 - Committed and pushed to `feature/runtime-implementation` as a standalone milestone, per the Repository Operating Charter.
+
+---
+
+# [Sprint 21]
+
+**Status:** Complete (Frontend Implementation: Application Shell, Request/Response Mechanism, Reviewing and Navigation Realization). First frontend implementation Sprint, following `FrontendArchitecture.md`, `FRONTEND_IMPLEMENTATION_AUTHORIZATION.md`, and `SPRINT21_PLAN.md`, all synchronized this same session.
+
+## Added
+
+- **`apps/console`** — the production interaction layer `FrontendArchitecture.md` authorizes, independent of `apps/sandbox`. Added to the root Cargo workspace as a real member (`Cargo.toml` `members`), with `default-members` preserving the original nine crates' own build behavior unchanged — confirmed empirically: bare `cargo check`/`build`/`test` complete without building `console` at all; `cargo check -p console`/`--workspace` build it in full when explicitly requested.
+- **Phase 1 — Foundation.** Console persistent shell hosting Dashboard and Workspace regions (`DashboardAndConsole.md`); a real sign-in flow constructing one real Organization, Membership (Owner role), and auto-provisioned Project per session, scoped exactly to `FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` §6's amendment. `apps/console/src-tauri` carries zero `modiq-*` dependency at this phase — Boundary Enforcement realized as a compile-time fact.
+- **Phase 2 — Intake and Submission.** Real Assessment Input acquisition (one Assessment Subject type — a mod folder, via `@tauri-apps/plugin-dialog`); the Request/Response Mechanism, calling `AssessmentService::execute_from_assessment_input` exactly as `modiq-cli` and `apps/sandbox` already do; Engine Transport Failure Handling. `assessment.rs` becomes the first, and only, module in this crate depending on `modiq-runtime`, `modiq-engine`, `modiq-report` — no `modiq-storage`, persistence being outside this Sprint's scope entirely.
+- **Phase 3 — Reviewing and Navigation.** `submit_assessment`'s return type extended from a bare success/failure signal to `ReportSummary { findings: [{ id, severity, description, recommendation, evidence[] }] }`, built from `AssessmentReport`'s already-public getters. Overview (severity counts, recommendation-existence) is a pure client-side derived view over `findings`, never transported or separately stored — the same discipline `DashboardAndConsole.md` already establishes for Console and Dashboard. Navigation Realization: a single `expandedFindingId` value is the entire navigation state — one continuous object, no route-per-view, single-step locality, symmetric reversal, cumulative orientation (the Overview remains rendered regardless of which Finding is expanded).
+
+## Verified
+
+- Root workspace (bare `cargo check`/`test`, `console` excluded via `default-members`): 264/264, unchanged.
+- `console` (`cargo test -p console`): 0 → 2 (Phase 2) → **4/4** (Phase 3) — real fixture, real `AssessmentSummary`/`Finding`/`Evidence` content asserted, no mocking.
+- Full workspace (`cargo test --workspace`, all ten members): **268/268**.
+- `apps/sandbox/src-tauri` (its own separate workspace): **9/9**, unaffected throughout all three phases.
+- `cargo fmt --all --check` clean at every phase; `npm run build` (`tsc && vite build`) clean at every phase.
+
+## Notes
+
+- **Implementation Observation — the sandbox pattern validated a technique, not an organization.** The sandbox transport pattern validated the boundary-crossing technique (getter-built DTOs, never serialized Runtime types) but not the payload organization the production Reviewing model actually requires. `apps/sandbox`'s own `AssessmentSummary` exposes `evidence`, `findings`, and `recommendations` as three flat, parallel lists with no linkage between them. The production implementation preserved the technique while deriving a consumer-driven transport organized around the real Runtime associations instead: a `Finding` references its own Evidence by id (`evidence_ids()`), and a `Recommendation` references its own Finding(s) by id (`finding_ids()`) — the inverse of what planning assumed, discovered only by reading `recommendation.rs` directly. `ReportSummary` resolves both associations once, at the boundary, so a Finding's own Evidence and Recommendation are always already scoped to it.
+- **Overview is derived entirely from Finding data**, never a transported or separately computed object — validated in practice with no friction; every Overview requirement (severity counts, recommendation existence) was fully derivable from `findings` once built.
+- **Several fields the frozen Interaction Design corpus names — Title/Summary decomposition, Mod Health/Category, Evidence's Content field, Confidence — are not implemented**, because none exists on the Runtime yet (Initiative 3 / Initiative 4, unimplemented). Phase 3 built the frozen behavioral and navigational model faithfully, populated only with currently-available content.
+- No ADR created. No Governance Register entry opened. No architecture reopened. No Initiative 1, Initiative 2, or GOV-008 assumption made anywhere in the implementation.
+- Committed across three commits (`76ccd8e`, `b63464d`, `c4efc22`) and pushed to `feature/runtime-implementation`.

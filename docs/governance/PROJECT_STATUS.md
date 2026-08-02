@@ -3,11 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Project** | modIQ |
-| **Current Release** | Engineering Release 1.5 — `docs/engineering/ENGINEERING_RELEASE_1.5.md`, covering Sprint 20 (Historical Assessment Analysis), recognized as a Sprint during Repository Closeout rather than originally scoped as one — see Sprint 20 entry, below. |
-| **Repository Status** | Implementation Ready — Sprint 13 (Storage Architectural Activation) complete; `modiq-storage` implemented, tested, and wired end to end through `modiq-cli` and `apps/sandbox`; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and unchanged since Sprint 11; Sprint 20 extended `modiq-storage` with a read-only, out-of-band history-analysis capability, wired through `modiq-cli` |
-| **Current Milestone** | Sprint 14 — Complete (GOV-003: `modiq-common` retired). Sprints 15–19 — Complete (governance-reconciliation cycle: GOV-002, GOV-015, ADR-0011; no Rust source touched — see Governance Status, below). **Sprint 20 — Complete (Historical Assessment Analysis).** |
-| **Overall Status** | Active Implementation — Sprint 20 gave `modiq-storage` its first capability built on top of Storage's own Sprint 13 activation (read-only, cross-report history analysis), root workspace and Sandbox both reverified clean; Lua Analysis still awaiting additional evidence before further architectural evaluation |
-| **Current Phase** | Sprint 20 complete: Historical Assessment Analysis implemented per its own Capability Definition, following an Architecture Evaluation (`ARCHITECTURE_EVALUATION_KNOWLEDGE_MODEL_CONSISTENCY.md`) that found no conflict between `ProductSpecification.md`/`Glossary.md` and `KnowledgeModel.md` and recorded an Adopted Architectural Constraint (knowledge accumulation must occur entirely outside live Assessment execution); root workspace 264/264 and Sandbox 9/9 both reverified clean. The originally-proposed broader Knowledge Feedback Loop capability remains suspended, not withdrawn. |
+| **Current Release** | Engineering Release 1.6 — `docs/engineering/ENGINEERING_RELEASE_1.6.md`, covering Sprint 21 (Frontend Implementation, Phases 1–3) — see Sprint 21 entry, below. |
+| **Repository Status** | Implementation Ready — Sprint 13 (Storage Architectural Activation) complete; `modiq-storage` implemented, tested, and wired end to end through `modiq-cli` and `apps/sandbox`; `RuntimeLogCollector` and `RuntimeLoadFailureRule` remain implemented, tested, and unchanged since Sprint 11; Sprint 20 extended `modiq-storage` with a read-only, out-of-band history-analysis capability, wired through `modiq-cli`; Sprint 21 delivered `apps/console`, the production interaction layer `FrontendArchitecture.md` authorizes, independent of `apps/sandbox` |
+| **Current Milestone** | Sprint 14 — Complete (GOV-003: `modiq-common` retired). Sprints 15–19 — Complete (governance-reconciliation cycle: GOV-002, GOV-015, ADR-0011; no Rust source touched — see Governance Status, below). Sprint 20 — Complete (Historical Assessment Analysis). **Sprint 21 — Complete (Frontend Implementation: Application Shell, Request/Response Mechanism, Reviewing and Navigation Realization).** |
+| **Overall Status** | Active Implementation — Sprint 21 gave the platform its first production interaction layer (`apps/console`), built entirely within Frontend Architecture's authorized envelope; root workspace, `console`, and Sandbox all reverified clean; Lua Analysis still awaiting additional evidence before further architectural evaluation |
+| **Current Phase** | Sprint 21 complete: Application Shell, Console/Dashboard/Workspace region composition, Identity/Session Mechanism, the Request/Response Mechanism, and the full Intake → Reviewing experience with Navigation Realization implemented across three phases, entirely within `FRONTEND_IMPLEMENTATION_AUTHORIZATION.md`'s authorized envelope; root workspace 264/264 (unchanged; `console` remains outside `default-members`), `console` 4/4, and Sandbox 9/9 all independently reverified clean. |
 | **Engineering Methodology Version** | 1.0 — unchanged |
 | **Last Updated** | 2026-08-02 |
 
@@ -86,7 +86,9 @@ Opened this session by a Frontend Architecture Readiness Assessment (evaluation 
 
 **`docs/architecture/FrontendArchitecture.md` synchronized.** The governing specification (Version 1.0, Approved) has been added to the repository as a Governed Specification of `Architecture.md`. `Architecture.md`'s Current Version was advanced by one increment following its established amendment practice. `docs/README.md` and `docs/DOCUMENTATION_MAP.md` were updated to reflect its place in the Engineering Specification lineage. The document remains Approved and not yet Frozen.
 
-**`docs/engineering/FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` synchronized.** The approved Implementation Authorization is now part of the repository, authorizing Sprint 21 Planning within the engineering envelope defined by its own Sections 3–6. The authorization records the implementation boundary, required implementation work, and explicit exclusions for Sprint 21. `docs/engineering/SPRINT21_PLAN.md` is now committed, per this repository's standing precedent that Sprint Plans exist as real, working documents — their own approval and completion record belongs to the Sprint's eventual closeout entry, not to a separate synchronization milestone.
+**`docs/engineering/FRONTEND_IMPLEMENTATION_AUTHORIZATION.md` synchronized.** The approved Implementation Authorization is now part of the repository, authorizing Sprint 21 Planning within the engineering envelope defined by its own Sections 3–6. The authorization records the implementation boundary, required implementation work, and explicit exclusions for Sprint 21. `docs/engineering/SPRINT21_PLAN.md` is committed alongside it, per this repository's standing precedent that Sprint Plans exist as real, working documents.
+
+**Sprint 21 complete.** All three authorized phases implemented and verified: Application Shell and Region Composition, Identity and Session Mechanism (Phase 1); real Assessment Input acquisition and the Request/Response Mechanism (Phase 2); Reviewing and Navigation Realization (Phase 3). Boundary Enforcement held throughout — `apps/console/src-tauri/src/assessment.rs` remains the only module depending on a `modiq-*` crate, `apps/console/src/engine/index.ts` remains the only file calling `invoke`. Every Authorization §4 exclusion (Assessing-state observation, reentrancy, payload finality, region richness beyond minimum) remains absent. Full record: `docs/engineering/ENGINEERING_RELEASE_1.6.md` and `docs/engineering/IMPLEMENTATION_REPORT_FRONTEND_CONSOLE.md`.
 
 ---
 
@@ -362,6 +364,6 @@ Authoritative governance documents:
 Future governance changes must be justified by implementation evidence,
 architectural evolution, or approved governance decisions.
 
-Sprint 20 is complete under this governance baseline. Sprint 21 has not yet begun.
+Sprint 20 is complete under this governance baseline. Sprint 21 (Frontend Implementation) is also complete — see the Frontend Architecture section, above, and `docs/engineering/ENGINEERING_RELEASE_1.6.md`.
 
 ---
