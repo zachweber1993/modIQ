@@ -2,6 +2,29 @@
 resolver = "2"
 
 members = [
+    "apps/console/src-tauri",
+    "crates/modiq-cli",
+    "crates/modiq-collection",
+    "crates/modiq-engine",
+    "crates/modiq-knowledge",
+    "crates/modiq-report",
+    "crates/modiq-rules",
+    "crates/modiq-runtime",
+    "crates/modiq-storage",
+    "crates/modiq-versioning",
+]
+
+# `apps/console/src-tauri` is a real workspace member (unlike
+# `apps/sandbox`, which deliberately is not — see its own Cargo.toml)
+# because Initiative 5 named non-membership as one of three facts
+# disqualifying a candidate from being the production interaction
+# layer. `default-members` preserves plain `cargo check`/`build`/`test`
+# behavior at exactly the original nine crates, so this membership
+# does not pull Tauri's GUI dependency tree into that default set —
+# only an explicit `--workspace` (or `-p console_lib`) invocation
+# builds it. Verified in ENGINEERING_LOG-equivalent implementation
+# notes at this Sprint's own closeout.
+default-members = [
     "crates/modiq-cli",
     "crates/modiq-collection",
     "crates/modiq-engine",

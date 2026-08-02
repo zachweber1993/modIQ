@@ -1,0 +1,37 @@
+[package]
+name = "console"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "modIQ Console — the production interaction layer FrontendArchitecture.md authorizes"
+authors = ["modIQ"]
+
+# A real member of the root workspace, unlike `apps/sandbox` (see its
+# own Cargo.toml's `[workspace]` table and comment) — Initiative 5
+# named non-membership as one of three facts disqualifying a candidate
+# from being the production interaction layer. `default-members` in
+# the root Cargo.toml keeps plain `cargo check`/`build`/`test`
+# unaffected; only an explicit `--workspace` or `-p console_lib`
+# invocation builds this crate.
+
+[lib]
+# The `_lib` suffix mirrors `apps/sandbox`'s own convention: needed to
+# keep the lib name distinct from the bin name, primarily an issue on
+# Windows (see https://github.com/rust-lang/cargo/issues/8519).
+name = "console_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Deliberately no modiq-* dependency in Phase 1 (Sprint 21) — see
+# FrontendArchitecture.md's Boundary Enforcement and this crate's own
+# README. The Request/Response Mechanism, and with it the first real
+# dependency on the engine, is Phase 2's work.
