@@ -80,9 +80,10 @@ impl AssessCommand {
         output.push_str(&format!("\nFindings ({}):\n", report.findings().len()));
         for finding in report.findings() {
             output.push_str(&format!(
-                "  - [{:?}] {}\n",
+                "  - [{:?}] {}: {}\n",
                 finding.severity(),
-                finding.description()
+                finding.title(),
+                finding.summary()
             ));
         }
 

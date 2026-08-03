@@ -51,7 +51,7 @@ mod tests {
     use super::*;
     use modiq_runtime::assessment::{
         Assessment, AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory, Finding,
-        FindingSeverity, RuleReference, VersionProfileReference,
+        FindingSeverity, FindingStatus, ModHealthDimension, RuleReference, VersionProfileReference,
     };
 
     /// A real, unique, temporary directory, mirroring this crate's own
@@ -107,15 +107,24 @@ mod tests {
                 VersionProfileReference::new("FS25"),
             );
             assessment.begin_evidence_collection().unwrap();
-            let evidence =
-                Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence").unwrap();
+            let evidence = Evidence::new(
+                EvidenceCategory::FileStructureAnalysis,
+                "sample evidence",
+                None,
+                None,
+                None,
+            )
+            .unwrap();
             assessment.add_evidence(evidence.clone()).unwrap();
             assessment.begin_rule_evaluation().unwrap();
             assessment
                 .add_finding(
                     Finding::new(
                         FindingSeverity::Warning,
+                        "Declared version mismatch",
                         "declared version mismatch",
+                        ModHealthDimension::Compatibility,
+                        FindingStatus::Final,
                         vec![evidence.id()],
                         RuleReference::new("version-compatibility-rule"),
                     )

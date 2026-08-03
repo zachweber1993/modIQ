@@ -14,9 +14,11 @@
  * - No assessment identity — Overview's "what was assessed" uses the
  *   folder path already known client-side from the picker (Phase 2),
  *   not engine data.
- * - No Category / Mod Health dimension, no Title/Summary split, no
- *   Evidence `Content` field, no Confidence — none exist on the real
- *   Runtime types yet (Initiative 3 / Initiative 4, unimplemented).
+ * - No Mod Health dimension, no Evidence `Content`/`Label`/`Source`
+ *   field, no Confidence — Sprint 22 (Initiative 3) added these to
+ *   the Runtime types, but nothing on this side of the boundary
+ *   consumes them yet; Title/Summary are the one Sprint 22 addition
+ *   this transport does carry, replacing the prior flat `description`.
  */
 
 export interface EvidenceSummary {
@@ -28,7 +30,8 @@ export interface EvidenceSummary {
 export interface FindingSummary {
   id: string;
   severity: string;
-  description: string;
+  title: string;
+  summary: string;
   recommendation: string | null;
   evidence: EvidenceSummary[];
 }

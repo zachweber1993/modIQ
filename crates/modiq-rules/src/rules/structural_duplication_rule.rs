@@ -1,5 +1,6 @@
 use modiq_runtime::assessment::{
-    Evidence, EvidenceCategory, Finding, FindingSeverity, Recommendation, RuleReference,
+    Evidence, EvidenceCategory, Finding, FindingSeverity, FindingStatus, ModHealthDimension,
+    Recommendation, RuleReference,
 };
 
 use super::engine::RuleOutcome;
@@ -15,6 +16,10 @@ use super::engine::RuleOutcome;
 /// this Rule's applicability is judged solely on Evidence category
 /// match, never on whether another Rule also matches the same or
 /// different Evidence.
+///
+/// Assigned `ModHealthDimension::Structure` (Initiative 3, Item 2,
+/// frozen mapping): this Rule evaluates the mod's own archive
+/// structure.
 ///
 /// Not yet reachable from `RuleEngine::evaluate` — wiring multiple
 /// Rules together is Sprint 5 Phase 3, not yet authorized. This Rule
@@ -51,12 +56,15 @@ impl StructuralDuplicationRule {
 
         let finding = Finding::new(
             FindingSeverity::Warning,
+            "Duplicate archive entries",
             "The archive contains duplicate entry names; collection could not fully resolve \
              every entry, so which content a reader actually extracts is not guaranteed.",
+            ModHealthDimension::Structure,
+            FindingStatus::Final,
             matching_ids,
             RuleReference::new("structural-duplication-rule"),
         )
-        .expect("severity, description, and rule reference are valid");
+        .expect("severity, title, summary, and rule reference are valid");
 
         let recommendation = Recommendation::new(
             "Repackage the archive without duplicate entry names to ensure deterministic, \
@@ -68,7 +76,7 @@ impl StructuralDuplicationRule {
 
         Some(RuleOutcome {
             finding,
-            recommendation,
+            recommendation: Some(recommendation),
         })
     }
 }
@@ -81,13 +89,22 @@ mod tests {
         Evidence::new(
             EvidenceCategory::StructuralDuplication,
             "duplicate entry names detected",
+            None,
+            None,
+            None,
         )
         .expect("category and description are valid")
     }
 
     fn other_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     #[test]
@@ -114,18 +131,22 @@ mod tests {
         let outcome = rule.evaluate(&[evidence]).expect("evidence matched");
 
         assert_eq!(outcome.finding.severity(), FindingSeverity::Warning);
-        assert!(!outcome.finding.description().is_empty());
+        assert!(!outcome.finding.title().is_empty());
+        assert!(!outcome.finding.summary().is_empty());
+        assert_eq!(
+            outcome.finding.mod_health_dimension(),
+            ModHealthDimension::Structure
+        );
+        assert_eq!(outcome.finding.status(), FindingStatus::Final);
         assert_eq!(outcome.finding.evidence_ids(), &[evidence_id]);
         assert_eq!(
             outcome.finding.rule_reference().identifier(),
             "structural-duplication-rule"
         );
-        assert!(!outcome.recommendation.action().is_empty());
-        assert_eq!(
-            outcome.recommendation.finding_ids(),
-            &[outcome.finding.id()]
-        );
-        assert_eq!(outcome.recommendation.repair_recipe_reference(), None);
+        let recommendation = outcome.recommendation.expect("this Rule always recommends");
+        assert!(!recommendation.action().is_empty());
+        assert_eq!(recommendation.finding_ids(), &[outcome.finding.id()]);
+        assert_eq!(recommendation.repair_recipe_reference(), None);
     }
 
     #[test]
@@ -168,19 +189,22 @@ mod tests {
         // identity); determinism is judged by content, not by
         // incidental identity.
         assert_eq!(first.finding.severity(), second.finding.severity());
-        assert_eq!(first.finding.description(), second.finding.description());
+        assert_eq!(first.finding.title(), second.finding.title());
+        assert_eq!(first.finding.summary(), second.finding.summary());
         assert_eq!(first.finding.evidence_ids(), second.finding.evidence_ids());
         assert_eq!(
             first.finding.rule_reference(),
             second.finding.rule_reference()
         );
+        let first_recommendation = first.recommendation.expect("this Rule always recommends");
+        let second_recommendation = second.recommendation.expect("this Rule always recommends");
         assert_eq!(
-            first.recommendation.action(),
-            second.recommendation.action()
+            first_recommendation.action(),
+            second_recommendation.action()
         );
         assert_eq!(
-            first.recommendation.repair_recipe_reference(),
-            second.recommendation.repair_recipe_reference()
+            first_recommendation.repair_recipe_reference(),
+            second_recommendation.repair_recipe_reference()
         );
     }
 }

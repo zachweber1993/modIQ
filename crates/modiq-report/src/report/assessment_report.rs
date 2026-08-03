@@ -55,22 +55,31 @@ mod tests {
     use super::*;
     use modiq_runtime::assessment::{
         AssessmentContext, AssessmentSubject, EvidenceCategory, EvidenceId, FindingId,
-        FindingSeverity, RuleReference, VersionProfileReference,
+        FindingSeverity, FindingStatus, ModHealthDimension, RuleReference, VersionProfileReference,
     };
 
     fn sample_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     fn sample_finding() -> Finding {
         Finding::new(
             FindingSeverity::Informational,
+            "Sample finding",
             "sample finding",
+            ModHealthDimension::EngineeringQuality,
+            FindingStatus::Final,
             vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )
-        .expect("severity, description, evidence_ids, and rule reference are valid")
+        .expect("severity, title, summary, evidence_ids, and rule reference are valid")
     }
 
     fn sample_recommendation() -> Recommendation {

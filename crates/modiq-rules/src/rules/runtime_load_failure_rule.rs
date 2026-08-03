@@ -1,5 +1,6 @@
 use modiq_runtime::assessment::{
-    Evidence, EvidenceCategory, EvidenceId, Finding, FindingSeverity, Recommendation, RuleReference,
+    Evidence, EvidenceCategory, EvidenceId, Finding, FindingSeverity, FindingStatus,
+    ModHealthDimension, Recommendation, RuleReference,
 };
 
 use super::engine::RuleOutcome;
@@ -29,6 +30,9 @@ const RUNTIME_LOG_FAILURE_PREFIX: &str =
 /// Finding (`RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md`, Architectural
 /// Invariants: "Unknown runtime signatures never produce inferred
 /// Findings").
+///
+/// Assigned `ModHealthDimension::Stability` (Initiative 3, Item 2,
+/// frozen mapping): this Rule detects the mod failing to load.
 ///
 /// Not yet reachable from `RuleEngine::evaluate` — dispatch wiring is a
 /// separate, later milestone. This Rule is a complete, independently
@@ -68,17 +72,22 @@ impl RuntimeLoadFailureRule {
         let evidence_ids: Vec<_> = failures.iter().map(|(id, _)| *id).collect();
         let mod_names: Vec<String> = failures.iter().map(|(_, name)| name.clone()).collect();
 
+        let summary = format!(
+            "The runtime log shows {} was rejected at modDesc validation and never reached \
+             a loadable state.",
+            mod_names.join(", ")
+        );
+
         let finding = Finding::new(
             FindingSeverity::Error,
-            format!(
-                "The runtime log shows {} was rejected at modDesc validation and never reached \
-                 a loadable state.",
-                mod_names.join(", ")
-            ),
+            "Runtime load failure",
+            summary,
+            ModHealthDimension::Stability,
+            FindingStatus::Final,
             evidence_ids,
             RuleReference::new("runtime-load-failure-rule"),
         )
-        .expect("severity, description, and rule reference are valid");
+        .expect("severity, title, summary, and rule reference are valid");
 
         let recommendation = Recommendation::new(
             "This mod's declared modDesc version was rejected by the game engine before it \
@@ -91,7 +100,7 @@ impl RuntimeLoadFailureRule {
 
         Some(RuleOutcome {
             finding,
-            recommendation,
+            recommendation: Some(recommendation),
         })
     }
 
@@ -121,6 +130,9 @@ mod tests {
             EvidenceCategory::RuntimeLogs,
             format!("{RUNTIME_LOG_FAILURE_PREFIX}{mod_name}"),
             "log.txt",
+            None,
+            None,
+            None,
         )
         .expect("description and location are non-empty")
     }
@@ -130,13 +142,22 @@ mod tests {
             EvidenceCategory::RuntimeLogs,
             "Runtime log records: some other, unrecognized observation",
             "log.txt",
+            None,
+            None,
+            None,
         )
         .expect("description and location are non-empty")
     }
 
     fn other_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     #[test]
@@ -181,9 +202,14 @@ mod tests {
         assert!(
             outcome
                 .finding
-                .description()
+                .summary()
                 .contains("FS25_DodgeChallengerHellcat")
         );
+        assert_eq!(
+            outcome.finding.mod_health_dimension(),
+            ModHealthDimension::Stability
+        );
+        assert_eq!(outcome.finding.status(), FindingStatus::Final);
         assert_eq!(outcome.finding.evidence_ids(), &[evidence_id]);
         assert_eq!(
             outcome.finding.rule_reference().identifier(),
@@ -192,12 +218,10 @@ mod tests {
 
         // Recommendation generation per Architecture Section 3.4:
         // inline-authored, no Repair Recipe pairing.
-        assert!(!outcome.recommendation.action().is_empty());
-        assert_eq!(
-            outcome.recommendation.finding_ids(),
-            &[outcome.finding.id()]
-        );
-        assert_eq!(outcome.recommendation.repair_recipe_reference(), None);
+        let recommendation = outcome.recommendation.expect("this Rule always recommends");
+        assert!(!recommendation.action().is_empty());
+        assert_eq!(recommendation.finding_ids(), &[outcome.finding.id()]);
+        assert_eq!(recommendation.repair_recipe_reference(), None);
     }
 
     #[test]
@@ -209,7 +233,7 @@ mod tests {
             .evaluate(&[evidence])
             .expect("the recognized template matched");
 
-        assert!(outcome.finding.description().contains("FS25_SomeOtherMod"));
+        assert!(outcome.finding.summary().contains("FS25_SomeOtherMod"));
     }
 
     #[test]
@@ -238,8 +262,8 @@ mod tests {
         let outcome = rule.evaluate(&[first, second]).expect("both items matched");
 
         assert_eq!(outcome.finding.evidence_ids(), &[first_id, second_id]);
-        assert!(outcome.finding.description().contains("FS25_ModOne"));
-        assert!(outcome.finding.description().contains("FS25_ModTwo"));
+        assert!(outcome.finding.summary().contains("FS25_ModOne"));
+        assert!(outcome.finding.summary().contains("FS25_ModTwo"));
     }
 
     #[test]
@@ -255,19 +279,22 @@ mod tests {
         // identity); determinism is judged by content, not by
         // incidental identity.
         assert_eq!(first.finding.severity(), second.finding.severity());
-        assert_eq!(first.finding.description(), second.finding.description());
+        assert_eq!(first.finding.title(), second.finding.title());
+        assert_eq!(first.finding.summary(), second.finding.summary());
         assert_eq!(first.finding.evidence_ids(), second.finding.evidence_ids());
         assert_eq!(
             first.finding.rule_reference(),
             second.finding.rule_reference()
         );
+        let first_recommendation = first.recommendation.expect("this Rule always recommends");
+        let second_recommendation = second.recommendation.expect("this Rule always recommends");
         assert_eq!(
-            first.recommendation.action(),
-            second.recommendation.action()
+            first_recommendation.action(),
+            second_recommendation.action()
         );
         assert_eq!(
-            first.recommendation.repair_recipe_reference(),
-            second.recommendation.repair_recipe_reference()
+            first_recommendation.repair_recipe_reference(),
+            second_recommendation.repair_recipe_reference()
         );
     }
 }

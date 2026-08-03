@@ -156,6 +156,9 @@ impl RuntimeLogCollector {
                     "Runtime log records: Unsupported mod description version in mod {mod_name}"
                 ),
                 LOG_FILE_NAME,
+                Some("Runtime Load Failure".to_string()),
+                Some(LOG_FILE_NAME.to_string()),
+                Some(line.to_string()),
             )
             .expect("description and location are non-empty"),
         )

@@ -54,6 +54,9 @@ impl EvidenceCollector {
                 EvidenceCategory::FileStructureAnalysis,
                 "File discovered during filesystem collection.",
                 input.value(),
+                Some("File Discovered".to_string()),
+                Some("Filesystem Collection".to_string()),
+                None,
             )
             .expect("description and location are non-empty because value() is non-empty");
             return Ok(vec![evidence]);
@@ -119,6 +122,9 @@ impl EvidenceCollector {
                         EvidenceCategory::FileStructureAnalysis,
                         "File discovered during filesystem collection.",
                         relative,
+                        Some("File Discovered".to_string()),
+                        Some("Filesystem Collection".to_string()),
+                        None,
                     )
                     .expect("description and location are non-empty"),
                 );
@@ -128,6 +134,9 @@ impl EvidenceCollector {
                         EvidenceCategory::FileStructureAnalysis,
                         "Directory discovered during filesystem collection.",
                         relative,
+                        Some("Directory Discovered".to_string()),
+                        Some("Filesystem Collection".to_string()),
+                        None,
                     )
                     .expect("description and location are non-empty"),
                 );

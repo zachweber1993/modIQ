@@ -59,7 +59,8 @@ impl From<&Evidence> for EvidenceSummary {
 pub struct FindingSummary {
     id: String,
     severity: String,
-    description: String,
+    title: String,
+    summary: String,
     recommendation: Option<String>,
     evidence: Vec<EvidenceSummary>,
 }
@@ -105,7 +106,8 @@ impl From<&AssessmentReport> for ReportSummary {
             .map(|finding| FindingSummary {
                 id: format!("{:?}", finding.id()),
                 severity: format!("{:?}", finding.severity()),
-                description: finding.description().to_string(),
+                title: finding.title().to_string(),
+                summary: finding.summary().to_string(),
                 recommendation: recommendation_for(finding.id()),
                 evidence: finding
                     .evidence_ids()
@@ -158,11 +160,12 @@ mod tests {
     }
 
     #[test]
-    fn every_finding_carries_a_non_empty_severity_and_description() {
+    fn every_finding_carries_a_non_empty_severity_title_and_summary() {
         let result = submit_assessment_from_path(FIXTURE_SAMPLE_MOD).unwrap();
         for finding in &result.findings {
             assert!(!finding.severity.is_empty());
-            assert!(!finding.description.is_empty());
+            assert!(!finding.title.is_empty());
+            assert!(!finding.summary.is_empty());
         }
     }
 

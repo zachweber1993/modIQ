@@ -238,8 +238,14 @@ impl ArchiveCollector {
             duplicate_names.join(", ")
         );
 
-        Evidence::new(EvidenceCategory::StructuralDuplication, description)
-            .expect("description is non-empty")
+        Evidence::new(
+            EvidenceCategory::StructuralDuplication,
+            description,
+            Some("Duplicate Archive Entries".to_string()),
+            Some("Archive Collection".to_string()),
+            None,
+        )
+        .expect("description is non-empty")
     }
 }
 

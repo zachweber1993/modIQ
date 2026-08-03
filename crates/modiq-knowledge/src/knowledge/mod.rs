@@ -11,5 +11,5 @@ pub use compatibility_pattern::CompatibilityPattern;
 pub use engine_behavior::EngineBehavior;
 pub use knowledge_reference::KnowledgeReference;
 pub use known_issue::KnownIssue;
-pub use repair_recipe::RepairRecipe;
+pub use repair_recipe::{RepairRecipe, RepairStep, RepairStepKind};
 pub use rule::Rule;

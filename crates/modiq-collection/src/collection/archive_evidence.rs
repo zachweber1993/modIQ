@@ -39,16 +39,25 @@ impl ArchiveEvidenceBuilder {
     }
 
     fn evidence_for_entry(entry: &ArchiveEntry) -> Evidence {
-        let description = if entry.is_dir() {
-            "Directory discovered during archive collection."
+        let (description, label) = if entry.is_dir() {
+            (
+                "Directory discovered during archive collection.",
+                "Directory Discovered",
+            )
         } else {
-            "File discovered during archive collection."
+            (
+                "File discovered during archive collection.",
+                "File Discovered",
+            )
         };
 
         Evidence::with_location(
             EvidenceCategory::FileStructureAnalysis,
             description,
             entry.name(),
+            Some(label.to_string()),
+            Some("Archive Collection".to_string()),
+            None,
         )
         .expect("description and location are non-empty")
     }

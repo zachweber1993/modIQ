@@ -1,7 +1,7 @@
 use modiq_knowledge::knowledge::RepairRecipe;
 use modiq_runtime::assessment::{
-    Evidence, EvidenceCategory, Finding, FindingSeverity, Recommendation, RepairRecipeReference,
-    RuleReference,
+    Evidence, EvidenceCategory, Finding, FindingSeverity, FindingStatus, ModHealthDimension,
+    Recommendation, RepairRecipeReference, RuleReference,
 };
 use modiq_versioning::versioning::VersionProfile;
 
@@ -26,6 +26,10 @@ const DECLARED_DESC_VERSION_PREFIX: &str = "modDesc.xml declares descVersion: ";
 /// raw declared value as a fact; this Rule is the first and only place
 /// that value is judged against what the platform actually recognizes
 /// (Sprint 8 Architectural Resolution, Decision 3).
+///
+/// Assigned `ModHealthDimension::Compatibility` (Initiative 3, Item 2,
+/// frozen mapping): this Rule evaluates version compatibility
+/// directly.
 pub struct VersionCompatibilityRule;
 
 impl VersionCompatibilityRule {
@@ -72,22 +76,33 @@ impl VersionCompatibilityRule {
             .map(|(_, version)| version.to_string())
             .collect();
 
+        let summary = format!(
+            "modDesc.xml declares descVersion {}, which the active Version Profile ({}) \
+             does not recognize.",
+            declared_versions.join(", "),
+            version_profile.game_version().name()
+        );
+
         let finding = Finding::new(
             FindingSeverity::Warning,
-            format!(
-                "modDesc.xml declares descVersion {}, which the active Version Profile ({}) \
-                 does not recognize.",
-                declared_versions.join(", "),
-                version_profile.game_version().name()
-            ),
+            "Unrecognized declared version",
+            summary,
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
             evidence_ids,
             RuleReference::new("version-compatibility-rule"),
         )
-        .expect("severity, description, and rule reference are valid");
+        .expect("severity, title, summary, and rule reference are valid");
 
         let recipe = RepairRecipe::version_compatibility_declared_version_mismatch();
+        let action = recipe
+            .steps()
+            .iter()
+            .map(|step| step.instruction())
+            .collect::<Vec<_>>()
+            .join(" ");
         let recommendation = Recommendation::new(
-            recipe.guidance(),
+            action,
             vec![finding.id()],
             Some(RepairRecipeReference::new(recipe.identifier())),
         )
@@ -95,7 +110,7 @@ impl VersionCompatibilityRule {
 
         Some(RuleOutcome {
             finding,
-            recommendation,
+            recommendation: Some(recommendation),
         })
     }
 }
@@ -111,13 +126,22 @@ mod tests {
             EvidenceCategory::XmlInspection,
             format!("{DECLARED_DESC_VERSION_PREFIX}{desc_version}"),
             "modDesc.xml",
+            None,
+            None,
+            None,
         )
         .expect("description and location are valid")
     }
 
     fn other_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     fn fs25_profile() -> VersionProfile {
@@ -158,20 +182,23 @@ mod tests {
             .expect("declared version is unrecognized");
 
         assert_eq!(outcome.finding.severity(), FindingSeverity::Warning);
-        assert!(outcome.finding.description().contains("42"));
-        assert!(outcome.finding.description().contains("FS25"));
+        assert!(outcome.finding.summary().contains("42"));
+        assert!(outcome.finding.summary().contains("FS25"));
+        assert_eq!(
+            outcome.finding.mod_health_dimension(),
+            ModHealthDimension::Compatibility
+        );
+        assert_eq!(outcome.finding.status(), FindingStatus::Final);
         assert_eq!(outcome.finding.evidence_ids(), &[evidence_id]);
         assert_eq!(
             outcome.finding.rule_reference().identifier(),
             "version-compatibility-rule"
         );
-        assert!(!outcome.recommendation.action().is_empty());
+        let recommendation = outcome.recommendation.expect("this Rule always recommends");
+        assert!(!recommendation.action().is_empty());
+        assert_eq!(recommendation.finding_ids(), &[outcome.finding.id()]);
         assert_eq!(
-            outcome.recommendation.finding_ids(),
-            &[outcome.finding.id()]
-        );
-        assert_eq!(
-            outcome.recommendation.repair_recipe_reference(),
+            recommendation.repair_recipe_reference(),
             Some(&RepairRecipeReference::new(
                 "version-compatibility-declared-version-mismatch"
             ))
@@ -207,19 +234,22 @@ mod tests {
             .expect("declared version is unrecognized");
 
         assert_eq!(first.finding.severity(), second.finding.severity());
-        assert_eq!(first.finding.description(), second.finding.description());
+        assert_eq!(first.finding.title(), second.finding.title());
+        assert_eq!(first.finding.summary(), second.finding.summary());
         assert_eq!(first.finding.evidence_ids(), second.finding.evidence_ids());
         assert_eq!(
             first.finding.rule_reference(),
             second.finding.rule_reference()
         );
+        let first_recommendation = first.recommendation.expect("this Rule always recommends");
+        let second_recommendation = second.recommendation.expect("this Rule always recommends");
         assert_eq!(
-            first.recommendation.action(),
-            second.recommendation.action()
+            first_recommendation.action(),
+            second_recommendation.action()
         );
         assert_eq!(
-            first.recommendation.repair_recipe_reference(),
-            second.recommendation.repair_recipe_reference()
+            first_recommendation.repair_recipe_reference(),
+            second_recommendation.repair_recipe_reference()
         );
     }
 

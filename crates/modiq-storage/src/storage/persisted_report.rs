@@ -113,7 +113,8 @@ impl From<FindingSeverity> for PersistedFindingSeverity {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PersistedFinding {
     severity: PersistedFindingSeverity,
-    description: String,
+    title: String,
+    summary: String,
     /// Positions into this same persisted report's own `evidence`
     /// list — not the original, process-local `EvidenceId` values.
     /// An id with no resolvable position (Runtime does not guarantee
@@ -127,7 +128,8 @@ impl PersistedFinding {
     fn from_finding(finding: &Finding, evidence_positions: &HashMap<EvidenceId, usize>) -> Self {
         Self {
             severity: PersistedFindingSeverity::from(finding.severity()),
-            description: finding.description().to_string(),
+            title: finding.title().to_string(),
+            summary: finding.summary().to_string(),
             evidence_indices: finding
                 .evidence_ids()
                 .iter()
@@ -141,8 +143,12 @@ impl PersistedFinding {
         self.severity
     }
 
-    pub fn description(&self) -> &str {
-        &self.description
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+
+    pub fn summary(&self) -> &str {
+        &self.summary
     }
 
     pub fn evidence_indices(&self) -> &[usize] {
@@ -270,7 +276,8 @@ impl PersistedAssessmentReport {
 mod tests {
     use super::*;
     use modiq_runtime::assessment::{
-        Assessment, AssessmentContext, AssessmentSubject, RuleReference, VersionProfileReference,
+        Assessment, AssessmentContext, AssessmentSubject, FindingStatus, ModHealthDimension,
+        RuleReference, VersionProfileReference,
     };
 
     fn sample_evidence() -> Evidence {
@@ -278,6 +285,9 @@ mod tests {
             EvidenceCategory::FileStructureAnalysis,
             "missing modDesc.xml",
             "root",
+            None,
+            None,
+            None,
         )
         .unwrap()
     }
@@ -285,7 +295,10 @@ mod tests {
     fn sample_finding(evidence_ids: Vec<EvidenceId>) -> Finding {
         Finding::new(
             FindingSeverity::Warning,
+            "Declared version mismatch",
             "declared version mismatch",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
             evidence_ids,
             RuleReference::new("version-compatibility-rule"),
         )
@@ -352,8 +365,9 @@ mod tests {
             persisted.findings()[0].severity(),
             PersistedFindingSeverity::Warning
         );
+        assert_eq!(persisted.findings()[0].title(), "Declared version mismatch");
         assert_eq!(
-            persisted.findings()[0].description(),
+            persisted.findings()[0].summary(),
             "declared version mismatch"
         );
         // The Finding's one EvidenceId resolves to position 0 in this

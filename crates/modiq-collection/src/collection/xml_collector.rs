@@ -163,6 +163,9 @@ impl XmlCollector {
                     EvidenceCategory::XmlInspection,
                     format!("modDesc.xml declares dependency: {name}"),
                     MANIFEST_FILE_NAME,
+                    Some("Declared Dependency".to_string()),
+                    Some(MANIFEST_FILE_NAME.to_string()),
+                    Some(name.to_string()),
                 )
                 .expect("description and location are non-empty"),
             );
@@ -176,6 +179,9 @@ impl XmlCollector {
             EvidenceCategory::XmlInspection,
             "modDesc.xml was found and is well-formed XML.",
             MANIFEST_FILE_NAME,
+            Some("Manifest Found".to_string()),
+            Some(MANIFEST_FILE_NAME.to_string()),
+            None,
         )
         .expect("description and location are non-empty")
     }
@@ -193,12 +199,18 @@ impl XmlCollector {
                 EvidenceCategory::XmlInspection,
                 format!("{DECLARED_DESC_VERSION_PREFIX}{value}"),
                 MANIFEST_FILE_NAME,
+                Some("Declared Version".to_string()),
+                Some(MANIFEST_FILE_NAME.to_string()),
+                Some(value.to_string()),
             )
             .expect("description and location are non-empty"),
             None => Evidence::with_location(
                 EvidenceCategory::XmlInspection,
                 "modDesc.xml does not declare a descVersion attribute.",
                 MANIFEST_FILE_NAME,
+                Some("Declared Version".to_string()),
+                Some(MANIFEST_FILE_NAME.to_string()),
+                None,
             )
             .expect("description and location are non-empty"),
         }
@@ -209,6 +221,9 @@ impl XmlCollector {
             EvidenceCategory::XmlInspection,
             "modDesc.xml was found but is not well-formed XML.",
             MANIFEST_FILE_NAME,
+            Some("Malformed Manifest".to_string()),
+            Some(MANIFEST_FILE_NAME.to_string()),
+            None,
         )
         .expect("description and location are non-empty")
     }
@@ -217,6 +232,9 @@ impl XmlCollector {
         Evidence::new(
             EvidenceCategory::XmlInspection,
             "No modDesc.xml was found at the assessment input's root.",
+            None,
+            None,
+            None,
         )
         .expect("description is non-empty")
     }

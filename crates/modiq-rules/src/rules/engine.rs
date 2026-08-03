@@ -7,11 +7,12 @@ use super::structural_duplication_rule::StructuralDuplicationRule;
 use super::version_compatibility_rule::VersionCompatibilityRule;
 
 /// The result of evaluating Evidence against a single deterministic Rule:
-/// one Finding and one Recommendation derived from it.
+/// one Finding and, optionally, a Recommendation derived from it
+/// (Initiative 3, Item 3 — a Finding may stand alone).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RuleOutcome {
     pub finding: Finding,
-    pub recommendation: Recommendation,
+    pub recommendation: Option<Recommendation>,
 }
 
 /// Coordinates deterministic rule execution.
@@ -80,14 +81,23 @@ mod tests {
     }
 
     fn structural_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     fn duplication_evidence() -> Evidence {
         Evidence::new(
             EvidenceCategory::StructuralDuplication,
             "duplicate entry names detected",
+            None,
+            None,
+            None,
         )
         .expect("category and description are valid")
     }
@@ -97,6 +107,9 @@ mod tests {
             EvidenceCategory::XmlInspection,
             "modDesc.xml declares descVersion: 42",
             "modDesc.xml",
+            None,
+            None,
+            None,
         )
         .expect("description and location are valid")
     }
@@ -107,6 +120,9 @@ mod tests {
             "Runtime log records: Unsupported mod description version in mod \
              FS25_DodgeChallengerHellcat",
             "log.txt",
+            None,
+            None,
+            None,
         )
         .expect("description and location are valid")
     }
@@ -116,6 +132,9 @@ mod tests {
             EvidenceCategory::RuntimeLogs,
             "Runtime log records: some other, unrecognized observation",
             "log.txt",
+            None,
+            None,
+            None,
         )
         .expect("description and location are valid")
     }
@@ -249,6 +268,9 @@ mod tests {
             EvidenceCategory::XmlInspection,
             "modDesc.xml declares descVersion: 93",
             "modDesc.xml",
+            None,
+            None,
+            None,
         )
         .expect("description and location are valid");
 
@@ -286,7 +308,7 @@ mod tests {
         assert!(
             outcomes[1]
                 .finding
-                .description()
+                .summary()
                 .contains("FS25_DodgeChallengerHellcat")
         );
     }

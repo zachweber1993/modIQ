@@ -42,9 +42,10 @@ impl RetrieveCommand {
         output.push_str(&format!("\nFindings ({}):\n", report.findings().len()));
         for finding in report.findings() {
             output.push_str(&format!(
-                "  - [{:?}] {}\n",
+                "  - [{:?}] {}: {}\n",
                 finding.severity(),
-                finding.description()
+                finding.title(),
+                finding.summary()
             ));
         }
 
@@ -116,7 +117,14 @@ mod tests {
         assessment.begin_evidence_collection().unwrap();
         assessment
             .add_evidence(
-                Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence").unwrap(),
+                Evidence::new(
+                    EvidenceCategory::FileStructureAnalysis,
+                    "sample evidence",
+                    None,
+                    None,
+                    None,
+                )
+                .unwrap(),
             )
             .unwrap();
         let report = modiq_report::report::AssessmentReport::generate(&assessment);

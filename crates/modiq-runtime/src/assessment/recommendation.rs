@@ -69,12 +69,17 @@ impl Recommendation {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assessment::{EvidenceId, Finding, FindingSeverity, RuleReference};
+    use crate::assessment::{
+        EvidenceId, Finding, FindingSeverity, FindingStatus, ModHealthDimension, RuleReference,
+    };
 
     fn sample_finding_id() -> FindingId {
         Finding::new(
             FindingSeverity::Informational,
+            "Sample finding",
             "sample finding",
+            ModHealthDimension::EngineeringQuality,
+            FindingStatus::Final,
             vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )

@@ -303,25 +303,36 @@ impl Assessment {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assessment::{EvidenceCategory, FindingSeverity, RuleReference};
+    use crate::assessment::{
+        EvidenceCategory, FindingSeverity, FindingStatus, ModHealthDimension, RuleReference,
+    };
 
     fn sample_version_profile_reference() -> VersionProfileReference {
         VersionProfileReference::new("FS25")
     }
 
     fn sample_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     fn sample_finding() -> Finding {
         Finding::new(
             FindingSeverity::Informational,
+            "Sample finding",
             "sample finding",
+            ModHealthDimension::EngineeringQuality,
+            FindingStatus::Final,
             vec![EvidenceId::generate()],
             RuleReference::new("sample-rule"),
         )
-        .expect("severity, description, evidence_ids, and rule reference are valid")
+        .expect("severity, title, summary, evidence_ids, and rule reference are valid")
     }
 
     fn sample_recommendation() -> Recommendation {
@@ -1197,7 +1208,10 @@ mod tests {
         assessment.begin_rule_evaluation().unwrap();
         let finding = Finding::new(
             FindingSeverity::Warning,
+            "Missing dependency",
             "missing dependency detected",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
             vec![first_evidence.id(), second_evidence.id()],
             RuleReference::new("sample-rule"),
         )
@@ -1227,7 +1241,10 @@ mod tests {
         let dangling_id = sample_evidence().id();
         let finding = Finding::new(
             FindingSeverity::Warning,
+            "Missing dependency",
             "missing dependency detected",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
             vec![dangling_id],
             RuleReference::new("sample-rule"),
         )
@@ -1307,7 +1324,10 @@ mod tests {
         assessment.begin_rule_evaluation().unwrap();
         let finding = Finding::new(
             FindingSeverity::Warning,
+            "Missing dependency",
             "missing dependency detected",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
             vec![evidence.id()],
             RuleReference::new("sample-rule"),
         )

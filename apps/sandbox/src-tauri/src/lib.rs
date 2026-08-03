@@ -35,7 +35,8 @@ impl From<&Evidence> for EvidenceEntry {
 struct FindingEntry {
     id: String,
     severity: String,
-    description: String,
+    title: String,
+    summary: String,
 }
 
 impl From<&Finding> for FindingEntry {
@@ -43,7 +44,8 @@ impl From<&Finding> for FindingEntry {
         Self {
             id: format!("{:?}", finding.id()),
             severity: format!("{:?}", finding.severity()),
-            description: finding.description().to_string(),
+            title: finding.title().to_string(),
+            summary: finding.summary().to_string(),
         }
     }
 }
@@ -129,14 +131,16 @@ impl From<&PersistedEvidence> for PersistedEvidenceEntry {
 #[serde(rename_all = "camelCase")]
 struct PersistedFindingEntry {
     severity: String,
-    description: String,
+    title: String,
+    summary: String,
 }
 
 impl From<&PersistedFinding> for PersistedFindingEntry {
     fn from(finding: &PersistedFinding) -> Self {
         Self {
             severity: format!("{:?}", finding.severity()),
-            description: finding.description().to_string(),
+            title: finding.title().to_string(),
+            summary: finding.summary().to_string(),
         }
     }
 }

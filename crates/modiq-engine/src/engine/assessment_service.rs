@@ -68,9 +68,15 @@ impl AssessmentService {
             assessment
                 .add_finding(outcome.finding)
                 .expect("rule evaluation is active immediately after begin_rule_evaluation");
-            assessment
-                .add_recommendation(outcome.recommendation)
-                .expect("a Finding was just added, and rule evaluation is still active");
+            // Initiative 3, Item 3: a Finding may stand alone. Absence of
+            // a Recommendation is represented by its omission from the
+            // Assessment (and therefore the AssessmentReport) — never a
+            // panic, and never a synthesized placeholder.
+            if let Some(recommendation) = outcome.recommendation {
+                assessment
+                    .add_recommendation(recommendation)
+                    .expect("a Finding was just added, and rule evaluation is still active");
+            }
         }
 
         let report = AssessmentReport::generate(&assessment);
@@ -176,8 +182,14 @@ mod tests {
     use super::*;
 
     fn sample_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     /// A real, unique, temporary directory for exercising the real
@@ -282,7 +294,7 @@ mod tests {
         assert_eq!(first.findings().len(), second.findings().len());
         for (first_finding, second_finding) in first.findings().iter().zip(second.findings()) {
             assert_eq!(first_finding.severity(), second_finding.severity());
-            assert_eq!(first_finding.description(), second_finding.description());
+            assert_eq!(first_finding.summary(), second_finding.summary());
             assert_eq!(first_finding.evidence_ids(), second_finding.evidence_ids());
             assert_eq!(
                 first_finding.rule_reference(),
@@ -634,8 +646,8 @@ mod tests {
             .find(|finding| finding.rule_reference().identifier() == "version-compatibility-rule")
             .expect("VersionCompatibilityRule produced a Finding");
         assert_eq!(version_finding.severity(), FindingSeverity::Warning);
-        assert!(version_finding.description().contains("42"));
-        assert!(version_finding.description().contains("FS25"));
+        assert!(version_finding.summary().contains("42"));
+        assert!(version_finding.summary().contains("FS25"));
 
         // Sprint 9: Repair Guidance — the Recommendation traceable to this
         // Finding now carries a real RepairRecipeReference, exercised
@@ -750,7 +762,7 @@ mod tests {
         assert_eq!(runtime_finding.severity(), FindingSeverity::Error);
         assert!(
             runtime_finding
-                .description()
+                .summary()
                 .contains("FS25_DodgeChallengerHellcat")
         );
 

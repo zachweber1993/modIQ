@@ -65,7 +65,7 @@ export function Reviewing({
                 <span className="shrink-0 text-xs font-medium uppercase text-muted-foreground">
                   {finding.severity}
                 </span>
-                <span className="text-foreground">{finding.description}</span>
+                <span className="text-foreground">{finding.summary}</span>
               </button>
               {expanded && (
                 <div className="mt-3 flex flex-col gap-3 border-t border-border pt-3">

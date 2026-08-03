@@ -13,8 +13,14 @@ use modiq_runtime::assessment::{
 };
 
 fn sample_evidence() -> Evidence {
-    Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-        .expect("category and description are valid")
+    Evidence::new(
+        EvidenceCategory::FileStructureAnalysis,
+        "sample evidence",
+        None,
+        None,
+        None,
+    )
+    .expect("category and description are valid")
 }
 
 #[test]
@@ -63,7 +69,7 @@ fn each_execution_produces_an_independent_assessment() {
     assert_eq!(first.findings().len(), second.findings().len());
     for (first_finding, second_finding) in first.findings().iter().zip(second.findings()) {
         assert_eq!(first_finding.severity(), second_finding.severity());
-        assert_eq!(first_finding.description(), second_finding.description());
+        assert_eq!(first_finding.summary(), second_finding.summary());
         assert_eq!(first_finding.evidence_ids(), second_finding.evidence_ids());
         assert_eq!(
             first_finding.rule_reference(),

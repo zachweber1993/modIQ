@@ -90,7 +90,7 @@ mod tests {
     use super::*;
     use modiq_runtime::assessment::{
         Assessment, AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory, Finding,
-        FindingSeverity, RuleReference, VersionProfileReference,
+        FindingSeverity, FindingStatus, ModHealthDimension, RuleReference, VersionProfileReference,
     };
     use std::path::Path;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -136,6 +136,9 @@ mod tests {
         let evidence = Evidence::new(
             EvidenceCategory::FileStructureAnalysis,
             "missing modDesc.xml",
+            None,
+            None,
+            None,
         )
         .unwrap();
         assessment.add_evidence(evidence.clone()).unwrap();
@@ -144,7 +147,10 @@ mod tests {
             .add_finding(
                 Finding::new(
                     FindingSeverity::Warning,
+                    "Declared version mismatch",
                     "declared version mismatch",
+                    ModHealthDimension::Compatibility,
+                    FindingStatus::Final,
                     vec![evidence.id()],
                     RuleReference::new("version-compatibility-rule"),
                 )

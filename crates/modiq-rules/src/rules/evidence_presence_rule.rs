@@ -1,5 +1,6 @@
 use modiq_runtime::assessment::{
-    Evidence, Finding, FindingSeverity, Recommendation, RuleReference,
+    Evidence, Finding, FindingSeverity, FindingStatus, ModHealthDimension, Recommendation,
+    RuleReference,
 };
 
 use super::engine::RuleOutcome;
@@ -12,6 +13,11 @@ use super::engine::RuleOutcome;
 /// 3 so `RuleEngine::evaluate` can dispatch to it and
 /// `StructuralDuplicationRule` (Phase 2) by explicit declaration order
 /// (GOV-012), the same shape every concrete Rule now takes.
+///
+/// Assigned `ModHealthDimension::EngineeringQuality` (Initiative 3,
+/// Item 2, frozen mapping): this Rule is a general, content-neutral
+/// observability check, not specific to any of the other five
+/// dimensions.
 pub struct EvidencePresenceRule;
 
 impl EvidencePresenceRule {
@@ -27,11 +33,14 @@ impl EvidencePresenceRule {
 
         let finding = Finding::new(
             FindingSeverity::Informational,
+            "Evidence collected",
             "Evidence was collected for this Assessment.",
+            ModHealthDimension::EngineeringQuality,
+            FindingStatus::Final,
             evidence.iter().map(Evidence::id).collect(),
             RuleReference::new("evidence-presence-rule"),
         )
-        .expect("severity, description, and rule reference are valid");
+        .expect("severity, title, summary, and rule reference are valid");
 
         let recommendation = Recommendation::new(
             "Review the collected evidence and address any issues found.",
@@ -42,7 +51,7 @@ impl EvidencePresenceRule {
 
         Some(RuleOutcome {
             finding,
-            recommendation,
+            recommendation: Some(recommendation),
         })
     }
 }
@@ -53,8 +62,14 @@ mod tests {
     use modiq_runtime::assessment::EvidenceCategory;
 
     fn sample_evidence() -> Evidence {
-        Evidence::new(EvidenceCategory::FileStructureAnalysis, "sample evidence")
-            .expect("category and description are valid")
+        Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .expect("category and description are valid")
     }
 
     #[test]
@@ -73,18 +88,22 @@ mod tests {
         let outcome = rule.evaluate(&[evidence]).expect("evidence was provided");
 
         assert_eq!(outcome.finding.severity(), FindingSeverity::Informational);
-        assert!(!outcome.finding.description().is_empty());
+        assert!(!outcome.finding.title().is_empty());
+        assert!(!outcome.finding.summary().is_empty());
+        assert_eq!(
+            outcome.finding.mod_health_dimension(),
+            ModHealthDimension::EngineeringQuality
+        );
+        assert_eq!(outcome.finding.status(), FindingStatus::Final);
         assert_eq!(outcome.finding.evidence_ids(), &[evidence_id]);
         assert_eq!(
             outcome.finding.rule_reference().identifier(),
             "evidence-presence-rule"
         );
-        assert!(!outcome.recommendation.action().is_empty());
-        assert_eq!(
-            outcome.recommendation.finding_ids(),
-            &[outcome.finding.id()]
-        );
-        assert_eq!(outcome.recommendation.repair_recipe_reference(), None);
+        let recommendation = outcome.recommendation.expect("this Rule always recommends");
+        assert!(!recommendation.action().is_empty());
+        assert_eq!(recommendation.finding_ids(), &[outcome.finding.id()]);
+        assert_eq!(recommendation.repair_recipe_reference(), None);
     }
 
     #[test]
@@ -99,19 +118,22 @@ mod tests {
         // identity by design; determinism is judged by content, not by
         // incidental identity.
         assert_eq!(first.finding.severity(), second.finding.severity());
-        assert_eq!(first.finding.description(), second.finding.description());
+        assert_eq!(first.finding.title(), second.finding.title());
+        assert_eq!(first.finding.summary(), second.finding.summary());
         assert_eq!(first.finding.evidence_ids(), second.finding.evidence_ids());
         assert_eq!(
             first.finding.rule_reference(),
             second.finding.rule_reference()
         );
+        let first_recommendation = first.recommendation.expect("this Rule always recommends");
+        let second_recommendation = second.recommendation.expect("this Rule always recommends");
         assert_eq!(
-            first.recommendation.action(),
-            second.recommendation.action()
+            first_recommendation.action(),
+            second_recommendation.action()
         );
         assert_eq!(
-            first.recommendation.repair_recipe_reference(),
-            second.recommendation.repair_recipe_reference()
+            first_recommendation.repair_recipe_reference(),
+            second_recommendation.repair_recipe_reference()
         );
     }
 }
