@@ -1580,6 +1580,37 @@ Full record: `docs/engineering/SPRINT22_IMPLEMENTATION_REPORT.md`, `docs/enginee
 
 ---
 
+## 2026-08-03 (continued)
+
+### Sprint 23: Frontend Presentation of Sprint 22's Domain Model — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- console (`apps/console/src-tauri`)
+
+Affected Documents:
+- docs/engineering/FRONTEND_PRESENTATION_IMPLEMENTATION_AUTHORIZATION.md (new, prior session)
+- docs/engineering/SPRINT23_IMPLEMENTATION_PLAN.md (new, prior session)
+- docs/engineering/SPRINT23_IMPLEMENTATION_REPORT.md (new)
+- docs/engineering/ENGINEERING_RELEASE_1.8.md (new)
+
+Notes:
+Implemented the five items `FRONTEND_PRESENTATION_IMPLEMENTATION_AUTHORIZATION.md` authorized: `FindingSummary` (Rust and TypeScript transport) gains `mod_health_dimension`/`status`; `EvidenceSummary` gains `label`/`source`/`content`, each converted via `.map(str::to_string)` identically to the existing `location` field; `Reviewing.tsx` renders Title (already transported since Sprint 22 but previously unused), Mod Health dimension, Status, and Evidence provenance within the existing single expansion layer; `Overview.tsx`'s doc comment corrected, with no new aggregate content added (the Phase 3 Authorization explicitly excluded grouping, narrowing the Sprint Plan's own "optional, if pursued" allowance for a per-dimension count).
+
+Four phases, each independently gated: Rust transport (Phase 1, including new test assertions in the same phase); TypeScript transport (Phase 2); presentation (Phase 3, verified via real-fixture data tracing — no GUI available in this environment); final reverification (Phase 4, zero files changed). No `modiq-*` crate, no `apps/sandbox` file, no ADR, no `GOVERNANCE.md` entry touched at any phase — confirmed via empty diffs, re-verified fresh at closeout.
+
+A closeout-time source review (not implementation itself) traced `VersionCompatibilityRule`'s construction of `Recommendation.action` and found it already joins `RepairRecipe::steps()`'s individual instructions into one flat string at Rule-evaluation time — the flattening is a real derivation, not a disconnected authoring gap, but the per-step structure it discards has no resolution path back into existence anywhere downstream. Recorded as a scoped finding for any future initiative to expose `RepairRecipe` steps, not acted on here.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass. Root workspace (default-members): 269/269, unchanged. `console`: 4 → 5 (one test extended, one added, none deleted). Full workspace (`--workspace`): 273 → 274. Sandbox (`apps/sandbox/src-tauri`, separate workspace): 9/9, unchanged. `apps/console`'s `npm run build` clean.
+
+Full record: `docs/engineering/SPRINT23_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.8.md`.
+
+**Separately observed, not corrected here:** `docs/governance/PROJECT_STATUS.md`, `docs/governance/CHANGELOG.md`, and this file have never recorded GOV-017 (Resolved prior to Sprint 22), understating the Governance Register by one item in all three tracking documents. Pre-existing, unrelated to Sprint 23, named here for a future dedicated reconciliation.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

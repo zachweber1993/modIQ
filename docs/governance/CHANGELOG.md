@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-03 (Sprint 22 — Initiative 3 Domain Model Anatomy Extension Complete) |
+| **Last Updated** | 2026-08-03 (Sprint 23 — Frontend Presentation of Sprint 22's Domain Model Complete) |
 
 ---
 
@@ -1744,3 +1744,34 @@ The Documentation Release 1.0 Final Review concluded with:
 - No ADR created. No Governance Register entry opened or modified. No Crate Boundary Rule changed. No new crate. No new external dependency. No change to `AssessmentService`'s public entry points.
 - Committed as a single commit (`969e595`) on `feature/runtime-implementation`.
 - Full record: `docs/engineering/SPRINT22_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.7.md`.
+
+---
+
+# [Sprint 23]
+
+**Status:** Complete (Frontend Presentation of Sprint 22's Domain Model). Implements exactly the five items `FRONTEND_PRESENTATION_IMPLEMENTATION_AUTHORIZATION.md` authorizes, following `SPRINT23_IMPLEMENTATION_PLAN.md`, itself following the same procedural pattern Sprint 21 established for `apps/console` — no Architecture Evaluation or Architectural Resolution preceded this Sprint, since `FrontendArchitecture.md`'s Consumer-Owned State authority already covers this work in full.
+
+## Added
+
+- **`FindingSummary` transport extension** (`console` crate, Rust and TypeScript): gains `mod_health_dimension`/`modHealthDimension` and `status`, both `Debug`-formatted strings mirroring the existing `severity` field's own convention (Item A).
+- **`EvidenceSummary` transport extension**: gains `label`, `source`, `content`, each `Option<String>`/`string | null`, populated via `.map(str::to_string)` — identical to the existing `location` conversion (Item B).
+- **TypeScript mirror** (`types.ts`): interfaces extended field-for-field, camelCase, matching the Rust `#[serde(rename_all = "camelCase")]` convention exactly; header doc comment corrected to remove the now-false claim that `ModHealthDimension` and Evidence `Label`/`Source`/`Content` are unconsumed (Item C).
+- **`Reviewing.tsx` presentation**: Title now renders on the collapsed row alongside the existing Summary; Mod Health dimension and Status render as a new line within the existing per-Finding expansion; Evidence `label`/`source`/`content` render inline within the existing Evidence list — no new expansion level introduced (Item D).
+- **`Overview.tsx` documentation correction**: stale claim that `ModHealthDimension` "does not exist on the Runtime yet" removed. No new aggregate content added — the governing Phase 3 Authorization explicitly excluded "grouping," narrowing the Sprint Plan's own "optional, if pursued" allowance for a per-dimension count (Item E).
+
+## Verified
+
+- Root workspace (default-members): **269/269**, unchanged.
+- `console` (`cargo test -p console`): **4 → 5** — one test extended (`mod_health_dimension`/`status` assertions), one added (`at_least_one_evidence_item_carries_a_populated_label`), none deleted.
+- Full workspace (`cargo test --workspace`, 10 members): **273 → 274**.
+- `apps/sandbox/src-tauri` (separate workspace): **9/9**, unaffected.
+- `cargo fmt --check` clean; `cargo check --workspace` clean; `npm run build` (`tsc && vite build`) clean — all re-verified fresh at closeout, not carried forward from phase reports alone.
+
+## Notes
+
+- **Field parity confirmed exact**, re-checked at closeout independently of the phase-by-phase reports: Rust and TypeScript `FindingSummary`/`EvidenceSummary` match field-for-field, same order, correct camelCase mapping.
+- **A closeout-time finding, not an implementation-time one:** `VersionCompatibilityRule` was found to already construct its flat `Recommendation.action` string by joining `RepairRecipe::steps()`'s individual instructions at Rule-evaluation time — the flattening is a real derivation, not a disconnected authoring gap, but nothing downstream ever resolves `RepairRecipeReference` back to structured content. Recorded as a scoped opportunity for a future initiative; not acted on here.
+- Real-fixture verification (`sample-mod`) confirmed Title, Mod Health dimension, Status, and one Evidence item's Label/Source render correctly; `content` was not empirically observed with a real value, since no Evidence item in this fixture produces one — the render path was confirmed by code-tracing against the same conditional pattern used by `label`/`source`, both of which did render with real data.
+- No `modiq-*` crate touched. No `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified.
+- Implementation verified complete on `feature/runtime-implementation`, pending commit at the time of this closeout package's own drafting.
+- Full record: `docs/engineering/SPRINT23_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.8.md`.

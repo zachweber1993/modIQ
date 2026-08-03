@@ -3,20 +3,22 @@ import type { FindingSummary } from "@/engine";
 import { Overview } from "./Overview";
 
 /**
- * Reviewing (Phase 3, Sprint 21) — Overview, Finding, Recommendation,
- * and Evidence as one continuous object at varying focus
- * (NAVIGATION_AND_WORKSPACE_BEHAVIOR.md), never separate destinations.
+ * Reviewing (Phase 3, Sprint 21; fields extended Sprint 23 Phase 3) —
+ * Overview, Finding, Recommendation, and Evidence as one continuous
+ * object at varying focus (NAVIGATION_AND_WORKSPACE_BEHAVIOR.md),
+ * never separate destinations.
  *
  * `expandedFindingId` is the entire navigation state: which Finding,
  * if any, is currently examined more closely. Expanding is one step
  * from Overview (single-step locality); it reveals that Finding's own
- * Recommendation and Evidence together, in the same single expansion
- * layer THE_FINDING.md specifies — there is no further, separately
- * navigable Evidence level, because the Runtime carries no Evidence
- * `Content` field distinct from `description` for a further reveal to
- * disclose. Collapsing uses the identical setter, inverted (symmetric
- * reversal). The Overview above the list is never replaced while a
- * Finding is expanded (cumulative orientation).
+ * Mod Health dimension, Status, Recommendation, and Evidence together,
+ * in the same single expansion layer THE_FINDING.md specifies —
+ * Evidence's `content` field (Sprint 22) is presented inline within
+ * this same expansion, not behind a further reveal; Sprint 23 Phase 3
+ * does not authorize a new expansion level. Collapsing uses the
+ * identical setter, inverted (symmetric reversal). The Overview above
+ * the list is never replaced while a Finding is expanded (cumulative
+ * orientation).
  *
  * No affordance returns to Intake: Sprint 21 does not implement
  * reentrancy or supplementation (Initiative 2), so once Reviewing is
@@ -65,10 +67,18 @@ export function Reviewing({
                 <span className="shrink-0 text-xs font-medium uppercase text-muted-foreground">
                   {finding.severity}
                 </span>
-                <span className="text-foreground">{finding.summary}</span>
+                <span className="flex flex-col">
+                  <span className="text-foreground">{finding.title}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {finding.summary}
+                  </span>
+                </span>
               </button>
               {expanded && (
                 <div className="mt-3 flex flex-col gap-3 border-t border-border pt-3">
+                  <p className="text-xs uppercase text-muted-foreground">
+                    {finding.modHealthDimension} · {finding.status}
+                  </p>
                   {finding.recommendation && (
                     <p className="text-sm text-foreground">
                       Recommendation: {finding.recommendation}
@@ -81,8 +91,19 @@ export function Reviewing({
                           key={evidence.id}
                           className="text-sm text-muted-foreground"
                         >
+                          {evidence.label && (
+                            <span className="font-medium text-foreground">
+                              {evidence.label}:{" "}
+                            </span>
+                          )}
                           {evidence.description}
                           {evidence.location ? ` (${evidence.location})` : ""}
+                          {evidence.source ? ` — ${evidence.source}` : ""}
+                          {evidence.content && (
+                            <div className="mt-0.5 pl-2 text-xs italic">
+                              {evidence.content}
+                            </div>
+                          )}
                         </li>
                       ))}
                     </ul>

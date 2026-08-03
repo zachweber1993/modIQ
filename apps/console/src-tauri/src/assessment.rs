@@ -30,15 +30,19 @@ use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject, Evidence, 
 /// IPC-safe snapshot of one Evidence item, scoped to the Finding that
 /// references it. No `category` field: nothing in Phase 3 reads it —
 /// `description` and `location` are Evidence's own always-visible
-/// content (`EVIDENCE_EXPLORATION.md`); there is no separate raw
-/// `Content` field on the Runtime type to gate behind a further
-/// reveal.
+/// content (`EVIDENCE_EXPLORATION.md`). `label`, `source`, and
+/// `content` (Sprint 22, Initiative 3, Item 4) are each optional,
+/// present only when the originating Collector populated them —
+/// no Collector populates all three uniformly.
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EvidenceSummary {
     id: String,
     description: String,
     location: Option<String>,
+    label: Option<String>,
+    source: Option<String>,
+    content: Option<String>,
 }
 
 impl From<&Evidence> for EvidenceSummary {
@@ -47,6 +51,9 @@ impl From<&Evidence> for EvidenceSummary {
             id: format!("{:?}", evidence.id()),
             description: evidence.description().to_string(),
             location: evidence.location().map(str::to_string),
+            label: evidence.label().map(str::to_string),
+            source: evidence.source().map(str::to_string),
+            content: evidence.content().map(str::to_string),
         }
     }
 }
@@ -61,6 +68,8 @@ pub struct FindingSummary {
     severity: String,
     title: String,
     summary: String,
+    mod_health_dimension: String,
+    status: String,
     recommendation: Option<String>,
     evidence: Vec<EvidenceSummary>,
 }
@@ -108,6 +117,8 @@ impl From<&AssessmentReport> for ReportSummary {
                 severity: format!("{:?}", finding.severity()),
                 title: finding.title().to_string(),
                 summary: finding.summary().to_string(),
+                mod_health_dimension: format!("{:?}", finding.mod_health_dimension()),
+                status: format!("{:?}", finding.status()),
                 recommendation: recommendation_for(finding.id()),
                 evidence: finding
                     .evidence_ids()
@@ -160,13 +171,26 @@ mod tests {
     }
 
     #[test]
-    fn every_finding_carries_a_non_empty_severity_title_and_summary() {
+    fn every_finding_carries_non_empty_severity_title_summary_dimension_and_status() {
         let result = submit_assessment_from_path(FIXTURE_SAMPLE_MOD).unwrap();
         for finding in &result.findings {
             assert!(!finding.severity.is_empty());
             assert!(!finding.title.is_empty());
             assert!(!finding.summary.is_empty());
+            assert!(!finding.mod_health_dimension.is_empty());
+            assert!(!finding.status.is_empty());
         }
+    }
+
+    #[test]
+    fn at_least_one_evidence_item_carries_a_populated_label() {
+        let result = submit_assessment_from_path(FIXTURE_SAMPLE_MOD).unwrap();
+        let has_label = result
+            .findings
+            .iter()
+            .flat_map(|finding| &finding.evidence)
+            .any(|evidence| evidence.label.is_some());
+        assert!(has_label);
     }
 
     #[test]

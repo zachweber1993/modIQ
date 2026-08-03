@@ -7,11 +7,14 @@ import type { FindingSummary } from "@/engine";
  * none of its own — the same discipline `DashboardAndConsole.md`
  * already establishes for Console and Dashboard.
  *
- * Mod Health, by dimension, is not shown: it depends on a Finding-level
- * Category field that does not exist on the Runtime yet (Initiative 3,
- * unimplemented). Only what the current data actually supports —
- * severity counts and whether any Recommendation exists — is
- * presented, per Explainable Continuity (`FrontendArchitecture.md`):
+ * Mod Health, by dimension, is not aggregated here. `ModHealthDimension`
+ * exists on the Runtime as of Sprint 22 (Initiative 3) and is carried
+ * by the transport as of Sprint 23, but is surfaced per-Finding in
+ * `Reviewing.tsx`'s own expansion, not summarized at this level — a
+ * per-dimension aggregate would be a form of grouping, outside Sprint
+ * 23 Phase 3's authorized scope. Only what this Sprint authorizes is
+ * presented here: severity counts and whether any Recommendation
+ * exists, per Explainable Continuity (`FrontendArchitecture.md`):
  * nothing here is a fact this consumer invented.
  */
 
