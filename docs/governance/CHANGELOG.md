@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-02 (Sprint 21 — Frontend Implementation Complete) |
+| **Last Updated** | 2026-08-03 (Sprint 22 — Initiative 3 Domain Model Anatomy Extension Complete) |
 
 ---
 
@@ -1712,3 +1712,35 @@ The Documentation Release 1.0 Final Review concluded with:
 - **Several fields the frozen Interaction Design corpus names — Title/Summary decomposition, Mod Health/Category, Evidence's Content field, Confidence — are not implemented**, because none exists on the Runtime yet (Initiative 3 / Initiative 4, unimplemented). Phase 3 built the frozen behavioral and navigational model faithfully, populated only with currently-available content.
 - No ADR created. No Governance Register entry opened. No architecture reopened. No Initiative 1, Initiative 2, or GOV-008 assumption made anywhere in the implementation.
 - Committed across three commits (`76ccd8e`, `b63464d`, `c4efc22`) and pushed to `feature/runtime-implementation`.
+
+---
+
+# [Sprint 22]
+
+**Status:** Complete (Initiative 3: Domain Model Anatomy Extension). Implements exactly the six items `INITIATIVE_3_IMPLEMENTATION_AUTHORIZATION.md` authorizes, following `INITIATIVE_3_ARCHITECTURE_EVALUATION.md`, `INITIATIVE_3_ARCHITECTURAL_RESOLUTION.md`, and `SPRINT22_IMPLEMENTATION_PLAN.md`, all treated as fixed, unreopened architecture and planning.
+
+## Added
+
+- **`Finding` gains real field anatomy** (`modiq-runtime`): `title`/`summary` replace the flat `description` (Item 1); a new closed-set `mod_health_dimension: ModHealthDimension` field (`Compatibility`, `Stability`, `Maintainability`, `Performance`, `Structure`, `EngineeringQuality`), assigned per-Rule via a reviewed mapping table finalized before implementation began (Item 2); a new `status: FindingStatus` (`Provisional`, `Final`), populated only at construction, with no mutation path (Item 10). All three ride the same `Finding::new` constructor-signature change, implemented once rather than three times.
+- **`RuleOutcome.recommendation` becomes `Option<Recommendation>`** (`modiq-rules`, Item 3), internal to the crate — a Finding may now stand alone. The production orchestration loop (`AssessmentService::execute`, `modiq-engine`) adds a Recommendation only when `Some(...)`, never panicking or synthesizing a placeholder.
+- **`Evidence` gains provenance fields** (`modiq-runtime`): `label`, `source`, `content`, each `Option<String>` (Item 4, Label/Source/Content only). Each of the four Collectors (`EvidenceCollector`, `ArchiveCollector`, `XmlCollector`, `RuntimeLogCollector`) decides what to populate for its own Evidence — five distinct population patterns across the four, not a uniform default.
+- **`RepairRecipe` gains structured steps** (`modiq-knowledge`, Item 5): `guidance: String` replaced by `steps: Vec<RepairStep>`, each step carrying a `RepairStepKind` (`XmlChange`, `LuaChange`, `DependencyInstallation`, `AssetReplacement`, `VersionUpdate`) and an instruction. The one real authored recipe (`version_compatibility_declared_version_mismatch`) migrated without changing its own meaning.
+- **`PersistedFinding` gains `title`/`summary`** (`modiq-storage`), replacing `description`, mirroring `Finding`'s own new shape — the recommended resolution of the Sprint's second-highest-ranked implementation risk.
+- Every real and test consumer of the changed types updated in the same pass: `modiq-cli` (`assess`, `retrieve`, `history`), `apps/console`'s `FindingSummary` DTO and TypeScript types, `apps/sandbox`'s `FindingEntry`/`PersistedFindingEntry` DTOs.
+
+## Verified
+
+- Root workspace (default-members): 264 → **269** passing (`modiq-runtime` +5: `evidence.rs` +2, `finding.rs` +3; every other touched crate's count unchanged, updated in place — no test deleted).
+- `console` (`cargo test -p console`): **4/4**, unchanged.
+- Full workspace (`cargo test --workspace`, 10 members): 268 → **273** passing.
+- `apps/sandbox/src-tauri` (separate workspace): **9/9**, unchanged.
+- `cargo fmt --check` clean; `cargo check --workspace` clean; `npm run build` (`tsc && vite build`) clean.
+
+## Notes
+
+- **Every implementation-risk prediction `INITIATIVE_3_IMPLEMENTATION_AUTHORIZATION.md` §9 named was confirmed, none disproved** — Item 3's blast radius reached exactly the consumers named, each already tolerant of an absent Recommendation at the presentation layer; Item 2's per-Rule assignment required the anticipated judgment call; Item 4's per-Collector decision was confirmed non-uniform.
+- **A testing-expectation deviation, not a gap:** `SPRINT22_IMPLEMENTATION_PLAN.md` anticipated a genuinely new `modiq-storage` round-trip test; implementation instead extended the existing round-trip test in place (behavior covered, test count unchanged at 3 → 3).
+- Item 6a (Report Identity), Item 4's Explanation field, 3C (Report currency/Updated marker), Item 7 (GOV-013), and Item 8 (Glossary's missing "Recommendation" entry) remain explicitly out of scope, untouched — exactly as `INITIATIVE_3_IMPLEMENTATION_AUTHORIZATION.md` §4 excludes.
+- No ADR created. No Governance Register entry opened or modified. No Crate Boundary Rule changed. No new crate. No new external dependency. No change to `AssessmentService`'s public entry points.
+- Committed as a single commit (`969e595`) on `feature/runtime-implementation`.
+- Full record: `docs/engineering/SPRINT22_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.7.md`.

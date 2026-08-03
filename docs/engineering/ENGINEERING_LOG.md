@@ -1544,6 +1544,42 @@ A Repository Reconciliation Plan (Sprint 20, planning only, no repository modifi
 
 ---
 
+## 2026-08-03
+
+### Sprint 22: Initiative 3 Domain Model Anatomy Extension — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-runtime
+- modiq-rules
+- modiq-knowledge
+- modiq-collection
+- modiq-engine
+- modiq-report (test fixtures only)
+- modiq-storage
+- modiq-cli
+
+Affected Documents:
+- docs/engineering/SPRINT22_IMPLEMENTATION_REPORT.md (new)
+- docs/engineering/ENGINEERING_RELEASE_1.7.md (new)
+
+Notes:
+Implemented the six Initiative 3 items `INITIATIVE_3_IMPLEMENTATION_AUTHORIZATION.md` authorized: Title/Summary decomposition and a Provisional/Final status on `Finding` (Items 1, 10); a closed-set `ModHealthDimension` field on `Finding`, assigned per-Rule via a reviewed mapping table (`EvidencePresenceRule` → EngineeringQuality, `StructuralDuplicationRule` → Structure, `VersionCompatibilityRule` → Compatibility, `RuntimeLoadFailureRule` → Stability) (Item 2); `RuleOutcome.recommendation` becoming `Option<Recommendation>`, internal to `modiq-rules` (Item 3); `Evidence` gaining optional `label`/`source`/`content` fields, populated per-Collector rather than uniformly (Item 4, Label/Source/Content only); and `RepairRecipe.guidance: String` replaced by a structured `Vec<RepairStep>` (Item 5). All six were authorized with no Governance Dependency and required no ADR or Governance Register action.
+
+`Finding::new`'s constructor changed exactly once, carrying Items 1, 2, and 10 together per the Authorization's own sequencing observation, propagating through every Rule, Collector, and downstream consumer (`modiq-engine`, `modiq-report`, `modiq-storage`, `modiq-cli`, `apps/console`, `apps/sandbox`). The production orchestration loop (`assessment_service.rs`) now adds a Recommendation only when `Some(...)` — never a panic, never a synthesized placeholder — resolving the Sprint's highest-ranked implementation risk exactly as `SPRINT22_IMPLEMENTATION_PLAN.md` anticipated. `PersistedFinding` (`modiq-storage`) gained `title`/`summary` fields mirroring Runtime's own shape, the recommended resolution of the Sprint's second-ranked risk.
+
+No new crate, no new external dependency, no change to `AssessmentService`'s public entry points, no Crate Boundary Rule modified, no Governance Register item or ADR touched — confirmed directly against `GOVERNANCE.md` and `docs/adrs/`, both untouched by this Sprint's commit (`969e595`).
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass. Root workspace (default-members): 264 → 269 (five net-new `modiq-runtime` tests; every other touched crate's count unchanged, updated in place). `console`: 4/4, unchanged. Full workspace (`--workspace`): 268 → 273. Sandbox (`apps/sandbox/src-tauri`, separate workspace): 9/9, unchanged. `apps/console`'s `npm run build` clean.
+
+Full record: `docs/engineering/SPRINT22_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.7.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md`, both stale at Sprint 21 / Engineering Release 1.6 as of this Sprint's own closeout review, were updated in the same session — see their respective `[Sprint 22]` / Engineering Release 1.7 entries. Separately observed, not corrected here: this file's own dated entries stop at 2026-07-24 (Sprint 18/19/21 governance-reconciliation coverage); no dedicated `ENGINEERING_LOG.md` entry exists for Sprint 21's own Frontend Console implementation (`ENGINEERING_RELEASE_1.6.md` is the only record of it). Backfilling that gap is outside this Sprint's own scope and is named here for a future closeout to address, consistent with this project's standing practice of flagging out-of-scope staleness rather than silently fixing it.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
