@@ -124,22 +124,22 @@ No file outside this table is expected to require modification. If one does, imp
 *Files:* `apps/console/src-tauri/src/assessment.rs`, `apps/console/src-tauri/fixtures/sample-mod`.
 *Completion criteria:* `cargo check -p console` clean; existing 5 tests still pass, updated only where the `recommendation` field's own type change requires it (`submit_assessment_from_path`'s callers are unaffected — no test currently asserts `recommendation`'s exact value); a new assertion confirms at least one Finding's `recommendation.repairSteps` is non-empty against the extended fixture, and a new assertion confirms `recommendation.action` remains a non-empty string wherever `recommendation` is present — exercising both halves of the new structure immediately, not deferred to a later phase.
 
-**Phase 2 — Transport (TypeScript).**
-*Objective:* mirror Phase 1's types in `types.ts`.
-*Files:* `apps/console/src/engine/types.ts`.
-*Completion criteria:* `tsc` (part of `npm run build`) clean; no runtime behavior change yet, since nothing consumes the new shape until Phase 3.
+**Phase 2 — Transport (TypeScript) and Minimal Consumer Continuity.**
+*Objective:* mirror Phase 1's types in `types.ts`; make the one mechanical change to `Reviewing.tsx` required to keep the whole program compiling against the retyped field — rendering `finding.recommendation.action` where the flat string previously appeared, and nothing else. This is not new content: it preserves today's existing behavior (only `action`'s text visible) through the new nested access path. Precedent: Sprint 22's own commit (`969e595`) landed its breaking transport-shape change (`description` → `title`/`summary`) together with the one-line consumer fix required to keep `Reviewing.tsx` compiling (`{finding.description}` → `{finding.summary}`) in the same atomic unit — never split across an independently-gated phase boundary. Rendering `repairSteps` itself — the genuinely new content this capability adds — remains Phase 3's own work.
+*Files:* `apps/console/src/engine/types.ts`; `apps/console/src/workspace/Reviewing.tsx` (mechanical continuity only — the `.action` access path; no new content, no `repairSteps` rendering).
+*Completion criteria:* `tsc` (part of `npm run build`) clean — achievable within this phase because the transport type and its one existing consumer are updated together, matching Sprint 22's own precedent; `Reviewing.tsx` renders exactly what it renders today (`action`'s text, nothing more), only through the new nested path.
 
-**Phase 3 — Presentation.**
-*Objective:* render `action` and, when present, each `repairSteps` entry's `kind`/`instruction` in `Reviewing.tsx`, distinguishable from `action`, within the existing expansion.
+**Phase 3 — Presentation of Repair Steps.**
+*Objective:* render, when present, each `repairSteps` entry's `kind`/`instruction` in `Reviewing.tsx`, distinguishable from `action`, within the existing expansion — the new content this capability adds. `action`'s own rendering is already continuity-safe entering this phase (Phase 2).
 *Files:* `apps/console/src/workspace/Reviewing.tsx`.
-*Completion criteria:* `npm run build` clean; manual verification against the extended fixture that both the empty-`repairSteps` case (existing fixture behavior, unchanged) and the non-empty case (Phase 1's new fixture content) render correctly and distinguishably. This gate is intentionally interpretive, not automated — restated from Sprint 23's own precedent: `apps/console` still contains no component-testing framework (`package.json`'s `devDependencies` confirmed this session: no Vitest, React Testing Library, Jest, or Playwright), and introducing one is outside this Authorization's scope.
+*Completion criteria:* `npm run build` clean (already true entering this phase); manual verification against the extended fixture that both the empty-`repairSteps` case (existing behavior, unchanged since Phase 2) and the non-empty case (new in this phase) render correctly and distinguishably. This gate is intentionally interpretive, not automated — restated from Sprint 23's own precedent: `apps/console` still contains no component-testing framework (`package.json`'s `devDependencies` confirmed this session: no Vitest, React Testing Library, Jest, or Playwright), and introducing one is outside this Authorization's scope.
 
 **Phase 4 — Final Reverification.**
 *Objective:* full repository reverification and regression confirmation only.
 *Files:* None — verification-only phase.
 *Completion criteria:* `cargo test -p console` — all tests pass, including Phase 1's new assertions, no deletions; root workspace `cargo fmt --check`/`check --workspace`/`test --workspace` unaffected; `apps/sandbox/src-tauri` unaffected (9/9); `npm run build` clean.
 
-This ordering matches Sprint 21's and Sprint 23's own precedent: Rust transport before TypeScript before presentation, no phase rendering data the prior phase has not yet made available.
+This ordering matches Sprint 21's and Sprint 23's own precedent: Rust transport before TypeScript before presentation, no phase rendering data the prior phase has not yet made available. Phase 2's inclusion of a `Reviewing.tsx` edit does not move presentation work forward — it distinguishes, as Sprint 22's own precedent does, a mechanical continuity fix (keeping an already-existing consumer compiling against a retyped field) from new-content presentation (Phase 3's own `repairSteps` rendering), the same distinction Sprint 22 drew between its compile-preserving `description`→`summary` swap and Sprint 23's later, separately-authorized rendering of `title`.
 
 ---
 
@@ -156,7 +156,7 @@ This ordering matches Sprint 21's and Sprint 23's own precedent: Rust transport 
 ## 6. Engineering Risks
 
 1. **The existing fixture does not exercise the non-empty case.** Confirmed directly this session by running the CLI against `fixtures/sample-mod`: it produces one generic Evidence-collection Finding, no `VersionCompatibilityRule` Finding. Phase 1 must add real content, not assume the existing fixture already covers this — the single largest risk this Plan identifies that Sprint 23's own planning did not have to address, since Sprint 22's fields were already present in that fixture's output.
-2. **`recommendation`'s own type change is a breaking change to this internal transport**, not an addition. Mitigated by precedent (Sprint 22's `description` → `title`/`summary` replacement) and by the transport's own explicitly provisional status. A repository-wide grep found two call sites, not one: `Reviewing.tsx` (requires the Phase 3 change described above) and `Overview.tsx:30` (`finding.recommendation !== null`, a bare null-check verified compatible with the new type as-is — see §3). Both are named here so neither is a silent surprise during implementation.
+2. **`recommendation`'s own type change is a breaking change to this internal transport**, not an addition. Mitigated by precedent (Sprint 22's `description` → `title`/`summary` replacement) and by the transport's own explicitly provisional status. A repository-wide grep found two call sites, not one: `Reviewing.tsx` (requires a minimal Phase 2 continuity change — the `.action` access path — plus Phase 3's own `repairSteps` rendering) and `Overview.tsx:30` (`finding.recommendation !== null`, a bare null-check verified compatible with the new type as-is — see §3). Both are named here so neither is a silent surprise during implementation. This risk item is also the reason Phase 2 and Phase 3's own boundary was corrected (§4): the breaking change and its one existing consumer's continuity fix must land together, exactly as Sprint 22's own precedent did it, or `tsc` cannot pass between them.
 3. **`RecommendationStepKind`'s five values have no existing visual precedent**, the same category of risk Sprint 23 recorded for `ModHealthDimension`. Phase 3 is authorized for plain-text presentation only; any grouping, iconography, or color treatment is out of scope and must not be improvised mid-phase.
 4. **Scope creep into `RepairRecipeReference`'s own unresolved status.** Nothing in this work should attempt to resolve or interpret `RepairRecipeReference`; only `repair_steps` is presented.
 
@@ -167,7 +167,7 @@ This ordering matches Sprint 21's and Sprint 23's own precedent: Rust transport 
 Before progressing past each phase:
 
 - **After Phase 1:** `cargo fmt --check`, `cargo check -p console`, `cargo test -p console` all clean. The extended fixture is checked in; the new `repairSteps`/`action` assertions pass against it; no existing test is removed.
-- **After Phase 2:** `tsc` clean (via `npm run build` or standalone).
+- **After Phase 2:** `tsc` clean (via `npm run build` or standalone) — now achievable because Phase 2 includes `Reviewing.tsx`'s own minimal continuity fix alongside the type change (§4).
 - **After Phase 3:** `npm run build` clean; manual fixture-driven verification of both the empty- and non-empty-`repairSteps` cases.
 - **After Phase 4:** full root workspace (`cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace`) and `apps/sandbox/src-tauri` both reverified clean and unaffected.
 
