@@ -95,6 +95,7 @@ impl RuntimeLoadFailureRule {
              installation, or obtain an updated release from the mod's author.",
             vec![finding.id()],
             None,
+            Vec::new(),
         )
         .expect("action is valid");
 

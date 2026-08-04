@@ -1,7 +1,8 @@
-use modiq_knowledge::knowledge::RepairRecipe;
+use modiq_knowledge::knowledge::{RepairRecipe, RepairStepKind};
 use modiq_runtime::assessment::{
     Evidence, EvidenceCategory, Finding, FindingSeverity, FindingStatus, ModHealthDimension,
-    Recommendation, RepairRecipeReference, RuleReference,
+    Recommendation, RecommendationStep, RecommendationStepKind, RepairRecipeReference,
+    RuleReference,
 };
 use modiq_versioning::versioning::VersionProfile;
 
@@ -101,10 +102,27 @@ impl VersionCompatibilityRule {
             .map(|step| step.instruction())
             .collect::<Vec<_>>()
             .join(" ");
+        let repair_steps: Vec<RecommendationStep> = recipe
+            .steps()
+            .iter()
+            .map(|step| {
+                let kind = match step.kind() {
+                    RepairStepKind::XmlChange => RecommendationStepKind::XmlChange,
+                    RepairStepKind::LuaChange => RecommendationStepKind::LuaChange,
+                    RepairStepKind::DependencyInstallation => {
+                        RecommendationStepKind::DependencyInstallation
+                    }
+                    RepairStepKind::AssetReplacement => RecommendationStepKind::AssetReplacement,
+                    RepairStepKind::VersionUpdate => RecommendationStepKind::VersionUpdate,
+                };
+                RecommendationStep::new(kind, step.instruction())
+            })
+            .collect();
         let recommendation = Recommendation::new(
             action,
             vec![finding.id()],
             Some(RepairRecipeReference::new(recipe.identifier())),
+            repair_steps,
         )
         .expect("action is valid");
 
@@ -203,6 +221,17 @@ mod tests {
                 "version-compatibility-declared-version-mismatch"
             ))
         );
+        let expected_recipe = RepairRecipe::version_compatibility_declared_version_mismatch();
+        let expected_step = &expected_recipe.steps()[0];
+        assert!(!recommendation.repair_steps().is_empty());
+        assert_eq!(
+            recommendation.repair_steps()[0].kind(),
+            RecommendationStepKind::VersionUpdate
+        );
+        assert_eq!(
+            recommendation.repair_steps()[0].instruction(),
+            expected_step.instruction()
+        );
     }
 
     #[test]
@@ -250,6 +279,10 @@ mod tests {
         assert_eq!(
             first_recommendation.repair_recipe_reference(),
             second_recommendation.repair_recipe_reference()
+        );
+        assert_eq!(
+            first_recommendation.repair_steps(),
+            second_recommendation.repair_steps()
         );
     }
 

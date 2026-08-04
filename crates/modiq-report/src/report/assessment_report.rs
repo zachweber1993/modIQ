@@ -83,8 +83,13 @@ mod tests {
     }
 
     fn sample_recommendation() -> Recommendation {
-        Recommendation::new("sample recommendation", vec![FindingId::generate()], None)
-            .expect("action and finding_ids are valid")
+        Recommendation::new(
+            "sample recommendation",
+            vec![FindingId::generate()],
+            None,
+            Vec::new(),
+        )
+        .expect("action and finding_ids are valid")
     }
 
     #[test]

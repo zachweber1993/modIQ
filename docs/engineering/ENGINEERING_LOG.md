@@ -1611,6 +1611,42 @@ Full record: `docs/engineering/SPRINT23_IMPLEMENTATION_REPORT.md`, `docs/enginee
 
 ---
 
+## 2026-08-03 (continued)
+
+### Sprint 24: Runtime-Owned Representation of RepairRecipe-Derived Structure — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-runtime
+- modiq-rules
+- modiq-storage
+- modiq-report (test fixture only)
+
+Affected Documents:
+- docs/engineering/RECOMMENDATION_REPAIR_STRUCTURE_IMPLEMENTATION_AUTHORIZATION.md (new, prior session)
+- docs/engineering/SPRINT24_IMPLEMENTATION_PLAN.md (new, prior session)
+- docs/engineering/SPRINT24_IMPLEMENTATION_REPORT.md (new)
+- docs/engineering/ENGINEERING_RELEASE_1.9.md (new)
+
+Notes:
+Implemented the four items `RECOMMENDATION_REPAIR_STRUCTURE_IMPLEMENTATION_AUTHORIZATION.md` §3 authorizes: a new Runtime-owned value representation, `RecommendationStep`/`RecommendationStepKind` (`modiq-runtime`), projecting `RepairRecipe`'s per-step `kind`/`instruction` structure; population of that representation by `VersionCompatibilityRule` at `Recommendation`-construction time (`modiq-rules`), via an explicit, exhaustive five-arm match with no wildcard; `Recommendation.action` continuing unchanged, supplemented rather than replaced; and a mirrored, one-way addition to `modiq-storage`'s `PersistedRecommendation`. The Architecture Evaluation and Architectural Resolution behind the Authorization were conducted in a prior session and are not separately committed as repository files — confirmed by a repository-wide search finding none — cited by title only, per the Authorization document's own Origin line.
+
+`Recommendation::new`'s constructor changed exactly once, gaining a fourth, trailing `repair_steps: Vec<RecommendationStep>` parameter, propagating mechanically through the three unrelated Rules (`EvidencePresenceRule`, `StructuralDuplicationRule`, `RuntimeLoadFailureRule`, none of which adopts a `RepairRecipe`) and through `modiq-runtime`'s and `modiq-storage`'s own test fixtures. `modiq-report`'s test fixture required the identical mechanical update despite Authorization §5 listing it as non-participating — its own production code was confirmed to touch `Recommendation` only by whole-value clone, never per-field, so no production behavior changed; this is the same category Sprint 22 already established precedent for under the identical `Finding::new` signature change.
+
+Four phases, each independently gated (Runtime foundation, Rule projection, Persistence, Final reverification), were followed by a dedicated, independent Implementation Audit — re-deriving every claim directly from the diff and fresh verification output rather than trusting the phase reports themselves. The audit found the Implementation Authorization fully realized, every phase implemented exactly as planned, no architectural boundary crossed, no unintended repository change, and no undisclosed deviation. It also precisely classified the one open finding from Phase 4: a literal `grep`-based Knowledge-boundary verification gate flagged an explanatory doc comment in `recommendation_step.rs` as if it were a code-level dependency on `modiq-knowledge`. Direct evidence — a code-only grep for `use modiq_knowledge` (zero hits), `modiq-runtime`'s unchanged `Cargo.toml` (no `modiq-knowledge` dependency), and two pre-existing, untouched files (`rule_reference.rs`, `repair_recipe_reference.rs`) already using the identical prose convention — confirmed this is a **verification-gate limitation** (the regex cannot distinguish comment text from code), not an implementation defect, not a documentation issue, and not an architectural crossing.
+
+No new crate, no new external dependency, no change to `AssessmentService`'s public entry points, no Crate Boundary Rule modified, no Governance Register item or ADR touched — confirmed directly against `GOVERNANCE.md` and `docs/adrs/`, both untouched, and against every `Cargo.toml`/`Cargo.lock` in the workspace, all confirmed zero-diff.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass, re-verified fresh at this entry's own drafting. Root workspace (default-members): 269 → 271 (`modiq-runtime` +1, `modiq-storage` +1; every other touched crate's count unchanged). `console`: 5/5, unaffected. Full workspace (`--workspace`): 274 → 276. Sandbox (`apps/sandbox/src-tauri`, separate workspace): 9/9, unaffected.
+
+Full record: `docs/engineering/SPRINT24_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.9.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` were updated in the same closeout session — see their respective Sprint 24 / Engineering Release 1.9 entries. **Per explicit direction, the pre-existing GOV-017 tracking-document discrepancy (named at Sprint 23's own closeout, immediately above) is not corrected by this Sprint's own tracking updates** — it remains outstanding across all three documents, named again here for continuity rather than silently fixed in passing.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

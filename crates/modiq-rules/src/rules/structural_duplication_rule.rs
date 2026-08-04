@@ -71,6 +71,7 @@ impl StructuralDuplicationRule {
              unambiguous content extraction.",
             vec![finding.id()],
             None,
+            Vec::new(),
         )
         .expect("action is valid");
 

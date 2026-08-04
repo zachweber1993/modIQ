@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{
     AssessmentStatus, Evidence, EvidenceCategory, EvidenceId, Finding, FindingId, FindingSeverity,
-    Recommendation,
+    Recommendation, RecommendationStep, RecommendationStepKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -160,6 +160,50 @@ impl PersistedFinding {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PersistedRecommendationStepKind {
+    XmlChange,
+    LuaChange,
+    DependencyInstallation,
+    AssetReplacement,
+    VersionUpdate,
+}
+
+impl From<RecommendationStepKind> for PersistedRecommendationStepKind {
+    fn from(kind: RecommendationStepKind) -> Self {
+        match kind {
+            RecommendationStepKind::XmlChange => Self::XmlChange,
+            RecommendationStepKind::LuaChange => Self::LuaChange,
+            RecommendationStepKind::DependencyInstallation => Self::DependencyInstallation,
+            RecommendationStepKind::AssetReplacement => Self::AssetReplacement,
+            RecommendationStepKind::VersionUpdate => Self::VersionUpdate,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PersistedRecommendationStep {
+    kind: PersistedRecommendationStepKind,
+    instruction: String,
+}
+
+impl PersistedRecommendationStep {
+    fn from_step(step: &RecommendationStep) -> Self {
+        Self {
+            kind: PersistedRecommendationStepKind::from(step.kind()),
+            instruction: step.instruction().to_string(),
+        }
+    }
+
+    pub fn kind(&self) -> PersistedRecommendationStepKind {
+        self.kind
+    }
+
+    pub fn instruction(&self) -> &str {
+        &self.instruction
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PersistedRecommendation {
     action: String,
@@ -167,6 +211,7 @@ pub struct PersistedRecommendation {
     /// list — not the original, process-local `FindingId` values.
     finding_indices: Vec<usize>,
     repair_recipe_reference: Option<String>,
+    repair_steps: Vec<PersistedRecommendationStep>,
 }
 
 impl PersistedRecommendation {
@@ -184,6 +229,11 @@ impl PersistedRecommendation {
             repair_recipe_reference: recommendation
                 .repair_recipe_reference()
                 .map(|reference| reference.identifier().to_string()),
+            repair_steps: recommendation
+                .repair_steps()
+                .iter()
+                .map(PersistedRecommendationStep::from_step)
+                .collect(),
         }
     }
 
@@ -197,6 +247,10 @@ impl PersistedRecommendation {
 
     pub fn repair_recipe_reference(&self) -> Option<&str> {
         self.repair_recipe_reference.as_deref()
+    }
+
+    pub fn repair_steps(&self) -> &[PersistedRecommendationStep] {
+        &self.repair_steps
     }
 }
 
@@ -306,7 +360,7 @@ mod tests {
     }
 
     fn sample_recommendation(finding_ids: Vec<FindingId>) -> Recommendation {
-        Recommendation::new("update the mod", finding_ids, None).unwrap()
+        Recommendation::new("update the mod", finding_ids, None, Vec::new()).unwrap()
     }
 
     #[test]
@@ -385,6 +439,38 @@ mod tests {
             persisted.recommendations()[0].repair_recipe_reference(),
             None
         );
+    }
+
+    #[test]
+    fn from_recommendation_preserves_repair_steps_content_and_order() {
+        let steps = vec![
+            RecommendationStep::new(RecommendationStepKind::XmlChange, "first step"),
+            RecommendationStep::new(RecommendationStepKind::VersionUpdate, "second step"),
+        ];
+        let recommendation = Recommendation::new(
+            "apply the repair recipe",
+            vec![FindingId::generate()],
+            None,
+            steps,
+        )
+        .unwrap();
+
+        let persisted = PersistedRecommendation::from_recommendation(
+            &recommendation,
+            &HashMap::from([(recommendation.finding_ids()[0], 0)]),
+        );
+
+        assert_eq!(persisted.repair_steps().len(), 2);
+        assert_eq!(
+            persisted.repair_steps()[0].kind(),
+            PersistedRecommendationStepKind::XmlChange
+        );
+        assert_eq!(persisted.repair_steps()[0].instruction(), "first step");
+        assert_eq!(
+            persisted.repair_steps()[1].kind(),
+            PersistedRecommendationStepKind::VersionUpdate
+        );
+        assert_eq!(persisted.repair_steps()[1].instruction(), "second step");
     }
 
     #[test]

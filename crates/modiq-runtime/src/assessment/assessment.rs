@@ -336,8 +336,13 @@ mod tests {
     }
 
     fn sample_recommendation() -> Recommendation {
-        Recommendation::new("sample recommendation", vec![FindingId::generate()], None)
-            .expect("action and finding_ids are valid")
+        Recommendation::new(
+            "sample recommendation",
+            vec![FindingId::generate()],
+            None,
+            Vec::new(),
+        )
+        .expect("action and finding_ids are valid")
     }
 
     #[test]
@@ -1271,6 +1276,7 @@ mod tests {
             "resolve the missing dependency",
             vec![first_finding.id(), second_finding.id()],
             None,
+            Vec::new(),
         )
         .unwrap();
         assessment
@@ -1298,8 +1304,13 @@ mod tests {
         // pending INV-005 refinement; today this is resolved
         // permissively rather than rejected.
         let dangling_id = sample_finding().id();
-        let recommendation =
-            Recommendation::new("resolve the missing dependency", vec![dangling_id], None).unwrap();
+        let recommendation = Recommendation::new(
+            "resolve the missing dependency",
+            vec![dangling_id],
+            None,
+            Vec::new(),
+        )
+        .unwrap();
         assessment
             .add_recommendation(recommendation.clone())
             .unwrap();
@@ -1333,9 +1344,13 @@ mod tests {
         )
         .unwrap();
         assessment.add_finding(finding.clone()).unwrap();
-        let recommendation =
-            Recommendation::new("resolve the missing dependency", vec![finding.id()], None)
-                .unwrap();
+        let recommendation = Recommendation::new(
+            "resolve the missing dependency",
+            vec![finding.id()],
+            None,
+            Vec::new(),
+        )
+        .unwrap();
         assessment
             .add_recommendation(recommendation.clone())
             .unwrap();

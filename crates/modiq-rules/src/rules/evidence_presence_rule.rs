@@ -46,6 +46,7 @@ impl EvidencePresenceRule {
             "Review the collected evidence and address any issues found.",
             vec![finding.id()],
             None,
+            Vec::new(),
         )
         .expect("action is valid");
 

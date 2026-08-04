@@ -1775,3 +1775,37 @@ The Documentation Release 1.0 Final Review concluded with:
 - No `modiq-*` crate touched. No `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified.
 - Implementation verified complete on `feature/runtime-implementation`, pending commit at the time of this closeout package's own drafting.
 - Full record: `docs/engineering/SPRINT23_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.8.md`.
+
+---
+
+# [Sprint 24]
+
+**Status:** Complete (Runtime-Owned Representation of RepairRecipe-Derived Structure). Implements exactly the four items `RECOMMENDATION_REPAIR_STRUCTURE_IMPLEMENTATION_AUTHORIZATION.md` §3 authorizes, following `SPRINT24_IMPLEMENTATION_PLAN.md`. Originated from a closeout-time finding in Sprint 23 (above), taken up through its own fresh Architecture Evaluation and Architectural Resolution — both conducted in a prior session and not separately committed as repository files, cited by title only — not a continuation of the closed Engineering Alignment Program.
+
+## Added
+
+- **`RecommendationStep`/`RecommendationStepKind`** (`modiq-runtime`, new file `recommendation_step.rs`): a Runtime-owned, closed-set projection of `RepairRecipe`'s per-step `kind`/`instruction` structure — five variants (`XmlChange`, `LuaChange`, `DependencyInstallation`, `AssetReplacement`, `VersionUpdate`), mirroring `modiq-knowledge`'s own `RepairStepKind` by value, named distinctly to avoid ambiguity at the one call site where both domains are visible. No identity; infallible constructor, matching `RepairRecipeReference`'s own shape.
+- **`Recommendation` gains `repair_steps: Vec<RecommendationStep>`**, a fourth, trailing constructor parameter and new getter — supplementing `action`, never replacing it. Empty `Vec` (not `Option`) represents "no Repair Recipe informed this Recommendation," consistent with `Vec<FindingId>`/`Vec<EvidenceId>`'s own existing shape elsewhere on the same and adjacent types.
+- **`VersionCompatibilityRule` populates `repair_steps` from real `RepairRecipe` content** (`modiq-rules`), via an explicit, exhaustive five-arm match from `modiq_knowledge::knowledge::RepairStepKind` to `RecommendationStepKind` — no wildcard arm. The three unrelated Rules (`EvidencePresenceRule`, `StructuralDuplicationRule`, `RuntimeLoadFailureRule`) propagate the constructor change mechanically, adopting no `RepairRecipe`.
+- **`PersistedRecommendation` gains a mirrored, one-way addition** (`modiq-storage`): `PersistedRecommendationStepKind` (exhaustive `From<RecommendationStepKind>`) and `PersistedRecommendationStep`, both `Serialize + Deserialize`, populated inside the existing `from_recommendation` conversion. No reverse `to_recommendation` — matching every other field this type already carries.
+- Every real and test consumer of the changed constructor updated in the same pass: `modiq-runtime`'s own 11 existing test call sites plus 4 in `assessment.rs`; `modiq-rules`'s 4 Rules; `modiq-storage`'s and `modiq-report`'s own test fixtures.
+
+## Verified
+
+- Root workspace (default-members): 269 → **271** passing (`modiq-runtime` +1, `modiq-storage` +1; every other touched crate's count unchanged, updated in place — no test deleted).
+- `console` (`cargo test -p console`): **5/5**, unaffected.
+- Full workspace (`cargo test --workspace`, 10 members): 274 → **276** passing.
+- `apps/sandbox/src-tauri` (separate workspace): **9/9**, unaffected.
+- `cargo fmt --check` clean; `cargo check --workspace` clean — all re-verified fresh at a dedicated, independent Implementation Audit, not carried forward from phase reports alone.
+- Zero new Cargo dependency edge (every `Cargo.toml`/`Cargo.lock` in the workspace confirmed zero-diff); `.action()` unaffected for all four Authorization-named consumers (`apps/sandbox`, `apps/console`, `modiq-cli`, `modiq-storage` — same 7 call sites as pre-Sprint-24 baseline).
+
+## Notes
+
+- **A verification-gate limitation, precisely classified, not an implementation or architectural defect:** the Sprint Plan's own literal Knowledge-boundary `grep` gate flagged two files instead of the expected one — the second being a doc comment in `recommendation_step.rs` naming `modiq-knowledge`'s types in prose to explain the naming decision, not a code reference. Confirmed by a code-only grep (zero hits), `modiq-runtime`'s unchanged `modiq-knowledge`-free `Cargo.toml`, and two pre-existing, Sprint-24-untouched files (`rule_reference.rs`, `repair_recipe_reference.rs`) already using the identical documentation convention. Classified as a gate regex limitation (cannot distinguish prose from code), not a documentation issue (the wording matches settled repository convention), and not a boundary crossing.
+- **A Technical Director review of the Sprint Plan, before implementation began, corrected six precision issues** (a call-site count, a phase-dependency overstatement, two verification-gate commands producing false positives against the then-current baseline, two missing derive-set specifications), plus one further post-review correction reclassifying `modiq-cli`'s row in the file-impact table — all applied before Phase 1 began, none reopening architecture.
+- `modiq-report`'s test fixture required the identical mechanical update despite the Authorization listing it as non-participating — its production code touches `Recommendation` only by whole-value clone, confirmed directly; the same category Sprint 22 already established precedent for.
+- No `modiq-knowledge`, `modiq-engine`, `modiq-cli`, `modiq-collection`, or `modiq-versioning` file touched. No `apps/console` or `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified.
+- A dedicated, independent Implementation Audit — re-deriving every claim from the diff and fresh verification rather than trusting phase reports — concluded Sprint 24 technically ready for engineering closeout before this closeout package was drafted.
+- The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this Sprint's own closeout updates** — recorded again here, per explicit direction, rather than silently fixed in passing.
+- Implementation verified complete on `feature/runtime-implementation`, pending commit at the time of this closeout package's own drafting.
+- Full record: `docs/engineering/SPRINT24_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.9.md`.
