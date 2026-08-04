@@ -25,7 +25,9 @@ use std::collections::HashMap;
 
 use modiq_engine::engine::AssessmentService;
 use modiq_report::report::AssessmentReport;
-use modiq_runtime::assessment::{AssessmentContext, AssessmentSubject, Evidence, FindingId};
+use modiq_runtime::assessment::{
+    AssessmentContext, AssessmentSubject, Evidence, FindingId, Recommendation, RecommendationStep,
+};
 
 /// IPC-safe snapshot of one Evidence item, scoped to the Finding that
 /// references it. No `category` field: nothing in Phase 3 reads it —
@@ -58,6 +60,50 @@ impl From<&Evidence> for EvidenceSummary {
     }
 }
 
+/// IPC-safe snapshot of one `RecommendationStep` — one entry of a
+/// Recommendation's Runtime-owned, Repair Recipe-derived structure
+/// (Sprint 24), supplementing `RecommendationSummary::action` rather
+/// than replacing it (C1).
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecommendationStepSummary {
+    kind: String,
+    instruction: String,
+}
+
+impl From<&RecommendationStep> for RecommendationStepSummary {
+    fn from(step: &RecommendationStep) -> Self {
+        Self {
+            kind: format!("{:?}", step.kind()),
+            instruction: step.instruction().to_string(),
+        }
+    }
+}
+
+/// IPC-safe snapshot of one Finding's Recommendation — `action`
+/// unchanged in meaning and content (Sprint 21), supplemented by
+/// `repairSteps` (C1), empty wherever the originating Rule did not
+/// populate `Recommendation::repair_steps`.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecommendationSummary {
+    action: String,
+    repair_steps: Vec<RecommendationStepSummary>,
+}
+
+impl From<&Recommendation> for RecommendationSummary {
+    fn from(recommendation: &Recommendation) -> Self {
+        Self {
+            action: recommendation.action().to_string(),
+            repair_steps: recommendation
+                .repair_steps()
+                .iter()
+                .map(RecommendationStepSummary::from)
+                .collect(),
+        }
+    }
+}
+
 /// IPC-safe snapshot of one Finding, with its own Evidence resolved
 /// and its own Recommendation (if any) resolved — never a bare
 /// Finding requiring presentation code to perform either lookup.
@@ -70,7 +116,7 @@ pub struct FindingSummary {
     summary: String,
     mod_health_dimension: String,
     status: String,
-    recommendation: Option<String>,
+    recommendation: Option<RecommendationSummary>,
     evidence: Vec<EvidenceSummary>,
 }
 
@@ -101,12 +147,12 @@ impl From<&AssessmentReport> for ReportSummary {
         // per Finding in practice, so the first match is taken. This
         // is a real, present-tense fact about today's Rule Engine, not
         // an assumption about its future shape.
-        let recommendation_for = |finding_id: FindingId| -> Option<String> {
+        let recommendation_for = |finding_id: FindingId| -> Option<RecommendationSummary> {
             report
                 .recommendations()
                 .iter()
                 .find(|recommendation| recommendation.finding_ids().contains(&finding_id))
-                .map(|recommendation| recommendation.action().to_string())
+                .map(RecommendationSummary::from)
         };
 
         let findings = report
@@ -196,5 +242,26 @@ mod tests {
     #[test]
     fn submit_assessment_fails_against_a_nonexistent_path() {
         assert!(submit_assessment_from_path("/no/such/path/modiq-console-test").is_err());
+    }
+
+    #[test]
+    fn at_least_one_finding_carries_non_empty_repair_steps() {
+        let result = submit_assessment_from_path(FIXTURE_SAMPLE_MOD).unwrap();
+        let has_repair_steps = result
+            .findings
+            .iter()
+            .filter_map(|finding| finding.recommendation.as_ref())
+            .any(|recommendation| !recommendation.repair_steps.is_empty());
+        assert!(has_repair_steps);
+    }
+
+    #[test]
+    fn every_present_recommendation_carries_a_non_empty_action() {
+        let result = submit_assessment_from_path(FIXTURE_SAMPLE_MOD).unwrap();
+        for finding in &result.findings {
+            if let Some(recommendation) = &finding.recommendation {
+                assert!(!recommendation.action.is_empty());
+            }
+        }
     }
 }

@@ -33,6 +33,16 @@ export interface EvidenceSummary {
   content: string | null;
 }
 
+export interface RecommendationStepSummary {
+  kind: string;
+  instruction: string;
+}
+
+export interface RecommendationSummary {
+  action: string;
+  repairSteps: RecommendationStepSummary[];
+}
+
 export interface FindingSummary {
   id: string;
   severity: string;
@@ -40,7 +50,7 @@ export interface FindingSummary {
   summary: string;
   modHealthDimension: string;
   status: string;
-  recommendation: string | null;
+  recommendation: RecommendationSummary | null;
   evidence: EvidenceSummary[];
 }
 

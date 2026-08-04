@@ -81,7 +81,7 @@ export function Reviewing({
                   </p>
                   {finding.recommendation && (
                     <p className="text-sm text-foreground">
-                      Recommendation: {finding.recommendation}
+                      Recommendation: {finding.recommendation.action}
                     </p>
                   )}
                   {finding.evidence.length > 0 && (
