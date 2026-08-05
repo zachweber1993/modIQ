@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-03 (Sprint 23 — Frontend Presentation of Sprint 22's Domain Model Complete) |
+| **Last Updated** | 2026-08-04 (C1 — RecommendationStep Presentation Complete) |
 
 ---
 
@@ -1809,3 +1809,34 @@ The Documentation Release 1.0 Final Review concluded with:
 - The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this Sprint's own closeout updates** — recorded again here, per explicit direction, rather than silently fixed in passing.
 - Implementation verified complete on `feature/runtime-implementation`, pending commit at the time of this closeout package's own drafting.
 - Full record: `docs/engineering/SPRINT24_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_1.9.md`.
+
+---
+
+# [C1]
+
+**Status:** Complete (RecommendationStep Presentation) — the first capability to exercise, in practice, the post-foundation lifecycle running from Capability Definition through Closeout; `CAPABILITY_PORTFOLIO_ASSESSMENT.md` itself named only Capability Definition as the immediate next step, with later stages following only as warranted. Implements exactly the work `C1_IMPLEMENTATION_AUTHORIZATION.md` §3 authorizes, following `C1_IMPLEMENTATION_PLAN.md`. Preceded by a dedicated Process Determination that re-derived, rather than assumed, that this capability matches Sprint 23's own precedent — no Architecture Evaluation or Architectural Resolution required.
+
+## Added
+
+- **`FindingSummary.recommendation` transport retype** (`console` crate, Rust and TypeScript): changes from a flat `Option<String>`/`string | null` to a nested `RecommendationSummary` (`action: String`/`string`, `repairSteps: Vec<RecommendationStepSummary>`/`RecommendationStepSummary[]`) — a breaking change to this internal, single-consumer, explicitly provisional transport, accepted on direct precedent (Sprint 22's identical-category `description` → `title`/`summary` replacement).
+- **`RecommendationStepSummary`** (`kind: string`, `instruction: string`): a new transport type mirroring `modiq-runtime`'s `RecommendationStep` (Sprint 24) field-for-field, `kind` rendered via the existing `Debug`-format-string convention already used for `severity`/`mod_health_dimension`/`status`.
+- **`Reviewing.tsx` presentation**: renders each `repairSteps` entry's `kind`/`instruction` as a new list, shown only when non-empty, immediately beneath the existing, unchanged `action` text — within the existing single expansion layer, no new navigation level.
+- **`sample-mod` fixture extension**: a `modDesc.xml` declaring a `descVersion` unsupported by the hardcoded `VersionProfile::fs25()`, so a real assessment run exercises `VersionCompatibilityRule` and produces a non-empty `repairSteps` for the first time against this fixture.
+
+## Verified
+
+- Root workspace (default-members): **271/271**, unaffected — no `modiq-*` crate touched.
+- `console` (`cargo test -p console`): **5 → 7** — two tests added, none deleted.
+- Full workspace (`cargo test --workspace`, 10 members): **276 → 278**.
+- `apps/sandbox/src-tauri` (separate workspace): **9/9**, unaffected.
+- `cargo fmt --check` clean; `cargo check --workspace` clean; `apps/console`'s `npx tsc` and `npm run build` (`tsc && vite build`) both clean.
+
+## Notes
+
+- **A Planning defect was found and corrected mid-implementation, not carried into closeout.** The Implementation Plan's original Phase 2/Phase 3 boundary placed the breaking transport-field change and its one existing consumer's compile fix in separately-gated phases, making the Plan's own stated `tsc`-clean gate unsatisfiable at Phase 2. A dedicated Repository Validation Review traced the correction to Sprint 22's own commit (`969e595`) — already cited in the Plan to justify the breaking change itself, and found, on re-examination, to also govern how such a change must be phased. The Plan was reconciled (moving the one mechanical consumer fix into Phase 2, narrowing Phase 3 to new content only) and re-verified before implementation resumed. No architecture, governance, or transport shape was reopened.
+- **`Overview.tsx` was identified, verified compatible, and left unmodified** — its own `finding.recommendation !== null` check is a bare null-check, unaffected by the field's internal shape.
+- No `modiq-runtime`, `modiq-rules`, `modiq-knowledge`, `modiq-collection`, `modiq-engine`, `modiq-report`, `modiq-storage`, or `modiq-cli` file touched. No `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified.
+- Every governing document (Process Determination, Implementation Authorization, Implementation Plan) and every implementation phase was independently put through its own Repository Validation Review before being treated as settled — extending Sprint 24's own single-Implementation-Audit precedent into a continuous practice for this capability.
+- The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per continued direction, rather than silently fixed in passing.
+- Implementation committed on `feature/runtime-implementation` (`431dac8`, `6a09464`), not yet pushed at the time of this closeout package's own drafting.
+- Full record: `docs/engineering/C1_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_2.0.md`.

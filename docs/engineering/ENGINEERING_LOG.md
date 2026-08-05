@@ -1647,6 +1647,44 @@ Full record: `docs/engineering/SPRINT24_IMPLEMENTATION_REPORT.md`, `docs/enginee
 
 ---
 
+## 2026-08-04
+
+### C1: RecommendationStep Presentation — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- console (`apps/console/src-tauri`)
+
+Affected Documents:
+- docs/engineering/CAPABILITY_PORTFOLIO_ASSESSMENT.md (new, prior session)
+- docs/engineering/CAPABILITY_DEFINITION_C1_RECOMMENDATION_STEP_PRESENTATION.md (new, prior session)
+- docs/engineering/PROCESS_DETERMINATION_C1_RECOMMENDATION_STEP_PRESENTATION.md (new)
+- docs/engineering/C1_IMPLEMENTATION_AUTHORIZATION.md (new)
+- docs/engineering/C1_IMPLEMENTATION_PLAN.md (new, reconciled once mid-implementation)
+- docs/engineering/C1_IMPLEMENTATION_REPORT.md (new)
+- docs/engineering/ENGINEERING_RELEASE_2.0.md (new)
+
+Notes:
+Implemented exactly what `C1_IMPLEMENTATION_AUTHORIZATION.md` §3 authorizes: `apps/console`'s transport now carries a Finding's Recommendation as a structured `RecommendationSummary` (`action` plus `repairSteps`), and `Reviewing.tsx` presents each `repairSteps` entry's `kind`/`instruction` when present, distinguishable from `action`, within the existing single expansion layer — closing the gap Sprint 24's own Implementation Report named as "a real, evidence-backed future opportunity."
+
+This is the first capability to exercise, in practice, the post-foundation lifecycle running from Capability Definition through Closeout — `CAPABILITY_PORTFOLIO_ASSESSMENT.md` itself named only Capability Definition as the immediate next step, conditioning everything after it on "if warranted"; the remaining stages followed as this capability's own history unfolded, requiring a dedicated Process Determination rather than an assumed equivalence to Sprint 23's precedent — the determination re-derived, and confirmed, that `FrontendArchitecture.md`'s Consumer-Owned State and Explainable Continuity needed no reinterpretation, matching Sprint 23's own basis exactly.
+
+Four phases were implemented, each independently gated, and — extending Sprint 24's own single-Implementation-Audit precedent — each governing document and each phase was independently put through its own Repository Validation Review as it was produced, not audited once at the end. This caught a genuine Planning defect mid-implementation: the original Implementation Plan's Phase 2/Phase 3 boundary placed `recommendation`'s breaking type change and its one existing consumer's compile fix in separately-gated phases, making the Plan's own stated `tsc`-clean gate unsatisfiable. The correction was grounded directly in Sprint 22's own commit (`969e595`) — already cited in the Plan to justify the breaking change itself, and found, on re-examination, to also govern how such a change must be phased (landing a breaking transport change and its one-line consumer fix atomically, never split across an independently-gated boundary). The Plan was reconciled and re-verified before Phase 2 resumed; no architecture, governance, or transport shape was reopened.
+
+`FindingSummary.recommendation`'s constructor path (`recommendation_for` in `assessment.rs`) changed exactly once, from returning a flat string to returning `Option<RecommendationSummary>`, propagating to its single real consumer (`Reviewing.tsx`) and its one verified-compatible, unmodified consumer (`Overview.tsx`, whose own `!== null` check required no change). The existing `sample-mod` fixture was extended with a `modDesc.xml` declaring an unsupported `descVersion`, since the fixture never previously exercised `VersionCompatibilityRule` and could not otherwise demonstrate the non-empty `repairSteps` case for real.
+
+No new crate, no new external dependency, no change to `AssessmentService`'s public entry points, no Crate Boundary Rule modified, no Governance Register item or ADR touched — confirmed directly against `GOVERNANCE.md` and `docs/adrs/`, both untouched, and against every `Cargo.toml`/`Cargo.lock` and `package.json`/`package-lock.json` in the workspace, all confirmed zero-diff.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass, re-verified fresh at this entry's own drafting. Root workspace (default-members): 271/271, unaffected. `console`: 5 → 7 (two new tests, none deleted). Full workspace (`--workspace`): 276 → 278. Sandbox (`apps/sandbox/src-tauri`, separate workspace): 9/9, unaffected. `apps/console`'s `npx tsc` and `npm run build` both clean.
+
+Full record: `docs/engineering/C1_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_2.0.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` were updated in the same closeout session — see their respective C1 / Engineering Release 2.0 entries. **Per continued direction, the pre-existing GOV-017 tracking-document discrepancy (named at Sprint 23's and Sprint 24's own closeouts, above) is not corrected by this capability's own tracking updates** — it remains outstanding across all three documents, named again here for continuity rather than silently fixed in passing.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
