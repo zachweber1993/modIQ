@@ -84,6 +84,24 @@ export function Reviewing({
                       Recommendation: {finding.recommendation.action}
                     </p>
                   )}
+                  {finding.recommendation &&
+                    finding.recommendation.repairSteps.length > 0 && (
+                      <ul className="flex flex-col gap-1 pl-2">
+                        {finding.recommendation.repairSteps.map(
+                          (step, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-muted-foreground"
+                            >
+                              <span className="font-medium text-foreground">
+                                {step.kind}:{" "}
+                              </span>
+                              {step.instruction}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    )}
                   {finding.evidence.length > 0 && (
                     <ul className="flex flex-col gap-1">
                       {finding.evidence.map((evidence) => (
