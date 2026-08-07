@@ -1,6 +1,7 @@
 use modiq_runtime::assessment::{Evidence, Finding, Recommendation};
 use modiq_versioning::versioning::VersionProfile;
 
+use super::declared_dependency_duplication_rule::DeclaredDependencyDuplicationRule;
 use super::evidence_presence_rule::EvidencePresenceRule;
 use super::runtime_load_failure_rule::RuntimeLoadFailureRule;
 use super::structural_duplication_rule::StructuralDuplicationRule;
@@ -29,8 +30,9 @@ impl RuleEngine {
     /// Rules are evaluated in a fixed, explicit declaration order —
     /// `EvidencePresenceRule`, then `StructuralDuplicationRule`, then
     /// `VersionCompatibilityRule` (Sprint 8), then `RuntimeLoadFailureRule`
-    /// (Sprint 11) — never an order derived from Evidence's own arrival
-    /// sequence (GOV-012, Question 2). Rules compose independently:
+    /// (Sprint 11), then `DeclaredDependencyDuplicationRule` (C2) —
+    /// never an order derived from Evidence's own arrival sequence
+    /// (GOV-012, Question 2). Rules compose independently:
     /// each is evaluated against the full Evidence set regardless of
     /// whether another Rule also matches it, and no Rule suppresses
     /// another (GOV-012, Question 3). This is deliberately a fixed
@@ -64,6 +66,9 @@ impl RuleEngine {
             outcomes.push(outcome);
         }
         if let Some(outcome) = RuntimeLoadFailureRule.evaluate(evidence) {
+            outcomes.push(outcome);
+        }
+        if let Some(outcome) = DeclaredDependencyDuplicationRule.evaluate(evidence) {
             outcomes.push(outcome);
         }
 
@@ -137,6 +142,29 @@ mod tests {
             None,
         )
         .expect("description and location are valid")
+    }
+
+    fn duplicate_declared_dependency_evidence() -> Vec<Evidence> {
+        vec![
+            Evidence::with_location(
+                EvidenceCategory::XmlInspection,
+                "modDesc.xml declares dependency: FS25_exampleModOne",
+                "modDesc.xml",
+                None,
+                None,
+                None,
+            )
+            .expect("description and location are valid"),
+            Evidence::with_location(
+                EvidenceCategory::XmlInspection,
+                "modDesc.xml declares dependency: FS25_exampleModOne",
+                "modDesc.xml",
+                None,
+                None,
+                None,
+            )
+            .expect("description and location are valid"),
+        ]
     }
 
     #[test]
@@ -331,22 +359,99 @@ mod tests {
     }
 
     #[test]
-    fn evaluate_dispatches_all_four_rules_independently_when_all_match() {
+    fn evaluate_dispatches_declared_dependency_duplication_rule_fifth_in_declaration_order() {
+        // C2 Phase 2: DeclaredDependencyDuplicationRule is the fifth
+        // Rule, added additively after RuntimeLoadFailureRule
+        // (GOV-012's fixed declaration order, extended, never
+        // reordered).
+        let engine = RuleEngine;
+
+        let outcomes = engine.evaluate(&duplicate_declared_dependency_evidence(), &fs25_profile());
+
+        assert_eq!(outcomes.len(), 2);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+        assert_eq!(
+            outcomes[1].finding.rule_reference().identifier(),
+            "declared-dependency-duplication-rule"
+        );
+        assert_eq!(outcomes[1].finding.severity(), FindingSeverity::Warning);
+    }
+
+    #[test]
+    fn evaluate_does_not_dispatch_declared_dependency_duplication_rule_when_no_duplicate_exists() {
+        let engine = RuleEngine;
+        let evidence = Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            "modDesc.xml declares dependency: FS25_exampleModOne",
+            "modDesc.xml",
+            None,
+            None,
+            None,
+        )
+        .expect("description and location are valid");
+
+        let outcomes = engine.evaluate(&[evidence], &fs25_profile());
+
+        assert_eq!(outcomes.len(), 1);
+        assert_eq!(
+            outcomes[0].finding.rule_reference().identifier(),
+            "evidence-presence-rule"
+        );
+    }
+
+    #[test]
+    fn version_compatibility_rule_and_declared_dependency_duplication_rule_never_match_the_same_evidence_item()
+     {
+        // Architectural Resolution, Decision 2 (Rule Conclusion
+        // Non-Contradiction): directly demonstrates, against real
+        // code, that no single Evidence item satisfies both Rules'
+        // own content-shape filters — not merely argued from the two
+        // prefix strings' own text (Authorization §8, §9).
+        let declared_version = unrecognized_declared_version_evidence();
+        let declared_version_id = declared_version.id();
+        let dependency_evidence = duplicate_declared_dependency_evidence();
+        let dependency_ids: Vec<_> = dependency_evidence.iter().map(Evidence::id).collect();
+
+        let mut evidence = vec![declared_version];
+        evidence.extend(dependency_evidence);
+
+        let version_outcome = VersionCompatibilityRule
+            .evaluate(&evidence, &fs25_profile())
+            .expect("the declared version is unrecognized");
+        let dependency_outcome = DeclaredDependencyDuplicationRule
+            .evaluate(&evidence)
+            .expect("the declared dependency recurs");
+
+        assert_eq!(
+            version_outcome.finding.evidence_ids(),
+            &[declared_version_id]
+        );
+        assert_eq!(
+            dependency_outcome.finding.evidence_ids(),
+            dependency_ids.as_slice()
+        );
+    }
+
+    #[test]
+    fn evaluate_dispatches_all_five_rules_independently_when_all_match() {
         // GOV-012 (Question 3): Rules compose independently, no
         // suppression — every Rule fires when its own Evidence is
         // present, regardless of how many others also match.
         let engine = RuleEngine;
 
-        let outcomes = engine.evaluate(
-            &[
-                duplication_evidence(),
-                unrecognized_declared_version_evidence(),
-                recognized_runtime_log_failure_evidence(),
-            ],
-            &fs25_profile(),
-        );
+        let mut evidence = vec![
+            duplication_evidence(),
+            unrecognized_declared_version_evidence(),
+            recognized_runtime_log_failure_evidence(),
+        ];
+        evidence.extend(duplicate_declared_dependency_evidence());
 
-        assert_eq!(outcomes.len(), 4);
+        let outcomes = engine.evaluate(&evidence, &fs25_profile());
+
+        assert_eq!(outcomes.len(), 5);
         assert_eq!(
             outcomes[0].finding.rule_reference().identifier(),
             "evidence-presence-rule"
@@ -362,6 +467,10 @@ mod tests {
         assert_eq!(
             outcomes[3].finding.rule_reference().identifier(),
             "runtime-load-failure-rule"
+        );
+        assert_eq!(
+            outcomes[4].finding.rule_reference().identifier(),
+            "declared-dependency-duplication-rule"
         );
     }
 
