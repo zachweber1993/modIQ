@@ -1685,6 +1685,44 @@ Full record: `docs/engineering/C1_IMPLEMENTATION_REPORT.md`, `docs/engineering/E
 
 ---
 
+## 2026-08-12
+
+### C2: Declared Dependency Interpretation — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-rules (`crates/modiq-rules`)
+
+Affected Documents:
+- docs/engineering/CAPABILITY_DEFINITION_C2_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/C2_ARCHITECTURE_EVALUATION_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/C2_ARCHITECTURAL_RESOLUTION_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/C2_IMPLEMENTATION_AUTHORIZATION_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/C2_IMPLEMENTATION_PLAN_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/C2_IMPLEMENTATION_REPORT_DECLARED_DEPENDENCY_INTERPRETATION.md (new)
+- docs/engineering/ENGINEERING_RELEASE_2.1.md (new)
+
+Notes:
+Implemented exactly what `C2_IMPLEMENTATION_AUTHORIZATION_DECLARED_DEPENDENCY_INTERPRETATION.md` §3 authorizes: `modiq-rules` gains a fifth Rule, `DeclaredDependencyDuplicationRule`, dispatched from `RuleEngine::evaluate` in fixed order, detecting a declared dependency name repeated more than once within one manifest — the first Rule to ask any question of `XmlInspection` Evidence's declared-dependency content, previously reachable only through `EvidencePresenceRule`'s undifferentiated Finding.
+
+This is the second post-foundation capability, and the first to reach a genuinely untested architectural question rather than apply already-settled precedent by construction: `SPRINT12_ARCHITECTURAL_RESOLUTION.md` had named, and left open, whether two Rules sharing one already-interpreted `EvidenceCategory` composes safely under GOV-012 alone. A dedicated Architecture Evaluation and Architectural Resolution answered this — GOV-012's own text already governs the dispatch question (Decision 1); a new, narrowly-scoped Rule Conclusion Non-Contradiction Constraint governs Rule authorship where two Rules could otherwise reach contradictory conclusions about one Evidence item (Decision 2) — without introducing any new dispatch mechanism, registry, or trait.
+
+Three phases were implemented, each independently gated and independently put through its own Repository Validation Review, extending C1's own per-phase review practice. Phase 1 built `DeclaredDependencyDuplicationRule` as a standalone, seven-test unit, not yet dispatched. Phase 2 wired it into `RuleEngine::evaluate` as the fifth, fixed-order dispatch line and directly demonstrated the Rule Conclusion Non-Contradiction Constraint against real code — a dedicated test calling `VersionCompatibilityRule::evaluate` and `DeclaredDependencyDuplicationRule::evaluate` independently against one shared Evidence set, confirming zero overlap in their respective `evidence_ids`, not merely arguing disjointness from the two Rules' fixed prefix strings. Phase 3 was verification-only, changing no file, and confirmed via a full-span `git diff --stat` that only the three files the Implementation Plan's own File Impact table named were touched across the entire capability.
+
+No Planning defect occurred, unlike C1. A Technical Director review during Phase 2 identified two Plan-drafting ambiguities — whether a Plan-directed test rename satisfies a completion criterion requiring existing tests be "extended, not altered," and whether the Plan should have stated the new Rule's own required Evidence cardinality (two items, not one) explicitly — both resolved without reopening the approved Plan or any verification gate, and recorded as Lessons Learned in the Implementation Report rather than as Planning defects.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass, re-verified fresh at this entry's own drafting. Root workspace (default-members): 271 → 281 (`modiq-rules` 36 → 46; every other default-member crate unchanged). Full workspace (`--workspace`): 278 → 288. Sandbox (`apps/sandbox/src-tauri`, separate workspace): 9/9, unaffected. `apps/console`'s `npx tsc` and `npm run build` both clean, unaffected — no `apps/console` file touched by C2.
+
+No `modiq-runtime`, `modiq-collection`, `modiq-versioning`, `modiq-report`, `modiq-engine`, `modiq-storage`, `modiq-cli`, or `modiq-knowledge` file touched. No `apps/console` or `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified. `XmlCollector`, `EvidenceCategory`'s closed set, and `RuleEngine::evaluate`'s own signature all confirmed unchanged.
+
+Full record: `docs/engineering/C2_IMPLEMENTATION_REPORT_DECLARED_DEPENDENCY_INTERPRETATION.md`, `docs/engineering/ENGINEERING_RELEASE_2.1.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` were updated in the same closeout session — see their respective C2 / Engineering Release 2.1 entries. **Per continued direction, the pre-existing GOV-017 tracking-document discrepancy (named at every closeout since Sprint 23, above) is not corrected by this capability's own tracking updates** — it remains outstanding across all three documents, named again here for continuity rather than silently fixed in passing.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

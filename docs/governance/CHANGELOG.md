@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-04 (C1 — RecommendationStep Presentation Complete) |
+| **Last Updated** | 2026-08-12 (C2 — Declared Dependency Interpretation Complete) |
 
 ---
 
@@ -1840,3 +1840,36 @@ The Documentation Release 1.0 Final Review concluded with:
 - The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per continued direction, rather than silently fixed in passing.
 - Implementation committed on `feature/runtime-implementation` (`431dac8`, `6a09464`), not yet pushed at the time of this closeout package's own drafting.
 - Full record: `docs/engineering/C1_IMPLEMENTATION_REPORT.md`, `docs/engineering/ENGINEERING_RELEASE_2.0.md`.
+
+---
+
+# [C2]
+
+**Status:** Complete (Declared Dependency Interpretation) — the second post-foundation capability, and the first to reach a genuinely untested architectural question rather than apply already-settled precedent by construction. Implements exactly the work `C2_IMPLEMENTATION_AUTHORIZATION_DECLARED_DEPENDENCY_INTERPRETATION.md` §3 authorizes, following `C2_IMPLEMENTATION_PLAN_DECLARED_DEPENDENCY_INTERPRETATION.md`. Preceded by a dedicated Architecture Evaluation and Architectural Resolution — `SPRINT12_ARCHITECTURAL_RESOLUTION.md` had named, and left open, whether two Rules sharing one already-interpreted `EvidenceCategory` composes safely under GOV-012 alone; C2 is the concrete instance that question required.
+
+## Added
+
+- **`DeclaredDependencyDuplicationRule`** (`modiq-rules`, new file `declared_dependency_duplication_rule.rs`): the platform's fifth Rule, and the first to compare multiple Evidence items against each other rather than filtering or mapping each independently. Filters `XmlInspection` Evidence for the `"modDesc.xml declares dependency: "` prefix, detects a declared name recurring more than once within one manifest, and produces one `FindingSeverity::Warning`, `ModHealthDimension::Structure` Finding referencing every occurrence of every duplicated name, paired with an inline-authored Recommendation (no `RepairRecipe`).
+- **`RuleEngine::evaluate` dispatches the new Rule fifth**, appended after `RuntimeLoadFailureRule`'s existing dispatch line — the four existing Rules' declaration order is unchanged, and dispatch remains five sequential `if let Some(outcome) = ... { outcomes.push(outcome); }` statements, no trait, registry, or dispatch table.
+- **Rule Conclusion Non-Contradiction Constraint** (Architectural Resolution, Decision 2): adopted as this repository's own architectural expectation for any Rule sharing an already-interpreted `EvidenceCategory` with another — satisfiable entirely through Rule authorship discipline, no new runtime mechanism. Directly demonstrated, not merely asserted, by a Phase 2 test calling `VersionCompatibilityRule::evaluate` and `DeclaredDependencyDuplicationRule::evaluate` independently against one shared Evidence set and confirming zero `evidence_ids` overlap.
+
+## Verified
+
+- Root workspace (default-members): **271 → 281** — `modiq-rules` 36 → 46 (7 new tests at Phase 1, 3 new plus one Plan-directed rename-and-extension at Phase 2); every other default-member crate unchanged.
+- Full workspace (`cargo test --workspace`, 10 members): **278 → 288**.
+- `apps/sandbox/src-tauri` (separate workspace): **9/9**, unaffected.
+- `apps/console`: **7/7**, unaffected — no `apps/console` file touched by C2.
+- `cargo fmt --check` clean; `cargo check --workspace` clean; `npx tsc` and `npm run build` clean.
+- Zero new Cargo dependency edge — every `Cargo.toml`/`Cargo.lock` in the workspace confirmed zero-diff.
+- A full-span `git diff --stat` (`208a755`..`ce21006`) confirmed only the three files the Implementation Plan's own File Impact table named were touched across the entire capability: `declared_dependency_duplication_rule.rs` (new), `mod.rs`, `engine.rs`.
+
+## Notes
+
+- **No Planning defect occurred, unlike C1.** A Technical Director review during Phase 2 identified two Plan-drafting ambiguities instead — whether a Plan-directed test rename satisfies the completion criterion that "no existing test is altered, only extended," and whether the Plan should have stated the new Rule's own required Evidence cardinality (two items, not one) explicitly. Both were resolved by following the Plan's more specific instruction, without reopening the approved Plan or making any verification gate unsatisfiable, and are recorded as Lessons Learned in the Implementation Report, not as Planning defects.
+- **The Rule Conclusion Non-Contradiction Constraint was checked against real code, not assumed.** `DeclaredDependencyDuplicationRule`'s and `VersionCompatibilityRule`'s content-shape filters were confirmed, by direct string comparison, to diverge at their 24th character — no Evidence item can satisfy both.
+- **A documentation-currency gap, consistent with pre-existing repository pattern, not introduced by C2.** `declared_dependency_duplication_rule.rs`'s own doc comment still states the Rule is "Not yet reachable from `RuleEngine::evaluate`," accurate at Phase 1 but stale since Phase 2's dispatch wiring; no phase of the committed Plan authorized correcting it. The identical phrasing already existed, uncorrected, in `structural_duplication_rule.rs` and `runtime_load_failure_rule.rs` since Sprint 5 and Sprint 11.
+- No `modiq-runtime`, `modiq-collection`, `modiq-versioning`, `modiq-report`, `modiq-engine`, `modiq-storage`, `modiq-cli`, or `modiq-knowledge` file touched. No `apps/console` or `apps/sandbox` file touched. No ADR created. No Governance Register entry opened or modified.
+- Every governing document (Capability Definition, Architecture Evaluation, Architectural Resolution, Implementation Authorization, Implementation Plan) and every implementation phase was independently put through its own Repository Validation Review before being treated as settled; the Implementation Report itself underwent a full Review → Reconciliation → Post-Reconciliation Verification cycle before being committed.
+- The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per continued direction, rather than silently fixed in passing.
+- Implementation committed on `feature/runtime-implementation` (`e5d931b`, `ce21006`, `35a5040`), not yet pushed at the time of this closeout package's own drafting.
+- Full record: `docs/engineering/C2_IMPLEMENTATION_REPORT_DECLARED_DEPENDENCY_INTERPRETATION.md`, `docs/engineering/ENGINEERING_RELEASE_2.1.md`.
