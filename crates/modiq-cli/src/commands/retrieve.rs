@@ -37,6 +37,9 @@ impl RetrieveCommand {
                 item.category(),
                 item.description()
             ));
+            if let Some(location) = item.location() {
+                output.push_str(&format!("    - Location: {location}\n"));
+            }
         }
 
         output.push_str(&format!("\nFindings ({}):\n", report.findings().len()));
@@ -55,6 +58,13 @@ impl RetrieveCommand {
         ));
         for recommendation in report.recommendations() {
             output.push_str(&format!("  - {}\n", recommendation.action()));
+            for step in recommendation.repair_steps() {
+                output.push_str(&format!(
+                    "    - {:?}: {}\n",
+                    step.kind(),
+                    step.instruction()
+                ));
+            }
         }
 
         output
@@ -69,8 +79,9 @@ mod tests {
 
     use super::*;
     use modiq_runtime::assessment::{
-        Assessment, AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory,
-        VersionProfileReference,
+        Assessment, AssessmentContext, AssessmentSubject, Evidence, EvidenceCategory, Finding,
+        FindingSeverity, FindingStatus, ModHealthDimension, Recommendation, RecommendationStep,
+        RecommendationStepKind, RuleReference, VersionProfileReference,
     };
 
     /// A real, unique, temporary directory, mirroring this crate's own
@@ -146,5 +157,184 @@ mod tests {
 
         assert_eq!(exit_code, ExitCode::InvalidUsage);
         assert!(message.contains("no report is stored"));
+    }
+
+    #[test]
+    fn run_shows_an_evidence_items_location_when_present() {
+        let storage = TempDir::new("retrieve-location-present");
+        let store = ReportStore::new(storage.path());
+
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        assessment
+            .add_evidence(
+                Evidence::with_location(
+                    EvidenceCategory::FileStructureAnalysis,
+                    "sample evidence",
+                    "root",
+                    None,
+                    None,
+                    None,
+                )
+                .unwrap(),
+            )
+            .unwrap();
+        let report = modiq_report::report::AssessmentReport::generate(&assessment);
+        let key = store.store(&report).unwrap();
+
+        let (message, exit_code) =
+            RetrieveCommand::run(key.value(), &storage.path().display().to_string());
+
+        assert_eq!(exit_code, ExitCode::Success);
+        assert!(message.contains("Location: root"));
+    }
+
+    #[test]
+    fn run_omits_the_location_sub_line_when_absent() {
+        let storage = TempDir::new("retrieve-location-absent");
+        let store = ReportStore::new(storage.path());
+
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        assessment
+            .add_evidence(
+                Evidence::new(
+                    EvidenceCategory::FileStructureAnalysis,
+                    "sample evidence",
+                    None,
+                    None,
+                    None,
+                )
+                .unwrap(),
+            )
+            .unwrap();
+        let report = modiq_report::report::AssessmentReport::generate(&assessment);
+        let key = store.store(&report).unwrap();
+
+        let (message, exit_code) =
+            RetrieveCommand::run(key.value(), &storage.path().display().to_string());
+
+        assert_eq!(exit_code, ExitCode::Success);
+        assert!(!message.contains("Location:"));
+    }
+
+    #[test]
+    fn run_shows_each_repair_steps_kind_and_instruction() {
+        let storage = TempDir::new("retrieve-repair-steps-present");
+        let store = ReportStore::new(storage.path());
+
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Sample finding",
+            "sample finding summary",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let finding_id = finding.id();
+        assessment.add_finding(finding).unwrap();
+        let recommendation = Recommendation::new(
+            "update the mod dependency",
+            vec![finding_id],
+            None,
+            vec![RecommendationStep::new(
+                RecommendationStepKind::VersionUpdate,
+                "update to the required version",
+            )],
+        )
+        .unwrap();
+        assessment.add_recommendation(recommendation).unwrap();
+
+        let report = modiq_report::report::AssessmentReport::generate(&assessment);
+        let key = store.store(&report).unwrap();
+
+        let (message, exit_code) =
+            RetrieveCommand::run(key.value(), &storage.path().display().to_string());
+
+        assert_eq!(exit_code, ExitCode::Success);
+        assert!(message.contains("VersionUpdate: update to the required version"));
+    }
+
+    #[test]
+    fn run_shows_no_repair_step_sub_line_when_repair_steps_is_empty() {
+        let storage = TempDir::new("retrieve-repair-steps-empty");
+        let store = ReportStore::new(storage.path());
+
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Sample finding",
+            "sample finding summary",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let finding_id = finding.id();
+        assessment.add_finding(finding).unwrap();
+        let recommendation = Recommendation::new(
+            "update the mod dependency",
+            vec![finding_id],
+            None,
+            Vec::new(),
+        )
+        .unwrap();
+        assessment.add_recommendation(recommendation).unwrap();
+
+        let report = modiq_report::report::AssessmentReport::generate(&assessment);
+        let key = store.store(&report).unwrap();
+
+        let (message, exit_code) =
+            RetrieveCommand::run(key.value(), &storage.path().display().to_string());
+
+        assert_eq!(exit_code, ExitCode::Success);
+        assert!(message.contains("update the mod dependency"));
+        assert!(!message.contains("VersionUpdate"));
+        assert!(!message.contains("XmlChange"));
+        assert!(!message.contains("LuaChange"));
+        assert!(!message.contains("DependencyInstallation"));
+        assert!(!message.contains("AssetReplacement"));
     }
 }
