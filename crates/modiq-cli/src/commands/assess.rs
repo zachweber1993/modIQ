@@ -75,6 +75,18 @@ impl AssessCommand {
                 item.category(),
                 item.description()
             ));
+            if let Some(location) = item.location() {
+                output.push_str(&format!("    - Location: {location}\n"));
+            }
+            if let Some(label) = item.label() {
+                output.push_str(&format!("    - Label: {label}\n"));
+            }
+            if let Some(source) = item.source() {
+                output.push_str(&format!("    - Source: {source}\n"));
+            }
+            if let Some(content) = item.content() {
+                output.push_str(&format!("    - Content: {content}\n"));
+            }
         }
 
         output.push_str(&format!("\nFindings ({}):\n", report.findings().len()));
@@ -85,6 +97,11 @@ impl AssessCommand {
                 finding.title(),
                 finding.summary()
             ));
+            output.push_str(&format!(
+                "    - Mod Health: {:?}, Status: {:?}\n",
+                finding.mod_health_dimension(),
+                finding.status()
+            ));
         }
 
         output.push_str(&format!(
@@ -93,6 +110,13 @@ impl AssessCommand {
         ));
         for recommendation in report.recommendations() {
             output.push_str(&format!("  - {}\n", recommendation.action()));
+            for step in recommendation.repair_steps() {
+                output.push_str(&format!(
+                    "    - {:?}: {}\n",
+                    step.kind(),
+                    step.instruction()
+                ));
+            }
         }
 
         output
@@ -106,6 +130,11 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     use super::*;
+    use modiq_runtime::assessment::{
+        Assessment, Evidence, EvidenceCategory, Finding, FindingSeverity, FindingStatus,
+        ModHealthDimension, Recommendation, RecommendationStep, RecommendationStepKind,
+        RuleReference, VersionProfileReference,
+    };
 
     /// A real, unique, temporary directory, mirroring
     /// `modiq-engine`'s own test helper of the same shape. Removed
@@ -211,5 +240,199 @@ mod tests {
 
         assert_eq!(exit_code, ExitCode::ExecutionFailure);
         assert!(message.contains("not accessible"));
+    }
+
+    #[test]
+    fn format_report_shows_a_findings_mod_health_dimension_and_status() {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Sample finding",
+            "sample finding summary",
+            ModHealthDimension::Stability,
+            FindingStatus::Provisional,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        assessment.add_finding(finding).unwrap();
+
+        let report = AssessmentReport::generate(&assessment);
+        let key = ReportKey::from_raw("test-key");
+        let output = AssessCommand::format_report(&report, Ok(&key));
+
+        assert!(output.contains("Mod Health: Stability, Status: Provisional"));
+    }
+
+    #[test]
+    fn format_report_shows_an_evidence_items_location_label_source_and_content_when_present() {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            "declared descVersion",
+            "modDesc.xml:3",
+            Some("Declared Version".to_string()),
+            Some("modDesc.xml".to_string()),
+            Some("<modDesc descVersion=\"42\">".to_string()),
+        )
+        .unwrap();
+        assessment.add_evidence(evidence).unwrap();
+
+        let report = AssessmentReport::generate(&assessment);
+        let key = ReportKey::from_raw("test-key");
+        let output = AssessCommand::format_report(&report, Ok(&key));
+
+        assert!(output.contains("Location: modDesc.xml:3"));
+        assert!(output.contains("Label: Declared Version"));
+        assert!(output.contains("Source: modDesc.xml"));
+        assert!(output.contains("Content: <modDesc descVersion=\"42\">"));
+    }
+
+    #[test]
+    fn format_report_omits_evidence_sub_lines_when_no_optional_field_is_present() {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence).unwrap();
+
+        let report = AssessmentReport::generate(&assessment);
+        let key = ReportKey::from_raw("test-key");
+        let output = AssessCommand::format_report(&report, Ok(&key));
+
+        assert!(!output.contains("Location:"));
+        assert!(!output.contains("Label:"));
+        assert!(!output.contains("Source:"));
+        assert!(!output.contains("Content:"));
+    }
+
+    #[test]
+    fn format_report_shows_each_repair_steps_kind_and_instruction() {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Sample finding",
+            "sample finding summary",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let finding_id = finding.id();
+        assessment.add_finding(finding).unwrap();
+        let recommendation = Recommendation::new(
+            "update the mod dependency",
+            vec![finding_id],
+            None,
+            vec![RecommendationStep::new(
+                RecommendationStepKind::VersionUpdate,
+                "update to the required version",
+            )],
+        )
+        .unwrap();
+        assessment.add_recommendation(recommendation).unwrap();
+
+        let report = AssessmentReport::generate(&assessment);
+        let key = ReportKey::from_raw("test-key");
+        let output = AssessCommand::format_report(&report, Ok(&key));
+
+        assert!(output.contains("VersionUpdate: update to the required version"));
+    }
+
+    #[test]
+    fn format_report_shows_no_repair_step_sub_line_when_repair_steps_is_empty() {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "sample evidence",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        assessment.add_evidence(evidence.clone()).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Sample finding",
+            "sample finding summary",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let finding_id = finding.id();
+        assessment.add_finding(finding).unwrap();
+        let recommendation = Recommendation::new(
+            "update the mod dependency",
+            vec![finding_id],
+            None,
+            Vec::new(),
+        )
+        .unwrap();
+        assessment.add_recommendation(recommendation).unwrap();
+
+        let report = AssessmentReport::generate(&assessment);
+        let key = ReportKey::from_raw("test-key");
+        let output = AssessCommand::format_report(&report, Ok(&key));
+
+        assert!(output.contains("update the mod dependency"));
+        assert!(!output.contains("VersionUpdate"));
+        assert!(!output.contains("XmlChange"));
+        assert!(!output.contains("LuaChange"));
+        assert!(!output.contains("DependencyInstallation"));
+        assert!(!output.contains("AssetReplacement"));
     }
 }
