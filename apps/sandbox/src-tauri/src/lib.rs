@@ -1,8 +1,9 @@
 use modiq_engine::engine::AssessmentService;
 use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{
-    AssessmentContext, AssessmentSubject, Evidence, Finding, Recommendation,
+    AssessmentContext, AssessmentSubject, Evidence, Finding, Recommendation, RecommendationStep,
 };
+use modiq_storage::storage::persisted_report::PersistedRecommendationStep;
 use modiq_storage::storage::{
     PersistedAssessmentReport, PersistedEvidence, PersistedFinding, PersistedRecommendation,
     ReportKey, ReportStore,
@@ -16,6 +17,9 @@ struct EvidenceEntry {
     category: String,
     description: String,
     location: Option<String>,
+    label: Option<String>,
+    source: Option<String>,
+    content: Option<String>,
 }
 
 impl From<&Evidence> for EvidenceEntry {
@@ -25,6 +29,9 @@ impl From<&Evidence> for EvidenceEntry {
             category: format!("{:?}", evidence.category()),
             description: evidence.description().to_string(),
             location: evidence.location().map(str::to_string),
+            label: evidence.label().map(str::to_string),
+            source: evidence.source().map(str::to_string),
+            content: evidence.content().map(str::to_string),
         }
     }
 }
@@ -37,6 +44,8 @@ struct FindingEntry {
     severity: String,
     title: String,
     summary: String,
+    mod_health_dimension: String,
+    status: String,
 }
 
 impl From<&Finding> for FindingEntry {
@@ -46,6 +55,26 @@ impl From<&Finding> for FindingEntry {
             severity: format!("{:?}", finding.severity()),
             title: finding.title().to_string(),
             summary: finding.summary().to_string(),
+            mod_health_dimension: format!("{:?}", finding.mod_health_dimension()),
+            status: format!("{:?}", finding.status()),
+        }
+    }
+}
+
+/// IPC-safe snapshot of a single Recommendation repair step's existing
+/// public data.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RecommendationStepEntry {
+    kind: String,
+    instruction: String,
+}
+
+impl From<&RecommendationStep> for RecommendationStepEntry {
+    fn from(step: &RecommendationStep) -> Self {
+        Self {
+            kind: format!("{:?}", step.kind()),
+            instruction: step.instruction().to_string(),
         }
     }
 }
@@ -56,6 +85,7 @@ impl From<&Finding> for FindingEntry {
 struct RecommendationEntry {
     id: String,
     action: String,
+    repair_steps: Vec<RecommendationStepEntry>,
 }
 
 impl From<&Recommendation> for RecommendationEntry {
@@ -63,6 +93,11 @@ impl From<&Recommendation> for RecommendationEntry {
         Self {
             id: format!("{:?}", recommendation.id()),
             action: recommendation.action().to_string(),
+            repair_steps: recommendation
+                .repair_steps()
+                .iter()
+                .map(RecommendationStepEntry::from)
+                .collect(),
         }
     }
 }
@@ -145,17 +180,41 @@ impl From<&PersistedFinding> for PersistedFindingEntry {
     }
 }
 
+/// IPC-safe snapshot of a single persisted Recommendation repair
+/// step's existing public data.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistedRecommendationStepEntry {
+    kind: String,
+    instruction: String,
+}
+
+impl From<&PersistedRecommendationStep> for PersistedRecommendationStepEntry {
+    fn from(step: &PersistedRecommendationStep) -> Self {
+        Self {
+            kind: format!("{:?}", step.kind()),
+            instruction: step.instruction().to_string(),
+        }
+    }
+}
+
 /// IPC-safe snapshot of a single persisted Recommendation entry.
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 struct PersistedRecommendationEntry {
     action: String,
+    repair_steps: Vec<PersistedRecommendationStepEntry>,
 }
 
 impl From<&PersistedRecommendation> for PersistedRecommendationEntry {
     fn from(recommendation: &PersistedRecommendation) -> Self {
         Self {
             action: recommendation.action().to_string(),
+            repair_steps: recommendation
+                .repair_steps()
+                .iter()
+                .map(PersistedRecommendationStepEntry::from)
+                .collect(),
         }
     }
 }
@@ -290,6 +349,10 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use modiq_runtime::assessment::{
+        Assessment, EvidenceCategory, FindingSeverity, FindingStatus, ModHealthDimension,
+        RecommendationStepKind, RuleReference, VersionProfileReference,
+    };
     use std::path::{Path, PathBuf};
     use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -527,5 +590,277 @@ mod tests {
             retrieve_report_with_storage("no-such-key", &storage.path().display().to_string());
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn create_assessment_reflects_a_findings_mod_health_dimension_and_status() {
+        // The fixture's own single Finding is always produced by
+        // EvidencePresenceRule, the platform's unconditional "Evidence
+        // was collected" Rule — `ModHealthDimension::EngineeringQuality`
+        // and `FindingStatus::Final` are that Rule's own fixed mapping,
+        // not a value this test invents.
+        let storage = TempDir::new("mod-health-dimension-and-status");
+        let summary = create_assessment_with_storage(&storage.path().display().to_string());
+
+        assert_eq!(summary.findings.len(), 1);
+        assert_eq!(
+            summary.findings[0].mod_health_dimension,
+            "EngineeringQuality"
+        );
+        assert_eq!(summary.findings[0].status, "Final");
+    }
+
+    /// A real Assessment carried through its own public lifecycle to
+    /// `EvaluatingRules`, with the given Evidence, Finding, and
+    /// Recommendation added via the aggregate's own public mutation
+    /// methods — never mocked. Used by tests below whose newly
+    /// authorized field content (`label`/`source`/`content`,
+    /// `repair_steps`) the checked-in fixture cannot produce through
+    /// the real Collector/Rule pipeline (Implementation Plan §8).
+    fn build_report(
+        evidence: Evidence,
+        finding: Finding,
+        recommendation: Recommendation,
+    ) -> AssessmentReport {
+        let mut assessment = Assessment::new(
+            AssessmentSubject,
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+        assessment.begin_evidence_collection().unwrap();
+        assessment.add_evidence(evidence).unwrap();
+        assessment.begin_rule_evaluation().unwrap();
+        assessment.add_finding(finding).unwrap();
+        assessment.add_recommendation(recommendation).unwrap();
+        AssessmentReport::generate(&assessment)
+    }
+
+    #[test]
+    fn evidence_entry_presents_label_source_and_content_when_present() {
+        let evidence = Evidence::new(
+            EvidenceCategory::XmlInspection,
+            "declared descVersion",
+            Some("Declared Version".to_string()),
+            Some("modDesc.xml".to_string()),
+            Some("<modDesc descVersion=\"42\">".to_string()),
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Informational,
+            "Declared version present",
+            "the mod declares a version",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let recommendation = Recommendation::new(
+            "review the declared version",
+            vec![finding.id()],
+            None,
+            Vec::new(),
+        )
+        .unwrap();
+
+        let report = build_report(evidence, finding, recommendation);
+        let summary = AssessmentSummary::from(&report);
+
+        let entry = &summary.evidence[0];
+        assert_eq!(entry.label, Some("Declared Version".to_string()));
+        assert_eq!(entry.source, Some("modDesc.xml".to_string()));
+        assert_eq!(
+            entry.content,
+            Some("<modDesc descVersion=\"42\">".to_string())
+        );
+    }
+
+    #[test]
+    fn evidence_entry_presents_no_label_source_or_content_when_absent() {
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "a structural observation",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Informational,
+            "Structural observation",
+            "a structural observation was made",
+            ModHealthDimension::Structure,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let recommendation =
+            Recommendation::new("review the structure", vec![finding.id()], None, Vec::new())
+                .unwrap();
+
+        let report = build_report(evidence, finding, recommendation);
+        let summary = AssessmentSummary::from(&report);
+
+        let entry = &summary.evidence[0];
+        assert_eq!(entry.label, None);
+        assert_eq!(entry.source, None);
+        assert_eq!(entry.content, None);
+    }
+
+    #[test]
+    fn recommendation_entry_presents_non_empty_repair_steps() {
+        let evidence = Evidence::new(
+            EvidenceCategory::XmlInspection,
+            "declared version mismatch",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Declared version mismatch",
+            "the declared version does not match the assessed version profile",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let steps = vec![
+            RecommendationStep::new(RecommendationStepKind::VersionUpdate, "update descVersion"),
+            RecommendationStep::new(RecommendationStepKind::XmlChange, "edit modDesc.xml"),
+        ];
+        let recommendation =
+            Recommendation::new("apply the repair recipe", vec![finding.id()], None, steps)
+                .unwrap();
+
+        let report = build_report(evidence, finding, recommendation);
+        let summary = AssessmentSummary::from(&report);
+
+        let entry = &summary.recommendations[0];
+        assert_eq!(entry.repair_steps.len(), 2);
+        assert_eq!(entry.repair_steps[0].kind, "VersionUpdate");
+        assert_eq!(entry.repair_steps[0].instruction, "update descVersion");
+        assert_eq!(entry.repair_steps[1].kind, "XmlChange");
+        assert_eq!(entry.repair_steps[1].instruction, "edit modDesc.xml");
+    }
+
+    #[test]
+    fn recommendation_entry_presents_an_empty_repair_steps_array_when_none_exist() {
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "a structural observation",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Informational,
+            "Structural observation",
+            "a structural observation was made",
+            ModHealthDimension::Structure,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let recommendation =
+            Recommendation::new("review the structure", vec![finding.id()], None, Vec::new())
+                .unwrap();
+
+        let report = build_report(evidence, finding, recommendation);
+        let summary = AssessmentSummary::from(&report);
+
+        assert!(summary.recommendations[0].repair_steps.is_empty());
+    }
+
+    #[test]
+    fn retrieve_report_presents_non_empty_persisted_repair_steps() {
+        let storage = TempDir::new("persisted-repair-steps-non-empty");
+
+        let evidence = Evidence::new(
+            EvidenceCategory::XmlInspection,
+            "declared version mismatch",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Warning,
+            "Declared version mismatch",
+            "the declared version does not match the assessed version profile",
+            ModHealthDimension::Compatibility,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let steps = vec![
+            RecommendationStep::new(RecommendationStepKind::VersionUpdate, "update descVersion"),
+            RecommendationStep::new(RecommendationStepKind::XmlChange, "edit modDesc.xml"),
+        ];
+        let recommendation =
+            Recommendation::new("apply the repair recipe", vec![finding.id()], None, steps)
+                .unwrap();
+        let report = build_report(evidence, finding, recommendation);
+
+        let store = ReportStore::new(storage.path().display().to_string());
+        let key = store
+            .store(&report)
+            .expect("storage succeeds against a real, writable directory");
+
+        let retrieved =
+            retrieve_report_with_storage(key.value(), &storage.path().display().to_string())
+                .expect("the just-stored report is retrievable");
+
+        let entry = &retrieved.recommendations[0];
+        assert_eq!(entry.repair_steps.len(), 2);
+        assert_eq!(entry.repair_steps[0].kind, "VersionUpdate");
+        assert_eq!(entry.repair_steps[0].instruction, "update descVersion");
+        assert_eq!(entry.repair_steps[1].kind, "XmlChange");
+        assert_eq!(entry.repair_steps[1].instruction, "edit modDesc.xml");
+    }
+
+    #[test]
+    fn retrieve_report_presents_an_empty_persisted_repair_steps_array_when_none_exist() {
+        let storage = TempDir::new("persisted-repair-steps-empty");
+
+        let evidence = Evidence::new(
+            EvidenceCategory::FileStructureAnalysis,
+            "a structural observation",
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+        let finding = Finding::new(
+            FindingSeverity::Informational,
+            "Structural observation",
+            "a structural observation was made",
+            ModHealthDimension::Structure,
+            FindingStatus::Final,
+            vec![evidence.id()],
+            RuleReference::new("sample-rule"),
+        )
+        .unwrap();
+        let recommendation =
+            Recommendation::new("review the structure", vec![finding.id()], None, Vec::new())
+                .unwrap();
+        let report = build_report(evidence, finding, recommendation);
+
+        let store = ReportStore::new(storage.path().display().to_string());
+        let key = store
+            .store(&report)
+            .expect("storage succeeds against a real, writable directory");
+
+        let retrieved =
+            retrieve_report_with_storage(key.value(), &storage.path().display().to_string())
+                .expect("the just-stored report is retrievable");
+
+        assert!(retrieved.recommendations[0].repair_steps.is_empty());
     }
 }
