@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use modiq_report::report::AssessmentReport;
 use modiq_runtime::assessment::{
     AssessmentStatus, Evidence, EvidenceCategory, EvidenceId, Finding, FindingId, FindingSeverity,
-    Recommendation, RecommendationStep, RecommendationStepKind,
+    ModHealthDimension, Recommendation, RecommendationStep, RecommendationStepKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -110,6 +110,29 @@ impl From<FindingSeverity> for PersistedFindingSeverity {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PersistedModHealthDimension {
+    Compatibility,
+    Stability,
+    Maintainability,
+    Performance,
+    Structure,
+    EngineeringQuality,
+}
+
+impl From<ModHealthDimension> for PersistedModHealthDimension {
+    fn from(dimension: ModHealthDimension) -> Self {
+        match dimension {
+            ModHealthDimension::Compatibility => Self::Compatibility,
+            ModHealthDimension::Stability => Self::Stability,
+            ModHealthDimension::Maintainability => Self::Maintainability,
+            ModHealthDimension::Performance => Self::Performance,
+            ModHealthDimension::Structure => Self::Structure,
+            ModHealthDimension::EngineeringQuality => Self::EngineeringQuality,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PersistedFinding {
     severity: PersistedFindingSeverity,
@@ -122,6 +145,14 @@ pub struct PersistedFinding {
     /// than causing this transformation to fail.
     evidence_indices: Vec<usize>,
     rule_reference: String,
+    /// `None` means this record was persisted before this field
+    /// existed in the persisted schema — a persistence-schema-vintage
+    /// condition, never a domain fact. It does not mean the Finding
+    /// had no dimension, that the dimension was not applicable, or
+    /// that the Finding was never evaluated; every `Finding` always
+    /// carries a required `ModHealthDimension` on the Runtime side.
+    /// See `docs/engineering/ARCHITECTURAL_RESOLUTION_C12_RICHER_HISTORICAL_ASSESSMENT_ANALYSIS.md` §5/§7.
+    mod_health_dimension: Option<PersistedModHealthDimension>,
 }
 
 impl PersistedFinding {
@@ -136,6 +167,9 @@ impl PersistedFinding {
                 .filter_map(|id| evidence_positions.get(id).copied())
                 .collect(),
             rule_reference: finding.rule_reference().identifier().to_string(),
+            mod_health_dimension: Some(PersistedModHealthDimension::from(
+                finding.mod_health_dimension(),
+            )),
         }
     }
 
@@ -157,6 +191,10 @@ impl PersistedFinding {
 
     pub fn rule_reference(&self) -> &str {
         &self.rule_reference
+    }
+
+    pub fn mod_health_dimension(&self) -> Option<PersistedModHealthDimension> {
+        self.mod_health_dimension
     }
 }
 
@@ -495,5 +533,51 @@ mod tests {
         let persisted = PersistedAssessmentReport::from_report(&report);
 
         assert!(persisted.findings()[0].evidence_indices().is_empty());
+    }
+
+    #[test]
+    fn from_finding_populates_mod_health_dimension() {
+        let finding = sample_finding(vec![EvidenceId::generate()]);
+
+        let persisted = PersistedFinding::from_finding(&finding, &HashMap::new());
+
+        assert_eq!(
+            persisted.mod_health_dimension(),
+            Some(PersistedModHealthDimension::Compatibility)
+        );
+    }
+
+    #[test]
+    fn deserializes_pre_c12_json_missing_mod_health_dimension_as_none() {
+        // The exact shape `PersistedFinding` carried before this field
+        // existed — no `mod_health_dimension` key present at all. This
+        // is the direct, empirical proof that a report persisted
+        // before this field existed remains readable — see
+        // `docs/engineering/ARCHITECTURAL_RESOLUTION_C12_RICHER_HISTORICAL_ASSESSMENT_ANALYSIS.md`
+        // §5/§7.
+        let pre_c12_json = r#"{
+            "severity": "Warning",
+            "title": "Declared version mismatch",
+            "summary": "declared version mismatch",
+            "evidence_indices": [],
+            "rule_reference": "version-compatibility-rule"
+        }"#;
+
+        let persisted: PersistedFinding =
+            serde_json::from_str(pre_c12_json).expect("a pre-C12 record remains readable");
+
+        assert_eq!(persisted.mod_health_dimension(), None);
+    }
+
+    #[test]
+    fn mod_health_dimension_round_trips_through_serialization() {
+        let finding = sample_finding(vec![EvidenceId::generate()]);
+        let persisted = PersistedFinding::from_finding(&finding, &HashMap::new());
+
+        let bytes = serde_json::to_vec(&persisted).expect("a PersistedFinding serializes");
+        let restored: PersistedFinding =
+            serde_json::from_slice(&bytes).expect("a serialized PersistedFinding deserializes");
+
+        assert_eq!(restored, persisted);
     }
 }
