@@ -7,23 +7,39 @@ import type { FindingSummary } from "@/engine";
  * none of its own — the same discipline `DashboardAndConsole.md`
  * already establishes for Console and Dashboard.
  *
- * Mod Health, by dimension, is not aggregated here. `ModHealthDimension`
- * exists on the Runtime as of Sprint 22 (Initiative 3) and is carried
- * by the transport as of Sprint 23, but is surfaced per-Finding in
- * `Reviewing.tsx`'s own expansion, not summarized at this level — a
- * per-dimension aggregate would be a form of grouping, outside Sprint
- * 23 Phase 3's authorized scope. Only what this Sprint authorizes is
- * presented here: severity counts and whether any Recommendation
- * exists, per Explainable Continuity (`FrontendArchitecture.md`):
- * nothing here is a fact this consumer invented.
+ * Mod Health, by dimension, is presented here as of Report Anatomy
+ * Alignment (WORKSPACE_EVOLUTION.md §6 item 3): each represented
+ * dimension is shown independently, as a count, never collapsed into
+ * one composite value — no score, formula, weighting, or ranking is
+ * computed anywhere in this component. `ModHealthDimension` already
+ * exists on every `FindingSummary` (Sprint 22/23); this component
+ * only aggregates what is already there, per Explainable Continuity
+ * (`FrontendArchitecture.md`) — nothing here is a fact this consumer
+ * invented.
  */
 
 const SEVERITY_ORDER = ["Error", "Warning", "Informational", "BestPractice"];
+
+const DIMENSION_ORDER = [
+  "Compatibility",
+  "Stability",
+  "Maintainability",
+  "Performance",
+  "Structure",
+  "EngineeringQuality",
+];
 
 export function Overview({ findings }: { findings: FindingSummary[] }) {
   const counts = SEVERITY_ORDER.map((severity) => ({
     severity,
     count: findings.filter((finding) => finding.severity === severity).length,
+  })).filter((entry) => entry.count > 0);
+
+  const dimensionCounts = DIMENSION_ORDER.map((dimension) => ({
+    dimension,
+    count: findings.filter(
+      (finding) => finding.modHealthDimension === dimension,
+    ).length,
   })).filter((entry) => entry.count > 0);
 
   const hasRecommendation = findings.some(
@@ -35,13 +51,22 @@ export function Overview({ findings }: { findings: FindingSummary[] }) {
       {findings.length === 0 ? (
         <p className="text-sm text-muted-foreground">No Findings.</p>
       ) : (
-        <div className="flex gap-4 text-sm text-foreground">
-          {counts.map(({ severity, count }) => (
-            <span key={severity}>
-              {severity}: {count}
-            </span>
-          ))}
-        </div>
+        <>
+          <div className="flex gap-4 text-sm text-foreground">
+            {counts.map(({ severity, count }) => (
+              <span key={severity}>
+                {severity}: {count}
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-4 text-sm text-foreground">
+            {dimensionCounts.map(({ dimension, count }) => (
+              <span key={dimension}>
+                {dimension}: {count}
+              </span>
+            ))}
+          </div>
+        </>
       )}
       <p className="text-sm text-muted-foreground">
         {hasRecommendation
