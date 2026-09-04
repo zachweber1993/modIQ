@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-09-04 (C14 — Operational Assessment Console Complete) |
+| **Last Updated** | 2026-09-04 (C15 — Assessment & Report Subject Identity Complete) |
 
 ---
 
@@ -1905,3 +1905,35 @@ The Documentation Release 1.0 Final Review concluded with:
 - The pre-existing GOV-017 tracking-document discrepancy itself (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per established convention, rather than silently fixed in passing.
 - Implementation and full lifecycle committed on `feature/runtime-implementation` (`73da9c4`), pushed to `origin/feature/runtime-implementation`.
 - Full record: `docs/engineering/IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md`, `docs/engineering/ENGINEERING_RELEASE_2.4.md`.
+
+---
+
+# [C15]
+
+**Status:** Complete (Assessment & Report Subject Identity) — the sixth post-foundation capability, and the first to require, and complete, a full Architecture Evaluation and Architectural Resolution before Implementation Authorization, rather than the shorter no-Architecture-Evaluation path C1/C3/C4/C14 each followed. Implements exactly the work `IMPLEMENTATION_AUTHORIZATION_C15_ASSESSMENT_REPORT_IDENTITY.md` authorizes, following `IMPLEMENTATION_PLAN_C15_ASSESSMENT_REPORT_IDENTITY.md`. Preceded by a Post-C14 Product & Capability Assessment that identified the capability as genuinely forced (C14's own real Hemp/Hashy acceptance sequence — the first instance in this repository's history requiring a human to distinguish two real Assessments within one continuous session), and by a dedicated Architecture Evaluation that, on direct primary-source inspection, found two of its own three named open questions already settled by existing architecture, narrowing to the one question the Architectural Resolution actually answered.
+
+## Added
+
+- **`AssessmentSubject::label`** (`modiq-runtime`): a real, fallible-constructed `String` field, mirroring `Evidence::new`'s own established validation pattern — `AssessmentSubject::new(label)` rejects empty or whitespace-only labels. A new `AssessmentSubjectError` (one variant, `EmptyLabel`) mirrors `EvidenceError`'s exact shape.
+- **`AssessmentReport::subject_label()`** (`modiq-report`): a direct reflection of `Assessment::subject().label()`, added to `generate` alongside its existing four reflected fields — computes or infers nothing, consistent with Reporting's own "Reports are reflections of Assessment state. They never create new state" rule.
+- **Call-site migration**: every real production caller (`modiq-cli assess`, `apps/console`'s Tauri command, `apps/sandbox`'s fixture command) now constructs `AssessmentSubject` from the same input string it already possessed; every other occurrence, across `modiq-runtime`, `modiq-report`, `modiq-engine` (including `tests/end_to_end.rs`), `modiq-cli`, `modiq-storage`, and `apps/sandbox`'s own tests, is a compiler-enumerated test/fixture-only update.
+
+## Verified
+
+- Root workspace: `cargo fmt --check`, `cargo check --workspace --all-targets`, `cargo test --workspace` — all clean, **311 total passing, 0 failed** (307 → 311; four new tests — three in `subject.rs`, one in `assessment_report.rs`).
+- `apps/sandbox` (separate workspace): `cargo fmt --check`, `cargo check --all-targets`, tests — clean, 16/16, unaffected.
+- `apps/console`: `tsc && vite build` — clean, 147 modules transformed.
+- `git diff --check` — clean.
+- Real-I/O: a real FS25 `.zip` mod (`FS25_HH_HempProdSystem.zip`) assessed successfully, 128 Evidence items, identical to pre-C15 behavior; an empty input remains rejected, with the identical message substring the pre-existing test already asserted, now surfaced one layer earlier (`AssessmentSubject::new` rather than `AssessmentInput::new`).
+
+## Notes
+
+- **A test-count discrepancy, found and corrected during this capability's own Implementation Report, not silently absorbed.** An intermediate mission turn stated the suite "increased from 297 to 301." Direct verification against this repository's own recorded C14 baseline (307) found the actual, traceable figure to be 307 → 311. Both the Implementation Report and the Engineering Release record the verified figure.
+- **The Architecture Evaluation narrowed its own Process Determination's framing, not merely confirmed it.** Domain ownership (settled by `ADR-0011`'s own explicit reaffirmation of `AssessmentSubject` as Assessment-owned) and cross-process durability (settled by the already-three-times-proven Storage Mirror pattern, independent of `AssessmentId`'s own differently-scoped non-durability) were both found already resolved by existing architecture on direct primary-source inspection — leaving one genuine question (submission-time vs. Evidence-derived content) for the Architectural Resolution to answer.
+- **Evidence-derived subject identity remains Deferred, not Rejected.** No mechanism for it exists, and none was authorized; nothing in this capability permanently forecloses it — it remains available for reconsideration if future real usage demonstrates submission-time content is genuinely insufficient.
+- **GOV-002 was not contradicted, superseded, or amended.** Its own Resolution text is confirmed unchanged; its own question (invariant-conformance of the previously-empty state) remains answered "no" on its own terms, independent of C15's own, later, different question.
+- **Initiative 3 Item 6a is satisfied for submission-time-known content specifically, and remains gated for Evidence-derived content.** Neither this entry nor the underlying Architectural Resolution claims the gate is satisfied in general.
+- **No console history, same-mod matching, C5, `ReportKey` redesign, or downstream UI/DTO/transport surfacing of `subject_label` was introduced.** All remain named, unauthorized, downstream consumers, exactly as `CAPABILITY_DEFINITION_C15_ASSESSMENT_REPORT_IDENTITY.md` itself states.
+- No `modiq-storage` schema, `AssessmentService` public signature, DTO, transport, or UI file changed. No ADR created. No Governance Register entry opened or modified. Initiative 2 remains untouched and unadvanced — "assess another mod" and "assess a real Subject" are both, and remain, independent-Assessment concerns, categorically distinct from Initiative 2's own same-Assessment supplementation question.
+- Implementation and full lifecycle committed on `feature/runtime-implementation` (`9854f1c`), **not yet pushed** — publication remains a separate, explicitly authorized action, following the identical precedent this repository's own C14 Engineering Release already established.
+- Full record: `docs/engineering/IMPLEMENTATION_REPORT_C15_ASSESSMENT_REPORT_IDENTITY.md`, `docs/engineering/ENGINEERING_RELEASE_2.5.md`.

@@ -1760,6 +1760,48 @@ Full record: `docs/engineering/IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_
 
 ---
 
+## 2026-09-04 (continued)
+
+### C15: Assessment & Report Subject Identity — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-runtime (`crates/modiq-runtime`)
+- modiq-report (`crates/modiq-report`)
+- modiq-engine (`crates/modiq-engine`) — test call sites only
+- modiq-cli (`crates/modiq-cli`) — one production call site + test call sites
+- modiq-storage (`crates/modiq-storage`) — test/fixture call sites only, no schema change
+- console (`apps/console/src-tauri`) — one production call site
+
+Affected Documents:
+- docs/engineering/CAPABILITY_DEFINITION_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/PROCESS_DETERMINATION_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/ARCHITECTURE_EVALUATION_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/ARCHITECTURAL_RESOLUTION_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/IMPLEMENTATION_AUTHORIZATION_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/IMPLEMENTATION_PLAN_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/IMPLEMENTATION_REPORT_C15_ASSESSMENT_REPORT_IDENTITY.md (new)
+- docs/engineering/ENGINEERING_RELEASE_2.5.md (new)
+
+Notes:
+C15 is the sixth post-foundation capability, and the first in this repository's history to require, and complete, a full Architecture Evaluation and Architectural Resolution before Implementation Authorization — every capability before it (C1, C2, C3, C4, C12, C14) either found no genuine open architectural question at the Process Determination stage, or reached Architecture Evaluation directly from a Capability Definition-level analysis without a separate Process Determination gate. C15's own Process Determination independently found Architecture Evaluation was required; the Architecture Evaluation that followed then found, on direct primary-source inspection rather than accepting that determination's own framing, that two of its three named open questions — domain ownership between `Assessment` and `AssessmentReport`, and cross-process durability against `AssessmentId`'s documented non-durability — were already settled by existing architecture: `ADR-0011`'s own text explicitly reaffirms `AssessmentSubject` as Assessment-owned at the exact moment it corrects `AssessmentReport` out of the identical list, and the already-three-times-proven Storage Mirror pattern (Sprint 13, 22, 24) already carries descriptive Runtime content into Storage durably, independent of `AssessmentId`'s own, differently-scoped non-durability. This narrowed the question to one: whether identity content must be limited to what is known at Assessment-construction time, or whether Evidence-derived content requires a new mechanism. The Architectural Resolution answered it directly, weighing four named architectural approaches against real, primary-source evidence rather than implementation convenience: submission-time-known content is architecturally sufficient, evidenced by `CAPABILITY_DEFINITION_C15...md`'s own stated Acceptance Criteria and by the fact that C14's real forcing instance (Hemp/Hashy) involved two mods already fully distinguishable by name alone. No Evidence-derived identity mechanism was authorized; it remains Deferred, not designed.
+
+Implementation gave `AssessmentSubject` (a zero-field type since the platform's foundation) a real, fallible-constructed `label: String`, validated by the same empty/whitespace-only rejection `Evidence::new` already established, with a new `AssessmentSubjectError` mirroring `EvidenceError`'s exact shape. `AssessmentReport::subject_label()` reflects it directly — a plain `.to_string()` copy of `Assessment::subject().label()`, computing or inferring nothing, consistent with Reporting's own "Reports are reflections of Assessment state. They never create new state" rule. Three real production call sites (`modiq-cli assess`, `apps/console`'s Tauri command, `apps/sandbox`'s fixture command) now construct `AssessmentSubject` from the same input string each already possessed. Implementation deliberately made the core type change first and let `cargo check --workspace --all-targets` (in both the root workspace and `apps/sandbox`'s own separate workspace) enumerate every remaining bare-literal construction site, rather than trusting a hand-authored inventory — this caught three `modiq-storage` test files an earlier manual scoping pass during Implementation Planning had not individually counted, confirming the compiler-driven approach's own value as a completeness check.
+
+`cargo fmt --check`, `cargo check --workspace --all-targets`, and `cargo test --workspace` all pass, re-verified fresh at this entry's own drafting: root workspace clean at **311 total passing, 0 failed** (307 → 311; four new tests — three in `subject.rs`, one in `assessment_report.rs`). `apps/sandbox`'s own separate workspace clean, 16/16, unaffected. `apps/console`'s `tsc && vite build` clean, 147 modules. `git diff --check` clean. Real-I/O: a real FS25 `.zip` mod (`FS25_HH_HempProdSystem.zip`) assessed successfully, 128 Evidence items, identical to pre-C15 behavior; an empty input remains rejected with the identical message substring the pre-existing test already asserted, surfaced one layer earlier. A test-count discrepancy in an intermediate mission turn's own framing ("297 → 301") was found and corrected against this repository's own recorded C14 baseline (307) during this capability's own Implementation Report — the verified figure, 307 → 311, is what this entry and the Engineering Release both record.
+
+No `modiq-storage` schema, `AssessmentService` public signature, DTO, transport, or UI file changed — confirmed directly: no struct field, serialization attribute, or public method signature line appears anywhere in this capability's diff outside `subject.rs`/`subject_error.rs`/`assessment_report.rs`. No ADR created. No Governance Register entry opened or modified. GOV-002 remains Resolved, textually unmodified, and not contradicted — its own question (invariant-conformance of the previously-empty state) remains answered "no" on its own terms, independent of C15's later, different question. Initiative 3 Item 6a is satisfied for submission-time-known content specifically, and remains gated for Evidence-derived content — not claimed satisfied in general. Initiative 2 remains untouched and unadvanced throughout.
+
+The complete release — implementation plus all seven lifecycle documents plus the release document — was staged and committed together as a single Engineering Release commit (`9854f1c`), the same deliberate, directed one-commit convention C14's own release already established, **not yet pushed** — publication remains a separate, explicitly authorized action.
+
+Full record: `docs/engineering/IMPLEMENTATION_REPORT_C15_ASSESSMENT_REPORT_IDENTITY.md`, `docs/engineering/ENGINEERING_RELEASE_2.5.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` were updated in the same closeout session — see their respective C15 / Engineering Release 2.5 entries. The pre-existing GOV-017 tracking-document discrepancy and the C3/C4 tracking-gap discrepancy (both already named at C14's own closeout, above) are **not re-corrected by this capability's own tracking updates** — both remain outstanding, exactly as C14's own closeout left them; this note does not repeat their full description a second time, per this repository's own convention of naming a standing discrepancy at the closeout that first found it and cross-referencing it thereafter rather than restating it verbatim at every subsequent closeout.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.
