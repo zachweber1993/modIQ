@@ -1723,6 +1723,43 @@ Full record: `docs/engineering/C2_IMPLEMENTATION_REPORT_DECLARED_DEPENDENCY_INTE
 
 ---
 
+## 2026-09-04
+
+### C14: Operational Assessment Console — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- None — this capability touched `apps/console`'s frontend (TypeScript) only (`apps/console/src/regions/Workspace.tsx`, `apps/console/src/workspace/Reviewing.tsx`); the `console_lib` Rust crate is unmodified.
+
+Affected Documents:
+- docs/engineering/CAPABILITY_DEFINITION_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md (new)
+- docs/engineering/PROCESS_DETERMINATION_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md (new)
+- docs/engineering/IMPLEMENTATION_AUTHORIZATION_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md (new)
+- docs/engineering/IMPLEMENTATION_PLAN_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md (new)
+- docs/engineering/IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md (new)
+- docs/engineering/ENGINEERING_RELEASE_2.4.md (new)
+
+Notes:
+Implemented exactly what `IMPLEMENTATION_AUTHORIZATION_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md` §3 authorizes: `apps/console`'s Workspace now offers a `.zip` mod-archive intake affordance alongside its existing directory intake, both submitting through the same, unmodified `submitAssessment(inputPath)` call the engine has always exposed; and an "Assess another mod" affordance, reachable once Reviewing is active, that resets exactly the four local `useState` values `Workspace.tsx` owns and returns to a fresh Intake presentation, performing no Tauri call and holding no reference to the prior Assessment. `Reviewing.tsx`'s own doc comment, previously and inaccurately attributing the absence of any return path to Initiative 2, was corrected to describe the real affordance.
+
+This is the fifth post-foundation capability, and — like C1, C3, and C4, and unlike C2 — required no Architecture Evaluation or Architectural Resolution. Its own Process Determination independently re-derived, rather than assumed, that six named questions (whether ZIP selection needs a new boundary/transport mechanism; whether repeated independent execution needs a Runtime lifecycle change; whether resetting local Workspace state carries architectural consequence; whether "assess another mod" could implicate Initiative 2; whether the existing Tauri dialog capability is sufficient; whether any DTO/command change is necessary) each resolve to already-implemented, already-tested mechanism, or to an already-shipped, directly analogous precedent already in this exact codebase (`Console.tsx`'s own `signOut`, which resets local session state to return to an earlier screen). One finding was sharpened beyond the Capability Definition's own claim: the Tauri dialog's `allow-open` permission is scoped at the command level, not per-parameter, so the capability file `apps/console/src-tauri/capabilities/default.json` was confirmed unnecessary to touch, not merely unlikely to need touching.
+
+A real, formally-recorded documentation defect was found during Implementation Planning: the three earlier lifecycle documents (Capability Definition, Process Determination, Implementation Authorization) each cited the Workspace file as `apps/console/src/workspace/Workspace.tsx` — a path that has never existed. Direct repository inspection established the real file as `apps/console/src/regions/Workspace.tsx`. This was a location error, not a scope error — every description of the file's role and contents in all three documents was unambiguous, and no incorrect file was ever created. Implementation proceeded against the real, verified path; the three historical documents remain textually unmodified, and the Implementation Report is the formal correction record.
+
+Manual acceptance was performed against two real Farming Simulator 2025 mods from this machine's own mods folder — one extracted directory, one `.zip` archive — exercised through both intake affordances and both directions of the independent-assessment sequence, with each second report directly confirmed to carry no stale Finding, Evidence, path, or error content from the first. C13's existing report presentation (dimension grouping, expansion, Evidence access, Recommendation visibility) was directly observed functioning, unregressed, throughout. Three UX observations (Finding-card disclosure discoverability, absence of an in-console assessment-history/retrieval interface, and reduced visibility of the transient "Submitting…" state given how quickly a real assessment completes) and one untested case (formal dialog-cancellation behavior) were recorded honestly as follow-up candidates and an acceptance-testing gap, respectively — none is a defect in authorized behavior, and none is implemented or newly authorized by this capability.
+
+`cargo fmt --check`, `cargo check --workspace`, and `cargo test --workspace` all pass, re-verified fresh at this entry's own drafting, full suite unaffected (no Rust file touched): root workspace and full workspace both clean, `console_lib` 7/7. `apps/console`'s `tsc && vite build` clean, 147 modules. `git diff --check` clean. The complete release — implementation plus all five lifecycle documents plus the release document — was staged and committed together as a single Engineering Release commit (`73da9c4`), an explicit, directed deviation from C1 through C4's own one-commit-per-stage granularity, then pushed to `origin/feature/runtime-implementation` as a plain fast-forward.
+
+No `modiq-runtime`, `modiq-rules`, `modiq-collection`, `modiq-versioning`, `modiq-engine`, `modiq-report`, `modiq-storage`, or `modiq-knowledge` file touched. No `assessment.rs`, `lib.rs`, `engine/index.ts`, `engine/types.ts`, `Overview.tsx`, Tauri capability file, `apps/sandbox`, or `modiq-cli` file touched. No ADR created. No Governance Register entry opened or modified. Initiative 2's own Central Architectural Question remains "Requires Governance Reconciliation," untouched; GOV-002 and GOV-008 remain exactly as they were.
+
+Full record: `docs/engineering/IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md`, `docs/engineering/ENGINEERING_RELEASE_2.4.md`.
+
+**Reconciliation note:** `docs/governance/PROJECT_STATUS.md` and `docs/governance/CHANGELOG.md` were updated in the same closeout session — see their respective C14 / Engineering Release 2.4 entries. **This closeout also found, and is recording rather than correcting, a larger tracking-document gap than GOV-017's own:** Engineering Releases 2.2 (C3, CLI Field Parity) and 2.3 (C4, `apps/sandbox` Field Parity) were never separately reconciled into this log, `PROJECT_STATUS.md`, or `CHANGELOG.md` — this log's own entries jump directly from C2 to C14. Backfilling dedicated C3/C4 entries here would be a separate, larger undertaking outside this closeout's own authorized scope; it is named explicitly instead, per this repository's own established convention for the structurally similar GOV-017 discrepancy. **The pre-existing GOV-017 tracking-document discrepancy itself is also not corrected by this capability's own tracking updates** — it remains outstanding across all three documents, named again here for continuity rather than silently fixed in passing.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

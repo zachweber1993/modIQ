@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-08-12 (C2 — Declared Dependency Interpretation Complete) |
+| **Last Updated** | 2026-09-04 (C14 — Operational Assessment Console Complete) |
 
 ---
 
@@ -1873,3 +1873,35 @@ The Documentation Release 1.0 Final Review concluded with:
 - The pre-existing GOV-017 tracking-document discrepancy (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per continued direction, rather than silently fixed in passing.
 - Implementation committed on `feature/runtime-implementation` (`e5d931b`, `ce21006`, `35a5040`), not yet pushed at the time of this closeout package's own drafting.
 - Full record: `docs/engineering/C2_IMPLEMENTATION_REPORT_DECLARED_DEPENDENCY_INTERPRETATION.md`, `docs/engineering/ENGINEERING_RELEASE_2.1.md`.
+
+---
+
+# [C14]
+
+**Status:** Complete (Operational Assessment Console) — the fifth post-foundation capability, and the first to expose already-implemented backend capability through the console's own interactive intake and review experience rather than extend a transport, DTO, or Rule. Implements exactly the work `IMPLEMENTATION_AUTHORIZATION_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md` §3 authorizes, following `IMPLEMENTATION_PLAN_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md`. Preceded by a dedicated Process Determination that independently re-verified, rather than assumed, that this capability matches C1's/C3's/C4's own no-Architecture-Evaluation path — sharpening one of the Capability Definition's own findings in the process (the Tauri dialog's `allow-open` permission is scoped at the command level, not per-parameter, so no capability-file change was ever required).
+
+## Added
+
+- **`.zip` archive intake** (`apps/console/src/regions/Workspace.tsx`): a second file-selection affordance, using the existing `@tauri-apps/plugin-dialog` `open()` API in file mode with a `.zip` extension filter, submitted through the existing, unmodified `submitAssessment(inputPath)` call already used for directory selection. No new Tauri command, DTO, or capability grant.
+- **`submitPath` shared helper**: the existing `chooseFolder` handler's submit/state-update sequence factored into one function, reused by both `chooseFolder` and the new `chooseArchive` — an implementation choice the Implementation Plan itself pre-authorized, not an unplanned refactor.
+- **`resetToIntake` / "Assess another mod"**: a new affordance, reachable once Reviewing is active, resetting exactly the four local `useState` values `Workspace.tsx` owns (`status`, `selectedPath`, `error`, `report`) and returning to a fresh Intake presentation. Performs no Tauri call and holds no reference to the prior Assessment; the next submission is a wholly new, independent call to the existing execution path — explicitly not an implementation of Initiative 2's reentrant/supplementation lifecycle question, which remains unresolved.
+- **`Reviewing.tsx` documentation correction**: the doc comment's prior claim that no return-to-Intake affordance exists, attributed to Initiative 2, was replaced with an accurate description of the real affordance and a restatement of the Initiative 2 distinction. No behavioral line in this file changed.
+
+## Verified
+
+- Root workspace: `cargo fmt --check`, `cargo check --workspace`, `cargo test --workspace` — all clean, full suite unaffected (no Rust file touched by this capability), including `console_lib` 7/7.
+- `apps/console`: `tsc && vite build` — clean, 147 modules transformed.
+- `git diff --check` — clean.
+- Real-I/O acceptance: two real FS25 mods (one extracted directory, one `.zip` archive, from this machine's own Farming Simulator 2025 mods folder) assessed successfully through the console's own real path, in both directions of the independent-assessment sequence (`Assess another mod`), each second report confirmed to carry no residue of the first.
+- C13's existing report presentation (dimension grouping, expansion, Evidence access, Recommendation visibility) observed unregressed for both reports.
+
+## Notes
+
+- **A documentation-location defect, found and formally corrected, not silently fixed.** The three earlier C14 lifecycle documents (Capability Definition, Process Determination, Implementation Authorization) each cited `apps/console/src/workspace/Workspace.tsx` — a path that does not exist. Direct repository inspection during Implementation Planning established the real file as `apps/console/src/regions/Workspace.tsx`. The error was a location mistake, not a scope mistake — every description of the file's role and contents was unambiguous — and no incorrect file was ever created. The three historical documents remain textually unmodified; `IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md` and `ENGINEERING_RELEASE_2.4.md` are the formal correction record.
+- **This release combined the entire lifecycle — implementation plus all five lifecycle documents plus the release document — into a single commit**, `73da9c4`, unlike C1 through C4's own one-commit-per-stage granularity. Recorded as an explicit, directed deviation for this capability, not a new default.
+- **"Assess another mod" is not Initiative 2.** It creates a new, independent Assessment via the existing, unmodified execution path; it does not reopen, supplement, or mutate a completed Assessment. Initiative 2's own Central Architectural Question (same-Assessment supplementation/reentrancy) remains dispositioned "Requires Governance Reconciliation," untouched and unadvanced by this capability.
+- No `modiq-runtime`, `modiq-rules`, `modiq-collection`, `modiq-versioning`, `modiq-engine`, `modiq-report`, `modiq-storage`, or `modiq-knowledge` file touched. No `assessment.rs`, `lib.rs`, `engine/index.ts`, `engine/types.ts`, `Overview.tsx`, Tauri capability file, `apps/sandbox`, or `modiq-cli` file touched. No ADR created. No Governance Register entry opened or modified. GOV-002 and GOV-008 remain exactly as they were.
+- **A pre-existing tracking-document gap, larger than GOV-017's own, found during this closeout.** Engineering Releases 2.2 (C3, CLI Field Parity) and 2.3 (C4, `apps/sandbox` Field Parity) were never separately reconciled into this file, `PROJECT_STATUS.md`, or `ENGINEERING_LOG.md` — this file's own entries jump directly from `[C2]` to `[C14]`. This closeout does not backfill dedicated `[C3]`/`[C4]` entries here, which would be a separate, larger undertaking outside C14's own authorized closeout scope; it is named explicitly, following this repository's own established convention for the structurally similar GOV-017 discrepancy (named, not silently corrected, at every closeout since Sprint 23), rather than left undiscovered or fixed by silent omission.
+- The pre-existing GOV-017 tracking-document discrepancy itself (this file, `PROJECT_STATUS.md`, `ENGINEERING_LOG.md` never recording it, first named at Sprint 23's own closeout) is **not corrected by this capability's own closeout updates** — recorded again here, per established convention, rather than silently fixed in passing.
+- Implementation and full lifecycle committed on `feature/runtime-implementation` (`73da9c4`), pushed to `origin/feature/runtime-implementation`.
+- Full record: `docs/engineering/IMPLEMENTATION_REPORT_C14_OPERATIONAL_ASSESSMENT_CONSOLE.md`, `docs/engineering/ENGINEERING_RELEASE_2.4.md`.
