@@ -121,7 +121,7 @@ mod tests {
         let store = ReportStore::new(storage.path());
 
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -165,7 +165,7 @@ mod tests {
         let store = ReportStore::new(storage.path());
 
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -199,7 +199,7 @@ mod tests {
         let store = ReportStore::new(storage.path());
 
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -232,7 +232,7 @@ mod tests {
         let store = ReportStore::new(storage.path());
 
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -287,7 +287,7 @@ mod tests {
         let store = ReportStore::new(storage.path());
 
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

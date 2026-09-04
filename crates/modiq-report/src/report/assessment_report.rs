@@ -11,6 +11,7 @@ use modiq_runtime::assessment::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AssessmentReport {
     assessment_id: AssessmentId,
+    subject_label: String,
     status: AssessmentStatus,
     evidence: Vec<Evidence>,
     findings: Vec<Finding>,
@@ -22,6 +23,7 @@ impl AssessmentReport {
     pub fn generate(assessment: &Assessment) -> Self {
         Self {
             assessment_id: assessment.id(),
+            subject_label: assessment.subject().label().to_string(),
             status: assessment.status(),
             evidence: assessment.evidence().to_vec(),
             findings: assessment.findings().to_vec(),
@@ -31,6 +33,16 @@ impl AssessmentReport {
 
     pub fn assessment_id(&self) -> AssessmentId {
         self.assessment_id
+    }
+
+    /// The Assessment Subject's own label (C15) — submission-time-known
+    /// content identifying what this Report concerns. A direct
+    /// reflection of `Assessment::subject()`'s already-public state,
+    /// never computed or inferred (`GOVERNANCE.md`, Reporting: "Reports
+    /// are reflections of Assessment state. They never create new
+    /// state.").
+    pub fn subject_label(&self) -> &str {
+        &self.subject_label
     }
 
     pub fn status(&self) -> AssessmentStatus {
@@ -95,7 +107,7 @@ mod tests {
     #[test]
     fn generate_reflects_empty_assessment_state() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -110,9 +122,22 @@ mod tests {
     }
 
     #[test]
+    fn generate_reflects_the_assessments_own_subject_label() {
+        let assessment = Assessment::new(
+            AssessmentSubject::new("FS25_HH_HempProdSystem.zip").unwrap(),
+            AssessmentContext,
+            VersionProfileReference::new("FS25"),
+        );
+
+        let report = AssessmentReport::generate(&assessment);
+
+        assert_eq!(report.subject_label(), "FS25_HH_HempProdSystem.zip");
+    }
+
+    #[test]
     fn generate_reflects_collected_evidence_findings_and_recommendations() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -138,7 +163,7 @@ mod tests {
     #[test]
     fn generate_after_completion_matches_generate_before_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

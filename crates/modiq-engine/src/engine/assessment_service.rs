@@ -247,7 +247,11 @@ mod tests {
         let service = AssessmentService;
         let evidence = sample_evidence();
 
-        let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
+        let report = service.execute(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            vec![evidence.clone()],
+        );
 
         assert_eq!(report.evidence(), &[evidence]);
         assert_eq!(report.findings().len(), 1);
@@ -258,7 +262,11 @@ mod tests {
     fn execute_without_evidence_produces_no_findings_or_recommendations() {
         let service = AssessmentService;
 
-        let report = service.execute(AssessmentSubject, AssessmentContext, vec![]);
+        let report = service.execute(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            vec![],
+        );
 
         assert!(report.evidence().is_empty());
         assert!(report.findings().is_empty());
@@ -270,7 +278,7 @@ mod tests {
         let service = AssessmentService;
 
         let report = service.execute(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             vec![sample_evidence()],
         );
@@ -283,8 +291,16 @@ mod tests {
         let service = AssessmentService;
         let evidence = sample_evidence();
 
-        let first = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
-        let second = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
+        let first = service.execute(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            vec![evidence.clone()],
+        );
+        let second = service.execute(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            vec![evidence],
+        );
 
         assert_ne!(first.assessment_id(), second.assessment_id());
         assert_eq!(first.evidence(), second.evidence());
@@ -335,7 +351,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -354,8 +370,11 @@ mod tests {
     fn execute_from_assessment_input_rejects_an_empty_input() {
         let service = AssessmentService;
 
-        let result =
-            service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, "");
+        let result = service.execute_from_assessment_input(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            "",
+        );
 
         assert_eq!(
             result,
@@ -372,7 +391,7 @@ mod tests {
         let service = AssessmentService;
 
         let result = service.execute_from_assessment_input(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             missing.display().to_string(),
         );
@@ -395,7 +414,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -408,8 +427,11 @@ mod tests {
     fn execute_from_assessment_input_never_creates_an_assessment_when_collection_fails() {
         let service = AssessmentService;
 
-        let result =
-            service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, "");
+        let result = service.execute_from_assessment_input(
+            AssessmentSubject::new("test-subject").unwrap(),
+            AssessmentContext,
+            "",
+        );
 
         // Atomicity is structural here: execute_from_assessment_input
         // returns before calling execute (and therefore before
@@ -446,7 +468,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 archive_path.display().to_string(),
             )
@@ -481,7 +503,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 archive_path.display().to_string(),
             )
@@ -498,7 +520,7 @@ mod tests {
         let service = AssessmentService;
 
         let result = service.execute_from_assessment_input(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             archive_path.display().to_string(),
         );
@@ -522,7 +544,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 file_path.display().to_string(),
             )
@@ -553,14 +575,14 @@ mod tests {
 
         let first = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 archive_path.display().to_string(),
             )
             .expect("archive is well-formed and accessible");
         let second = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 archive_path.display().to_string(),
             )
@@ -587,7 +609,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -631,7 +653,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -676,7 +698,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -717,7 +739,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -745,7 +767,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -787,7 +809,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
@@ -815,14 +837,14 @@ mod tests {
 
         let first = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )
             .expect("directory is accessible");
         let second = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 dir.path().display().to_string(),
             )

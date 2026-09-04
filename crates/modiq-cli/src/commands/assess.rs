@@ -24,9 +24,13 @@ pub struct AssessCommand;
 
 impl AssessCommand {
     pub fn run(path: &str, storage_root: &str) -> (String, ExitCode) {
+        let subject = match AssessmentSubject::new(path) {
+            Ok(subject) => subject,
+            Err(error) => return (format!("error: {error}"), ExitCode::InvalidUsage),
+        };
         let service = AssessmentService;
 
-        match service.execute_from_assessment_input(AssessmentSubject, AssessmentContext, path) {
+        match service.execute_from_assessment_input(subject, AssessmentContext, path) {
             Ok(report) => {
                 let store = ReportStore::new(storage_root);
                 let stored = store.store(&report);
@@ -245,7 +249,7 @@ mod tests {
     #[test]
     fn format_report_shows_a_findings_mod_health_dimension_and_status() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -282,7 +286,7 @@ mod tests {
     #[test]
     fn format_report_shows_an_evidence_items_location_label_source_and_content_when_present() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -311,7 +315,7 @@ mod tests {
     #[test]
     fn format_report_omits_evidence_sub_lines_when_no_optional_field_is_present() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -339,7 +343,7 @@ mod tests {
     #[test]
     fn format_report_shows_each_repair_steps_kind_and_instruction() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -388,7 +392,7 @@ mod tests {
     #[test]
     fn format_report_shows_no_repair_step_sub_line_when_repair_steps_is_empty() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

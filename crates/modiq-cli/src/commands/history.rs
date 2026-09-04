@@ -102,7 +102,7 @@ mod tests {
 
         for _ in 0..2 {
             let mut assessment = Assessment::new(
-                AssessmentSubject,
+                AssessmentSubject::new("test-subject").unwrap(),
                 AssessmentContext,
                 VersionProfileReference::new("FS25"),
             );

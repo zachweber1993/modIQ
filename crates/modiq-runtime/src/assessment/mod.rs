@@ -20,6 +20,7 @@ pub mod recommendation_step;
 pub mod repair_recipe_reference;
 pub mod rule_reference;
 pub mod subject;
+pub mod subject_error;
 pub mod version_profile_reference;
 
 pub use assessment::Assessment;
@@ -44,4 +45,5 @@ pub use recommendation_step::{RecommendationStep, RecommendationStepKind};
 pub use repair_recipe_reference::RepairRecipeReference;
 pub use rule_reference::RuleReference;
 pub use subject::AssessmentSubject;
+pub use subject_error::AssessmentSubjectError;
 pub use version_profile_reference::VersionProfileReference;

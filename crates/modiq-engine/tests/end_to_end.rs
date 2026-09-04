@@ -28,7 +28,11 @@ fn complete_deterministic_assessment_pipeline_via_the_engine() {
     let service = AssessmentService;
     let evidence = sample_evidence();
 
-    let report = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
+    let report = service.execute(
+        AssessmentSubject::new("test-subject").unwrap(),
+        AssessmentContext,
+        vec![evidence.clone()],
+    );
 
     // Evidence Collection
     assert_eq!(report.evidence(), &[evidence]);
@@ -46,7 +50,11 @@ fn complete_deterministic_assessment_pipeline_via_the_engine() {
 fn pipeline_with_no_evidence_via_the_engine_produces_an_empty_report() {
     let service = AssessmentService;
 
-    let report = service.execute(AssessmentSubject, AssessmentContext, vec![]);
+    let report = service.execute(
+        AssessmentSubject::new("test-subject").unwrap(),
+        AssessmentContext,
+        vec![],
+    );
 
     assert!(report.evidence().is_empty());
     assert!(report.findings().is_empty());
@@ -58,8 +66,16 @@ fn each_execution_produces_an_independent_assessment() {
     let service = AssessmentService;
     let evidence = sample_evidence();
 
-    let first = service.execute(AssessmentSubject, AssessmentContext, vec![evidence.clone()]);
-    let second = service.execute(AssessmentSubject, AssessmentContext, vec![evidence]);
+    let first = service.execute(
+        AssessmentSubject::new("test-subject").unwrap(),
+        AssessmentContext,
+        vec![evidence.clone()],
+    );
+    let second = service.execute(
+        AssessmentSubject::new("test-subject").unwrap(),
+        AssessmentContext,
+        vec![evidence],
+    );
 
     // Distinct Assessments, but deterministic, identical results for
     // identical input. Each execution's Finding is freshly assigned its

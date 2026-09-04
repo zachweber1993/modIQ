@@ -301,13 +301,11 @@ fn create_assessment() -> AssessmentSummary {
 /// temporary directory rather than `STORAGE_ROOT`'s own fixed
 /// location.
 fn create_assessment_with_storage(storage_root: &str) -> AssessmentSummary {
+    let subject = AssessmentSubject::new(FIXTURE_ASSESSMENT_INPUT)
+        .expect("the fixture assessment input constant is non-empty");
     let service = AssessmentService;
     let report = service
-        .execute_from_assessment_input(
-            AssessmentSubject,
-            AssessmentContext,
-            FIXTURE_ASSESSMENT_INPUT,
-        )
+        .execute_from_assessment_input(subject, AssessmentContext, FIXTURE_ASSESSMENT_INPUT)
         .expect("the fixture assessment input exists and is accessible");
 
     let mut summary = AssessmentSummary::from(&report);
@@ -494,7 +492,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new(FIXTURE_ARCHIVE_INPUT).unwrap(),
                 AssessmentContext,
                 FIXTURE_ARCHIVE_INPUT,
             )
@@ -520,7 +518,7 @@ mod tests {
 
         let report = service
             .execute_from_assessment_input(
-                AssessmentSubject,
+                AssessmentSubject::new(FIXTURE_ARCHIVE_INPUT).unwrap(),
                 AssessmentContext,
                 FIXTURE_ARCHIVE_INPUT,
             )
@@ -623,7 +621,7 @@ mod tests {
         recommendation: Recommendation,
     ) -> AssessmentReport {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

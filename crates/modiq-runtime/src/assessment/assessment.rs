@@ -348,7 +348,7 @@ mod tests {
     #[test]
     fn new_assessment_begins_in_created_state() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -359,7 +359,7 @@ mod tests {
     #[test]
     fn new_assessment_initializes_empty_collections() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -372,19 +372,22 @@ mod tests {
     #[test]
     fn new_assessment_preserves_subject_and_context() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
 
-        assert_eq!(assessment.subject(), &AssessmentSubject);
+        assert_eq!(
+            assessment.subject(),
+            &AssessmentSubject::new("test-subject").unwrap()
+        );
         assert_eq!(assessment.context(), &AssessmentContext);
     }
 
     #[test]
     fn new_assessment_preserves_version_profile() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -398,12 +401,12 @@ mod tests {
     #[test]
     fn each_assessment_receives_a_unique_id() {
         let first = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
         let second = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -414,7 +417,7 @@ mod tests {
     #[test]
     fn begin_evidence_collection_succeeds_from_created() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -426,7 +429,7 @@ mod tests {
     #[test]
     fn begin_rule_evaluation_succeeds_from_collecting_evidence() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -439,7 +442,7 @@ mod tests {
     #[test]
     fn complete_succeeds_from_evaluating_rules() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -453,7 +456,7 @@ mod tests {
     #[test]
     fn full_lifecycle_sequence_succeeds_end_to_end() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -470,7 +473,7 @@ mod tests {
     #[test]
     fn begin_rule_evaluation_rejects_skipping_evidence_collection() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -490,7 +493,7 @@ mod tests {
     #[test]
     fn complete_rejects_skipping_evidence_collection() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -510,7 +513,7 @@ mod tests {
     #[test]
     fn complete_rejects_skipping_rule_evaluation() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -531,7 +534,7 @@ mod tests {
     #[test]
     fn begin_evidence_collection_rejects_repeated_call() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -552,7 +555,7 @@ mod tests {
     #[test]
     fn begin_evidence_collection_rejects_backwards_transition() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -574,7 +577,7 @@ mod tests {
     #[test]
     fn completed_assessment_rejects_further_transitions() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -600,7 +603,7 @@ mod tests {
     #[test]
     fn add_evidence_succeeds_during_evidence_collection() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -617,7 +620,7 @@ mod tests {
     #[test]
     fn add_evidence_accumulates_multiple_items() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -633,7 +636,7 @@ mod tests {
     #[test]
     fn add_evidence_rejects_before_evidence_collection_begins() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -652,7 +655,7 @@ mod tests {
     #[test]
     fn add_evidence_rejects_once_rule_evaluation_has_started() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -676,7 +679,7 @@ mod tests {
     #[test]
     fn add_evidence_rejects_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -693,7 +696,7 @@ mod tests {
     #[test]
     fn is_evaluating_is_false_before_rule_evaluation_begins() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -706,7 +709,7 @@ mod tests {
     #[test]
     fn is_evaluating_is_true_once_rule_evaluation_begins() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -719,7 +722,7 @@ mod tests {
     #[test]
     fn is_evaluating_is_false_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -733,7 +736,7 @@ mod tests {
     #[test]
     fn evidence_is_fully_available_and_unchanged_throughout_evaluation() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -754,7 +757,7 @@ mod tests {
     #[test]
     fn repeated_add_evidence_attempts_during_evaluation_never_mutate_state() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -778,7 +781,7 @@ mod tests {
     #[test]
     fn findings_and_recommendations_remain_empty_throughout_the_lifecycle() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -798,7 +801,7 @@ mod tests {
     #[test]
     fn add_finding_succeeds_during_rule_evaluation() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -816,7 +819,7 @@ mod tests {
     #[test]
     fn add_finding_accumulates_multiple_findings() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -833,7 +836,7 @@ mod tests {
     #[test]
     fn add_finding_rejects_while_created() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -852,7 +855,7 @@ mod tests {
     #[test]
     fn add_finding_rejects_while_collecting_evidence() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -872,7 +875,7 @@ mod tests {
     #[test]
     fn add_finding_rejects_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -891,7 +894,7 @@ mod tests {
     #[test]
     fn repeated_add_finding_attempts_before_evaluation_never_mutate_state() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -912,7 +915,7 @@ mod tests {
     #[test]
     fn findings_remain_readable_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -930,7 +933,7 @@ mod tests {
     #[test]
     fn evidence_is_unaffected_while_findings_are_added() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -949,7 +952,7 @@ mod tests {
     #[test]
     fn add_recommendation_succeeds_after_a_finding_exists() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -968,7 +971,7 @@ mod tests {
     #[test]
     fn add_recommendation_accumulates_multiple_recommendations() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -989,7 +992,7 @@ mod tests {
     #[test]
     fn add_recommendation_rejects_without_a_finding() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1005,7 +1008,7 @@ mod tests {
     #[test]
     fn add_recommendation_rejects_while_created() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1024,7 +1027,7 @@ mod tests {
     #[test]
     fn add_recommendation_rejects_while_collecting_evidence() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1044,7 +1047,7 @@ mod tests {
     #[test]
     fn add_recommendation_rejects_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1067,7 +1070,7 @@ mod tests {
     #[test]
     fn recommendations_remain_readable_after_completion() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1086,7 +1089,7 @@ mod tests {
     #[test]
     fn evidence_and_findings_are_unaffected_while_recommendations_are_added() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1112,7 +1115,7 @@ mod tests {
     #[test]
     fn full_pipeline_then_completion_rejects_all_further_mutation() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1148,7 +1151,7 @@ mod tests {
     #[test]
     fn evidence_by_id_finds_collected_evidence() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1162,7 +1165,7 @@ mod tests {
     #[test]
     fn evidence_by_id_returns_none_for_an_unknown_id() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1174,7 +1177,7 @@ mod tests {
     #[test]
     fn finding_by_id_finds_a_produced_finding() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1189,7 +1192,7 @@ mod tests {
     #[test]
     fn finding_by_id_returns_none_for_an_unknown_id() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1201,7 +1204,7 @@ mod tests {
     #[test]
     fn evidence_for_finding_resolves_referenced_evidence() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1232,7 +1235,7 @@ mod tests {
     #[test]
     fn evidence_for_finding_omits_evidence_ids_that_do_not_resolve() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1262,7 +1265,7 @@ mod tests {
     #[test]
     fn findings_for_recommendation_resolves_referenced_findings() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1292,7 +1295,7 @@ mod tests {
     #[test]
     fn findings_for_recommendation_omits_finding_ids_that_do_not_resolve() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );
@@ -1325,7 +1328,7 @@ mod tests {
     #[test]
     fn full_pipeline_relationships_resolve_correctly() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             sample_version_profile_reference(),
         );

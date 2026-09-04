@@ -191,7 +191,7 @@ mod tests {
         rule: &str,
     ) -> modiq_report::report::AssessmentReport {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -228,7 +228,7 @@ mod tests {
         dimension: ModHealthDimension,
     ) -> modiq_report::report::AssessmentReport {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

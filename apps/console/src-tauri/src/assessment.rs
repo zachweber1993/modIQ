@@ -191,9 +191,10 @@ pub fn submit_assessment(input_path: String) -> Result<ReportSummary, String> {
 /// exercise it directly rather than through Tauri's own command
 /// dispatch — mirroring `apps/sandbox`'s own established pattern.
 fn submit_assessment_from_path(input_path: &str) -> Result<ReportSummary, String> {
+    let subject = AssessmentSubject::new(input_path).map_err(|error| error.to_string())?;
     let service = AssessmentService;
     service
-        .execute_from_assessment_input(AssessmentSubject, AssessmentContext, input_path)
+        .execute_from_assessment_input(subject, AssessmentContext, input_path)
         .map(|report| ReportSummary::from(&report))
         .map_err(|error| error.to_string())
 }

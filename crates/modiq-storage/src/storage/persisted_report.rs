@@ -404,7 +404,7 @@ mod tests {
     #[test]
     fn from_report_preserves_empty_assessment_content() {
         let assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -421,7 +421,7 @@ mod tests {
     #[test]
     fn from_report_preserves_content_and_order() {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
@@ -519,7 +519,7 @@ mod tests {
         // does not resolve within this report must not cause this
         // transformation to fail.
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );

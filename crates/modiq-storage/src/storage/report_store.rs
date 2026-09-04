@@ -128,7 +128,7 @@ mod tests {
 
     fn sample_report() -> AssessmentReport {
         let mut assessment = Assessment::new(
-            AssessmentSubject,
+            AssessmentSubject::new("test-subject").unwrap(),
             AssessmentContext,
             VersionProfileReference::new("FS25"),
         );
