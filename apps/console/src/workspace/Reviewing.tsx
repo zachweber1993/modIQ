@@ -29,9 +29,14 @@ import { Overview } from "./Overview";
  * reversal). The Overview above the list is never replaced while a
  * Finding is expanded (cumulative orientation).
  *
- * No affordance returns to Intake: Sprint 21 does not implement
- * reentrancy or supplementation (Initiative 2), so once Reviewing is
- * reached there is deliberately nowhere else for this phase to go.
+ * An affordance returns to Intake (C14): `Workspace.tsx` renders an
+ * "Assess another mod" control alongside this component once
+ * Reviewing is active, resetting only its own local presentation
+ * state and starting a wholly new, independent Assessment on the next
+ * submission. This is not, and does not implement, Initiative 2's
+ * reentrant/supplementation lifecycle question — nothing here
+ * reopens, supplements, or otherwise continues to evolve the
+ * Assessment already reflected by `findings` above.
  */
 export function Reviewing({
   findings,
