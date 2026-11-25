@@ -22,6 +22,21 @@ const MANIFEST_FILE_NAME: &str = "modDesc.xml";
 /// architecturally independent).
 const DECLARED_DESC_VERSION_PREFIX: &str = "modDesc.xml declares descVersion: ";
 
+/// The exact prefix used when reporting a `storeItem` declaration's own
+/// `xmlFilename` attribute as Evidence (Store Item Reference Integrity,
+/// `ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md` §5).
+/// `modiq-rules`'s `StoreItemReferenceRule` recognizes this same,
+/// independently-duplicated prefix — a data-format convention between
+/// the two crates, not a code dependency, mirroring
+/// `DECLARED_DESC_VERSION_PREFIX`'s own established precedent.
+///
+/// Only a declaration carrying a non-empty path uses this prefix. A
+/// declaration whose `xmlFilename` is absent or empty is still recorded
+/// as Evidence, under its own distinct description, so that neither
+/// degenerate form is recognized by that Rule's own content-shape
+/// filter.
+const DECLARED_STORE_ITEM_PREFIX: &str = "modDesc.xml declares store item: ";
+
 /// Produces `XmlInspection` Evidence from an Assessment Input's
 /// manifest file (`modDesc.xml`) — the platform's first
 /// content-inspecting Collector, and the first implementation of
@@ -171,7 +186,76 @@ impl XmlCollector {
             );
         }
 
+        // Store-item declarations are appended strictly after every
+        // dependency item, preserving the position of every Evidence
+        // item this Collector already produced.
+        //
+        // Only `storeItem` elements that are direct children of the
+        // canonical `storeItems` element are recognized — never
+        // unrestricted descendant matching, which would also accept a
+        // `storeItem` element appearing anywhere else in the document
+        // (`ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md`
+        // §5; Implementation Authorization, Q4).
+        for store_items in document
+            .root_element()
+            .children()
+            .filter(|node| node.has_tag_name("storeItems"))
+        {
+            for store_item in store_items
+                .children()
+                .filter(|node| node.has_tag_name("storeItem"))
+            {
+                evidence.push(Self::declared_store_item_evidence(
+                    store_item.attribute("xmlFilename"),
+                ));
+            }
+        }
+
         evidence
+    }
+
+    /// Reports one `storeItem` declaration as a purely factual
+    /// observation — the raw declared value, never an interpretation of
+    /// whether the path resolves to anything. Whether a declared path
+    /// matches an archive entry is the Rule Engine's later, separate
+    /// concern (`StoreItemReferenceRule`, `modiq-rules`), exactly as
+    /// `declared_desc_version_evidence` already leaves compatibility
+    /// judgment to `VersionCompatibilityRule`.
+    ///
+    /// Every structurally valid declaration is preserved, including one
+    /// whose `xmlFilename` attribute is absent or empty: an absent
+    /// attribute is represented without inventing a path (`content` is
+    /// `None`), and a present-but-empty value is preserved verbatim in
+    /// `content`. Both degenerate forms carry their own description
+    /// rather than `DECLARED_STORE_ITEM_PREFIX`, so neither can produce
+    /// a missing-file conclusion downstream.
+    fn declared_store_item_evidence(xml_filename: Option<&str>) -> Evidence {
+        let (description, content) = match xml_filename {
+            Some(path) if !path.trim().is_empty() => (
+                format!("{DECLARED_STORE_ITEM_PREFIX}{path}"),
+                Some(path.to_string()),
+            ),
+            Some(path) => (
+                "modDesc.xml declares a store item with an empty or whitespace-only xmlFilename \
+                 attribute."
+                    .to_string(),
+                Some(path.to_string()),
+            ),
+            None => (
+                "modDesc.xml declares a store item with no xmlFilename attribute.".to_string(),
+                None,
+            ),
+        };
+
+        Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            description,
+            MANIFEST_FILE_NAME,
+            Some("Declared Store Item".to_string()),
+            Some(MANIFEST_FILE_NAME.to_string()),
+            content,
+        )
+        .expect("description and location are non-empty")
     }
 
     fn found_manifest_evidence() -> Evidence {
@@ -326,6 +410,35 @@ mod tests {
 </modDesc>"#;
 
     const MALFORMED_MANIFEST: &str = "<modDesc><author>Example</modDesc>";
+
+    const MANIFEST_WITH_STORE_ITEMS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <author>Example</author>
+    <storeItems>
+        <storeItem xmlFilename="objects/first/first.xml"/>
+        <storeItem xmlFilename="objects/second/second.xml"/>
+    </storeItems>
+</modDesc>"#;
+
+    const MANIFEST_WITH_DEGENERATE_STORE_ITEMS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <author>Example</author>
+    <storeItems>
+        <storeItem/>
+        <storeItem xmlFilename=""/>
+    </storeItems>
+</modDesc>"#;
+
+    const MANIFEST_WITH_NON_CANONICAL_STORE_ITEM: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <author>Example</author>
+    <storeItems>
+        <storeItem xmlFilename="objects/canonical.xml"/>
+    </storeItems>
+    <vehicleTypes>
+        <storeItem xmlFilename="objects/misplaced.xml"/>
+    </vehicleTypes>
+</modDesc>"#;
 
     #[test]
     fn collect_reports_absence_for_a_directory_with_no_manifest() {
@@ -570,5 +683,210 @@ mod tests {
             assert_eq!(a.description(), b.description());
             assert_eq!(a.location(), b.location());
         }
+    }
+
+    #[test]
+    fn collect_extracts_one_evidence_item_per_declared_store_item_in_document_order() {
+        let dir = TempDir::new("store-items");
+        write_file(&dir.path().join("modDesc.xml"), MANIFEST_WITH_STORE_ITEMS);
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        // Manifest-found, declared-version, then one item per
+        // declaration, in document order.
+        assert_eq!(evidence.len(), 4);
+        assert_eq!(
+            evidence[2].description(),
+            "modDesc.xml declares store item: objects/first/first.xml"
+        );
+        assert_eq!(
+            evidence[3].description(),
+            "modDesc.xml declares store item: objects/second/second.xml"
+        );
+    }
+
+    #[test]
+    fn collect_records_the_declared_store_item_path_as_evidence_content() {
+        let dir = TempDir::new("store-item-content");
+        write_file(&dir.path().join("modDesc.xml"), MANIFEST_WITH_STORE_ITEMS);
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        assert_eq!(evidence[2].content(), Some("objects/first/first.xml"));
+        assert_eq!(evidence[3].content(), Some("objects/second/second.xml"));
+    }
+
+    #[test]
+    fn collect_labels_and_locates_declared_store_item_evidence_consistently() {
+        let dir = TempDir::new("store-item-label");
+        write_file(&dir.path().join("modDesc.xml"), MANIFEST_WITH_STORE_ITEMS);
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        for item in &evidence[2..] {
+            assert_eq!(item.category(), EvidenceCategory::XmlInspection);
+            assert_eq!(item.label(), Some("Declared Store Item"));
+            assert_eq!(item.source(), Some("modDesc.xml"));
+            assert_eq!(item.location(), Some("modDesc.xml"));
+        }
+    }
+
+    #[test]
+    fn collect_appends_store_item_evidence_after_every_dependency_item() {
+        let dir = TempDir::new("store-item-ordering");
+        let manifest = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <dependencies>
+        <dependency>FS25_exampleModOne</dependency>
+        <dependency>FS25_exampleModTwo</dependency>
+    </dependencies>
+    <storeItems>
+        <storeItem xmlFilename="objects/first/first.xml"/>
+    </storeItems>
+</modDesc>"#;
+        write_file(&dir.path().join("modDesc.xml"), manifest);
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        // Positions 0-3 are exactly what this Collector already
+        // produced before store-item extraction existed; the new item
+        // is appended at position 4 and shifts nothing.
+        assert_eq!(evidence.len(), 5);
+        assert!(evidence[0].description().contains("well-formed"));
+        assert!(evidence[1].description().contains("declares descVersion"));
+        assert!(evidence[2].description().contains("FS25_exampleModOne"));
+        assert!(evidence[3].description().contains("FS25_exampleModTwo"));
+        assert!(evidence[4].description().contains("declares store item"));
+    }
+
+    #[test]
+    fn collect_preserves_a_store_item_declaration_with_no_xml_filename_attribute() {
+        let dir = TempDir::new("store-item-absent-attribute");
+        write_file(
+            &dir.path().join("modDesc.xml"),
+            MANIFEST_WITH_DEGENERATE_STORE_ITEMS,
+        );
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        assert_eq!(evidence.len(), 4);
+        assert_eq!(
+            evidence[2].description(),
+            "modDesc.xml declares a store item with no xmlFilename attribute."
+        );
+        // No path is invented for an absent attribute.
+        assert_eq!(evidence[2].content(), None);
+    }
+
+    #[test]
+    fn collect_preserves_a_store_item_declaration_with_an_empty_xml_filename_attribute() {
+        let dir = TempDir::new("store-item-empty-attribute");
+        write_file(
+            &dir.path().join("modDesc.xml"),
+            MANIFEST_WITH_DEGENERATE_STORE_ITEMS,
+        );
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        assert!(
+            evidence[3]
+                .description()
+                .contains("empty or whitespace-only xmlFilename")
+        );
+        // The empty value itself is preserved, not discarded.
+        assert_eq!(evidence[3].content(), Some(""));
+    }
+
+    #[test]
+    fn collect_does_not_use_the_declaration_prefix_for_a_degenerate_store_item() {
+        let dir = TempDir::new("store-item-degenerate-prefix");
+        write_file(
+            &dir.path().join("modDesc.xml"),
+            MANIFEST_WITH_DEGENERATE_STORE_ITEMS,
+        );
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        for item in &evidence[2..] {
+            assert!(
+                !item
+                    .description()
+                    .starts_with("modDesc.xml declares store item: "),
+                "a degenerate declaration must not carry the declaration prefix"
+            );
+        }
+    }
+
+    #[test]
+    fn collect_recognizes_only_store_items_that_are_direct_children_of_store_items() {
+        let dir = TempDir::new("store-item-canonical-position");
+        write_file(
+            &dir.path().join("modDesc.xml"),
+            MANIFEST_WITH_NON_CANONICAL_STORE_ITEM,
+        );
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        let declared: Vec<&str> = evidence
+            .iter()
+            .filter_map(Evidence::content)
+            .filter(|content| content.ends_with(".xml"))
+            .collect();
+
+        assert_eq!(declared, vec!["objects/canonical.xml"]);
+    }
+
+    #[test]
+    fn collect_reports_no_store_item_evidence_when_none_is_declared() {
+        let dir = TempDir::new("store-item-absent");
+        write_file(&dir.path().join("modDesc.xml"), WELL_FORMED_MANIFEST);
+        let input = AssessmentInput::new(dir.path().display().to_string()).unwrap();
+
+        let evidence = XmlCollector
+            .collect(&input)
+            .expect("directory is accessible");
+
+        assert!(
+            evidence
+                .iter()
+                .all(|item| item.label() != Some("Declared Store Item"))
+        );
+    }
+
+    #[test]
+    fn collect_extracts_store_items_from_an_archived_manifest() {
+        let dir = TempDir::new("store-item-archive");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(&archive_path, &[("modDesc.xml", MANIFEST_WITH_STORE_ITEMS)]);
+        let input = AssessmentInput::new(archive_path.display().to_string()).unwrap();
+
+        let evidence = XmlCollector.collect(&input).expect("archive is accessible");
+
+        assert_eq!(evidence.len(), 4);
+        assert_eq!(evidence[2].content(), Some("objects/first/first.xml"));
     }
 }

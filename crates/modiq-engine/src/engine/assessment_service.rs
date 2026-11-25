@@ -175,7 +175,9 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     use modiq_collection::collection::{AssessmentInputError, CollectionError};
-    use modiq_runtime::assessment::{AssessmentStatus, EvidenceCategory, FindingSeverity};
+    use modiq_runtime::assessment::{
+        AssessmentStatus, EvidenceCategory, Finding, FindingSeverity, ModHealthDimension,
+    };
     use zip::ZipWriter;
     use zip::write::SimpleFileOptions;
 
@@ -860,5 +862,278 @@ mod tests {
                 EvidenceCategory::XmlInspection
             ]
         );
+    }
+
+    /// A manifest declaring one store item, used by the Store Item
+    /// Reference Integrity integration tests below.
+    const MANIFEST_DECLARING_ONE_STORE_ITEM: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <author>Example</author>
+    <storeItems>
+        <storeItem xmlFilename="objects/first/first.xml"/>
+    </storeItems>
+</modDesc>"#;
+
+    fn store_item_findings(report: &modiq_report::report::AssessmentReport) -> Vec<&Finding> {
+        report
+            .findings()
+            .iter()
+            .filter(|finding| finding.rule_reference().identifier() == "store-item-reference-rule")
+            .collect()
+    }
+
+    #[test]
+    fn a_declared_store_item_present_in_the_archive_produces_no_store_item_finding() {
+        let dir = TempDir::new("store-item-present");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(
+            &archive_path,
+            &[
+                ("modDesc.xml", MANIFEST_DECLARING_ONE_STORE_ITEM),
+                ("objects/first/first.xml", "<vehicle/>"),
+            ],
+        );
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        assert!(store_item_findings(&report).is_empty());
+    }
+
+    #[test]
+    fn a_declared_store_item_absent_from_the_archive_produces_one_store_item_finding() {
+        let dir = TempDir::new("store-item-absent");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(
+            &archive_path,
+            &[("modDesc.xml", MANIFEST_DECLARING_ONE_STORE_ITEM)],
+        );
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        let findings = store_item_findings(&report);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].severity(), FindingSeverity::Warning);
+        assert_eq!(
+            findings[0].mod_health_dimension(),
+            ModHealthDimension::Structure
+        );
+        assert!(findings[0].summary().contains("objects/first/first.xml"));
+
+        // The cited Evidence is the declaration itself, and it resolves
+        // within this same Assessment's own Evidence.
+        assert_eq!(findings[0].evidence_ids().len(), 1);
+        let cited = report
+            .evidence()
+            .iter()
+            .find(|item| item.id() == findings[0].evidence_ids()[0])
+            .expect("the cited declaration Evidence is present in this Assessment");
+        assert_eq!(cited.category(), EvidenceCategory::XmlInspection);
+        assert_eq!(cited.content(), Some("objects/first/first.xml"));
+    }
+
+    #[test]
+    fn declared_store_items_are_evaluated_independently_of_one_another() {
+        let dir = TempDir::new("store-item-mixed");
+        let archive_path = dir.path().join("mod.zip");
+        let manifest = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <storeItems>
+        <storeItem xmlFilename="objects/present.xml"/>
+        <storeItem xmlFilename="objects/missing.xml"/>
+    </storeItems>
+</modDesc>"#;
+        write_archive(
+            &archive_path,
+            &[
+                ("modDesc.xml", manifest),
+                ("objects/present.xml", "<vehicle/>"),
+            ],
+        );
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        let findings = store_item_findings(&report);
+        assert_eq!(findings.len(), 1);
+        assert!(findings[0].summary().contains("objects/missing.xml"));
+    }
+
+    #[test]
+    fn an_unsupported_declared_store_item_path_produces_no_store_item_finding() {
+        let dir = TempDir::new("store-item-unsupported");
+        let archive_path = dir.path().join("mod.zip");
+        let manifest = r#"<?xml version="1.0" encoding="utf-8"?>
+<modDesc descVersion="93">
+    <storeItems>
+        <storeItem xmlFilename="/objects/absolute.xml"/>
+        <storeItem xmlFilename="$data/objects/base.xml"/>
+        <storeItem xmlFilename="objects\backslash.xml"/>
+        <storeItem xmlFilename="./objects/dot.xml"/>
+        <storeItem xmlFilename="objects/../parent.xml"/>
+        <storeItem/>
+        <storeItem xmlFilename=""/>
+    </storeItems>
+</modDesc>"#;
+        write_archive(&archive_path, &[("modDesc.xml", manifest)]);
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        // Every declaration is still preserved as Evidence, and none
+        // produces a missing-file conclusion.
+        let declarations = report
+            .evidence()
+            .iter()
+            .filter(|item| item.label() == Some("Declared Store Item"))
+            .count();
+        assert_eq!(declarations, 7);
+        assert!(store_item_findings(&report).is_empty());
+    }
+
+    #[test]
+    fn a_directory_based_assessment_produces_no_store_item_finding() {
+        let dir = TempDir::new("store-item-directory-input");
+        fs::write(
+            dir.path().join("modDesc.xml"),
+            MANIFEST_DECLARING_ONE_STORE_ITEM,
+        )
+        .unwrap();
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                dir.path().display().to_string(),
+            )
+            .expect("directory is accessible");
+
+        // The declaration is collected and the target is genuinely
+        // absent, yet a filesystem-directory assessment is outside this
+        // capability's authorized scope and produces nothing.
+        assert!(
+            report
+                .evidence()
+                .iter()
+                .any(|item| item.label() == Some("Declared Store Item"))
+        );
+        assert!(store_item_findings(&report).is_empty());
+    }
+
+    #[test]
+    fn a_directory_entry_in_the_archive_does_not_satisfy_a_declared_store_item() {
+        let dir = TempDir::new("store-item-directory-entry");
+        let archive_path = dir.path().join("mod.zip");
+        // A ZIP directory entry named exactly as the declaration, with
+        // no file of that name anywhere in the archive.
+        let file = fs::File::create(&archive_path).expect("can create a temporary archive file");
+        let mut writer = ZipWriter::new(file);
+        let options = SimpleFileOptions::default();
+        writer
+            .start_file("modDesc.xml", options)
+            .expect("can start a file entry");
+        std::io::Write::write_all(&mut writer, MANIFEST_DECLARING_ONE_STORE_ITEM.as_bytes())
+            .expect("can write file entry content");
+        writer
+            .add_directory("objects/first/first.xml", options)
+            .expect("can add a directory entry");
+        writer.finish().expect("can finalize the archive");
+
+        let service = AssessmentService;
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        assert_eq!(store_item_findings(&report).len(), 1);
+    }
+
+    #[test]
+    fn a_case_only_difference_does_not_satisfy_a_declared_store_item() {
+        let dir = TempDir::new("store-item-case");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(
+            &archive_path,
+            &[
+                ("modDesc.xml", MANIFEST_DECLARING_ONE_STORE_ITEM),
+                ("Objects/First/First.xml", "<vehicle/>"),
+            ],
+        );
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        assert_eq!(store_item_findings(&report).len(), 1);
+    }
+
+    #[test]
+    fn store_item_evaluation_is_deterministic_across_repeated_assessments() {
+        let dir = TempDir::new("store-item-deterministic");
+        let archive_path = dir.path().join("mod.zip");
+        write_archive(
+            &archive_path,
+            &[("modDesc.xml", MANIFEST_DECLARING_ONE_STORE_ITEM)],
+        );
+        let service = AssessmentService;
+
+        let first = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+        let second = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("test-subject").unwrap(),
+                AssessmentContext,
+                archive_path.display().to_string(),
+            )
+            .expect("archive is well-formed and accessible");
+
+        let first_summaries: Vec<&str> = store_item_findings(&first)
+            .iter()
+            .map(|finding| finding.summary())
+            .collect();
+        let second_summaries: Vec<&str> = store_item_findings(&second)
+            .iter()
+            .map(|finding| finding.summary())
+            .collect();
+        assert_eq!(first_summaries, second_summaries);
     }
 }

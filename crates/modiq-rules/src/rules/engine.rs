@@ -4,6 +4,7 @@ use modiq_versioning::versioning::VersionProfile;
 use super::declared_dependency_duplication_rule::DeclaredDependencyDuplicationRule;
 use super::evidence_presence_rule::EvidencePresenceRule;
 use super::runtime_load_failure_rule::RuntimeLoadFailureRule;
+use super::store_item_reference_rule::StoreItemReferenceRule;
 use super::structural_duplication_rule::StructuralDuplicationRule;
 use super::version_compatibility_rule::VersionCompatibilityRule;
 
@@ -30,16 +31,20 @@ impl RuleEngine {
     /// Rules are evaluated in a fixed, explicit declaration order —
     /// `EvidencePresenceRule`, then `StructuralDuplicationRule`, then
     /// `VersionCompatibilityRule` (Sprint 8), then `RuntimeLoadFailureRule`
-    /// (Sprint 11), then `DeclaredDependencyDuplicationRule` (C2) —
+    /// (Sprint 11), then `DeclaredDependencyDuplicationRule` (C2), then
+    /// `StoreItemReferenceRule` (Store Item Reference Integrity) —
     /// never an order derived from Evidence's own arrival sequence
     /// (GOV-012, Question 2). Rules compose independently:
     /// each is evaluated against the full Evidence set regardless of
     /// whether another Rule also matches it, and no Rule suppresses
     /// another (GOV-012, Question 3). This is deliberately a fixed
-    /// sequence of `if let` checks, not a trait, registry, or dispatch
+    /// sequence of inline checks, not a trait, registry, or dispatch
     /// table — an implementation detail GOV-012 leaves open, provided
     /// no such abstraction is introduced (`GOVERNANCE.md`: Crate
-    /// Boundary Rules, ADR-0010, GOV-004).
+    /// Boundary Rules, ADR-0010, GOV-004). Every Rule but the last
+    /// reports at most one outcome and is dispatched with `if let`;
+    /// `StoreItemReferenceRule` reports one per unmatched declaration
+    /// and is appended with `extend` (see its own call site, below).
     ///
     /// `version_profile` is consulted only by `VersionCompatibilityRule`
     /// — every other Rule's applicability is unaffected by it
@@ -71,6 +76,21 @@ impl RuleEngine {
         if let Some(outcome) = DeclaredDependencyDuplicationRule.evaluate(evidence) {
             outcomes.push(outcome);
         }
+        // `StoreItemReferenceRule` is the first Rule to report more
+        // than one outcome from a single evaluation: one Finding per
+        // unmatched declaration, each citing exactly that declaration's
+        // own Evidence
+        // (`ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md`
+        // §9; Implementation Authorization, Q5). It is therefore
+        // appended with `extend` rather than `push`. This changes
+        // nothing about dispatch itself: `evaluate` already returns
+        // `Vec<RuleOutcome>` (GOV-012, Question 1), Rules are still
+        // evaluated in fixed declaration order (Question 2), and
+        // composition remains independent with no suppression
+        // (Question 3). No trait, registry, factory, or dispatch table
+        // is introduced (`GOVERNANCE.md`: Crate Boundary Rules,
+        // ADR-0010, GOV-004).
+        outcomes.extend(StoreItemReferenceRule.evaluate(evidence));
 
         outcomes
     }
@@ -492,5 +512,154 @@ mod tests {
             .collect();
         assert_eq!(first_references, second_references);
         assert_eq!(first.len(), second.len());
+    }
+
+    fn archive_file_entry(name: &str) -> Evidence {
+        Evidence::with_location(
+            EvidenceCategory::FileStructureAnalysis,
+            "File discovered during archive collection.",
+            name,
+            Some("File Discovered".to_string()),
+            Some("Archive Collection".to_string()),
+            None,
+        )
+        .expect("description and location are valid")
+    }
+
+    fn declared_store_item_evidence(path: &str) -> Evidence {
+        Evidence::with_location(
+            EvidenceCategory::XmlInspection,
+            format!("modDesc.xml declares store item: {path}"),
+            "modDesc.xml",
+            Some("Declared Store Item".to_string()),
+            Some("modDesc.xml".to_string()),
+            Some(path.to_string()),
+        )
+        .expect("description and location are valid")
+    }
+
+    #[test]
+    fn evaluate_dispatches_to_the_store_item_reference_rule() {
+        let engine = RuleEngine;
+        let evidence = [
+            archive_file_entry("modDesc.xml"),
+            declared_store_item_evidence("objects/missing.xml"),
+        ];
+
+        let outcomes = engine.evaluate(&evidence, &fs25_profile());
+
+        assert!(
+            outcomes
+                .iter()
+                .any(|outcome| outcome.finding.rule_reference().identifier()
+                    == "store-item-reference-rule")
+        );
+    }
+
+    #[test]
+    fn evaluate_reports_the_store_item_reference_rule_last_in_dispatch_order() {
+        let engine = RuleEngine;
+        let evidence = [
+            archive_file_entry("modDesc.xml"),
+            declared_store_item_evidence("objects/missing.xml"),
+        ];
+
+        let outcomes = engine.evaluate(&evidence, &fs25_profile());
+        let references: Vec<&str> = outcomes
+            .iter()
+            .map(|outcome| outcome.finding.rule_reference().identifier())
+            .collect();
+
+        // EvidencePresenceRule fires first (Evidence exists at all);
+        // the new Rule is appended last, after every pre-existing Rule.
+        assert_eq!(references.first(), Some(&"evidence-presence-rule"));
+        assert_eq!(references.last(), Some(&"store-item-reference-rule"));
+    }
+
+    #[test]
+    fn evaluate_reports_one_store_item_outcome_per_unmatched_declaration() {
+        let engine = RuleEngine;
+        let evidence = [
+            archive_file_entry("modDesc.xml"),
+            declared_store_item_evidence("objects/first-missing.xml"),
+            declared_store_item_evidence("objects/second-missing.xml"),
+        ];
+
+        let outcomes = engine.evaluate(&evidence, &fs25_profile());
+        let store_item_outcomes = outcomes
+            .iter()
+            .filter(|outcome| {
+                outcome.finding.rule_reference().identifier() == "store-item-reference-rule"
+            })
+            .count();
+
+        assert_eq!(store_item_outcomes, 2);
+    }
+
+    #[test]
+    fn evaluate_leaves_every_pre_existing_rule_unaffected_by_store_item_evidence() {
+        let engine = RuleEngine;
+        let baseline_evidence = [
+            duplication_evidence(),
+            unrecognized_declared_version_evidence(),
+        ];
+        let with_store_items = [
+            duplication_evidence(),
+            unrecognized_declared_version_evidence(),
+            archive_file_entry("modDesc.xml"),
+            declared_store_item_evidence("objects/missing.xml"),
+        ];
+
+        let baseline = engine.evaluate(&baseline_evidence, &fs25_profile());
+        let extended = engine.evaluate(&with_store_items, &fs25_profile());
+
+        let baseline_references: Vec<&str> = baseline
+            .iter()
+            .map(|outcome| outcome.finding.rule_reference().identifier())
+            .collect();
+        let extended_pre_existing: Vec<&str> = extended
+            .iter()
+            .map(|outcome| outcome.finding.rule_reference().identifier())
+            .filter(|reference| *reference != "store-item-reference-rule")
+            .collect();
+
+        // Every pre-existing Rule still fires, in the same order, with
+        // the same severities — the new Rule suppresses nothing and
+        // reorders nothing (GOV-012, Question 3).
+        assert_eq!(baseline_references, extended_pre_existing);
+        for (base, ext) in baseline.iter().zip(extended.iter().filter(|outcome| {
+            outcome.finding.rule_reference().identifier() != "store-item-reference-rule"
+        })) {
+            assert_eq!(base.finding.severity(), ext.finding.severity());
+            assert_eq!(base.finding.title(), ext.finding.title());
+            assert_eq!(base.finding.summary(), ext.finding.summary());
+        }
+    }
+
+    #[test]
+    fn evaluate_reports_no_store_item_outcome_for_a_filesystem_assessment() {
+        let engine = RuleEngine;
+        let filesystem_entry = Evidence::with_location(
+            EvidenceCategory::FileStructureAnalysis,
+            "File discovered during filesystem collection.",
+            "modDesc.xml",
+            Some("File Discovered".to_string()),
+            Some("Filesystem Collection".to_string()),
+            None,
+        )
+        .expect("description and location are valid");
+        let evidence = [
+            filesystem_entry,
+            declared_store_item_evidence("objects/missing.xml"),
+        ];
+
+        let outcomes = engine.evaluate(&evidence, &fs25_profile());
+
+        assert!(
+            outcomes
+                .iter()
+                .all(|outcome| outcome.finding.rule_reference().identifier()
+                    != "store-item-reference-rule")
+        );
     }
 }
