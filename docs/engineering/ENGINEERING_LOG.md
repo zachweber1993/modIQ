@@ -1846,6 +1846,42 @@ This capability carries **no `C`-number**; none was authorized, and the Engineer
 
 ---
 
+### Runtime Load Failure Recognition Correction — Candidate A — Implemented
+
+Status:
+Completed
+
+Affected Crates:
+- modiq-collection (`crates/modiq-collection`) — `RuntimeLogCollector` recognition correction, additive
+- modiq-rules (`crates/modiq-rules`) — `RuntimeLoadFailureRule` deduplication correction, additive
+- modiq-engine (`crates/modiq-engine`) — integration tests only, no production change
+
+Affected Documents:
+- docs/engineering/ENGINEERING_RELEASE_2.7.md (new)
+
+Notes:
+This is a correction to existing Runtime Load Failure recognition behavior, carrying **no `C`-number** — it is not a new capability. The recognition contract Sprint 11 and `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` introduced matched the governed engine message `Error: Unsupported mod description version in mod {Name}` only at offset zero of its log line, missing a timestamped occurrence of the identical message the real `single-incompatible-mod` fixture also carries (line 1445, after a 23-character `YYYY-MM-DD HH:MM:SS.mmm` prefix), alongside the untimestamped occurrence already recognized at line 124.
+
+**Approved interpretation (D1).** "Engine line" means the engine message content, not its physical offset within the file line — the timestamp is a transport artifact the logging mechanism prepends, not part of the engine's own message. Recognition now sets aside exactly one timestamp shape, matched positionally and exactly (never parsed as a calendar date, never generalized to any other shape), before matching the unchanged governed template against what remains. An untimestamped line is matched exactly as before this correction. This is not general timestamp parsing and not a general error-line recognizer.
+
+**Approved interpretation (D2).** A log recording the identical engine message twice cannot be distinguished, from this fixture corpus alone, as one rejection reported twice or two independent rejections of the same mod. The Collector takes no position — one Evidence item per occurrence, no deduplication, each occurrence's own id, the complete raw line preserved verbatim — consistent with `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` Section 5's restated invariant that Collectors acquire facts and do not infer meaning. `RuntimeLoadFailureRule` takes the interpretive position instead: it names each affected mod exactly once in its Finding summary, in first-observed order via a single linear pass (no hash-based collection, so repeated evaluation of identical input remains byte-identical), while still citing every contributing Evidence id.
+
+**Unmodified (D3).** `Load mod:` remains corroborating evidence only, not required for recognition, and was not touched by this correction. The pre-existing Matrix wording discrepancy around that signal remains deferred housekeeping.
+
+**No Architectural Resolution required (D4).** Classified as a correction to the existing recognition contract, not a new capability or runtime signal. No ADR created. No Governance Register entry created.
+
+**Scope (D5).** Authorized: timestamp-tolerant recognition of the exact governed message; occurrence-level Evidence preservation; per-mod Finding deduplication; tests for the approved behavior; real-fixture integration coverage. Explicitly excluded: new runtime signals, general error/warning recognition, modDesc version extraction, hash-based mod identity, runtime intake architecture, Application Support discovery/intake, persistence changes, Evidence-content persistence expansion, UI/frontend work, broad parsing heuristics, additional runtime capabilities, architectural expansion, unrelated refactoring, and documentation changes outside a separately authorized stage.
+
+**Verification.** `cargo fmt --all -- --check`, `cargo check --workspace --all-targets`, and `cargo test --workspace` all pass, re-verified fresh at release review: root workspace clean at **370 total passing, 0 failed** (354 → 370; 16 new tests — 9 in `runtime_log_collector.rs`, 5 in `runtime_load_failure_rule.rs`, 2 in `assessment_service.rs`). `cargo clippy --workspace --all-targets` shows one pre-existing, unrelated `module_inception` warning in `modiq-runtime`; no new warning in any of the three modified crates. `git diff --check` clean. The diff is 586 insertions against 2 deletions — both deletions are the single-line replacements switching matching to the engine line and deduplicating the mod-name collection; no test assertion was deleted, and no existing test was weakened, altered, or removed.
+
+**Accepted documentation basis.** By the nature of this workstream, the Product Owner's decisions (D1–D7) were delivered directly as a decision record rather than as separate persisted lifecycle documents (no Capability Definition, Process Determination, or Implementation Plan/Report file exists for it). `ENGINEERING_RELEASE_2.7.md` carries the load-bearing content of that record inline, consistent with D4's classification of this workstream as a correction.
+
+**Repository closeout status.** Engineering Release 2.7 is approved by the Product Owner. This closeout synchronizes `ENGINEERING_LOG.md`, `CHANGELOG.md`, and `PROJECT_STATUS.md`. As of this entry's own drafting the correction remains uncommitted working-tree state; the commit itself awaits separate, explicit Product Owner authorization, and nothing has been staged, committed, pushed, or published.
+
+**Pre-existing discrepancies, not re-corrected here.** The GOV-017 tracking-document discrepancy and the C3/C4 `CHANGELOG.md` entry gap both remain outstanding, exactly as each prior closeout left them; this closeout does not repeat their full description, per this repository's own convention of naming a standing discrepancy at the closeout that first found it and cross-referencing it thereafter.
+
+---
+
 ## Engineering Methodology Observations
 
 A running record of process observations surfaced during Sprint execution — distinct from the Engineering Methodology itself (`PROJECT_HANDOFF_v1.0.md`, Section 5, Version 1.0). Recorded here as history and future input, per this project's own evidence-based standard for methodology change: an observation is not an adopted process change until a future Chief Architect session evaluates it as such, exactly as GOV-004 and GOV-012 required convergent implementation evidence before a code-level pattern was treated as settled. Nothing in this section modifies the canonical workflow.

@@ -1136,4 +1136,97 @@ mod tests {
             .collect();
         assert_eq!(first_summaries, second_summaries);
     }
+
+    /// The real, checked-in runtime log fixture — not a synthetic
+    /// substitute. Its `log.txt` carries the recognized engine
+    /// rejection twice: untimestamped at line 124 (startup phase) and
+    /// timestamped at line 1445 (session phase).
+    const REAL_INCOMPATIBLE_MOD_FIXTURE: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../fixtures/runtime-logs/single-incompatible-mod"
+    );
+
+    #[test]
+    fn the_real_runtime_fixture_yields_both_occurrences_and_one_deduplicated_finding() {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("single-incompatible-mod").unwrap(),
+                AssessmentContext,
+                REAL_INCOMPATIBLE_MOD_FIXTURE.to_string(),
+            )
+            .expect("the real fixture directory is accessible");
+
+        // Collection stays faithful to the file: both observed
+        // occurrences become Evidence (before this correction, only the
+        // untimestamped one was recognized).
+        let runtime_evidence: Vec<&Evidence> = report
+            .evidence()
+            .iter()
+            .filter(|item| item.category() == EvidenceCategory::RuntimeLogs)
+            .collect();
+        assert_eq!(runtime_evidence.len(), 2);
+        assert_eq!(
+            runtime_evidence
+                .iter()
+                .filter(|item| item.content().is_some_and(|raw| raw.starts_with("2026-")))
+                .count(),
+            1,
+            "exactly one of the two occurrences carries a timestamp in its raw line"
+        );
+
+        // Interpretation deduplicates: one Finding, naming the mod once,
+        // citing both occurrences.
+        let runtime_findings: Vec<&Finding> = report
+            .findings()
+            .iter()
+            .filter(|finding| finding.rule_reference().identifier() == "runtime-load-failure-rule")
+            .collect();
+        assert_eq!(runtime_findings.len(), 1);
+        assert_eq!(runtime_findings[0].severity(), FindingSeverity::Error);
+        assert_eq!(
+            runtime_findings[0].mod_health_dimension(),
+            ModHealthDimension::Stability
+        );
+        assert_eq!(
+            runtime_findings[0]
+                .summary()
+                .matches("FS25_DodgeChallengerHellcat")
+                .count(),
+            1
+        );
+        assert_eq!(runtime_findings[0].evidence_ids().len(), 2);
+    }
+
+    #[test]
+    fn the_real_clean_runtime_fixture_yields_no_runtime_finding() {
+        let service = AssessmentService;
+
+        let report = service
+            .execute_from_assessment_input(
+                AssessmentSubject::new("clean-base-game").unwrap(),
+                AssessmentContext,
+                concat!(
+                    env!("CARGO_MANIFEST_DIR"),
+                    "/../../fixtures/runtime-logs/clean-base-game"
+                )
+                .to_string(),
+            )
+            .expect("the real fixture directory is accessible");
+
+        assert!(
+            report
+                .evidence()
+                .iter()
+                .all(|item| item.category() != EvidenceCategory::RuntimeLogs)
+        );
+        assert!(
+            report
+                .findings()
+                .iter()
+                .all(|finding| finding.rule_reference().identifier()
+                    != "runtime-load-failure-rule")
+        );
+    }
 }

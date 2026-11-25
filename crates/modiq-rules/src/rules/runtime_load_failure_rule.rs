@@ -58,6 +58,28 @@ impl RuntimeLoadFailureRule {
     /// does not match it, which this Rule treats identically to no
     /// `RuntimeLogs` Evidence existing at all. References every
     /// matching Evidence item by id, not just the first.
+    ///
+    /// **Deduplication of repeated occurrences belongs here, not in the
+    /// Collector.** A real runtime log can record the same engine
+    /// rejection message more than once — the engine re-enumerates mods
+    /// when a session ends, so `single-incompatible-mod`'s own fixture
+    /// carries the identical message twice (untimestamped at line 124,
+    /// timestamped at line 1445). The Collector stays faithful to the
+    /// file and reports each observed occurrence as its own Evidence
+    /// item; deciding that two observations describe one rejection is
+    /// interpretation, which `RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md`
+    /// Section 5's first invariant reserves to a Rule ("Collectors
+    /// acquire facts; they do not create Findings, and they do not infer
+    /// meaning").
+    ///
+    /// The fixture cannot conclusively distinguish one rejection logged
+    /// twice from two separate rejections of the same mod, and this Rule
+    /// does not claim to: naming each affected mod exactly once yields
+    /// the identical, defensible conclusion under either reading — that
+    /// this mod was rejected at modDesc validation — whereas reporting a
+    /// count would assert what the Evidence cannot establish. Every
+    /// contributing Evidence item is still cited, so the Finding remains
+    /// traceable to each individual observation.
     pub fn evaluate(&self, evidence: &[Evidence]) -> Option<RuleOutcome> {
         let failures: Vec<_> = evidence
             .iter()
@@ -70,7 +92,19 @@ impl RuntimeLoadFailureRule {
         }
 
         let evidence_ids: Vec<_> = failures.iter().map(|(id, _)| *id).collect();
-        let mod_names: Vec<String> = failures.iter().map(|(_, name)| name.clone()).collect();
+
+        // Distinct mod names, in first-observed order — a single pass
+        // over `failures`'s own slice order, never a hash-based
+        // collection, so repeated evaluation of identical input yields
+        // an identical summary (the determinism discipline
+        // `DeclaredDependencyDuplicationRule` applies to its own
+        // duplicate detection for the same reason).
+        let mut mod_names: Vec<String> = Vec::new();
+        for (_, name) in &failures {
+            if !mod_names.contains(name) {
+                mod_names.push(name.clone());
+            }
+        }
 
         let summary = format!(
             "The runtime log shows {} was rejected at modDesc validation and never reached \
@@ -297,5 +331,128 @@ mod tests {
             first_recommendation.repair_recipe_reference(),
             second_recommendation.repair_recipe_reference()
         );
+    }
+
+    #[test]
+    fn multiple_occurrences_for_the_same_mod_produce_exactly_one_finding() {
+        let rule = RuntimeLoadFailureRule;
+        let first = recognized_failure_evidence("FS25_DodgeChallengerHellcat");
+        let second = recognized_failure_evidence("FS25_DodgeChallengerHellcat");
+        let first_id = first.id();
+        let second_id = second.id();
+        let evidence = [first, second];
+
+        let outcome = rule
+            .evaluate(&evidence)
+            .expect("a recognized failure produces an outcome");
+
+        // The two assertions that can actually fail if D2's
+        // deduplication regresses: the repeated mod is named once, and
+        // the Finding still traces to both contributing observations.
+        // (Asserting "one Finding" alone would be vacuous — this Rule's
+        // `Option<RuleOutcome>` return type can never carry more than
+        // one. The one-Finding property is verified where it can
+        // genuinely fail: through `RuleEngine` dispatch, in
+        // `modiq-engine`'s own real-fixture integration test.)
+        assert_eq!(
+            outcome
+                .finding
+                .summary()
+                .matches("FS25_DodgeChallengerHellcat")
+                .count(),
+            1,
+            "a mod rejected once but logged twice must be named exactly once"
+        );
+        assert_eq!(
+            outcome.finding.evidence_ids(),
+            &[first_id, second_id],
+            "deduplicating the summary must not drop either contributing Evidence id"
+        );
+    }
+
+    #[test]
+    fn the_mod_name_appears_only_once_in_the_finding_summary() {
+        let rule = RuntimeLoadFailureRule;
+        let evidence = [
+            recognized_failure_evidence("FS25_DodgeChallengerHellcat"),
+            recognized_failure_evidence("FS25_DodgeChallengerHellcat"),
+        ];
+
+        let outcome = rule
+            .evaluate(&evidence)
+            .expect("a recognized failure produces an outcome");
+
+        assert_eq!(
+            outcome
+                .finding
+                .summary()
+                .matches("FS25_DodgeChallengerHellcat")
+                .count(),
+            1,
+            "a mod rejected once but logged twice must be named once"
+        );
+    }
+
+    #[test]
+    fn the_finding_cites_every_contributing_occurrence() {
+        let rule = RuntimeLoadFailureRule;
+        let first = recognized_failure_evidence("FS25_DodgeChallengerHellcat");
+        let second = recognized_failure_evidence("FS25_DodgeChallengerHellcat");
+        let first_id = first.id();
+        let second_id = second.id();
+        let evidence = [first, second];
+
+        let outcome = rule
+            .evaluate(&evidence)
+            .expect("a recognized failure produces an outcome");
+
+        // Deduplication applies to the summary's mod names, never to
+        // the Evidence the Finding is traceable to.
+        assert_eq!(outcome.finding.evidence_ids(), &[first_id, second_id]);
+    }
+
+    #[test]
+    fn distinct_mod_names_remain_distinct() {
+        let rule = RuntimeLoadFailureRule;
+        let evidence = [
+            recognized_failure_evidence("FS25_FirstMod"),
+            recognized_failure_evidence("FS25_SecondMod"),
+            recognized_failure_evidence("FS25_FirstMod"),
+        ];
+
+        let outcome = rule
+            .evaluate(&evidence)
+            .expect("a recognized failure produces an outcome");
+
+        let summary = outcome.finding.summary();
+        assert_eq!(summary.matches("FS25_FirstMod").count(), 1);
+        assert_eq!(summary.matches("FS25_SecondMod").count(), 1);
+        // First-observed order is preserved, deterministically.
+        assert!(
+            summary.find("FS25_FirstMod") < summary.find("FS25_SecondMod"),
+            "distinct mod names must appear in first-observed order"
+        );
+        assert_eq!(outcome.finding.evidence_ids().len(), 3);
+    }
+
+    #[test]
+    fn output_remains_deterministic_with_duplicate_occurrences() {
+        let rule = RuntimeLoadFailureRule;
+        let evidence = [
+            recognized_failure_evidence("FS25_SecondMod"),
+            recognized_failure_evidence("FS25_FirstMod"),
+            recognized_failure_evidence("FS25_SecondMod"),
+        ];
+
+        let first = rule.evaluate(&evidence).expect("an outcome is produced");
+        let second = rule.evaluate(&evidence).expect("an outcome is produced");
+
+        assert_eq!(first.finding.summary(), second.finding.summary());
+        assert_eq!(first.finding.severity(), second.finding.severity());
+        assert_eq!(
+            first.finding.mod_health_dimension(),
+            second.finding.mod_health_dimension()
+        );
+        assert_eq!(first.finding.evidence_ids(), second.finding.evidence_ids());
     }
 }

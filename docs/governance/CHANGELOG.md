@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-11-25 (Store Item Reference Integrity Complete — Engineering Release 2.6) |
+| **Last Updated** | 2026-11-25 (Runtime Load Failure Recognition Correction — Candidate A Complete — Engineering Release 2.7) |
 
 ---
 
@@ -1979,3 +1979,43 @@ The Documentation Release 1.0 Final Review concluded with:
 - No ADR created. No Governance Register item opened. GOV-010 and GOV-011 remain textually unmodified; GOV-012's clarification is additive only.
 - Implementation, Architectural Resolution, Engineering Release, and this closeout remain **uncommitted** at this entry's own drafting — the commit awaits separate, explicit Product Owner authorization.
 - Full record: `docs/engineering/ENGINEERING_RELEASE_2.6.md`, `docs/engineering/ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md`.
+
+---
+
+# [Runtime Load Failure Recognition Correction — Candidate A]
+
+**Status:** Complete — a correction to existing Runtime Load Failure recognition behavior, carrying **no `C`-number**; this is not a new capability or runtime signal. Implements exactly the scope the Product Owner's decision record (D1–D7) authorized.
+
+## Fixed
+
+- **Timestamped occurrences of the governed message are now recognized** (`modiq-collection`, `RuntimeLogCollector`): the governed template `Error: Unsupported mod description version in mod {Name}` previously matched only at offset zero of a log line, missing the real `single-incompatible-mod` fixture's own timestamped session-phase occurrence (line 1445, after a 23-character `YYYY-MM-DD HH:MM:SS.mmm` prefix) alongside the untimestamped startup-phase occurrence already recognized (line 124). Recognition now matches against the **engine line** — the line's own content with exactly one recognized timestamp shape set aside, matched positionally and exactly, never parsed as a calendar date and never generalized to any other shape. An untimestamped line matches exactly as before. Evidence `content` always carries the complete original line verbatim, including the timestamp where present.
+- **Repeated occurrences of the same mod no longer repeat the mod name in the Finding summary** (`modiq-rules`, `RuntimeLoadFailureRule`): a mod name now appears once in the summary regardless of how many Evidence items recognize it, collected in first-observed order via a single linear pass (no hash-based collection, so repeated evaluation of identical input remains byte-identical). Every contributing Evidence id is still cited.
+
+## Added
+
+- One Evidence item per recognized occurrence, with no Collector-level deduplication — each occurrence carries its own Evidence id, consistent with the existing Collector/Rule boundary (`RUNTIME_EVIDENCE_PROCESSING_ARCHITECTURE.md` Section 5: Collectors acquire facts, they do not infer meaning).
+- Test coverage for timestamped recognition, untimestamped recognition (regression), both forms in one file, verbatim content preservation including the timestamp, a malformed timestamp shape correctly falling back to non-recognition, an unrelated timestamped message correctly remaining unrecognized, Collector non-deduplication, Rule one-name-per-summary deduplication with every contributing Evidence id retained, distinct mod names remaining distinct, deterministic output, and both real occurrences in the checked-in `single-incompatible-mod` fixture end-to-end.
+
+## Unchanged
+
+- `Load mod:` remains corroborating evidence only, not required for recognition, and was not touched by this correction. The pre-existing Matrix wording discrepancy around that signal remains deferred housekeeping.
+- No new `EvidenceCategory`, no entity field, no invariant change, no `AssessmentService` signature change, no Storage schema, transport, DTO, or UI change. No pre-existing Rule source file other than `runtime_load_failure_rule.rs` touched.
+
+## Limitations
+
+- **Repeated-occurrence interpretation is accepted, not resolved.** Whether two occurrences of the identical engine message represent one rejection logged twice or two separate rejections cannot be determined from the fixture corpus available. The Rule's one-Finding-per-mod-name behavior produces the same conclusion under either reading; it does not claim to have resolved which is correct.
+- **Exactly one timestamp shape is recognized** (`YYYY-MM-DD HH:MM:SS.mmm`). No other log-transport timestamp shape is recognized by this correction, and none is claimed to be. This is not general timestamp parsing.
+- No claim of completeness over failure classes — recognition remains bounded to the one governed template this corpus evidences; this correction widens where that template is recognized within a line, not what is recognized.
+
+## Verified
+
+- Root workspace: `cargo fmt --all -- --check`, `cargo check --workspace --all-targets`, `cargo test --workspace` — all clean, **370 total passing, 0 failed** (354 → 370; 16 new tests — 9 in `runtime_log_collector.rs`, 5 in `runtime_load_failure_rule.rs`, 2 in `assessment_service.rs`).
+- `cargo clippy --workspace --all-targets` — one pre-existing, unrelated `module_inception` warning in `modiq-runtime`; no new warning in any of the three modified crates.
+- `git diff --check` — clean. Diff is 586 insertions against 2 deletions; both deletions are the single-line replacements switching matching to the engine line and deduplicating the mod-name collection. No existing test was weakened, altered, or removed.
+
+## Notes
+
+- **No Architectural Resolution was required.** Classified as a correction to the existing recognition contract, not a new capability. No ADR created. No Governance Register entry opened.
+- **An accepted documentation basis, by the nature of this workstream.** The Product Owner's decisions (D1–D7) were delivered directly as a decision record rather than as separate persisted lifecycle documents; `ENGINEERING_RELEASE_2.7.md` carries the load-bearing content of that record inline.
+- Implementation, Engineering Release, and this closeout remain **uncommitted** at this entry's own drafting — the commit awaits separate, explicit Product Owner authorization.
+- Full record: `docs/engineering/ENGINEERING_RELEASE_2.7.md`.
