@@ -6,7 +6,7 @@
 | **Project** | modIQ |
 | **Purpose** | Repository History |
 | **Maintained By** | Project Maintainers |
-| **Last Updated** | 2026-09-04 (C15 — Assessment & Report Subject Identity Complete) |
+| **Last Updated** | 2026-11-25 (Store Item Reference Integrity Complete — Engineering Release 2.6) |
 
 ---
 
@@ -1937,3 +1937,45 @@ The Documentation Release 1.0 Final Review concluded with:
 - No `modiq-storage` schema, `AssessmentService` public signature, DTO, transport, or UI file changed. No ADR created. No Governance Register entry opened or modified. Initiative 2 remains untouched and unadvanced — "assess another mod" and "assess a real Subject" are both, and remain, independent-Assessment concerns, categorically distinct from Initiative 2's own same-Assessment supplementation question.
 - Implementation and full lifecycle committed on `feature/runtime-implementation` (`9854f1c`), **not yet pushed** — publication remains a separate, explicitly authorized action, following the identical precedent this repository's own C14 Engineering Release already established.
 - Full record: `docs/engineering/IMPLEMENTATION_REPORT_C15_ASSESSMENT_REPORT_IDENTITY.md`, `docs/engineering/ENGINEERING_RELEASE_2.5.md`.
+
+---
+
+# [Store Item Reference Integrity]
+
+**Status:** Complete — the seventh post-foundation capability, and the first to evaluate a relationship between two independently collected facts: a path a mod declares in its own manifest, and the inventory of entries collected from the archive that manifest ships inside. Carries **no `C`-number**; none was authorized. Implements exactly the scope `ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md` adopts and a separate Implementation Authorization authorized.
+
+## Added
+
+- **Store-item declaration extraction** (`modiq-collection`, `XmlCollector`): one `XmlInspection` Evidence item per `storeItem` element that is a **direct child of the canonical `storeItems` element** in root `modDesc.xml`, in document order, appended strictly after every pre-existing manifest Evidence item. Unrestricted descendant matching is deliberately not used. Every structurally valid declaration is preserved, including degenerate forms: an absent `xmlFilename` is recorded without inventing a path, and an empty or whitespace-only value is preserved verbatim — both under their own distinct descriptions, so neither can produce a missing-file conclusion.
+- **`StoreItemReferenceRule`** (`modiq-rules`): evaluates supported declared paths against the file entries collected from the assessed ZIP archive. Comparison is over raw as-stored archive entry names, with `/` as the recognized separator, **case-sensitive**, with **no Unicode normalization**; directory entries never satisfy a file declaration. Registered last in the existing fixed evaluation order; all five pre-existing Rules are unaffected in content, severity, and ordering.
+- **Findings for unmatched supported declarations**: one independent `Warning` / `Structure` / `Final` Finding per unmatched declaration, each citing **exactly its own corresponding declaration Evidence item**, with no Recommendation. Finding wording is bounded to the collected archive inventory.
+
+## Changed
+
+- Nothing. No existing behavior, signature, schema, DTO, transport, or UI changed. No pre-existing Rule source file was edited.
+
+## Limitations
+
+- **ZIP archive assessments only.** A filesystem-directory assessment produces no store-item finding — a deliberate silence, because adopted collection policy omits symbolic links and non-regular objects from Evidence with no Rule-visible signal, which is the only condition under which a false missing-file conclusion could arise. `apps/console` supports directory intake today.
+- **Excluded reference forms** produce no missing-file finding and are never normalized or silently reinterpreted — absolute and leading-separator paths (including drive-qualified), `$`-based path expressions, backslash-containing paths, and paths containing `.` or `..` segments. Excluded declarations remain fully traceable as Evidence.
+- **No runtime or functional claim.** The capability establishes nothing about runtime loadability, functional correctness, in-game behavior, or comprehensive XML validation. It reports only whether a declared path matched what collection actually observed.
+- Legacy ZIP filename encoding is not resolved; no claim is made that all legacy-encoded archives are interpreted identically.
+
+## Verified
+
+- Root workspace: `cargo fmt --check`, `cargo check --workspace --all-targets`, `cargo test --workspace` — all clean, **354 total passing, 0 failed** (311 → 354; 43 new tests — 10 in `xml_collector.rs`, 20 in `store_item_reference_rule.rs`, 5 in `engine.rs`, 8 in `assessment_service.rs`).
+- `apps/sandbox` (separate workspace): `cargo fmt --check`, `cargo check --all-targets`, tests — clean, 16/16, unaffected.
+- `apps/console`: `tsc --noEmit` and `vite build` — both clean.
+- `git diff --check` — clean. Diff is 768 insertions against 4 deletions; all four deletions audited individually (one test-import line extended, three doc-comment lines replaced with longer text). No existing test was weakened, altered, or removed.
+
+## Notes
+
+- **GOV-012 received an additive clarification, with no existing resolution text modified.** "One per matching Rule" describes aggregation **across** Rules and sets no cardinality cap on outcomes from a single Rule; a Rule may produce multiple independent Findings where each is separately traceable to its Rule and its own Evidence. `Finding.rule_reference` remains a single `RuleReference`. First instance: `StoreItemReferenceRule`.
+- **A dedicated Architectural Impact Review found no defect.** Multiple outcomes from one Rule are architecturally permissible; `RuleEngine` aggregation handles them naturally; no `HashMap`, `HashSet`, `dedup`, or `BTreeMap` anywhere in the workspace is keyed by `rule_reference`; every downstream consumer preserves individual Findings. No implementation change was required.
+- **History aggregation nuance.** `history_analysis` counts individual Finding occurrences, so one assessment may now contribute multiple occurrences to the same `(rule_reference, severity)` pattern — consistent with `PatternFrequency`'s own documented semantics, and recorded so `modiq-cli history` output is not misread as a per-report count. No change to `history_analysis` was made or required.
+- **An accepted lifecycle-document gap, by explicit Product Owner decision.** Seven lifecycle artifacts (Capability Definition, Process Determination, Architecture Evaluation, Implementation Plan, Implementation Authorization, Implementation Report, Architectural Impact Review) were completed and delivered during the engineering process but were not persisted in this repository; only the Architectural Resolution was. No retrospective reconstruction was authorized. `ENGINEERING_RELEASE_2.6.md` carries the load-bearing findings inline. Recorded as a documentation gap, not an implementation defect or release blocker.
+- **The Architectural Resolution did not itself authorize implementation**, and says so; a separate Implementation Authorization was subsequently issued and implementation proceeded under it. The Resolution's own wording was not rewritten.
+- **Deferred, and not approved future commitments:** filesystem-directory support; case-insensitive matching; case-only near-match detection; legacy ZIP filename encoding; duplicate store-item declaration handling; inventory omission signalling for traversal-invalid entries; broader XML, configuration, vehicle, specialization, and localization reference intelligence; base-game reference knowledge; canonical path representation in archive Evidence `content`.
+- No ADR created. No Governance Register item opened. GOV-010 and GOV-011 remain textually unmodified; GOV-012's clarification is additive only.
+- Implementation, Architectural Resolution, Engineering Release, and this closeout remain **uncommitted** at this entry's own drafting — the commit awaits separate, explicit Product Owner authorization.
+- Full record: `docs/engineering/ENGINEERING_RELEASE_2.6.md`, `docs/engineering/ARCHITECTURAL_RESOLUTION_STORE_ITEM_REFERENCE_INTEGRITY.md`.

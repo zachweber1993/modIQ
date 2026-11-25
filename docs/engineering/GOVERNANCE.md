@@ -767,6 +767,8 @@ Approved by Technical Director in its entirety, following `SPRINT5_IMPLEMENTATIO
 
 Full definition recorded in `SPRINT5_IMPLEMENTATION_PLAN.md`, Design Questions 1–3.
 
+**Clarification (additive; recorded at the Store Item Reference Integrity closeout, Engineering Release 2.6). No part of the resolution text above is modified, withdrawn, or reinterpreted.** Question 1's phrase "one per matching Rule" answers whether `RuleEngine::evaluate` aggregates **across** Rules; it does **not** establish a cardinality cap on how many outcomes a single Rule may contribute. A Rule may produce multiple independent Findings from one evaluation where each conclusion is separately traceable to that Rule and to its own supporting Evidence — which is precisely the property Question 1's own return-shape reasoning exists to protect ("keeps each Rule's Finding independently traceable to exactly the Rule and Evidence that produced it"). `Finding.rule_reference` remains a single `RuleReference`, unchanged. Question 2 (fixed declaration ordering) and Question 3 (independent, non-suppressing composition) are unaffected. First instance: `StoreItemReferenceRule`, which reports one Finding per unmatched store-item declaration, each citing exactly that declaration's own Evidence. A dedicated read-only Architectural Impact Review confirmed, against all fourteen Runtime Invariants and every downstream consumer, that no invariant constrains per-Rule Finding cardinality and that nothing in the workspace groups, deduplicates, or indexes Findings by `rule_reference` — full record: `docs/engineering/ENGINEERING_RELEASE_2.6.md` §8.
+
 ---
 
 ## GOV-013
